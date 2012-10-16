@@ -30,7 +30,7 @@ class keystone::config::mysql(
   $password      = 'keystone_default_password',
   $host          = '127.0.0.1',
   $dbname        = 'keystone',
-  $idle_timeout  = '200',
+  $idle_timeout  = '200'
 #  the below key,values will not be read from the keystone.conf and should be removed
 #  $min_pool_size = '5',
 #  $max_pool_size = '10',
