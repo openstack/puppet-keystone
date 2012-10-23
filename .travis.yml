@@ -7,6 +7,8 @@ script: "rake spec"
 branches:
   only:
     - master
+    - folsom
+    - essex
 env:
   - PUPPET_VERSION=2.7.13
   - PUPPET_VERSION=2.7.6
