@@ -13,7 +13,7 @@ class keystone::endpoint(
   $internal_address = '127.0.0.1',
   $public_port      = '5000',
   $admin_port       = '35357',
-  $region           = 'RegionOne',
+  $region           = 'RegionOne'
 ) {
   keystone_service { 'keystone':
     ensure      => present,
