@@ -18,7 +18,6 @@ Puppet::Type.newtype(:keystone_endpoint) do
   end
 
   newproperty(:region) do
-    defaultto('RegionOne')
   end
 
   # TODO I should do some url validation
@@ -37,7 +36,8 @@ Puppet::Type.newtype(:keystone_endpoint) do
   end
 
   autorequire(:keystone_service) do
-    [self[:name]]
+    (region, service_name) = self[:name].split('/')
+    [service_name]
   end
 
 end
