@@ -9,7 +9,7 @@ describe 'keystone::endpoint' do
   )}
 
   describe 'with default parameters' do
-    it { should contain_keystone_endpoint('keystone').with(
+    it { should contain_keystone_endpoint('RegionOne/keystone').with(
       :ensure => 'present',
       :public_url   => 'http://127.0.0.1:5000/v2.0',
       :admin_url    => 'http://127.0.0.1:35357/v2.0',
@@ -25,11 +25,12 @@ describe 'keystone::endpoint' do
         :admin_address    => '10.0.0.2',
         :internal_address => '10.0.0.3',
         :public_port      => '23456',
-        :admin_port       => '12345'
+        :admin_port       => '12345',
+        :region           => 'RegionTwo',
       }
     end
 
-    it { should contain_keystone_endpoint('keystone').with(
+    it { should contain_keystone_endpoint('RegionTwo/keystone').with(
       :ensure => 'present',
       :public_url   => 'http://10.0.0.1:23456/v2.0',
       :admin_url    => 'http://10.0.0.2:12345/v2.0',

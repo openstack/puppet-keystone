@@ -8,7 +8,7 @@ Puppet::Type.newtype(:keystone_endpoint) do
   ensurable
 
   newparam(:name, :namevar => true) do
-    newvalues(/\S+/)
+    newvalues(/\S+\/\S+/)
   end
 
   newproperty(:id) do
