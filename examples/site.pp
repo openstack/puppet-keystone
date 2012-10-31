@@ -1,5 +1,7 @@
 Exec { logoutput => 'on_failure' }
 
+package { 'curl': ensure => present }
+
 # example of how to build a single node
 # keystone instance backed by sqlite
 # with all of the default admin roles
@@ -12,7 +14,7 @@ node keystone_sqlite {
   }
   class { 'keystone::roles::admin':
     email    => 'example@abc.com',
-    password => 'secret',
+    password => 'ChangeMe',
   }
 }
 
@@ -29,8 +31,8 @@ node keystone_mysql {
     admin_token    => 'admin_token',
   }
   class { 'keystone::roles::admin':
-    email     => 'test@puppetlabs.com',
-    password => 'secret',
+    email    => 'test@puppetlabs.com',
+    password => 'ChangeMe',
   }
 }
 
@@ -49,7 +51,7 @@ node keystone {
   }
   class { 'keystone::roles::admin':
     email    => 'example@abc.com',
-    password => 'secret',
+    password => 'ChangeMe',
   }
 }
 
