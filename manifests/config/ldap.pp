@@ -1,6 +1,5 @@
 #
-# This class implements a config fragment for
-# the ldap specific backend for keystone.
+# Implements ldap configuration for keystone.
 #
 # == Dependencies
 # == Examples

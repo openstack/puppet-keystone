@@ -1,9 +1,9 @@
 # Overview #
 
+Keystone is the Identity service for OpenStack.
+
 The module contains a collection of manifests and native types that are capable
 of installing/managing/configuring Keystone.
-
-Keystone is the Identity service for OpenStack.
 
 # Tested use cases #
 
@@ -18,44 +18,23 @@ packaging that are built off of trunk.
 
 This module has relatively few dependencies:
 
-  https://github.com/puppetlabs/puppet-concat
-  # if used on Ubuntu
-  https://github.com/puppetlabs/puppet-apt
   # if using mysql as a backend
   https://github.com/puppetlabs/puppetlabs-mysql
 
 # Usage #
-## Manifests ##
 
-### class keystone ###
+## class keystone ##
 
 The keystone class sets up the basic configuration for the keystone service.
-
-It must be used together with a class that expresses the db backend to use:
 
 for example:
 
     class { 'keystone':
-      log_verbose => 'True',
       admin_token => 'my_secret_token'
+      verbose     => 'True',
     }
 
-  needs to be configured to use a backend database with either:
-
-    class { 'keystone::config::sqlite': }
-
-  or
-
-    class { 'keystone::config::mysql':
-      password => 'keystone',
-    }
-  or
-
-    class { 'keystone::config::postgresql':
-      password => 'keystone',
-    }
-
-### setting up a keystone mysql db ###
+## setting up a keystone mysql db ##
 
   A keystone mysql database can be configured separately from
   the service.
@@ -65,6 +44,7 @@ for example:
 
     # check out the mysql module's README to learn more about
     # how to more appropriately configure a server
+    # http://forge.puppetlabs.com/puppetlabs/mysql
     class { 'mysql::server': }
 
     class { 'keystone::mysql':
@@ -73,17 +53,14 @@ for example:
       password => 'keystone_password',
     }
 
-### setting up a keystone postgresql db ###
+## setting up a keystone postgresql db ##
 
   A keystone postgresql database can be configured separately from
   the service instead of mysql.
 
-  If you need to actually install a postgresql database server, you can use
-  the postgresql::server class from the puppetlabs postgresql module. You
-  will also need that module to install the postgresql python driver dependencies.
+  Use puppetlab's postgresql module to install postgresql.
+    http://forge.puppetlabs.com/puppetlabs/postgresql
 
-  # check out the postgresql module's README to learn more about
-  # how to more appropriately configure a server
   class { 'postgresql::server': }
 
   class { 'keystone::postgresql':
@@ -91,6 +68,35 @@ for example:
       user     => 'keystone',
       password => 'keystone_password',
   }
+
+## Install keystone role ##
+
+  The following class adds admin credentials to keystone.
+
+  class { 'keystone::roles::admin':
+    email        => 'you@your_domain.com',
+    password     => 'password',
+    admin_tenant => 'admin_tenant',
+  }
+
+## Install service user and endpoint ##
+
+  The following class installs the keystone service user and endpoints.
+
+  class { 'keystone::endpoint':
+    public_address   => '212.234.21.4',
+    admin_address    => '10.0.0.4',
+    internal_address => '11.0.1.4',
+    region           => 'RegionTwo',
+  }
+
+## Examples
+
+Examples can be located in the examples directory of this modules. The node keystone_mysql is the most common deployment style.
+
+The keystone deployment description that I use for testing can be found here:
+
+https://github.com/puppetlabs/puppetlabs-openstack_dev_env/tree/master/manifests
 
 ## Native Types ##
 
@@ -104,7 +110,7 @@ for example:
     - keystone_service
     - keystone_endpoint
 
-  These types will only work on an actual keystone node (and they read keystone.conf
+  These types will only work on the keystone server (and they read keystone.conf
   to figure out the admin port and admin token, which is kind of hacky, but the best
   way I could think of.)
 
@@ -112,21 +118,28 @@ for example:
 
 ### examples ###
 
-  keystone_tenant { 'openstack':
-    ensure  => present,
-    enabled => 'True',
-  }
-  keystone_user { 'openstack':
-    ensure  => present,
-    enabled => 'True'
-  }
-  keystone_role { 'admin':
-    ensure => present,
-  }
-  keystone_user_role { 'admin@openstack':
-    roles => ['admin', 'superawesomedue'],
-    ensure => present
-  }
+    keystone_tenant { 'openstack':
+      ensure  => present,
+      enabled => 'True',
+    }
+    keystone_user { 'openstack':
+      ensure  => present,
+      enabled => 'True'
+    }
+    keystone_role { 'admin':
+      ensure => present,
+    }
+    keystone_user_role { 'admin@openstack':
+      roles => ['admin', 'superawesomedue'],
+      ensure => present
+    }
+
+  The keystone_config native type allows you to arbitrarily modify any config line
+  from any scope in Puppet.
+
+    keystone_config { '':
+
+    }
 
 ### puppet resource ###
 
@@ -136,8 +149,7 @@ To list all of the objects of a certain type in the keystone database, you can r
 
   puppet resource <type>
 
-For example:
+For example, the following command lists all keystone tenants when run on the keystone server:
 
-  puppet resource keystone_tenant
+    puppet resource keystone_tenant
 
-  would list all know keystone tenants for a given keystone instance.
