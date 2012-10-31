@@ -2,8 +2,9 @@
 
 Keystone is the Identity service for OpenStack.
 
-The module contains a collection of manifests and native types that are capable
-of installing/managing/configuring Keystone.
+This modules contains classes and native types that install and configure keystone.
+
+This version of the module is targetted at Folsom.
 
 # Tested use cases #
 
