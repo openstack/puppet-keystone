@@ -4,7 +4,7 @@
 # This class can be used to create tables, users and grant
 # privelege for a mysql keystone database.
 #
-# [*Parameters*]
+# == parameters
 #
 # [password] Password that will be used for the keystone db user.
 #   Optional. Defaults to: 'keystone_default_password'

@@ -1,23 +1,20 @@
 #
 # This class implements some reasonable admin defaults for keystone.
 #
-# It relies on the Puppet native types that wrap the
-# keystone client command line tool.
-#
 # It creates the following keystone objects:
-#   - service tenant
-#   - "admin" tenant (defaults to "openstack")
-#   - admin user (that defaults to the "admin" tenant)
-#   - admin role
-#   - Member role
-#   - adds admin role to admin user on the "admin" tenant
+#   * service tenant (tenant used by all service users)
+#   * "admin" tenant (defaults to "openstack")
+#   * admin user (that defaults to the "admin" tenant)
+#   * admin role
+#   * Member role
+#   * adds admin role to admin user on the "admin" tenant
+#
 # [*Parameters*]
 #
-# [email] The email address for the admin. Optional. Defaults to demo@puppetlabs.com.
-#    TODO should be required.
-# [password] The admin password. Optional. Defaults to ChangeMe
-#    TODO should be required.
+# [email] The email address for the admin. Required.
+# [password] The admin password. Required.
 # [admin_tenant] The name of the tenant to be used for admin privileges. Optional. Defaults to openstack.
+# [admin] Admin user. Optional. Defaults to admin.
 #
 # == Dependencies
 # == Examples

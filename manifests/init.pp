@@ -80,7 +80,6 @@ class keystone(
     notify  => Service['keystone'],
   }
 
-
   package { 'keystone':
     name   => $::keystone::params::package_name,
     ensure => $package_ensure,
