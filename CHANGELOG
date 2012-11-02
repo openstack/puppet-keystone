@@ -1,3 +1,15 @@
+2012-11-02 - Version 1.0.0
+* Adds region to be part of the namevar for endpoints (breaks backwards compat)
+* Add full support for travisci
+* Unset password defaults. Force users to provide password. (breaks backwards compat)
+* Replace concat with inifile (breaks backwards compat)
+* Adds native types for managing all config
+* Adds folsom support
+* Drops essex support
+* Changes log_verbose and log_debug to verbose,debug
+* Documentation updates
+* Improved error handling
+* Adds db config to keystone class
 2012-10-08 - Version 0.2.0
 * add enable parameter
 * add initial postgres classes
