@@ -39,7 +39,6 @@ Puppet::Type.type(:keystone_endpoint).provide(
   def create
     optional_opts = []
     {
-      :region       => '--region',
       :public_url   => '--publicurl',
       :internal_url => '--internalurl',
       :admin_url    => '--adminurl'
@@ -48,8 +47,11 @@ Puppet::Type.type(:keystone_endpoint).provide(
         optional_opts.push(opt).push(resource[param])
       end
     end
+    (region, service_name) = resource[:name].split('/')
+    resource[:region] = region
+    optional_opts.push('--region').push(resource[:region])
     service_id = self.class.list_keystone_objects('service', 4).detect do |user|
-      user[1] == resource[:name]
+      user[1] == service_name
     end.first
 
     auth_keystone(
@@ -109,10 +111,10 @@ Puppet::Type.type(:keystone_endpoint).provide(
 
     def self.build_endpoint_hash
       hash = {}
-      list_keystone_objects('endpoint', 5).each do |endpoint|
+      list_keystone_objects('endpoint', [5,6]).each do |endpoint|
         service_id   = get_service_id(endpoint[0])
         service_name = get_keystone_object('service', service_id, 'name')
-        hash[service_name] = {
+        hash["#{endpoint[1]}/#{service_name}"] = {
           :id           => endpoint[0],
           :region       => endpoint[1],
           :public_url   => endpoint[2],
