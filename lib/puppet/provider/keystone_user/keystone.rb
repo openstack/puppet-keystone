@@ -128,7 +128,12 @@ Puppet::Type.type(:keystone_user).provide(
         if tenantId.nil? or tenantId == 'None' or tenantId.empty?
           tenant = 'None'
         else
-          tenant = get_keystone_object('tenant', tenantId, 'name')
+          # this prevents is from failing if tenant no longer exists
+          begin
+            tenant = get_keystone_object('tenant', tenantId, 'name')
+          rescue
+            tenant = 'None'
+          end
         end
         password = 'nil'
         hash[user[1]] = {
