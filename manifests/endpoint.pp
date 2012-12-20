@@ -25,9 +25,15 @@ class keystone::endpoint(
   $internal_address = '127.0.0.1',
   $public_port      = '5000',
   $admin_port       = '35357',
+  $internal_port    = undef,
   $region           = 'RegionOne',
   $public_protocol  = 'http'
 ) {
+  if $internal_port == undef {
+	$real_internal_port = $public_port
+  } else {
+	$real_internal_port = $internal_port
+  }
   keystone_service { 'keystone':
     ensure      => present,
     type        => 'identity',
@@ -37,7 +43,7 @@ class keystone::endpoint(
     ensure       => present,
     public_url   => "${public_protocol}://${public_address}:${public_port}/v2.0",
     admin_url    => "http://${admin_address}:${admin_port}/v2.0",
-    internal_url => "http://${internal_address}:${public_port}/v2.0",
+    internal_url => "http://${internal_address}:${real_internal_port}/v2.0",
     region       => $region,
   }
 }
