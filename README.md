@@ -5,15 +5,14 @@ Keystone is the Identity service for OpenStack.
 This modules contains classes and native types that install and configure keystone.
 
 This version of the module is targetted at Folsom.
+The Essex version of this module can be found in the essex branch.
 
 # Tested use cases #
 
-This module has been tested against the dev version of Ubuntu Precise.
+This module has mainly been tested against Ubuntu Precise and RHEL 6.
 
 It has only currently been tested as a single node installation of keystone.
 
-It is currently targetting essex support and is being actively developed against
-packaging that are built off of trunk.
 
 # Dependencies: #
 
@@ -60,36 +59,36 @@ for example:
   the service instead of mysql.
 
   Use puppetlab's postgresql module to install postgresql.
-    http://forge.puppetlabs.com/puppetlabs/postgresql
+  http://forge.puppetlabs.com/puppetlabs/postgresql
 
-  class { 'postgresql::server': }
+    class { 'postgresql::server': }
 
-  class { 'keystone::postgresql':
-      dbname   => 'keystone',
-      user     => 'keystone',
-      password => 'keystone_password',
-  }
+    class { 'keystone::postgresql':
+        dbname   => 'keystone',
+        user     => 'keystone',
+        password => 'keystone_password',
+    }
 
 ## Install keystone role ##
 
   The following class adds admin credentials to keystone.
 
-  class { 'keystone::roles::admin':
-    email        => 'you@your_domain.com',
-    password     => 'password',
-    admin_tenant => 'admin_tenant',
-  }
+    class { 'keystone::roles::admin':
+      email        => 'you@your_domain.com',
+      password     => 'password',
+      admin_tenant => 'admin_tenant',
+    }
 
 ## Install service user and endpoint ##
 
   The following class installs the keystone service user and endpoints.
 
-  class { 'keystone::endpoint':
-    public_address   => '212.234.21.4',
-    admin_address    => '10.0.0.4',
-    internal_address => '11.0.1.4',
-    region           => 'RegionTwo',
-  }
+    class { 'keystone::endpoint':
+      public_address   => '212.234.21.4',
+      admin_address    => '10.0.0.4',
+      internal_address => '11.0.1.4',
+      region           => 'RegionTwo',
+    }
 
 ## Examples
 
@@ -131,15 +130,15 @@ https://github.com/puppetlabs/puppetlabs-openstack_dev_env/tree/master/manifests
       ensure => present,
     }
     keystone_user_role { 'admin@openstack':
-      roles => ['admin', 'superawesomedue'],
+      roles => ['admin', 'superawesomedude'],
       ensure => present
     }
 
   The keystone_config native type allows you to arbitrarily modify any config line
   from any scope in Puppet.
 
-    keystone_config { '':
-
+    keystone_config { 'ssl/enable':
+      value => 'True',
     }
 
 ### puppet resource ###
