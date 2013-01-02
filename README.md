@@ -7,6 +7,8 @@ This modules contains classes and native types that install and configure keysto
 This version of the module is targetted at Folsom.
 The Essex version of this module can be found in the essex branch.
 
+[![Unit Test Status](https://secure.travis-ci.org/puppetlabs/puppetlabs-keystone.png?branch=master)](http://travis-ci.org/puppetlabs/puppetlabs-keystone)
+
 # Tested use cases #
 
 This module has mainly been tested against Ubuntu Precise and RHEL 6.
