@@ -35,7 +35,7 @@
 class keystone::db::postgresql(
   $password,
   $dbname        = 'keystone',
-  $user          = 'keystone_admin',
+  $user          = 'keystone_admin'
 ) {
 
   Class['keystone::db::postgresql'] -> Service<| title == 'keystone' |>
