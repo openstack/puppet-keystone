@@ -124,7 +124,11 @@ Puppet::Type.type(:keystone_user).provide(
     def self.build_user_hash
       hash = {}
       list_keystone_objects('user', 4).each do |user|
-        tenantId = get_keystone_object('user', user[0], 'tenantId')
+        begin
+          tenantId = get_keystone_object('user', user[0], 'tenantId')
+        rescue
+          tenantId = nil
+        end
         if tenantId.nil? or tenantId == 'None' or tenantId.empty?
           tenant = 'None'
         else
