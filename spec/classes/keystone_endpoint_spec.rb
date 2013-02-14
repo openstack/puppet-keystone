@@ -39,4 +39,23 @@ describe 'keystone::endpoint' do
 
   end
 
+  describe 'with overridden internal port' do
+
+    let :params do
+      {
+        :internal_port    => '12345'
+      }
+    end
+
+    it { should contain_keystone_endpoint('RegionOne/keystone').with(
+      :ensure => 'present',
+      :public_url   => 'http://127.0.0.1:5000/v2.0',
+      :admin_url    => 'http://127.0.0.1:35357/v2.0',
+      :internal_url => 'http://127.0.0.1:12345/v2.0'
+    )}
+
+  end
+
+
+
 end
