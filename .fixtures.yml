@@ -4,6 +4,5 @@ fixtures:
     "mysql": "git://github.com/puppetlabs/puppetlabs-mysql.git"
     "stdlib": "git://github.com/puppetlabs/puppetlabs-stdlib.git"
     "inifile": 'git://github.com/cprice-puppet/puppetlabs-inifile'
-    "create_resources": 'git://github.com/puppetlabs/puppetlabs-create_resources'
   symlinks:
     "keystone": "#{source_dir}"
