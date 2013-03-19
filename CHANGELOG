@@ -1,3 +1,5 @@
+2013-03-19 - Version 1.1.1
+- add dep from host_access to db sync
 2013-03-19 - Version 1.1.0
 - update travis matrix, add 3.x, 1.9.3 support
 - update config types to support purging (pending inifile release)
