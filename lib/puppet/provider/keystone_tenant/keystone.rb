@@ -94,8 +94,12 @@ Puppet::Type.type(:keystone_tenant).provide(
     def self.build_tenant_hash
       hash = {}
       list_keystone_objects('tenant', 3).each do |tenant|
-        # I may need to make a call to get to get the description
-        description = get_keystone_object('tenant', tenant[0], 'description')
+        begin
+          # I may need to make a call to get to get the description
+          description = get_keystone_object('tenant', tenant[0], 'description')
+        rescue
+          description = ""
+        end
         hash[tenant[1]] = {
           :id          => tenant[0],
           :description => description,

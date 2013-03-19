@@ -1,3 +1,11 @@
+2013-03-19 - Version 1.1.0
+- update travis matrix, add 3.x, 1.9.3 support
+- update config types to support purging (pending inifile release)
+- add more rescues to keystone types to handle empty fields
+- Adding the ability to specify https for the public endpoint
+- Move keystone ldap class to correct file.
+2012-11-02 - Version 1.0.1
+* update dependencies
 2012-11-02 - Version 1.0.0
 * Adds region to be part of the namevar for endpoints (breaks backwards compat)
 * Add full support for travisci
