@@ -12,11 +12,12 @@ describe 'keystone::db::mysql' do
 
   let :param_defaults do
     {
-      'password' => 'keystone_default_password',
-      'dbname'   => 'keystone',
-      'user'     => 'keystone_admin',
-      'charset'  => 'latin1',
-      'host'     => '127.0.0.1'
+      'password'      => 'keystone_default_password',
+      'dbname'        => 'keystone',
+      'user'          => 'keystone_admin',
+      'charset'       => 'latin1',
+      'host'          => '127.0.0.1',
+      'allowed_hosts' => ['127.0.0.%', '192.168.1.%']
     }
   end
 
