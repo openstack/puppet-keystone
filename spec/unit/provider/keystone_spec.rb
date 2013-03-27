@@ -8,11 +8,12 @@ klass = Puppet::Provider::Keystone
 
 describe Puppet::Provider::Keystone do
 
-  describe 'when retrieving the security token' do
+  after :each do
+    klass.reset
+  end
 
-    after :each do
-      klass.instance_variable_set(:@keystone_file, nil)
-    end
+
+  describe 'when retrieving the security token' do
 
     it 'should fail if there is no keystone config file' do
       ini_file = Puppet::Util::IniConfig::File.new
@@ -71,6 +72,20 @@ describe Puppet::Provider::Keystone do
       mock.expects(:read).with('/etc/keystone/keystone.conf')
       klass.get_admin_endpoint.should == 'http://127.0.0.1:35357/v2.0/'
     end
-  end
 
+    describe 'when testing keystone connection retires' do
+
+      ['[Errno 111] Connection refused', '(HTTP 400)'].reverse.each do |valid_message|
+        it "should retry when keystone is not ready with error #{valid_message}" do
+          mock = {'DEFAULT' => {'admin_token' => 'foo'}}
+          Puppet::Util::IniConfig::File.expects(:new).returns(mock)
+          mock.expects(:read).with('/etc/keystone/keystone.conf')
+          klass.expects(:sleep).with(10).returns(nil)
+          klass.expects(:keystone).twice.with('--token', 'foo', '--endpoint', 'http://127.0.0.1:35357/v2.0/', ['test_retries']).raises(Exception, valid_message).then.returns(true)
+          klass.auth_keystone('test_retries')
+        end
+      end
+    end
+
+  end
 end
