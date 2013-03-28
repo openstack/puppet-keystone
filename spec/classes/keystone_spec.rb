@@ -18,6 +18,8 @@ describe 'keystone' do
       'debug'           => 'False',
       'use_syslog'      => 'False',
       'catalog_type'    => 'sql',
+      'token_format'    => 'UUID',
+      'cache_dir'       => '/var/cache/keystone',
       'enabled'         => true,
       'sql_connection'  => 'sqlite:////var/lib/keystone/keystone.db',
       'idle_timeout'    => '200'
@@ -35,6 +37,7 @@ describe 'keystone' do
       'verbose'         => 'True',
       'debug'           => 'True',
       'catalog_type'    => 'template',
+      'token_format'    => 'PKI',
       'enabled'         => false,
       'sql_connection'  => 'mysql://a:b@c/d',
       'idle_timeout'    => '300'
@@ -112,6 +115,43 @@ describe 'keystone' do
       it 'should contain correct mysql config' do
         should contain_keystone_config('sql/idle_timeout').with_value(param_hash['idle_timeout'])
         should contain_keystone_config('sql/connection').with_value(param_hash['sql_connection'])
+      end
+
+      it { should contain_keystone_config('signing/token_format').with_value(
+        param_hash['token_format']
+      ) }
+    end
+  end
+  describe 'when configuring signing token format' do
+    describe 'when configuring as UUID' do
+      let :params do
+        {
+          'admin_token'  => 'service_token',
+          'token_format' => 'UUID'
+        }
+      end
+      it { should_not contain_exec('/usr/bin/keystone-manage pki_setup') }
+    end
+    describe 'when configuring as PKI' do
+      let :params do
+        {
+          'admin_token'  => 'service_token',
+          'token_format' => 'PKI'
+        }
+      end
+      it { should contain_exec('/usr/bin/keystone-manage pki_setup').with(
+        :creates => '/etc/keystone/ssl/private/signing_key.pem'
+      ) }
+      it { should contain_file('/var/cache/keystone').with_ensure('directory') }
+      describe 'when overriding the cache dir' do
+        let :params do
+          {
+            'admin_token'  => 'service_token',
+            'token_format' => 'PKI',
+            'cache_dir'    => '/var/lib/cache/keystone'
+          }
+        end
+        it { should contain_file('/var/lib/cache/keystone') }
       end
     end
   end

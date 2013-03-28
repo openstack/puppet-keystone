@@ -21,6 +21,10 @@
 #     Defaults to False.
 #   [catalog_type] Type of catalog that keystone uses to store endpoints,services. Optional.
 #     Defaults to sql. (Also accepts template)
+#   [token_format] Format keystone uses for tokens. Optional. Defaults to UUID.
+#     Supports PKI and UUID.
+#   [cache_dir] Directory created when token_format is PKI. Optional.
+#     Defaults to /var/cache/keystone.
 #   [enalbles] If the keystone services should be enabled. Optioal. Default to true.
 #   [sql_conneciton] Url used to connect to database.
 #   [idle_timeout] Timeout when db connections should be reaped.
@@ -54,12 +58,15 @@ class keystone(
   $debug          = 'False',
   $use_syslog     = 'False',
   $catalog_type   = 'sql',
+  $token_format   = 'UUID',
+  $cache_dir      = '/var/cache/keystone',
   $enabled        = true,
   $sql_connection = 'sqlite:////var/lib/keystone/keystone.db',
   $idle_timeout   = '200'
 ) {
 
   validate_re($catalog_type,   'template|sql')
+  validate_re($token_format,  'UUID|PKI')
 
   File['/etc/keystone/keystone.conf'] -> Keystone_config<||> ~> Service['keystone']
   Keystone_config<||> ~> Exec<| title == 'keystone-manage db_sync'|>
@@ -144,6 +151,16 @@ class keystone(
   } elsif($catalog_type == 'sql' ) {
     keystone_config { 'catalog/driver':
       value => ' keystone.catalog.backends.sql.Catalog'
+    }
+  }
+
+  keystone_config { 'signing/token_format': value => $token_format }
+  if($token_format  == 'PKI') {
+    file { $cache_dir:
+      ensure => directory,
+    }
+    exec { '/usr/bin/keystone-manage pki_setup':
+      creates => '/etc/keystone/ssl/private/signing_key.pem'
     }
   }
 
