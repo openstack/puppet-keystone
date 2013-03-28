@@ -50,7 +50,7 @@ class keystone::roles::admin(
     email       => $email,
     password    => $password,
   }
-  keystone_role { ['admin', 'Member']:
+  keystone_role { ['admin', 'Member', '_member_']:
     ensure => present,
   }
   keystone_user_role { "${admin}@${admin_tenant}":
