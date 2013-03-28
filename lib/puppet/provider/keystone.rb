@@ -46,11 +46,18 @@ class Puppet::Provider::Keystone < Puppet::Provider
     self.class.tenant_hash
   end
 
+  def self.reset
+    @admin_endpoint = nil
+    @tenant_hash    = nil
+    @admin_token    = nil
+    @keystone_file  = nil
+  end
+
   def self.auth_keystone(*args)
     begin
       keystone('--token', admin_token, '--endpoint', admin_endpoint, args)
     rescue Exception => e
-      if e.message =~ /\(HTTP 400\)/
+      if (e.message =~ /\[Errno 111\] Connection refused/) or  (e.message =~ /\(HTTP 400\)/)
        sleep 10
        keystone('--token', admin_token, '--endpoint', admin_endpoint, args)
       else
