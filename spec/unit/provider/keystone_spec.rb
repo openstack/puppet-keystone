@@ -81,11 +81,29 @@ describe Puppet::Provider::Keystone do
           Puppet::Util::IniConfig::File.expects(:new).returns(mock)
           mock.expects(:read).with('/etc/keystone/keystone.conf')
           klass.expects(:sleep).with(10).returns(nil)
-          klass.expects(:keystone).twice.with('--token', 'foo', '--endpoint', 'http://127.0.0.1:35357/v2.0/', ['test_retries']).raises(Exception, valid_message).then.returns(true)
+          klass.expects(:keystone).twice.with('--token', 'foo', '--endpoint', 'http://127.0.0.1:35357/v2.0/', ['test_retries']).raises(Exception, valid_message).then.returns('')
           klass.auth_keystone('test_retries')
         end
       end
     end
 
+  end
+
+  describe 'when keystone cli has warnings' do
+    it "should remove errors from results" do
+      mock = {'DEFAULT' => {'admin_token' => 'foo'}}
+      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
+      mock.expects(:read).with('/etc/keystone/keystone.conf')
+      klass.expects(
+        :keystone
+      ).with(
+        '--token',
+        'foo',
+        '--endpoint',
+        'http://127.0.0.1:35357/v2.0/',
+        ['test_retries']
+      ).returns("WARNING\n+-+-+\nWARNING")
+      klass.auth_keystone('test_retries').should == "+-+-+\nWARNING"
+    end
   end
 end
