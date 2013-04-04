@@ -1,3 +1,10 @@
+2013-04-04
+- Set the compute_port default value to 8774
+- Ensure _member_ role is present
+- explicitly set token_format
+- Add keystone code to capture and ignore warning
+- update keystone ready test for grizzly
+- Removed quotes in allowed_hosts as it was causing a failure when allowed_hosts is an array of hosts
 2013-03-19 - Version 1.1.1
 - add dep from host_access to db sync
 2013-03-19 - Version 1.1.0
