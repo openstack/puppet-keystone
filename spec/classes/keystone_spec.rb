@@ -89,11 +89,13 @@ describe 'keystone' do
       ) }
 
       it 'should only migrate the db if $enabled is true' do
-        if param_hash[:enabled]
+        if param_hash['enabled']
           should contain_exec('keystone-manage db_sync').with(
+            :user        => 'keystone',
             :refreshonly => true,
             :notify      => 'Service[keystone]',
-            :subscribe   => ['Package[keystone]', 'Concat[/etc/keystone/keystone.conf]']
+            :subscribe   => 'Package[keystone]',
+            :require     => 'User[keystone]'
           )
         end
       end
