@@ -4,10 +4,8 @@ Keystone is the Identity service for OpenStack.
 
 This modules contains classes and native types that install and configure keystone.
 
-This version of the module is targetted at Folsom.
+This version of the module is targetted at Folsom and Grizzly.
 The Essex version of this module can be found in the essex branch.
-
-[![Unit Test Status](https://secure.travis-ci.org/puppetlabs/puppetlabs-keystone.png?branch=master)](http://travis-ci.org/puppetlabs/puppetlabs-keystone)
 
 # Tested use cases #
 
