@@ -25,7 +25,7 @@
 #     Supports PKI and UUID.
 #   [cache_dir] Directory created when token_format is PKI. Optional.
 #     Defaults to /var/cache/keystone.
-#   [enalbles] If the keystone services should be enabled. Optioal. Default to true.
+#   [enabled] If the keystone services should be enabled. Optioal. Default to true.
 #   [sql_conneciton] Url used to connect to database.
 #   [idle_timeout] Timeout when db connections should be reaped.
 #
