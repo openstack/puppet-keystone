@@ -109,7 +109,7 @@ Puppet::Type.type(:keystone_user_role).provide(
       hash = {}
       get_tenants.each do |tenant_name, tenant_id|
         get_users(tenant_id).each do |user_name, user_id|
-          list_user_roles(user_id, tenant_id).each do |role|
+          list_user_roles(user_id, tenant_id).sort.each do |role|
             hash["#{user_name}@#{tenant_name}"] ||= {
               :user_id    => user_id,
               :tenant_id  => tenant_id,
