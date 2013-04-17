@@ -1,11 +1,14 @@
 # Overview #
 
-Keystone is the Identity service for OpenStack.
+This module can be used to flexibly configure [keystone](http://keystone.openstack.org/),
+the Identity Service of Openstack.
 
-This modules contains classes and native types that install and configure keystone.
+It has been tested with a combination of other modules, and has primarily been
+developed as a subcomponent of the [openstack module](https://github.com/stackforge/puppet-openstack)
+
+This modules contains both classes as well as native types that install and configure keystone.
 
 This version of the module is targetted at Folsom and Grizzly.
-The Essex version of this module can be found in the essex branch.
 
 # Tested use cases #
 
