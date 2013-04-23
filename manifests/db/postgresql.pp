@@ -15,11 +15,6 @@
 #
 # [user] Name of keystone user. Optional. Defaults to keystone_admin.
 #
-# [host] Host where user should be allowed all priveleges for database.
-# Optional. Defaults to 127.0.0.1.
-#
-# [allowed_hosts] Hosts allowed to use the database
-#
 # == Dependencies
 #   Class['postgresql::server']
 #
