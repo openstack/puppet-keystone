@@ -82,7 +82,6 @@ class keystone(
     ensure  => present,
     owner   => 'keystone',
     group   => 'keystone',
-    mode    => '0644',
     require => Package['keystone'],
     notify  => Service['keystone'],
   }
@@ -107,6 +106,7 @@ class keystone(
 
   file { ['/etc/keystone', '/var/log/keystone', '/var/lib/keystone']:
     ensure  => directory,
+    mode    => '0750',
   }
 
   file { '/etc/keystone/keystone.conf':
