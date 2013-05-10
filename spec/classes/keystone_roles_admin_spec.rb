@@ -5,8 +5,9 @@ describe 'keystone::roles::admin' do
 
     let :params do
       {
-        :email    => 'foo@bar',
-        :password => 'ChangeMe'
+        :email          => 'foo@bar',
+        :password       => 'ChangeMe',
+        :service_tenant => 'services'
       }
     end
 
@@ -41,13 +42,19 @@ describe 'keystone::roles::admin' do
 
     let :params do
       {
-        :admin        => 'admin',
-        :email        => 'foo@baz',
-        :password     => 'foo',
-        :admin_tenant => 'admin'
+        :admin          => 'admin',
+        :email          => 'foo@baz',
+        :password       => 'foo',
+        :admin_tenant   => 'admin',
+        :service_tenant => 'foobar'
       }
     end
 
+    it { should contain_keystone_tenant('foobar').with(
+      :ensure  => 'present',
+      :enabled => 'True',
+      :description => 'Tenant for the openstack services'
+    )}
     it { should contain_keystone_tenant('admin').with(
       :ensure      => 'present',
       :enabled     => 'True',
