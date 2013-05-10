@@ -54,9 +54,9 @@ class keystone(
   $public_port    = '5000',
   $admin_port     = '35357',
   $compute_port   = '8774',
-  $verbose        = 'False',
-  $debug          = 'False',
-  $use_syslog     = 'False',
+  $verbose        = false,
+  $debug          = false,
+  $use_syslog     = false,
   $catalog_type   = 'sql',
   $token_format   = 'UUID',
   $cache_dir      = '/var/cache/keystone',
@@ -72,7 +72,7 @@ class keystone(
   Keystone_config<||> ~> Exec<| title == 'keystone-manage db_sync'|>
 
   # TODO implement syslog features
-  if ( $use_syslog != 'False') {
+  if ( $use_syslog != false) {
     fail('use syslog currently only accepts false')
   }
 

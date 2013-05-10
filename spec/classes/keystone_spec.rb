@@ -14,9 +14,9 @@ describe 'keystone' do
       'admin_port'      => '35357',
       'admin_token'     => 'service_token',
       'compute_port'    => '8774',
-      'verbose'         => 'False',
-      'debug'           => 'False',
-      'use_syslog'      => 'False',
+      'verbose'         => false,
+      'debug'           => false,
+      'use_syslog'      => false,
       'catalog_type'    => 'sql',
       'token_format'    => 'UUID',
       'cache_dir'       => '/var/cache/keystone',
@@ -34,8 +34,8 @@ describe 'keystone' do
       'admin_port'      => '35358',
       'admin_token'     => 'service_token_override',
       'compute_port'    => '8778',
-      'verbose'         => 'True',
-      'debug'           => 'True',
+      'verbose'         => true,
+      'debug'           => true,
       'catalog_type'    => 'template',
       'token_format'    => 'PKI',
       'enabled'         => false,
@@ -61,12 +61,12 @@ describe 'keystone' do
 
       it { should contain_group('keystone').with(
           'ensure' => 'present',
-          'system' => 'true'
+          'system' => true
       ) }
       it { should contain_user('keystone').with(
         'ensure' => 'present',
         'gid'    => 'keystone',
-        'system' => 'true'
+        'system' => true
       ) }
 
       it 'should contain the expected directories' do
@@ -84,8 +84,8 @@ describe 'keystone' do
       it { should contain_service('keystone').with(
         'ensure'     => param_hash['enabled'] ? 'running' : 'stopped',
         'enable'     => param_hash['enabled'],
-        'hasstatus'  => 'true',
-        'hasrestart' => 'true'
+        'hasstatus'  => true,
+        'hasrestart' => true
       ) }
 
       it 'should only migrate the db if $enabled is true' do

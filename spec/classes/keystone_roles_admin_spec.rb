@@ -13,17 +13,17 @@ describe 'keystone::roles::admin' do
 
     it { should contain_keystone_tenant('services').with(
       :ensure      => 'present',
-      :enabled     => 'True',
+      :enabled     => true,
       :description => 'Tenant for the openstack services'
     )}
     it { should contain_keystone_tenant('openstack').with(
       :ensure      => 'present',
-      :enabled     => 'True',
+      :enabled     => true,
       :description => 'admin tenant'
     )}
     it { should contain_keystone_user('admin').with(
       :ensure      => 'present',
-      :enabled     => 'True',
+      :enabled     => true,
       :tenant      => 'openstack',
       :email       => 'foo@bar',
       :password    => 'ChangeMe'
@@ -52,17 +52,17 @@ describe 'keystone::roles::admin' do
 
     it { should contain_keystone_tenant('foobar').with(
       :ensure  => 'present',
-      :enabled => 'True',
+      :enabled => true,
       :description => 'Tenant for the openstack services'
     )}
     it { should contain_keystone_tenant('admin').with(
       :ensure      => 'present',
-      :enabled     => 'True',
+      :enabled     => true,
       :description => 'admin tenant'
     )}
     it { should contain_keystone_user('admin').with(
       :ensure      => 'present',
-      :enabled     => 'True',
+      :enabled     => true,
       :tenant      => 'admin',
       :email       => 'foo@baz',
       :password    => 'foo'
