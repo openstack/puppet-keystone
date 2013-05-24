@@ -81,7 +81,7 @@ describe Puppet::Provider::Keystone do
           Puppet::Util::IniConfig::File.expects(:new).returns(mock)
           mock.expects(:read).with('/etc/keystone/keystone.conf')
           klass.expects(:sleep).with(10).returns(nil)
-          klass.expects(:keystone).twice.with('--token', 'foo', '--endpoint', 'http://127.0.0.1:35357/v2.0/', ['test_retries']).raises(Exception, valid_message).then.returns('')
+          klass.expects(:keystone).twice.with('--endpoint', 'http://127.0.0.1:35357/v2.0/', ['test_retries']).raises(Exception, valid_message).then.returns('')
           klass.auth_keystone('test_retries')
         end
       end
@@ -97,8 +97,6 @@ describe Puppet::Provider::Keystone do
       klass.expects(
         :keystone
       ).with(
-        '--token',
-        'foo',
         '--endpoint',
         'http://127.0.0.1:35357/v2.0/',
         ['test_retries']

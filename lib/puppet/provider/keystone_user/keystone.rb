@@ -80,20 +80,23 @@ Puppet::Type.type(:keystone_user).provide(
     )
   end
 
-#  def password
-#    Puppet.warning("Cannot retrieve password")
-#    user_hash[resource[:name]][:password]
-#  end
-#
-#  def password=(value)
-#    Puppet.warning('Cannot update password')
-#    # user-password-update does not support the ability know what the
-#    # current value is
-#    #auth_keystone(
-#    #  'user-password-update',
-#    #  '--pass', value,
-#    #  user_hash[resource[:name]][:id]
-#  end
+  def password
+    # if we don't know a password we can't test it
+    return nil if resource[:password] == nil
+    # we can't get the value of the password but we can test to see if the one we know
+    # about works, if it doesn't then return nil, causing it to be reset
+    begin
+      token_out = creds_keystone(resource[:name], resource[:tenant], resource[:password], "token-get")
+    rescue Exception => e
+      return nil if e.message =~ /Not Authorized/
+      raise e
+    end
+    return resource[:password]
+  end
+
+  def password=(value)
+    auth_keystone('user-password-update', '--pass', value, user_hash[resource[:name]][:id])
+  end
 
   def tenant
     user_hash[resource[:name]][:tenant]
