@@ -50,7 +50,7 @@ for example:
     # http://forge.puppetlabs.com/puppetlabs/mysql
     class { 'mysql::server': }
 
-    class { 'keystone::mysql':
+    class { 'keystone::db::mysql':
       dbname   => 'keystone',
       user     => 'keystone',
       password => 'keystone_password',
@@ -66,7 +66,7 @@ for example:
 
     class { 'postgresql::server': }
 
-    class { 'keystone::postgresql':
+    class { 'keystone::db::postgresql':
         dbname   => 'keystone',
         user     => 'keystone',
         password => 'keystone_password',
