@@ -18,7 +18,7 @@ describe 'keystone' do
       'debug'           => false,
       'use_syslog'      => false,
       'catalog_type'    => 'sql',
-      'token_format'    => 'UUID',
+      'token_format'    => 'PKI',
       'cache_dir'       => '/var/cache/keystone',
       'enabled'         => true,
       'sql_connection'  => 'sqlite:////var/lib/keystone/keystone.db',
@@ -37,7 +37,7 @@ describe 'keystone' do
       'verbose'         => true,
       'debug'           => true,
       'catalog_type'    => 'template',
-      'token_format'    => 'PKI',
+      'token_format'    => 'UUID',
       'enabled'         => false,
       'sql_connection'  => 'mysql://a:b@c/d',
       'idle_timeout'    => '300'
@@ -132,7 +132,7 @@ describe 'keystone' do
           'token_format' => 'UUID'
         }
       end
-      it { should_not contain_exec('/usr/bin/keystone-manage pki_setup') }
+      it { should_not contain_exec('keystone-manage pki_setup') }
     end
     describe 'when configuring as PKI' do
       let :params do
@@ -141,7 +141,7 @@ describe 'keystone' do
           'token_format' => 'PKI'
         }
       end
-      it { should contain_exec('/usr/bin/keystone-manage pki_setup').with(
+      it { should contain_exec('keystone-manage pki_setup').with(
         :creates => '/etc/keystone/ssl/private/signing_key.pem'
       ) }
       it { should contain_file('/var/cache/keystone').with_ensure('directory') }
