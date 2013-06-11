@@ -70,6 +70,7 @@ class keystone(
 
   File['/etc/keystone/keystone.conf'] -> Keystone_config<||> ~> Service['keystone']
   Keystone_config<||> ~> Exec<| title == 'keystone-manage db_sync'|>
+  Keystone_config<||> ~> Exec<| title == 'keystone-manage pki_setup'|>
 
   # TODO implement syslog features
   if ( $use_syslog != false) {
