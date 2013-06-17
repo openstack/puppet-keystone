@@ -73,9 +73,9 @@ describe Puppet::Provider::Keystone do
       klass.get_admin_endpoint.should == 'http://127.0.0.1:35357/v2.0/'
     end
 
-    describe 'when testing keystone connection retires' do
+    describe 'when testing keystone connection retries' do
 
-      ['[Errno 111] Connection refused', '(HTTP 400)'].reverse.each do |valid_message|
+      ['[Errno 111] Connection refused', '(HTTP 400)', 'HTTP Unable to establish connection'].reverse.each do |valid_message|
         it "should retry when keystone is not ready with error #{valid_message}" do
           mock = {'DEFAULT' => {'admin_token' => 'foo'}}
           Puppet::Util::IniConfig::File.expects(:new).returns(mock)

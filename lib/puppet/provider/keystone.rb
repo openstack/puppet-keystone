@@ -75,7 +75,7 @@ class Puppet::Provider::Keystone < Puppet::Provider
         remove_warnings(keystone('--endpoint', admin_endpoint, args))
       end
     rescue Exception => e
-      if (e.message =~ /\[Errno 111\] Connection refused/) or  (e.message =~ /\(HTTP 400\)/)
+      if (e.message =~ /\[Errno 111\] Connection refused/) or (e.message =~ /\(HTTP 400\)/) or (e.message =~ /HTTP Unable to establish connection/)
         sleep 10
         withenv authenv do
           remove_warnings(keystone('--endpoint', admin_endpoint, args))
