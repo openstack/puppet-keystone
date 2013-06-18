@@ -1,158 +1,166 @@
-# Overview #
+keystone
+=======
 
-This module can be used to flexibly configure [keystone](http://keystone.openstack.org/),
-the Identity Service of Openstack.
+#### Table of Contents
 
-It has been tested with a combination of other modules, and has primarily been
-developed as a subcomponent of the [openstack module](https://github.com/stackforge/puppet-openstack)
+1. [Overview - What is the keystone module?](#overview)
+2. [Module Description - What does the module do?](#module-description)
+3. [Setup - The basics of getting started with keystone](#setup)
+4. [Implementation - An under-the-hood peek at what the module is doing](#implementation)
+5. [Limitations - OS compatibility, etc.](#limitations)
+6. [Development - Guide for contributing to the module](#development)
+7. [Contributors - Those with commits](#contributors)
+8. [Release Notes - Notes on the most recent updates to the module](#release-notes)
 
-This modules contains both classes as well as native types that install and configure keystone.
+Overview
+--------
 
-This version of the module is targetted at Folsom and Grizzly.
+The keystone module is a part of [Stackforge](https://github.com/stackfoge), an effort by the Openstack infrastructure team to provide continuous integration testing and code review for Openstack and Openstack community projects not part of the core software.  The module its self is used to flexibly configure and manage the identify service for Openstack.
 
-# Tested use cases #
+Module Description
+------------------
 
-This module has mainly been tested against Ubuntu Precise and RHEL 6.
+The keystone module is a thorough attempt to make Puppet capable of managing the entirety of keystone.  This includes manifests to provision region specific endpoint and database connections.  Types are shipped as part of the keystone module to assist in manipulation of configuration files.
 
-It has only currently been tested as a single node installation of keystone.
+This module is tested in combination with other modules needed to build and leverage an entire Openstack software stack.  These modules can be found, all pulled together in the [openstack module](https://github.com/stackfoge/puppet-openstack).
 
+Setup
+-----
 
-# Dependencies: #
+**What the keystone module affects**
 
-This module has relatively few dependencies:
+* keystone, the identify service for Openstack.
 
-  # if using mysql as a backend
-  https://github.com/puppetlabs/puppetlabs-mysql
+### Installing keystone
 
-# Usage #
+    example% puppet module install puppetlabs/keystone
 
-## class keystone ##
+### Beginning with keystone
 
-The keystone class sets up the basic configuration for the keystone service.
+To utilize the keystone module's functionality you will need to declare multiple resources.  The following is a modified excerpt from the [openstack module](https://github.com/stackfoge/puppet-openstack).  This is not an exhaustive list of all the components needed, we recommend you consult and understand the [openstack module](https://github.com/stackforge/puppet-openstack) and the [core openstack](http://docs.openstack.org) documentation.
 
-for example:
+**Define a keystone node**
 
-    class { 'keystone':
-      admin_token => 'my_secret_token'
-      verbose     => 'True',
-    }
+```puppet
+class { 'keystone':
+  verbose        => 'True',
+  catalog_type   => 'sql',
+  admin_token    => 'random_uuid',
+  sql_connection => 'mysql://keystone:secret_identity_password@openstack-controller.example.com/keystone',
+}
 
-## setting up a keystone mysql db ##
+# Adds the admin credential to keystone.
+class { 'keystone::roles::admin':
+  email        => 'admin@example.com',
+  password     => 'super_secret',
+}
 
-  A keystone mysql database can be configured separately from
-  the service.
+# Installs the service user endpoint.
+class { 'keystone::endpoint':
+  public_address   => '10.16.0.101',
+  admin_address    => '10.16.1.101',
+  internal_address => '10.16.2.101',
+  region           => 'example-1',
+}
+```
 
-  If you need to actually install a mysql database server, you can use
-  the mysql::server class from the puppetlabs mysql module
+**Leveraging the Native Types**
 
-    # check out the mysql module's README to learn more about
-    # how to more appropriately configure a server
-    # http://forge.puppetlabs.com/puppetlabs/mysql
-    class { 'mysql::server': }
+Keystone ships with a collection of native types that can be used to interact with the data stored in keystone.  The following, related to user management could live throughout your Puppet code base.  They even support puppet's ability to introspect the current environment much the same as `puppet resource user`, `puppet resouce keystone_tenant` will print out all the currently stored tenants and their parameters.
 
-    class { 'keystone::mysql':
-      dbname   => 'keystone',
-      user     => 'keystone',
-      password => 'keystone_password',
-    }
+```puppet
+keystone_tenant { 'openstack':
+  ensure  => present,
+  enabled => 'True',
+}
+keystone_user { 'openstack':
+  ensure  => present,
+  enabled => 'True'
+}
+keystone_role { 'admin':
+  ensure => present,
+}
+keystone_user_role { 'admin@openstack':
+  roles => ['admin', 'superawesomedude'],
+  ensure => present
+}
+```
 
-## setting up a keystone postgresql db ##
+These two will seldom be used outside openstack related classes, like nova or cinder.  These are modified examples form Class['nova::keystone::auth'].
 
-  A keystone postgresql database can be configured separately from
-  the service instead of mysql.
+```puppet
+# Setup the nova keystone service
+keystone_service { 'nova'
+  ensure      => present,
+  type        => 'compute',
+  description => 'Openstack Compute Service',
+}
 
-  Use puppetlab's postgresql module to install postgresql.
-  http://forge.puppetlabs.com/puppetlabs/postgresql
+# Setup nova keystone endpoint
+keystone_endpoint { 'example-1-west/nova':
+   ensure       => present,
+   public_url   => "http://127.0.0.1:8774/v2/%(tenant_id)s",
+   admin_url    => "http://127.0.0.1:8774/v2/%(tenant_id)s",
+   internal_url => "http://127.0.0.1:8774/v2/%(tenant_id)s",
+}
+```
 
-    class { 'postgresql::server': }
+**Setting up a database for keystone**
 
-    class { 'keystone::postgresql':
-        dbname   => 'keystone',
-        user     => 'keystone',
-        password => 'keystone_password',
-    }
+A keystone database can be configured separately from the keystone services.
 
-## Install keystone role ##
+If one needs to actually install a fresh database they have the choice of mysql or postgres.  Use the mysql::server or postgreql::server classes to do this setup then the Class['keystone::db::mysql'] or Class['keystone::db::postgresql'] for adding the needed databases and users that will be needed by keystone.
 
-  The following class adds admin credentials to keystone.
+* For mysql
 
-    class { 'keystone::roles::admin':
-      email        => 'you@your_domain.com',
-      password     => 'password',
-      admin_tenant => 'admin_tenant',
-    }
+```puppet
+class { 'mysql::server': }
 
-## Install service user and endpoint ##
+class { 'keystone::db::mysql':
+  password      => 'super_secret_db_password',
+  allowed_hosts => '%',
+}
+```
 
-  The following class installs the keystone service user and endpoints.
+* For postgresql
 
-    class { 'keystone::endpoint':
-      public_address   => '212.234.21.4',
-      admin_address    => '10.0.0.4',
-      internal_address => '11.0.1.4',
-      region           => 'RegionTwo',
-    }
+```puppet
+class { 'postgresql::server': }
 
-## Examples
+class { 'keystone::db::postgresql': password => 'super_secret_db_password', }
+```
 
-Examples can be located in the examples directory of this modules. The node keystone_mysql is the most common deployment style.
+Implementation
+--------------
 
-The keystone deployment description that I use for testing can be found here:
+### keystone
 
-https://github.com/puppetlabs/puppetlabs-openstack_dev_env/tree/master/manifests
+keystone is a combination of Puppet manifest and ruby code to delivery configuration and extra functionality through types and providers.
 
-## Native Types ##
+Limitations
+------------
 
-  The Puppet support for keystone also includes native types that can be
-  used to manage the following keystone objects:
+* All the keystone types use the CLI tools and so need to be ran on the keystone node.
 
-    - keystone_tenant
-    - keystone_user
-    - keystone_role
-    - keystone_user_role
-    - keystone_service
-    - keystone_endpoint
+Development
+-----------
 
-  These types will only work on the keystone server (and they read keystone.conf
-  to figure out the admin port and admin token, which is kind of hacky, but the best
-  way I could think of.)
+Developer documentation for the entire puppet-openstack project.
 
-    - keystone_config - manages individual config file entries as resources.
+* https://wiki.openstack.org/wiki/Puppet-openstack#Developer_documentation
 
-### examples ###
+Contributors
+------------
 
-    keystone_tenant { 'openstack':
-      ensure  => present,
-      enabled => 'True',
-    }
-    keystone_user { 'openstack':
-      ensure  => present,
-      enabled => 'True'
-    }
-    keystone_role { 'admin':
-      ensure => present,
-    }
-    keystone_user_role { 'admin@openstack':
-      roles => ['admin', 'superawesomedude'],
-      ensure => present
-    }
+* https://github.com/stackforge/puppet-keystone/graphs/contributors
 
-  The keystone_config native type allows you to arbitrarily modify any config line
-  from any scope in Puppet.
+Release Notes
+-------------
 
-    keystone_config { 'ssl/enable':
-      value => 'True',
-    }
+**2.0.0**
 
-### puppet resource ###
-
-These native types also allow for some interesting introspection using puppet resource
-
-To list all of the objects of a certain type in the keystone database, you can run:
-
-  puppet resource <type>
-
-For example, the following command lists all keystone tenants when run on the keystone server:
-
-    puppet resource keystone_tenant
-
+* Upstream is now part of stackfoge.
+* keystone_user can be used to change passwords.
+* service tenant name now configurable.
+* keystone_user is now idempotent.
+* Various cleanups and bug fixes.
