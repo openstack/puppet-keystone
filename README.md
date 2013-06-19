@@ -142,6 +142,10 @@ Limitations
 
 * All the keystone types use the CLI tools and so need to be ran on the keystone node.
 
+### Upgrade warning
+
+* If you've setup Openstack using previous versions of this module you need to be aware that it used UUID as the dedault to the token_format parameter but now defaults to PKI.  If you're using this module to manage a Grizzly Openstack deployment that was set up using a development release of the modules or are attempting an upgrade from Folsom then you'll need to make sure you set the token_format to UUID at classification time.
+
 Development
 -----------
 
@@ -164,3 +168,4 @@ Release Notes
 * service tenant name now configurable.
 * keystone_user is now idempotent.
 * Various cleanups and bug fixes.
+* 
