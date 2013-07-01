@@ -35,12 +35,12 @@ class keystone::db::postgresql(
 
   Class['keystone::db::postgresql'] -> Service<| title == 'keystone' |>
 
-  require 'postgresql::python'
+  require postgresql::python
 
-   postgresql::db { "${dbname}":
-      user     =>  "${user}",
-      password  =>  "${password}",
-   }
+  postgresql::db { $dbname:
+    user      => $user,
+    password  => $password,
+  }
 
   Postgresql::Db[$dbname] ~> Exec<| title == 'keystone-manage db_sync' |>
 

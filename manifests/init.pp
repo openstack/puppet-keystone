@@ -77,7 +77,7 @@ class keystone(
     fail('use syslog currently only accepts false')
   }
 
-  include 'keystone::params'
+  include keystone::params
 
   File {
     ensure  => present,
