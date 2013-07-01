@@ -29,16 +29,19 @@ class keystone::endpoint(
   $region           = 'RegionOne',
   $public_protocol  = 'http'
 ) {
+
   if $internal_port == undef {
-	$real_internal_port = $public_port
+    $real_internal_port = $public_port
   } else {
-	$real_internal_port = $internal_port
+    $real_internal_port = $internal_port
   }
+
   keystone_service { 'keystone':
     ensure      => present,
     type        => 'identity',
     description => 'OpenStack Identity Service',
   }
+
   keystone_endpoint { "${region}/keystone":
     ensure       => present,
     public_url   => "${public_protocol}://${public_address}:${public_port}/v2.0",
