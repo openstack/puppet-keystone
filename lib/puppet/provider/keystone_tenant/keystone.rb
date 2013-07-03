@@ -35,7 +35,10 @@ Puppet::Type.type(:keystone_tenant).provide(
 
   def self.instances
     tenant_hash.collect do |k, v|
-      new(:name => k)
+      new(
+          :name => k,
+          :id   => v[:id]
+          )
     end
   end
 
