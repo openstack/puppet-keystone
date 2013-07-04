@@ -112,6 +112,18 @@ class Puppet::Provider::Keystone < Puppet::Provider
      self.class.creds_keystone(name, tenant, password, args)
    end
 
+  def self.parse_keystone_object(data)
+    # Parse the output of [type]-{create,get} into a hash
+    attrs = {}
+    header_lines = 3
+    footer_lines = 1
+    data.split("\n")[header_lines...-footer_lines].each do |line|
+      if match_data = /\|\s([^|]+)\s\|\s([^|]+)\s\|/.match(line)
+        attrs[match_data[1].strip] = match_data[2].strip
+      end
+    end
+    attrs
+  end
 
   private
 

@@ -104,4 +104,27 @@ describe Puppet::Provider::Keystone do
       klass.auth_keystone('test_retries').should == "+-+-+\nWARNING"
     end
   end
+
+  describe 'when parsing keystone objects' do
+    it 'should parse valid output into a hash' do
+      data = <<-EOT
++-------------+----------------------------------+
+|   Property  |              Value               |
++-------------+----------------------------------+
+| description |          default tenant          |
+|   enabled   |               True               |
+|      id     | b71040f47e144399b7f10182918b5e2f |
+|     name    |               demo               |
++-------------+----------------------------------+
+      EOT
+      expected = {
+        'description' => 'default tenant',
+        'enabled'     => 'True',
+        'id'          => 'b71040f47e144399b7f10182918b5e2f',
+        'name'        => 'demo'
+      }
+      klass.parse_keystone_object(data).should == expected
+    end
+  end
+
 end
