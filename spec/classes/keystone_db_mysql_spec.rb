@@ -51,5 +51,53 @@ describe 'keystone::db::mysql' do
     )}
 
   end
+  describe "overriding allowed_hosts param to array" do
+    let :params do
+      {
+        :password       => 'keystonepass',
+        :allowed_hosts  => ['127.0.0.1','%']
+      }
+    end
+
+    it {should_not contain_keystone__db__mysql__host_access("127.0.0.1").with(
+      :user     => 'keystone_admin',
+      :password => 'keystonepass',
+      :database => 'keystone'
+    )}
+    it {should contain_keystone__db__mysql__host_access("%").with(
+      :user     => 'keystone_admin',
+      :password => 'keystonepass',
+      :database => 'keystone'
+    )}
+  end
+  describe "overriding allowed_hosts param to string" do
+    let :params do
+      {
+        :password       => 'keystonepass2',
+        :allowed_hosts  => '192.168.1.1'
+      }
+    end
+
+    it {should contain_keystone__db__mysql__host_access("192.168.1.1").with(
+      :user     => 'keystone_admin',
+      :password => 'keystonepass2',
+      :database => 'keystone'
+    )}
+  end
+
+  describe "overriding allowed_hosts param equals to host param " do
+    let :params do
+      {
+        :password       => 'keystonepass2',
+        :allowed_hosts  => '127.0.0.1'
+      }
+    end
+
+    it {should_not contain_keystone__db__mysql__host_access("127.0.0.1").with(
+      :user     => 'keystone_admin',
+      :password => 'keystonepass2',
+      :database => 'keystone'
+    )}
+  end
 
 end
