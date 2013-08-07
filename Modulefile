@@ -7,5 +7,5 @@ summary 'Puppet Labs Keystone Module'
 description 'Puppet module to install and configure the Openstack identity service'
 project_page 'https://launchpad.net/puppet-openstack'
 
-dependency 'cprice404/inifile', '>= 0.10.3'
+dependency 'puppetlabs/inifile', '>= 1.0.0'
 dependency 'puppetlabs/mysql', '>= 0.6.1'
