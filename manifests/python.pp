@@ -8,8 +8,8 @@ class keystone::python (
 ) inherits keystone::params {
 
   package { 'python-keystone' :
-    name   => $client_package_name,
     ensure => $ensure,
+    name   => $client_package_name,
   }
 
 }

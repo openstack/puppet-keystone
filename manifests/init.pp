@@ -88,8 +88,8 @@ class keystone(
   }
 
   package { 'keystone':
-    name   => $::keystone::params::package_name,
     ensure => $package_ensure,
+    name   => $::keystone::params::package_name,
   }
 
   group { 'keystone':
@@ -178,8 +178,8 @@ class keystone(
   }
 
   service { 'keystone':
-    name       => $::keystone::params::service_name,
     ensure     => $service_ensure,
+    name       => $::keystone::params::service_name,
     enable     => $enabled,
     hasstatus  => true,
     hasrestart => true,

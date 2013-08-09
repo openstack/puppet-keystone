@@ -55,8 +55,8 @@ class keystone::roles::admin(
     ensure => present,
   }
   keystone_user_role { "${admin}@${admin_tenant}":
-    roles  => 'admin',
     ensure => present,
+    roles  => 'admin',
   }
 
 }
