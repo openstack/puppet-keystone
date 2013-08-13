@@ -29,6 +29,6 @@ class keystone::ldap(
     'ldap/user_tree_dn':   value => $user_tree_dn;
     'ldap/tenant_tree_dn': value => $tenant_tree_dn;
     'ldap/role_tree_dn':   value => $role_tree_dn;
-    #"ldap/tree_dn" value => "dc=example,dc=com",
+#   'ldap/tree_dn':        value => "dc=example,dc=com";
   }
 }
