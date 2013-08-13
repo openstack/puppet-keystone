@@ -19,6 +19,7 @@ describe 'keystone' do
       'use_syslog'      => false,
       'catalog_type'    => 'sql',
       'token_format'    => 'PKI',
+      'token_driver'    => 'keystone.token.backends.kvs.Token',
       'cache_dir'       => '/var/cache/keystone',
       'enabled'         => true,
       'sql_connection'  => 'sqlite:////var/lib/keystone/keystone.db',
@@ -38,6 +39,7 @@ describe 'keystone' do
       'debug'           => true,
       'catalog_type'    => 'template',
       'token_format'    => 'UUID',
+      'token_driver'    => 'keystone.token.backends.sql.Token',
       'enabled'         => false,
       'sql_connection'  => 'mysql://a:b@c/d',
       'idle_timeout'    => '300'
@@ -122,6 +124,10 @@ describe 'keystone' do
       it { should contain_keystone_config('signing/token_format').with_value(
         param_hash['token_format']
       ) }
+
+      it 'should contain correct token driver' do
+        should contain_keystone_config('token/driver').with_value(param_hash['token_driver'])
+      end
     end
   end
   describe 'when configuring signing token format' do

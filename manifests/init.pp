@@ -23,6 +23,8 @@
 #     Defaults to sql. (Also accepts template)
 #   [token_format] Format keystone uses for tokens. Optional. Defaults to PKI.
 #     Supports PKI and UUID.
+#   [token_driver] Driver to use for managing tokens.
+#     Optional.  Defaults to 'keystone.token.backends.kvs.Token'
 #   [cache_dir] Directory created when token_format is PKI. Optional.
 #     Defaults to /var/cache/keystone.
 #   [enabled] If the keystone services should be enabled. Optioal. Default to true.
@@ -59,6 +61,7 @@ class keystone(
   $use_syslog     = false,
   $catalog_type   = 'sql',
   $token_format   = 'PKI',
+  $token_driver   = 'keystone.token.backends.kvs.Token',
   $cache_dir      = '/var/cache/keystone',
   $enabled        = true,
   $sql_connection = 'sqlite:////var/lib/keystone/keystone.db',
@@ -123,6 +126,11 @@ class keystone(
     'DEFAULT/compute_port': value => $compute_port;
     'DEFAULT/verbose':      value => $verbose;
     'DEFAULT/debug':        value => $debug;
+  }
+
+  # token driver config
+  keystone_config {
+    'token/driver': value => $token_driver;
   }
 
   if($sql_connection =~ /mysql:\/\/\S+:\S+@\S+\/\S+/) {
