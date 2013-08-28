@@ -17,8 +17,9 @@
 #     Defaults to False.
 #   [debug] Rather keystone should log at debug level. Optional.
 #     Defaults to False.
-#   [use_syslog] Rather or not keystone should log to syslog. Optional.
+#   [use_syslog] Use syslog for logging. Optional.
 #     Defaults to False.
+#   [log_facility] Syslog facility to receive log lines. Optional.
 #   [catalog_type] Type of catalog that keystone uses to store endpoints,services. Optional.
 #     Defaults to sql. (Also accepts template)
 #   [token_format] Format keystone uses for tokens. Optional. Defaults to PKI.
@@ -59,6 +60,7 @@ class keystone(
   $verbose        = false,
   $debug          = false,
   $use_syslog     = false,
+  $log_facility   = 'LOG_USER',
   $catalog_type   = 'sql',
   $token_format   = 'PKI',
   $token_driver   = 'keystone.token.backends.kvs.Token',
@@ -74,11 +76,6 @@ class keystone(
   File['/etc/keystone/keystone.conf'] -> Keystone_config<||> ~> Service['keystone']
   Keystone_config<||> ~> Exec<| title == 'keystone-manage db_sync'|>
   Keystone_config<||> ~> Exec<| title == 'keystone-manage pki_setup'|>
-
-  # TODO implement syslog features
-  if ( $use_syslog != false) {
-    fail('use syslog currently only accepts false')
-  }
 
   include keystone::params
 
@@ -204,6 +201,18 @@ class keystone(
       notify      => Service['keystone'],
       subscribe   => Package['keystone'],
       require     => User['keystone'],
+    }
+  }
+
+  # Syslog configuration
+  if $use_syslog {
+    keystone_config {
+      'DEFAULT/use_syslog':           value => true;
+      'DEFAULT/syslog_log_facility':  value => $log_facility;
+    }
+  } else {
+    keystone_config {
+      'DEFAULT/use_syslog':           value => false;
     }
   }
 }

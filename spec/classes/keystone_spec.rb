@@ -16,7 +16,6 @@ describe 'keystone' do
       'compute_port'    => '8774',
       'verbose'         => false,
       'debug'           => false,
-      'use_syslog'      => false,
       'catalog_type'    => 'sql',
       'token_format'    => 'PKI',
       'token_driver'    => 'keystone.token.backends.kvs.Token',
@@ -163,4 +162,37 @@ describe 'keystone' do
       end
     end
   end
+
+  describe 'with syslog disabled by default' do
+    let :params do
+      default_params
+    end
+
+    it { should contain_keystone_config('DEFAULT/use_syslog').with_value(false) }
+    it { should_not contain_keystone_config('DEFAULT/syslog_log_facility') }
+  end
+
+  describe 'with syslog enabled' do
+    let :params do
+      default_params.merge({
+        :use_syslog   => 'true',
+      })
+    end
+
+    it { should contain_keystone_config('DEFAULT/use_syslog').with_value(true) }
+    it { should contain_keystone_config('DEFAULT/syslog_log_facility').with_value('LOG_USER') }
+  end
+
+  describe 'with syslog enabled and custom settings' do
+    let :params do
+      default_params.merge({
+        :use_syslog   => 'true',
+        :log_facility => 'LOG_LOCAL0'
+     })
+    end
+
+    it { should contain_keystone_config('DEFAULT/use_syslog').with_value(true) }
+    it { should contain_keystone_config('DEFAULT/syslog_log_facility').with_value('LOG_LOCAL0') }
+  end
+
 end
