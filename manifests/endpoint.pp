@@ -9,6 +9,7 @@
 # * public_port      - Port for non-admin access to keystone endpoint. Optional. Defaults to 5000.
 # * admin_port       - Port for admin access to keystone endpoint. Optional. Defaults to 35357.
 # * region           - Region for endpoint. Optional. Defaults to RegionOne.
+# * version          - API version for endpoint. Optional. Defaults to v2.0.
 #
 # == Sample Usage
 #
@@ -27,7 +28,8 @@ class keystone::endpoint(
   $admin_port       = '35357',
   $internal_port    = undef,
   $region           = 'RegionOne',
-  $public_protocol  = 'http'
+  $public_protocol  = 'http',
+  $version          = 'v2.0',
 ) {
 
   if $internal_port == undef {
@@ -44,9 +46,9 @@ class keystone::endpoint(
 
   keystone_endpoint { "${region}/keystone":
     ensure       => present,
-    public_url   => "${public_protocol}://${public_address}:${public_port}/v2.0",
-    admin_url    => "http://${admin_address}:${admin_port}/v2.0",
-    internal_url => "http://${internal_address}:${real_internal_port}/v2.0",
+    public_url   => "${public_protocol}://${public_address}:${public_port}/${version}",
+    admin_url    => "http://${admin_address}:${admin_port}/${version}",
+    internal_url => "http://${internal_address}:${real_internal_port}/${version}",
     region       => $region,
   }
 }

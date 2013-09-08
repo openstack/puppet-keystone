@@ -27,14 +27,15 @@ describe 'keystone::endpoint' do
         :public_port      => '23456',
         :admin_port       => '12345',
         :region           => 'RegionTwo',
+        :version          => 'v3.0',
       }
     end
 
     it { should contain_keystone_endpoint('RegionTwo/keystone').with(
       :ensure => 'present',
-      :public_url   => 'http://10.0.0.1:23456/v2.0',
-      :admin_url    => 'http://10.0.0.2:12345/v2.0',
-      :internal_url => 'http://10.0.0.3:23456/v2.0'
+      :public_url   => 'http://10.0.0.1:23456/v3.0',
+      :admin_url    => 'http://10.0.0.2:12345/v3.0',
+      :internal_url => 'http://10.0.0.3:23456/v3.0'
     )}
 
   end
