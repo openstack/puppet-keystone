@@ -112,24 +112,17 @@ Puppet::Type.type(:keystone_endpoint).provide(
     def self.build_endpoint_hash
       hash = {}
       list_keystone_objects('endpoint', [5,6]).each do |endpoint|
-        service_id   = get_service_id(endpoint[0])
-        service_name = get_keystone_object('service', service_id, 'name')
+        service_name = get_keystone_object('service', endpoint[5], 'name')
         hash["#{endpoint[1]}/#{service_name}"] = {
           :id           => endpoint[0],
           :region       => endpoint[1],
           :public_url   => endpoint[2],
           :internal_url => endpoint[3],
           :admin_url    => endpoint[4],
-          :service_id   => service_id
+          :service_id   => endpoint[5]
         }
       end
       hash
-    end
-
-    # TODO - this needs to be replaced with a call to endpoint-get
-    # but endpoint-get is not currently supported from the admin url
-    def self.get_service_id(endpoint_id)
-      `python -c "from keystoneclient.v2_0 import client ; import os ; print [e.service_id for e in client.Client(endpoint='#{admin_endpoint}', token='#{admin_token}').endpoints.list() if e.id == u'#{endpoint_id}'][0]"`.strip()
     end
 
 end
