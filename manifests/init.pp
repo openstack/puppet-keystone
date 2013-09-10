@@ -22,11 +22,13 @@
 #   [log_facility] Syslog facility to receive log lines. Optional.
 #   [catalog_type] Type of catalog that keystone uses to store endpoints,services. Optional.
 #     Defaults to sql. (Also accepts template)
-#   [token_format] Format keystone uses for tokens. Optional. Defaults to PKI.
+#   [token_provider] Format keystone uses for tokens. Optional.
+#     Defaults to 'keystone.token.providers.pki.Provider'
 #     Supports PKI and UUID.
 #   [token_driver] Driver to use for managing tokens.
 #     Optional.  Defaults to 'keystone.token.backends.sql.Token'
-#   [cache_dir] Directory created when token_format is PKI. Optional.
+#   [token_format] Deprecated: Use token_provider instead.
+#   [cache_dir] Directory created when token_provider is pki. Optional.
 #     Defaults to /var/cache/keystone.
 #   [enabled] If the keystone services should be enabled. Optioal. Default to true.
 #   [sql_conneciton] Url used to connect to database.
@@ -62,7 +64,8 @@ class keystone(
   $use_syslog     = false,
   $log_facility   = 'LOG_USER',
   $catalog_type   = 'sql',
-  $token_format   = 'PKI',
+  $token_format   = false,
+  $token_provider = 'keystone.token.providers.pki.Provider',
   $token_driver   = 'keystone.token.backends.sql.Token',
   $cache_dir      = '/var/cache/keystone',
   $enabled        = true,
@@ -71,7 +74,6 @@ class keystone(
 ) {
 
   validate_re($catalog_type,   'template|sql')
-  validate_re($token_format,  'UUID|PKI')
 
   File['/etc/keystone/keystone.conf'] -> Keystone_config<||> ~> Service['keystone']
   Keystone_config<||> ~> Exec<| title == 'keystone-manage db_sync'|>
@@ -160,8 +162,15 @@ class keystone(
     }
   }
 
-  keystone_config { 'signing/token_format': value => $token_format }
-  if($token_format  == 'PKI') {
+  if $token_format {
+    warning('token_format parameter is deprecated. Use token_provider instead.')
+  }
+
+  # remove the old format in case of an upgrade
+  keystone_config { 'signing/token_format': ensure => absent }
+
+  if ($token_format == false and $token_provider == 'keystone.token.providers.pki.Provider') or $token_format == 'PKI' {
+    keystone_config { 'token/provider': value => 'keystone.token.providers.pki.Provider' }
     file { $cache_dir:
       ensure => directory,
     }
@@ -174,6 +183,10 @@ class keystone(
       subscribe   => Package['keystone'],
       require     => User['keystone'],
     }
+  } elsif $token_format == 'UUID' {
+    keystone_config { 'token/provider': value => 'keystone.token.providers.uuid.Provider' }
+  } else {
+    keystone_config { 'token/provider': value => $token_provider }
   }
 
   if $enabled {
