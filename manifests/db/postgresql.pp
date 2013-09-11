@@ -13,7 +13,7 @@
 #
 # [dbname] Name of keystone database. Optional. Defaults to keystone.
 #
-# [user] Name of keystone user. Optional. Defaults to keystone_admin.
+# [user] Name of keystone user. Optional. Defaults to keystone.
 #
 # == Dependencies
 #   Class['postgresql::server']
@@ -30,7 +30,7 @@
 class keystone::db::postgresql(
   $password,
   $dbname        = 'keystone',
-  $user          = 'keystone_admin'
+  $user          = 'keystone'
 ) {
 
   Class['keystone::db::postgresql'] -> Service<| title == 'keystone' |>

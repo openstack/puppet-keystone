@@ -18,7 +18,7 @@ describe 'keystone::db::postgresql' do
       req_params
     end
     it { should contain_postgresql__db('keystone').with(
-      :user         => 'keystone_admin',
+      :user         => 'keystone',
       :password     => 'pw'
      ) }
   end

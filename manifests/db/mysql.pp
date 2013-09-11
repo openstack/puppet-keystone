@@ -11,7 +11,7 @@
 #
 # [dbname] Name of keystone database. Optional. Defaults to keystone.
 #
-# [user] Name of keystone user. Optional. Defaults to keystone_admin.
+# [user] Name of keystone user. Optional. Defaults to keystone.
 #
 # [host] Host where user should be allowed all priveleges for database.
 # Optional. Defaults to 127.0.0.1.
@@ -33,7 +33,7 @@
 class keystone::db::mysql(
   $password,
   $dbname        = 'keystone',
-  $user          = 'keystone_admin',
+  $user          = 'keystone',
   $host          = '127.0.0.1',
   $charset       = 'latin1',
   $allowed_hosts = undef
