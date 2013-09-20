@@ -46,7 +46,7 @@ class { 'keystone':
   verbose        => 'True',
   catalog_type   => 'sql',
   admin_token    => 'random_uuid',
-  sql_connection => 'mysql://keystone:secret_identity_password@openstack-controller.example.com/keystone',
+  sql_connection => 'mysql://keystone_admin:super_secret_db_password@openstack-controller.example.com/keystone',
 }
 
 # Adds the admin credential to keystone.
