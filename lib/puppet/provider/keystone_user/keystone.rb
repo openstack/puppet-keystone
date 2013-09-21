@@ -99,7 +99,23 @@ Puppet::Type.type(:keystone_user).provide(
   end
 
   def tenant
-    user_hash[resource[:name]][:tenant]
+    user_id = user_hash[resource[:name]][:id]
+    begin
+      tenantId = self.class.get_keystone_object('user', user_id, 'tenantId')
+    rescue
+      tenantId = nil
+    end
+    if tenantId.nil? or tenantId == 'None' or tenantId.empty?
+      tenant = 'None'
+    else
+      # this prevents is from failing if tenant no longer exists
+      begin
+        tenant = self.class.get_keystone_object('tenant', tenantId, 'name')
+      rescue
+        tenant = 'None'
+      end
+    end
+    tenant
   end
 
   def tenant=(value)
@@ -127,21 +143,6 @@ Puppet::Type.type(:keystone_user).provide(
     def self.build_user_hash
       hash = {}
       list_keystone_objects('user', 4).each do |user|
-        begin
-          tenantId = get_keystone_object('user', user[0], 'tenantId')
-        rescue
-          tenantId = nil
-        end
-        if tenantId.nil? or tenantId == 'None' or tenantId.empty?
-          tenant = 'None'
-        else
-          # this prevents is from failing if tenant no longer exists
-          begin
-            tenant = get_keystone_object('tenant', tenantId, 'name')
-          rescue
-            tenant = 'None'
-          end
-        end
         password = 'nil'
         hash[user[1]] = {
           :id          => user[0],
@@ -149,7 +150,6 @@ Puppet::Type.type(:keystone_user).provide(
           :email       => user[3],
           :name        => user[1],
           :password    => password,
-          :tenant      => tenant
         }
       end
       hash
