@@ -87,6 +87,10 @@ Puppet::Type.type(:keystone_tenant).provide(
     instance[:enabled] = value
   end
 
+  def description
+    self.class.get_keystone_object('tenant', instance[:id], 'description')
+  end
+
   def description=(value)
     auth_keystone("tenant-update", '--description', value, instance[:id])
     instance[:description] = value
@@ -95,7 +99,6 @@ Puppet::Type.type(:keystone_tenant).provide(
   [
    :id,
    :enabled,
-   :description,
   ].each do |attr|
     define_method(attr.to_s) do
       instance[attr] || :absent
@@ -107,15 +110,8 @@ Puppet::Type.type(:keystone_tenant).provide(
     def self.build_tenant_hash
       hash = {}
       list_keystone_objects('tenant', 3).each do |tenant|
-        begin
-          # I may need to make a call to get to get the description
-          description = get_keystone_object('tenant', tenant[0], 'description')
-        rescue
-          description = ""
-        end
         hash[tenant[1]] = {
           :id          => tenant[0],
-          :description => description,
           :enabled     => tenant[2],
         }
       end
