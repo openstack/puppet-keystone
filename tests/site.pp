@@ -26,7 +26,7 @@ node keystone_mysql {
   class { 'keystone':
     verbose        => true,
     debug          => true,
-    sql_connection => 'mysql://keystone_admin:keystone@127.0.0.1/keystone',
+    sql_connection => 'mysql://keystone:keystone@127.0.0.1/keystone',
     catalog_type   => 'sql',
     admin_token    => 'admin_token',
   }
@@ -42,7 +42,7 @@ node keystone {
   class { 'keystone':
     verbose        => true,
     debug          => true,
-    sql_connection => 'mysql://keystone_admin:password@127.0.0.1/keystone',
+    sql_connection => 'mysql://keystone:password@127.0.0.1/keystone',
     catalog_type   => 'sql',
     admin_token    => 'admin_token',
   }

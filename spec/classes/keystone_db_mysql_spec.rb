@@ -14,7 +14,7 @@ describe 'keystone::db::mysql' do
     {
       'password'      => 'keystone_default_password',
       'dbname'        => 'keystone',
-      'user'          => 'keystone_admin',
+      'user'          => 'keystone',
       'charset'       => 'latin1',
       'host'          => '127.0.0.1',
       'allowed_hosts' => ['127.0.0.%', '192.168.1.%']
@@ -60,12 +60,12 @@ describe 'keystone::db::mysql' do
     end
 
     it {should_not contain_keystone__db__mysql__host_access("127.0.0.1").with(
-      :user     => 'keystone_admin',
+      :user     => 'keystone',
       :password => 'keystonepass',
       :database => 'keystone'
     )}
     it {should contain_keystone__db__mysql__host_access("%").with(
-      :user     => 'keystone_admin',
+      :user     => 'keystone',
       :password => 'keystonepass',
       :database => 'keystone'
     )}
@@ -79,7 +79,7 @@ describe 'keystone::db::mysql' do
     end
 
     it {should contain_keystone__db__mysql__host_access("192.168.1.1").with(
-      :user     => 'keystone_admin',
+      :user     => 'keystone',
       :password => 'keystonepass2',
       :database => 'keystone'
     )}
@@ -94,7 +94,7 @@ describe 'keystone::db::mysql' do
     end
 
     it {should_not contain_keystone__db__mysql__host_access("127.0.0.1").with(
-      :user     => 'keystone_admin',
+      :user     => 'keystone',
       :password => 'keystonepass2',
       :database => 'keystone'
     )}
