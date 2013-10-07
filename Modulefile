@@ -1,5 +1,5 @@
 name    'puppetlabs-keystone'
-version '2.1.0'
+version '2.2.0'
 source  'https://github.com/stackforge/puppet-keystone'
 author  'Puppet Labs'
 license 'Apache License 2.0'

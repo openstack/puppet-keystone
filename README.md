@@ -160,6 +160,14 @@ Contributors
 
 Release Notes
 -------------
+
+**2.2.0**
+
+* Optimized tenant and user queries.
+* Added syslog support.
+* Added support for token driver backend.
+* Various bug and lint fixes.
+
 **2.1.0**
 
 * Tracks release of puppet-quantum
