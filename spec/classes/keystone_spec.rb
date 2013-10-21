@@ -17,7 +17,7 @@ describe 'keystone' do
       'verbose'         => false,
       'debug'           => false,
       'catalog_type'    => 'sql',
-      'token_format'    => 'PKI',
+      'token_provider'  => 'keystone.token.providers.pki.Provider',
       'token_driver'    => 'keystone.token.backends.sql.Token',
       'cache_dir'       => '/var/cache/keystone',
       'enabled'         => true,
@@ -37,7 +37,7 @@ describe 'keystone' do
       'verbose'         => true,
       'debug'           => true,
       'catalog_type'    => 'template',
-      'token_format'    => 'UUID',
+      'token_provider'  => 'keystone.token.providers.uuid.Provider',
       'token_driver'    => 'keystone.token.backends.kvs.Token',
       'enabled'         => false,
       'sql_connection'  => 'mysql://a:b@c/d',
@@ -120,8 +120,8 @@ describe 'keystone' do
         should contain_keystone_config('sql/connection').with_value(param_hash['sql_connection'])
       end
 
-      it { should contain_keystone_config('signing/token_format').with_value(
-        param_hash['token_format']
+      it { should contain_keystone_config('token/provider').with_value(
+        param_hash['token_provider']
       ) }
 
       it 'should contain correct token driver' do
@@ -133,8 +133,8 @@ describe 'keystone' do
     describe 'when configuring as UUID' do
       let :params do
         {
-          'admin_token'  => 'service_token',
-          'token_format' => 'UUID'
+          'admin_token'    => 'service_token',
+          'token_provider' => 'keystone.token.providers.uuid.Provider'
         }
       end
       it { should_not contain_exec('keystone-manage pki_setup') }
@@ -142,8 +142,8 @@ describe 'keystone' do
     describe 'when configuring as PKI' do
       let :params do
         {
-          'admin_token'  => 'service_token',
-          'token_format' => 'PKI'
+          'admin_token'    => 'service_token',
+          'token_provider' => 'keystone.token.providers.pki.Provider'
         }
       end
       it { should contain_exec('keystone-manage pki_setup').with(
@@ -153,14 +153,48 @@ describe 'keystone' do
       describe 'when overriding the cache dir' do
         let :params do
           {
-            'admin_token'  => 'service_token',
-            'token_format' => 'PKI',
-            'cache_dir'    => '/var/lib/cache/keystone'
+            'admin_token'    => 'service_token',
+            'token_provider' => 'keystone.token.providers.pki.Provider',
+            'cache_dir'      => '/var/lib/cache/keystone'
           }
         end
         it { should contain_file('/var/lib/cache/keystone') }
       end
     end
+
+    describe 'when configuring deprecated token_format as UUID' do
+      let :params do
+        {
+          'admin_token'    => 'service_token',
+          'token_format'   => 'UUID'
+        }
+      end
+      it { should_not contain_exec('keystone-manage pki_setup') }
+    end
+
+    describe 'when configuring deprecated token_format as PKI' do
+      let :params do
+        {
+          'admin_token'    => 'service_token',
+          'token_format'   => 'PKI'
+        }
+      end
+      it { should contain_exec('keystone-manage pki_setup').with(
+        :creates => '/etc/keystone/ssl/private/signing_key.pem'
+      ) }
+      it { should contain_file('/var/cache/keystone').with_ensure('directory') }
+      describe 'when overriding the cache dir' do
+        let :params do
+          {
+            'admin_token'    => 'service_token',
+            'token_provider' => 'keystone.token.providers.pki.Provider',
+            'cache_dir'      => '/var/lib/cache/keystone'
+          }
+        end
+        it { should contain_file('/var/lib/cache/keystone') }
+      end
+    end
+
   end
 
   describe 'with syslog disabled by default' do
