@@ -168,12 +168,16 @@ class Puppet::Provider::Keystone < Puppet::Provider
     # I refactor things to use the the rest API
     def self.remove_warnings(results)
       found_header = false
+      in_warning = false
       results.split("\n").collect do |line|
         unless found_header
-          if line =~ /^\+-+\+-+\+$/
+          if line =~ /^\+[-\+]+\+$/
+            in_warning = false
             found_header = true
             line
-          elsif line =~ /^WARNING/
+          elsif line =~ /^WARNING/ or line =~ /UserWarning/ or in_warning
+            # warnings can be multi line, we have to skip all of them
+            in_warning = true
             nil
           else
             line
