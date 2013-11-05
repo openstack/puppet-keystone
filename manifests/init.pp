@@ -205,16 +205,8 @@ class keystone(
   }
 
   if $enabled {
-    # this probably needs to happen more often than just when the db is
-    # created
-    exec { 'keystone-manage db_sync':
-      path        => '/usr/bin',
-      user        => 'keystone',
-      refreshonly => true,
-      notify      => Service['keystone'],
-      subscribe   => Package['keystone'],
-      require     => User['keystone'],
-    }
+    include keystone::db::sync
+    Class['keystone::db::sync'] ~> Service['keystone']
   }
 
   # Syslog configuration

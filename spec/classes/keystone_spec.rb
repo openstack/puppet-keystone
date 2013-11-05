@@ -94,8 +94,7 @@ describe 'keystone' do
           should contain_exec('keystone-manage db_sync').with(
             :user        => 'keystone',
             :refreshonly => true,
-            :notify      => 'Service[keystone]',
-            :subscribe   => 'Package[keystone]',
+            :subscribe   => ['Package[keystone]', 'Keystone_config[sql/connection]'],
             :require     => 'User[keystone]'
           )
         end
