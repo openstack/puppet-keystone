@@ -161,6 +161,13 @@ Contributors
 Release Notes
 -------------
 
+**3.0.0**
+
+* Major release for OpenStack Havana.
+* Fixed duplicated keystone endpoints.
+* Refactored keystone_endpoint to use prefetch and flush paradigm.
+* Switched from signing/format to token/provider.
+
 **2.2.0**
 
 * Optimized tenant and user queries.
