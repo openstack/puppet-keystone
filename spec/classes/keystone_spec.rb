@@ -196,6 +196,38 @@ describe 'keystone' do
 
   end
 
+  describe 'configure memcache servers if set' do
+    let :params do
+      {
+        'admin_token'      => 'service_token',
+        'memcache_servers' => [ 'SERVER1:11211', 'SERVER2:11211' ],
+        'token_driver'     => 'keystone.token.backends.memcache.Token'
+      }
+    end
+
+    it { should contain_keystone_config("memcache/servers").with_value('SERVER1:11211,SERVER2:11211') }
+  end
+
+  describe 'do not configure memcache servers when not set' do
+    let :params do
+      default_params
+    end
+
+    it { should contain_keystone_config("memcache/servers").with_ensure('absent') }
+  end
+
+  describe 'raise error if memcache_servers is not an array' do
+    let :params do
+      {
+        'admin_token'      => 'service_token',
+        'memcache_servers' => 'ANY_SERVER:11211'
+      }
+    end
+
+    it { expect { should contain_class('keystone::params') }.to \
+      raise_error(Puppet::Error, /is not an Array/) }
+  end
+
   describe 'with syslog disabled by default' do
     let :params do
       default_params

@@ -30,7 +30,9 @@
 #   [token_format] Deprecated: Use token_provider instead.
 #   [cache_dir] Directory created when token_provider is pki. Optional.
 #     Defaults to /var/cache/keystone.
-#   [enabled] If the keystone services should be enabled. Optioal. Default to true.
+#   [memcache_servers] List of memcache servers/ports. Optional. Used with
+#     token_driver keystone.token.backends.memcache.Token.  Defaults to false.
+#   [enabled] If the keystone services should be enabled. Optional. Default to true.
 #   [sql_conneciton] Url used to connect to database.
 #   [idle_timeout] Timeout when db connections should be reaped.
 #
@@ -54,23 +56,24 @@
 #
 class keystone(
   $admin_token,
-  $package_ensure = 'present',
-  $bind_host      = '0.0.0.0',
-  $public_port    = '5000',
-  $admin_port     = '35357',
-  $compute_port   = '8774',
-  $verbose        = false,
-  $debug          = false,
-  $use_syslog     = false,
-  $log_facility   = 'LOG_USER',
-  $catalog_type   = 'sql',
-  $token_format   = false,
-  $token_provider = 'keystone.token.providers.pki.Provider',
-  $token_driver   = 'keystone.token.backends.sql.Token',
-  $cache_dir      = '/var/cache/keystone',
-  $enabled        = true,
-  $sql_connection = 'sqlite:////var/lib/keystone/keystone.db',
-  $idle_timeout   = '200'
+  $package_ensure   = 'present',
+  $bind_host        = '0.0.0.0',
+  $public_port      = '5000',
+  $admin_port       = '35357',
+  $compute_port     = '8774',
+  $verbose          = false,
+  $debug            = false,
+  $use_syslog       = false,
+  $log_facility     = 'LOG_USER',
+  $catalog_type     = 'sql',
+  $token_format     = false,
+  $token_provider   = 'keystone.token.providers.pki.Provider',
+  $token_driver     = 'keystone.token.backends.sql.Token',
+  $cache_dir        = '/var/cache/keystone',
+  $memcache_servers = false,
+  $enabled          = true,
+  $sql_connection   = 'sqlite:////var/lib/keystone/keystone.db',
+  $idle_timeout     = '200'
 ) {
 
   validate_re($catalog_type,   'template|sql')
@@ -140,6 +143,18 @@ class keystone(
 
   } else {
     fail("Invalid db connection ${sql_connection}")
+  }
+
+  # memcache connection config
+  if $memcache_servers {
+    validate_array($memcache_servers)
+    keystone_config {
+      'memcache/servers': value => join($memcache_servers, ',');
+    }
+  } else {
+    keystone_config {
+      'memcache/servers': ensure => absent;
+    }
   }
 
   # db connection config
