@@ -43,7 +43,7 @@ To utilize the keystone module's functionality you will need to declare multiple
 
 ```puppet
 class { 'keystone':
-  verbose        => 'True',
+  verbose        => True,
   catalog_type   => 'sql',
   admin_token    => 'random_uuid',
   sql_connection => 'mysql://keystone_admin:super_secret_db_password@openstack-controller.example.com/keystone',
@@ -71,11 +71,11 @@ Keystone ships with a collection of native types that can be used to interact wi
 ```puppet
 keystone_tenant { 'openstack':
   ensure  => present,
-  enabled => 'True',
+  enabled => True,
 }
 keystone_user { 'openstack':
   ensure  => present,
-  enabled => 'True'
+  enabled => True,
 }
 keystone_role { 'admin':
   ensure => present,
