@@ -16,6 +16,10 @@ node keystone_sqlite {
     email    => 'example@abc.com',
     password => 'ChangeMe',
   }
+  class { 'keystone::endpoint':
+    public_url => "http://${::fqdn}:5000/",
+    admin_url  => "http://${::fqdn}:35357/",
+  }
 }
 
 node keystone_mysql {
@@ -52,6 +56,10 @@ node keystone {
   class { 'keystone::roles::admin':
     email    => 'example@abc.com',
     password => 'ChangeMe',
+  }
+  class { 'keystone::endpoint':
+    public_url => "http://${::fqdn}:5000/",
+    admin_url  => "http://${::fqdn}:35357/",
   }
 }
 
