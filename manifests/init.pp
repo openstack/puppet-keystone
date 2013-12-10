@@ -27,6 +27,8 @@
 #     Supports PKI and UUID.
 #   [token_driver] Driver to use for managing tokens.
 #     Optional.  Defaults to 'keystone.token.backends.sql.Token'
+#   [token_expiration] Amount of time a token should remain valid (seconds).
+#     Optional.  Defaults to 86400 (24 hours).
 #   [token_format] Deprecated: Use token_provider instead.
 #   [cache_dir] Directory created when token_provider is pki. Optional.
 #     Defaults to /var/cache/keystone.
@@ -69,6 +71,7 @@ class keystone(
   $token_format     = false,
   $token_provider   = 'keystone.token.providers.pki.Provider',
   $token_driver     = 'keystone.token.backends.sql.Token',
+  $token_expiration = 86400,
   $cache_dir        = '/var/cache/keystone',
   $memcache_servers = false,
   $enabled          = true,
@@ -132,7 +135,8 @@ class keystone(
 
   # token driver config
   keystone_config {
-    'token/driver': value => $token_driver;
+    'token/driver':     value => $token_driver;
+    'token/expiration': value => $token_expiration;
   }
 
   if($sql_connection =~ /mysql:\/\/\S+:\S+@\S+\/\S+/) {
