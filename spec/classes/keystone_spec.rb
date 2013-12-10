@@ -196,6 +196,27 @@ describe 'keystone' do
 
   end
 
+  describe 'when configuring token expiration' do
+    let :params do
+      {
+        'admin_token'      => 'service_token',
+        'token_expiration' => '42',
+      }
+    end
+
+    it { should contain_keystone_config("token/expiration").with_value('42') }
+  end
+
+  describe 'when not configuring token expiration' do
+    let :params do
+      {
+        'admin_token' => 'service_token',
+      }
+    end
+
+    it { should contain_keystone_config("token/expiration").with_value('86400') }
+  end
+
   describe 'configure memcache servers if set' do
     let :params do
       {
