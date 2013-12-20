@@ -167,6 +167,9 @@ Release Notes
 * Fixed duplicated keystone endpoints.
 * Refactored keystone_endpoint to use prefetch and flush paradigm.
 * Switched from signing/format to token/provider.
+* Created memcache_servers option to allow for multiple cache servers.
+* Enabled serving Keystone from Apache mod_wsgi.
+* Moved db_sync to its own class.
 
 **2.2.0**
 
