@@ -37,16 +37,10 @@ class { 'keystone::roles::admin':
   password => 'ChangeMe',
 }
 class { 'keystone::endpoint':
-  public_address   => $::fqdn,
-  admin_address    => $::fqdn,
-  internal_address => $::fqdn,
-  public_port      => 443,
-  admin_port       => 443,
-  public_protocol  => 'https',
-  admin_protocol   => 'https'
+  public_url    => "https://${::fqdn}:443/main/",
+  admin_address => "https://${::fqdn}:443/admin/",
 }
 
-# keystone_config { 'ssl/enable': value => true }
 keystone_config { 'ssl/enable': ensure  => absent }
 
 include apache

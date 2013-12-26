@@ -23,7 +23,7 @@ class Puppet::Provider::Keystone < Puppet::Provider
     return admin_endpoint if admin_endpoint
 
     admin_port = keystone_file['DEFAULT']['admin_port'] ? keystone_file['DEFAULT']['admin_port'].strip : '35357'
-    ssl = keystone_file['ssl'] && keystone_file['ssl']['enable'] ? keystone_file['ssl']['enable'].downcase == 'true' : false
+    ssl = keystone_file['ssl'] && keystone_file['ssl']['enable'] ? keystone_file['ssl']['enable'].strip.downcase == 'true' : false
     protocol = ssl ? 'https' : 'http'
     if keystone_file and keystone_file['DEFAULT'] and keystone_file['DEFAULT']['bind_host']
       host = keystone_file['DEFAULT']['bind_host'].strip
