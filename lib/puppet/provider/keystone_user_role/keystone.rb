@@ -35,7 +35,7 @@ Puppet::Type.type(:keystone_user_role).provide(
   def create
     user_id, tenant_id = get_user_and_tenant
     resource[:roles].each do |role_name|
-      role_id = self.class.get_roles[role_name]
+      role_id = self.class.get_role(role_name)
       auth_keystone(
         'user-role-add',
         '--user-id', user_id,
@@ -45,45 +45,57 @@ Puppet::Type.type(:keystone_user_role).provide(
     end
   end
 
+  def self.get_user_and_tenant(user, tenant)
+    @tenant_hash ||= {}
+    @user_hash   ||= {}
+    @tenant_hash[tenant] = @tenant_hash[tenant] || get_tenants[tenant]
+    [
+      get_user(@tenant_hash[tenant], user),
+      @tenant_hash[tenant]
+    ]
+  end
+
   def get_user_and_tenant
     user, tenant = resource[:name].split('@', 2)
-    tenant_id = self.class.get_tenants[tenant]
-    [self.class.get_users(tenant_id)[user], self.class.get_tenants[tenant]]
+    self.class.get_user_and_tenant(user, tenant)
   end
 
   def exists?
-    user_role_hash[resource[:name]]
+    user_id, tenant_id = get_user_and_tenant
+    get_user_tenant_hash(user_id, tenant_id)
   end
 
   def destroy
-    user_role_hash[resource[:name]][:role_ids].each do |role_id|
+    user_id, tenant_id = get_user_and_tenant
+    get_user_tenant_hash(user_id, tenant_id)[:role_ids].each do |role_id|
       auth_keystone(
        'user-role-remove',
-       '--user-id', user_role_hash[resource[:name]][:user_id],
-       '--tenant-id', user_role_hash[resource[:name]][:tenant_id],
+       '--user-id', user_id,
+       '--tenant-id', tenant_id,
        '--role-id', role_id
       )
     end
   end
 
   def id
-    user_role_hash[resource[:name]][:id]
+    user_id, tenant_id = get_user_and_tenant
+    get_user_tenant_hash(user_id, tenant_id)[:id]
   end
 
   def roles
-    user_role_hash[resource[:name]][:role_names]
+    user_id, tenant_id = get_user_and_tenant
+    get_user_tenant_hash(user_id, tenant_id)[:role_names]
   end
 
   def roles=(value)
     # determine the roles to be added and removed
-    # require 'ruby-debug';debugger
     remove = roles - Array(value)
     add    = Array(value) - roles
 
     user_id, tenant_id = get_user_and_tenant
 
     add.each do |role_name|
-      role_id = self.class.get_roles[role_name]
+      role_id = self.class.get_role(role_name)
       auth_keystone(
         'user-role-add',
         '--user-id', user_id,
@@ -92,7 +104,7 @@ Puppet::Type.type(:keystone_user_role).provide(
       )
     end
     remove.each do |role_name|
-      role_id = self.class.get_roles[role_name]
+      role_id = self.class.get_role(role_name)
       auth_keystone(
         'user-role-remove',
         '--user-id', user_id,
@@ -121,8 +133,25 @@ Puppet::Type.type(:keystone_user_role).provide(
           end
         end
       end
-#require 'ruby-debug';debugger
       hash
+    end
+
+    # lookup the roles for a single tenant/user combination
+    def get_user_tenant_hash(user_id, tenant_id)
+      @user_tenant_hash ||= {}
+      unless @user_tenant_hash["#{user_id}@#{tenant_id}"]
+        list_user_roles(user_id, tenant_id).sort.each do |role|
+          @user_tenant_hash["#{user_id}@#{tenant_id}"] ||= {
+            :user_id    => user_id,
+            :tenant_id  => tenant_id,
+            :role_names => [],
+            :role_ids   => []
+          }
+          @user_tenant_hash["#{user_id}@#{tenant_id}"][:role_names].push(role[1])
+          @user_tenant_hash["#{user_id}@#{tenant_id}"][:role_ids].push(role[0])
+        end
+      end
+      @user_tenant_hash["#{user_id}@#{tenant_id}"]
     end
 
 
@@ -141,9 +170,23 @@ Puppet::Type.type(:keystone_user_role).provide(
       list
     end
 
+    def list_user_roles(user_id, tenant_id)
+      self.class.list_user_roles(user_id, tenant_id)
+    end
+
+    def self.get_user(tenant_id, name)
+      @users ||= {}
+      user_key = "#{name}@#{tenant_id}"
+      unless @users[user_key]
+        list_keystone_objects('user', 4, '--tenant-id', tenant_id).each do |user|
+          @users["#{user[1]}@#{tenant_id}"] = user[0]
+        end
+      end
+      @users[user_key]
+    end
+
     def self.get_users(tenant_id='')
       @users = {}
-
       list_keystone_objects('user', 4, '--tenant-id', tenant_id).each do |user|
         @users[user[1]] = user[0]
       end
@@ -151,19 +194,23 @@ Puppet::Type.type(:keystone_user_role).provide(
     end
 
     def self.get_tenants
-      @tenants = {}
-      list_keystone_objects('tenant', 3).each do |tenant|
-        @tenants[tenant[1]] = tenant[0]
+      unless @tenants
+        @tenants = {}
+        list_keystone_objects('tenant', 3).each do |tenant|
+          @tenants[tenant[1]] = tenant[0]
+        end
       end
       @tenants
     end
 
-    def self.get_roles
-      @roles = {}
-      list_keystone_objects('role', 2).each do |role|
-        @roles[role[1]] = role[0]
+    def self.get_role(name)
+      @roles ||= {}
+      unless @roles[name]
+        list_keystone_objects('role', 2).each do |role|
+          @roles[role[1]] = role[0]
+        end
       end
-      @roles
+      @roles[name]
     end
 
 end
