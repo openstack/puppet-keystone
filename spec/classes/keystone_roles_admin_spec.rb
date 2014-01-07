@@ -28,7 +28,7 @@ describe 'keystone::roles::admin' do
       :email       => 'foo@bar',
       :password    => 'ChangeMe'
     )}
-    ['admin', 'Member', '_member_'].each do |role_name|
+    ['admin', '_member_'].each do |role_name|
       it { should contain_keystone_role(role_name).with_ensure('present') }
     end
     it { should contain_keystone_user_role('admin@openstack').with(
