@@ -57,6 +57,43 @@ describe 'keystone::endpoint' do
 
   end
 
+  describe 'with overriden public and private paths' do
+
+    let :params do
+      {
+        :public_url => 'https://identity.some.tld/the/main/endpoint',
+        :admin_url  => 'https://identity-int.some.tld/some/admin/endpoint',
+      }
+    end
+
+    it { should contain_keystone_endpoint('RegionOne/keystone').with(
+      :ensure => 'present',
+      :public_url   => 'https://identity.some.tld/the/main/endpoint/v2.0',
+      :admin_url    => 'https://identity-int.some.tld/some/admin/endpoint/v2.0',
+      :internal_url => 'https://identity.some.tld/the/main/endpoint/v2.0'
+    )}
+
+    end
+
+  describe 'with overriden public, private and internal paths and version' do
+
+    let :params do
+      {
+        :version      => 'v42.6',
+        :public_url   => 'https://identity.some.tld/the/main/endpoint',
+        :admin_url    => 'https://identity-int.some.tld/some/admin/endpoint',
+        :internal_url => 'https://identity-int.some.tld/some/internal/endpoint'
+      }
+    end
+
+    it { should contain_keystone_endpoint('RegionOne/keystone').with(
+      :ensure       => 'present',
+      :public_url   => 'https://identity.some.tld/the/main/endpoint/v42.6',
+      :admin_url    => 'https://identity-int.some.tld/some/admin/endpoint/v42.6',
+      :internal_url => 'https://identity-int.some.tld/some/internal/endpoint/v42.6'
+    )}
+
+  end
 
 
 end
