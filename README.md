@@ -170,6 +170,10 @@ Release Notes
 * Created memcache_servers option to allow for multiple cache servers.
 * Enabled serving Keystone from Apache mod_wsgi.
 * Moved db_sync to its own class.
+* Removed creation of Member role.
+* Improved performance of Keystone providers.
+* Updated endpoints to support paths and ssl.
+* Added support for token expiration parameter.
 
 **2.2.0**
 
