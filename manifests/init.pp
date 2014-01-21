@@ -39,6 +39,16 @@
 #   [idle_timeout] Timeout when db connections should be reaped.
 #   [enable_pki_setup] Enable call to pki_setup.
 #
+#   [*public_bind_host*]
+#   (optional) The IP address of the public network interface to listen on
+#   Deprecates bind_host
+#   Default to '0.0.0.0'.
+#
+#   [*admin_bind_host*]
+#   (optional) The IP address of the public network interface to listen on
+#   Deprecates bind_host
+#   Default to '0.0.0.0'.
+#
 # == Dependencies
 #  None
 #
@@ -60,7 +70,9 @@
 class keystone(
   $admin_token,
   $package_ensure   = 'present',
-  $bind_host        = '0.0.0.0',
+  $bind_host        = false,
+  $public_bind_host = '0.0.0.0',
+  $admin_bind_host  = '0.0.0.0',
   $public_port      = '5000',
   $admin_port       = '35357',
   $compute_port     = '8774',
@@ -124,15 +136,25 @@ class keystone(
     mode    => '0600',
   }
 
+  if $bind_host {
+    warning('The bind_host parameter is deprecated, use public_bind_host and admin_bind_host instead.')
+    $public_bind_host_real = $bind_host
+    $admin_bind_host_real  = $bind_host
+  } else {
+    $public_bind_host_real = $public_bind_host
+    $admin_bind_host_real  = $admin_bind_host
+  }
+
   # default config
   keystone_config {
-    'DEFAULT/admin_token':  value => $admin_token;
-    'DEFAULT/bind_host':    value => $bind_host;
-    'DEFAULT/public_port':  value => $public_port;
-    'DEFAULT/admin_port':   value => $admin_port;
-    'DEFAULT/compute_port': value => $compute_port;
-    'DEFAULT/verbose':      value => $verbose;
-    'DEFAULT/debug':        value => $debug;
+    'DEFAULT/admin_token':      value => $admin_token;
+    'DEFAULT/public_bind_host': value => $public_bind_host_real;
+    'DEFAULT/admin_bind_host':  value => $admin_bind_host_real;
+    'DEFAULT/public_port':      value => $public_port;
+    'DEFAULT/admin_port':       value => $admin_port;
+    'DEFAULT/compute_port':     value => $compute_port;
+    'DEFAULT/verbose':          value => $verbose;
+    'DEFAULT/debug':            value => $debug;
   }
 
   # token driver config

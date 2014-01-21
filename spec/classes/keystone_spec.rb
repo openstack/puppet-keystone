@@ -8,40 +8,42 @@ describe 'keystone' do
 
   let :default_params do
     {
-      'package_ensure'  => 'present',
-      'bind_host'       => '0.0.0.0',
-      'public_port'     => '5000',
-      'admin_port'      => '35357',
-      'admin_token'     => 'service_token',
-      'compute_port'    => '8774',
-      'verbose'         => false,
-      'debug'           => false,
-      'catalog_type'    => 'sql',
-      'token_provider'  => 'keystone.token.providers.pki.Provider',
-      'token_driver'    => 'keystone.token.backends.sql.Token',
-      'cache_dir'       => '/var/cache/keystone',
-      'enabled'         => true,
-      'sql_connection'  => 'sqlite:////var/lib/keystone/keystone.db',
-      'idle_timeout'    => '200'
+      'package_ensure'   => 'present',
+      'public_bind_host' => '0.0.0.0',
+      'admin_bind_host'  => '0.0.0.0',
+      'public_port'      => '5000',
+      'admin_port'       => '35357',
+      'admin_token'      => 'service_token',
+      'compute_port'     => '8774',
+      'verbose'          => false,
+      'debug'            => false,
+      'catalog_type'     => 'sql',
+      'token_provider'   => 'keystone.token.providers.pki.Provider',
+      'token_driver'     => 'keystone.token.backends.sql.Token',
+      'cache_dir'        => '/var/cache/keystone',
+      'enabled'          => true,
+      'sql_connection'   => 'sqlite:////var/lib/keystone/keystone.db',
+      'idle_timeout'     => '200'
     }
   end
 
   [{'admin_token'     => 'service_token'},
    {
-      'package_ensure'  => 'latest',
-      'bind_host'       => '127.0.0.1',
-      'public_port'     => '5001',
-      'admin_port'      => '35358',
-      'admin_token'     => 'service_token_override',
-      'compute_port'    => '8778',
-      'verbose'         => true,
-      'debug'           => true,
-      'catalog_type'    => 'template',
-      'token_provider'  => 'keystone.token.providers.uuid.Provider',
-      'token_driver'    => 'keystone.token.backends.kvs.Token',
-      'enabled'         => false,
-      'sql_connection'  => 'mysql://a:b@c/d',
-      'idle_timeout'    => '300'
+      'package_ensure'   => 'latest',
+      'public_bind_host' => '0.0.0.0',
+      'admin_bind_host'  => '0.0.0.0',
+      'public_port'      => '5001',
+      'admin_port'       => '35358',
+      'admin_token'      => 'service_token_override',
+      'compute_port'     => '8778',
+      'verbose'          => true,
+      'debug'            => true,
+      'catalog_type'     => 'template',
+      'token_provider'   => 'keystone.token.providers.uuid.Provider',
+      'token_driver'     => 'keystone.token.backends.kvs.Token',
+      'enabled'          => false,
+      'sql_connection'   => 'mysql://a:b@c/d',
+      'idle_timeout'     => '300'
     }
   ].each do |param_set|
 
@@ -103,7 +105,8 @@ describe 'keystone' do
       it 'should contain correct config' do
         [
           'admin_token',
-          'bind_host',
+          'public_bind_host',
+          'admin_bind_host',
           'public_port',
           'admin_port',
           'compute_port',
@@ -286,6 +289,16 @@ describe 'keystone' do
 
     it { should contain_keystone_config('DEFAULT/use_syslog').with_value(true) }
     it { should contain_keystone_config('DEFAULT/syslog_log_facility').with_value('LOG_LOCAL0') }
+  end
+
+  describe 'when configuring api binding with deprecated parameter' do
+    let :params do
+      default_params.merge({
+        :bind_host => '10.0.0.2',
+      })
+    end
+    it { should contain_keystone_config('DEFAULT/public_bind_host').with_value('10.0.0.2') }
+    it { should contain_keystone_config('DEFAULT/admin_bind_host').with_value('10.0.0.2') }
   end
 
 end
