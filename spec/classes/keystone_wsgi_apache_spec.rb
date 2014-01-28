@@ -53,6 +53,7 @@ describe 'keystone::wsgi::apache' do
 
       it { should contain_apache__vhost('keystone_wsgi_admin').with(
         'servername'                  => 'some.host.tld',
+        'ip'                          => nil,
         'port'                        => '35357',
         'docroot'                     => "#{platform_parameters[:wsgi_script_path]}",
         'docroot_owner'               => 'keystone',
@@ -65,6 +66,7 @@ describe 'keystone::wsgi::apache' do
 
       it { should contain_apache__vhost('keystone_wsgi_main').with(
         'servername'                  => 'some.host.tld',
+        'ip'                          => nil,
         'port'                        => '5000',
         'docroot'                     => "#{platform_parameters[:wsgi_script_path]}",
         'docroot_owner'               => 'keystone',
@@ -86,6 +88,7 @@ describe 'keystone::wsgi::apache' do
       let :params do
         {
           :servername  => 'dummy.host',
+          :bind_host   => '10.42.51.1',
           :public_port => 12345,
           :admin_port  => 4142,
           :ssl         => false,
@@ -95,6 +98,7 @@ describe 'keystone::wsgi::apache' do
 
       it { should contain_apache__vhost('keystone_wsgi_admin').with(
         'servername'                  => 'dummy.host',
+        'ip'                          => '10.42.51.1',
         'port'                        => '4142',
         'docroot'                     => "#{platform_parameters[:wsgi_script_path]}",
         'docroot_owner'               => 'keystone',
@@ -107,6 +111,7 @@ describe 'keystone::wsgi::apache' do
 
       it { should contain_apache__vhost('keystone_wsgi_main').with(
         'servername'                  => 'dummy.host',
+        'ip'                          => '10.42.51.1',
         'port'                        => '12345',
         'docroot'                     => "#{platform_parameters[:wsgi_script_path]}",
         'docroot_owner'               => 'keystone',
@@ -141,6 +146,7 @@ describe 'keystone::wsgi::apache' do
 
       it { should contain_apache__vhost('keystone_wsgi_main').with(
         'servername'                  => 'dummy.host',
+        'ip'                          => nil,
         'port'                        => '4242',
         'docroot'                     => "#{platform_parameters[:wsgi_script_path]}",
         'docroot_owner'               => 'keystone',
