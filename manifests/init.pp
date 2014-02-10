@@ -37,6 +37,7 @@
 #   [enabled] If the keystone services should be enabled. Optional. Default to true.
 #   [sql_conneciton] Url used to connect to database.
 #   [idle_timeout] Timeout when db connections should be reaped.
+#   [enable_pki_setup] Enable call to pki_setup.
 #
 # == Dependencies
 #  None
@@ -76,7 +77,8 @@ class keystone(
   $memcache_servers = false,
   $enabled          = true,
   $sql_connection   = 'sqlite:////var/lib/keystone/keystone.db',
-  $idle_timeout     = '200'
+  $idle_timeout     = '200',
+  $enable_pki_setup = true
 ) {
 
   validate_re($catalog_type,   'template|sql')
@@ -193,14 +195,17 @@ class keystone(
     file { $cache_dir:
       ensure => directory,
     }
-    exec { 'keystone-manage pki_setup':
-      path        => '/usr/bin',
-      user        => 'keystone',
-      refreshonly => true,
-      creates     => '/etc/keystone/ssl/private/signing_key.pem',
-      notify      => Service['keystone'],
-      subscribe   => Package['keystone'],
-      require     => User['keystone'],
+
+    if $enable_pki_setup {
+      exec { 'keystone-manage pki_setup':
+        path        => '/usr/bin',
+        user        => 'keystone',
+        refreshonly => true,
+        creates     => '/etc/keystone/ssl/private/signing_key.pem',
+        notify      => Service['keystone'],
+        subscribe   => Package['keystone'],
+        require     => User['keystone'],
+      }
     }
   } elsif $token_format == 'UUID' {
     keystone_config { 'token/provider': value => 'keystone.token.providers.uuid.Provider' }
