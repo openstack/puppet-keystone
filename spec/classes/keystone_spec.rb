@@ -128,7 +128,9 @@ describe 'keystone' do
       end
     end
   end
-  describe 'when configuring signing token format' do
+
+  describe 'when configuring signing token provider' do
+
     describe 'when configuring as UUID' do
       let :params do
         {
@@ -138,6 +140,7 @@ describe 'keystone' do
       end
       it { should_not contain_exec('keystone-manage pki_setup') }
     end
+
     describe 'when configuring as PKI' do
       let :params do
         {
@@ -149,15 +152,19 @@ describe 'keystone' do
         :creates => '/etc/keystone/ssl/private/signing_key.pem'
       ) }
       it { should contain_file('/var/cache/keystone').with_ensure('directory') }
+
       describe 'when overriding the cache dir' do
-        let :params do
-          {
-            'admin_token'    => 'service_token',
-            'token_provider' => 'keystone.token.providers.pki.Provider',
-            'cache_dir'      => '/var/lib/cache/keystone'
-          }
+        before do
+          params.merge!(:cache_dir => '/var/lib/cache/keystone')
         end
         it { should contain_file('/var/lib/cache/keystone') }
+      end
+
+      describe 'when disable pki_setup' do
+        before do
+          params.merge!(:enable_pki_setup => false)
+        end
+        it { should_not contain_exec('keystone-manage pki_setup') }
       end
     end
 
