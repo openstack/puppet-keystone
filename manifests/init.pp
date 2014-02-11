@@ -44,6 +44,20 @@
 #   If set to boolean false, it will not log to any directory
 #   Defaults to '/var/log/keystone'
 #
+#   [public_endpoint] The base public endpoint URL for keystone that are
+#    advertised to clients (NOTE: this does NOT affect how
+#    keystone listens for connections) (string value)
+#   [admin_endpoint] The base admin endpoint URL for keystone that are advertised
+#    to clients (NOTE: this does NOT affect how keystone listens
+#    for connections) (string value)
+#   [ssl_enable] Toggle for SSL support on the keystone eventlet servers.
+#   (boolean value)
+#   [certfile]   Path of the certfile for SSL. (string value)
+#   [keyfile]   Path of the keyfile for SSL. (string value)
+#   [ca_certs]   Path of the ca cert file for SSL. (string value)
+#   [ca_key]   Path of the CA key file for SSL (string value)
+#   [cert_subject]   SSL Certificate Subject (auto generated certificate) (string value)
+
 # == Dependencies
 #  None
 #
@@ -79,6 +93,14 @@ class keystone(
   $token_provider   = 'keystone.token.providers.pki.Provider',
   $token_driver     = 'keystone.token.backends.sql.Token',
   $token_expiration = 86400,
+  $public_endpoint  = 'http://localhost:5000',
+  $admin_endpoint   = 'http://localhost:35357',
+  $enable_ssl       = false,
+  $ssl_certfile     = '/etc/keystone/ssl/certs/keystone.pem',
+  $ssl_keyfile      = '/etc/keystone/ssl/private/keystonekey.pem',
+  $ssl_ca_certs     = '/etc/keystone/ssl/certs/ca.pem',
+  $ssl_ca_key       = '/etc/keystone/ssl/private/cakey.pem',
+  $ssl_cert_subject = '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
   $cache_dir        = '/var/cache/keystone',
   $memcache_servers = false,
   $enabled          = true,
@@ -137,8 +159,10 @@ class keystone(
     'DEFAULT/public_port':  value => $public_port;
     'DEFAULT/admin_port':   value => $admin_port;
     'DEFAULT/compute_port': value => $compute_port;
-    'DEFAULT/verbose':      value => $verbose;
-    'DEFAULT/debug':        value => $debug;
+    'DEFAULT/public_endpoint':  value  => $public_endpoint;
+    'DEFAULT/admin_endpoint':   value  => $admin_endpoint;
+    'DEFAULT/verbose':          value => $verbose;
+    'DEFAULT/debug':            value => $debug;
   }
 
   # logging config
@@ -156,6 +180,22 @@ class keystone(
   keystone_config {
     'token/driver':     value => $token_driver;
     'token/expiration': value => $token_expiration;
+  }
+
+  # ssl config
+  if ($enable_ssl) {
+    keystone_config {
+      'ssl/enable':              value  => true;
+      'ssl/certfile':            value  => $ssl_certfile;
+      'ssl/keyfile':             value  => $ssl_keyfile;
+      'ssl/ca_certs':            value  => $ssl_ca_certs;
+      'ssl/ca_key':              value  => $ssl_ca_key;
+      'ssl/cert_subject':        value  => $ssl_cert_subject;
+    }
+  } else {
+    keystone_config {
+      'ssl/enable':              value  => false;
+    }
   }
 
   if($sql_connection =~ /mysql:\/\/\S+:\S+@\S+\/\S+/) {

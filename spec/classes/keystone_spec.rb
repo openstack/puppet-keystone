@@ -8,40 +8,56 @@ describe 'keystone' do
 
   let :default_params do
     {
-      'package_ensure'  => 'present',
-      'bind_host'       => '0.0.0.0',
-      'public_port'     => '5000',
-      'admin_port'      => '35357',
-      'admin_token'     => 'service_token',
-      'compute_port'    => '8774',
-      'verbose'         => false,
-      'debug'           => false,
-      'catalog_type'    => 'sql',
-      'token_provider'  => 'keystone.token.providers.pki.Provider',
-      'token_driver'    => 'keystone.token.backends.sql.Token',
-      'cache_dir'       => '/var/cache/keystone',
-      'enabled'         => true,
-      'sql_connection'  => 'sqlite:////var/lib/keystone/keystone.db',
-      'idle_timeout'    => '200'
+      'package_ensure'   => 'present',
+      'bind_host'        => '0.0.0.0',
+      'public_port'      => '5000',
+      'admin_port'       => '35357',
+      'admin_token'      => 'service_token',
+      'compute_port'     => '8774',
+      'verbose'          => false,
+      'debug'            => false,
+      'catalog_type'     => 'sql',
+      'token_provider'   => 'keystone.token.providers.pki.Provider',
+      'token_driver'     => 'keystone.token.backends.sql.Token',
+      'cache_dir'        => '/var/cache/keystone',
+      'public_endpoint'  => 'http://localhost:5000',
+      'admin_endpoint'   => 'http://localhost:35357',
+      'enable_ssl'       => false,
+      'ssl_certfile'     => '/etc/keystone/ssl/certs/keystone.pem',
+      'ssl_keyfile'      => '/etc/keystone/ssl/private/keystonekey.pem',
+      'ssl_ca_certs'     => '/etc/keystone/ssl/certs/ca.pem',
+      'ssl_ca_key'       => '/etc/keystone/ssl/private/cakey.pem',
+      'ssl_cert_subject' => '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
+      'enabled'          => true,
+      'sql_connection'   => 'sqlite:////var/lib/keystone/keystone.db',
+      'idle_timeout'     => '200'
     }
   end
 
   [{'admin_token'     => 'service_token'},
    {
-      'package_ensure'  => 'latest',
-      'bind_host'       => '127.0.0.1',
-      'public_port'     => '5001',
-      'admin_port'      => '35358',
-      'admin_token'     => 'service_token_override',
-      'compute_port'    => '8778',
-      'verbose'         => true,
-      'debug'           => true,
-      'catalog_type'    => 'template',
-      'token_provider'  => 'keystone.token.providers.uuid.Provider',
-      'token_driver'    => 'keystone.token.backends.kvs.Token',
-      'enabled'         => false,
-      'sql_connection'  => 'mysql://a:b@c/d',
-      'idle_timeout'    => '300'
+      'package_ensure'   => 'latest',
+      'bind_host'        => '127.0.0.1',
+      'public_port'      => '5001',
+      'admin_port'       => '35358',
+      'admin_token'      => 'service_token_override',
+      'compute_port'     => '8778',
+      'verbose'          => true,
+      'debug'            => true,
+      'catalog_type'     => 'template',
+      'token_provider'   => 'keystone.token.providers.uuid.Provider',
+      'token_driver'     => 'keystone.token.backends.kvs.Token',
+      'public_endpoint'  => 'https://localhost:5000',
+      'admin_endpoint'   => 'https://localhost:35357',
+      'enable_ssl'       => true,
+      'ssl_certfile'     => '/etc/keystone/ssl/certs/keystone.pem',
+      'ssl_keyfile'      => '/etc/keystone/ssl/private/keystonekey.pem',
+      'ssl_ca_certs'     => '/etc/keystone/ssl/certs/ca.pem',
+      'ssl_ca_key'       => '/etc/keystone/ssl/private/cakey.pem',
+      'ssl_cert_subject' => '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
+      'enabled'          => false,
+      'sql_connection'   => 'mysql://a:b@c/d',
+      'idle_timeout'     => '300'
     }
   ].each do |param_set|
 
@@ -293,4 +309,53 @@ describe 'keystone' do
     it { should contain_keystone_config('DEFAULT/log_dir').with_ensure('absent') }
   end
 
+  describe 'when configuring as SSL' do
+    let :params do
+      {
+        'admin_token' => 'service_token',
+        'enable_ssl'  => true
+      }
+    end
+    it { should contain_exec('keystone-manage pki_setup').with(
+      :creates => '/etc/keystone/ssl/private/signing_key.pem'
+    ) }
+    it { should contain_file('/var/cache/keystone').with_ensure('directory') }
+    describe 'when overriding the cache dir' do
+      let :params do
+        {
+          'admin_token' => 'service_token',
+          'enable_ssl'  => true,
+          'cache_dir'   => '/var/lib/cache/keystone'
+        }
+      end
+      it { should contain_file('/var/lib/cache/keystone') }
+    end
+  end
+  describe 'when enabling SSL' do
+    let :params do
+      {
+        'admin_token' => 'service_token',
+        'enable_ssl'  => true,
+        'public_endpoint'  => 'https://localhost:5000',
+        'admin_endpoint'   => 'https://localhost:35357',
+      }
+    end
+    it {should contain_keystone_config('ssl/enable').with_value(true)}
+    it {should contain_keystone_config('ssl/certfile').with_value('/etc/keystone/ssl/certs/keystone.pem')}
+    it {should contain_keystone_config('ssl/keyfile').with_value('/etc/keystone/ssl/private/keystonekey.pem')}
+    it {should contain_keystone_config('ssl/ca_certs').with_value('/etc/keystone/ssl/certs/ca.pem')}
+    it {should contain_keystone_config('ssl/ca_key').with_value('/etc/keystone/ssl/private/cakey.pem')}
+    it {should contain_keystone_config('ssl/cert_subject').with_value('/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost')}
+    it {should contain_keystone_config('DEFAULT/public_endpoint').with_value('https://localhost:5000')}
+    it {should contain_keystone_config('DEFAULT/admin_endpoint').with_value('https://localhost:35357')}
+  end
+  describe 'when disabling SSL' do
+    let :params do
+      {
+        'admin_token' => 'service_token',
+        'enable_ssl'  => false,
+      }
+    end
+    it {should contain_keystone_config('ssl/enable').with_value(false)}
+  end
 end
