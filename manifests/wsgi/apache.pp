@@ -25,6 +25,10 @@
 #     The admin port.
 #     Optional. Defaults to 35357
 #
+#   [*bind_host*]
+#     The host/ip address Apache will listen on.
+#     Optional. Defaults to undef (listen on all ip addresses).
+#
 #   [*public_path*]
 #     The prefix for the public endpoint.
 #     Optional. Defaults to '/'
@@ -78,6 +82,7 @@ class keystone::wsgi::apache (
   $servername    = $::fqdn,
   $public_port   = 5000,
   $admin_port    = 35357,
+  $bind_host     = undef,
   $public_path   = '/',
   $admin_path    = '/',
   $ssl           = true,
@@ -162,6 +167,7 @@ class keystone::wsgi::apache (
 
   apache::vhost { 'keystone_wsgi_main':
     servername                  => $servername,
+    ip                          => $bind_host,
     port                        => $public_port,
     docroot                     => $::keystone::params::keystone_wsgi_script_path,
     docroot_owner               => 'keystone',
@@ -184,6 +190,7 @@ class keystone::wsgi::apache (
   if $public_port != $admin_port {
     apache::vhost { 'keystone_wsgi_admin':
       servername          => $servername,
+      ip                  => $bind_host,
       port                => $admin_port,
       docroot             => $::keystone::params::keystone_wsgi_script_path,
       docroot_owner       => 'keystone',
