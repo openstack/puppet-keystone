@@ -291,6 +291,11 @@ describe 'keystone' do
     it { should contain_keystone_config('DEFAULT/syslog_log_facility').with_value('LOG_LOCAL0') }
   end
 
+  describe 'with log_dir disabled' do
+    let(:params) { default_params.merge({:log_dir => false}) }
+    it { should contain_keystone_config('DEFAULT/log_dir').with_ensure('absent') }
+  end
+
   describe 'when configuring api binding with deprecated parameter' do
     let :params do
       default_params.merge({
