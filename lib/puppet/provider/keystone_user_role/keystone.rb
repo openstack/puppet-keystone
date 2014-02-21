@@ -48,7 +48,7 @@ Puppet::Type.type(:keystone_user_role).provide(
   def self.get_user_and_tenant(user, tenant)
     @tenant_hash ||= {}
     @user_hash   ||= {}
-    @tenant_hash[tenant] = @tenant_hash[tenant] || get_tenants[tenant]
+    @tenant_hash[tenant] = @tenant_hash[tenant] || get_tenant(tenant)
     [
       get_user(@tenant_hash[tenant], user),
       @tenant_hash[tenant]
@@ -201,6 +201,19 @@ Puppet::Type.type(:keystone_user_role).provide(
         end
       end
       @tenants
+    end
+
+    def self.get_tenant(name)
+      unless (@tenants and @tenants[name])
+        @tenants = {}
+        list_keystone_objects('tenant', 3).each do |tenant|
+          if tenant[1] == name
+            @tenants[tenant[1]] = tenant[0]
+            #tenant
+          end
+        end
+      end
+      @tenants[name]
     end
 
     def self.get_role(name)
