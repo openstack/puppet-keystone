@@ -104,7 +104,6 @@ describe 'keystone' do
 
       it 'should contain correct config' do
         [
-          'admin_token',
           'public_bind_host',
           'admin_bind_host',
           'public_port',
@@ -117,9 +116,13 @@ describe 'keystone' do
         end
       end
 
+      it 'should contain correct admin_token config' do
+        should contain_keystone_config('DEFAULT/admin_token').with_value(param_hash['admin_token']).with_secret(true)
+      end
+
       it 'should contain correct mysql config' do
         should contain_keystone_config('sql/idle_timeout').with_value(param_hash['idle_timeout'])
-        should contain_keystone_config('sql/connection').with_value(param_hash['sql_connection'])
+        should contain_keystone_config('sql/connection').with_value(param_hash['sql_connection']).with_secret(true)
       end
 
       it { should contain_keystone_config('token/provider').with_value(
