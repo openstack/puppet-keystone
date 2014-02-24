@@ -39,6 +39,11 @@
 #   [idle_timeout] Timeout when db connections should be reaped.
 #   [enable_pki_setup] Enable call to pki_setup.
 #
+#   [*log_dir*]
+#   (optional) Directory where logs should be stored
+#   If set to boolean false, it will not log to any directory
+#   Defaults to '/var/log/keystone'
+#
 # == Dependencies
 #  None
 #
@@ -66,6 +71,7 @@ class keystone(
   $compute_port     = '8774',
   $verbose          = false,
   $debug            = false,
+  $log_dir          = '/var/log/keystone',
   $use_syslog       = false,
   $log_facility     = 'LOG_USER',
   $catalog_type     = 'sql',
@@ -133,6 +139,17 @@ class keystone(
     'DEFAULT/compute_port': value => $compute_port;
     'DEFAULT/verbose':      value => $verbose;
     'DEFAULT/debug':        value => $debug;
+  }
+
+  # logging config
+  if $log_dir {
+    keystone_config {
+      'DEFAULT/log_dir': value => $log_dir;
+    }
+  } else {
+    keystone_config {
+      'DEFAULT/log_dir': ensure => absent;
+    }
   }
 
   # token driver config
