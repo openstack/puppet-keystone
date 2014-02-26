@@ -29,7 +29,8 @@ describe 'keystone' do
       'ssl_cert_subject' => '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
       'enabled'          => true,
       'sql_connection'   => 'sqlite:////var/lib/keystone/keystone.db',
-      'idle_timeout'     => '200'
+      'idle_timeout'     => '200',
+      'mysql_module'     => '0.9',
     }
   end
 

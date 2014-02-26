@@ -16,6 +16,7 @@ describe 'keystone::db::mysql' do
       'dbname'        => 'keystone',
       'user'          => 'keystone',
       'charset'       => 'latin1',
+      'collate'       => 'latin1_swedish_ci',
       'host'          => '127.0.0.1',
       'allowed_hosts' => ['127.0.0.%', '192.168.1.%']
     }
