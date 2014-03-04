@@ -44,19 +44,47 @@
 #   If set to boolean false, it will not log to any directory
 #   Defaults to '/var/log/keystone'
 #
-#   [public_endpoint] The base public endpoint URL for keystone that are
-#    advertised to clients (NOTE: this does NOT affect how
-#    keystone listens for connections) (string value)
-#   [admin_endpoint] The base admin endpoint URL for keystone that are advertised
-#    to clients (NOTE: this does NOT affect how keystone listens
-#    for connections) (string value)
-#   [ssl_enable] Toggle for SSL support on the keystone eventlet servers.
+#   [*public_endpoint*]
+#   (optional) The base public endpoint URL for keystone that are
+#   advertised to clients (NOTE: this does NOT affect how
+#   keystone listens for connections) (string value)
+#   If set to false, no public_endpoint will be defined in keystone.conf.
+#   Sample value: 'http://localhost:5000/v2.0/'
+#   Defaults to false
+#
+#   [*admin_endpoint*]
+#   (optional) The base admin endpoint URL for keystone that are
+#   advertised to clients (NOTE: this does NOT affect how keystone listens
+#   for connections) (string value)
+#   If set to false, no admin_endpoint will be defined in keystone.conf.
+#   Sample value: 'http://localhost:35357/v2.0/'
+#   Defaults to false
+#
+#   [*enable_ssl*]
+#   (optional) Toggle for SSL support on the keystone eventlet servers.
 #   (boolean value)
-#   [certfile]   Path of the certfile for SSL. (string value)
-#   [keyfile]   Path of the keyfile for SSL. (string value)
-#   [ca_certs]   Path of the ca cert file for SSL. (string value)
-#   [ca_key]   Path of the CA key file for SSL (string value)
-#   [cert_subject]   SSL Certificate Subject (auto generated certificate) (string value)
+#   Defaults to false
+#
+#   [*ssl_certfile*]
+#   (optional) Path of the certfile for SSL. (string value)
+#   Defaults to '/etc/keystone/ssl/certs/keystone.pem'
+#
+#   [*ssl_keyfile*]
+#   (optional) Path of the keyfile for SSL. (string value)
+#   Defaults to '/etc/keystone/ssl/private/keystonekey.pem'
+#
+#   [*ssl_ca_certs*]
+#   (optional) Path of the ca cert file for SSL. (string value)
+#   Defaults to '/etc/keystone/ssl/certs/ca.pem'
+#
+#   [*ssl_ca_key*]
+#   (optional) Path of the CA key file for SSL (string value)
+#   Defaults to '/etc/keystone/ssl/private/cakey.pem'
+#
+#   [*ssl_cert_subject*]
+#   (optional) SSL Certificate Subject (auto generated certificate)
+#   (string value)
+#   Defaults to '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost'
 
 # == Dependencies
 #  None
@@ -93,8 +121,8 @@ class keystone(
   $token_provider   = 'keystone.token.providers.pki.Provider',
   $token_driver     = 'keystone.token.backends.sql.Token',
   $token_expiration = 86400,
-  $public_endpoint  = 'http://localhost:5000',
-  $admin_endpoint   = 'http://localhost:35357',
+  $public_endpoint  = false,
+  $admin_endpoint   = false,
   $enable_ssl       = false,
   $ssl_certfile     = '/etc/keystone/ssl/certs/keystone.pem',
   $ssl_keyfile      = '/etc/keystone/ssl/private/keystonekey.pem',
@@ -159,10 +187,28 @@ class keystone(
     'DEFAULT/public_port':  value => $public_port;
     'DEFAULT/admin_port':   value => $admin_port;
     'DEFAULT/compute_port': value => $compute_port;
-    'DEFAULT/public_endpoint':  value  => $public_endpoint;
-    'DEFAULT/admin_endpoint':   value  => $admin_endpoint;
-    'DEFAULT/verbose':          value => $verbose;
-    'DEFAULT/debug':            value => $debug;
+    'DEFAULT/verbose':      value => $verbose;
+    'DEFAULT/debug':        value => $debug;
+  }
+
+  # Endpoint configuration
+  if $public_endpoint {
+    keystone_config {
+      'DEFAULT/public_endpoint': value => $public_endpoint;
+    }
+  } else {
+    keystone_config {
+      'DEFAULT/public_endpoint': ensure => absent;
+    }
+  }
+  if $admin_endpoint {
+    keystone_config {
+      'DEFAULT/admin_endpoint': value => $admin_endpoint;
+    }
+  } else {
+    keystone_config {
+      'DEFAULT/admin_endpoint': ensure => absent;
+    }
   }
 
   # logging config

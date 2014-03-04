@@ -20,8 +20,6 @@ describe 'keystone' do
       'token_provider'   => 'keystone.token.providers.pki.Provider',
       'token_driver'     => 'keystone.token.backends.sql.Token',
       'cache_dir'        => '/var/cache/keystone',
-      'public_endpoint'  => 'http://localhost:5000',
-      'admin_endpoint'   => 'http://localhost:35357',
       'enable_ssl'       => false,
       'ssl_certfile'     => '/etc/keystone/ssl/certs/keystone.pem',
       'ssl_keyfile'      => '/etc/keystone/ssl/private/keystonekey.pem',
@@ -47,8 +45,8 @@ describe 'keystone' do
       'catalog_type'     => 'template',
       'token_provider'   => 'keystone.token.providers.uuid.Provider',
       'token_driver'     => 'keystone.token.backends.kvs.Token',
-      'public_endpoint'  => 'https://localhost:5000',
-      'admin_endpoint'   => 'https://localhost:35357',
+      'public_endpoint'  => 'https://localhost:5000/v2.0/',
+      'admin_endpoint'   => 'https://localhost:35357/v2.0/',
       'enable_ssl'       => true,
       'ssl_certfile'     => '/etc/keystone/ssl/certs/keystone.pem',
       'ssl_keyfile'      => '/etc/keystone/ssl/private/keystonekey.pem',
@@ -141,6 +139,19 @@ describe 'keystone' do
 
       it 'should contain correct token driver' do
         should contain_keystone_config('token/driver').with_value(param_hash['token_driver'])
+      end
+
+      it 'should ensure proper setting of admin_endpoint and public_endpoint' do
+        if param_hash['admin_endpoint']
+          should contain_keystone_config('DEFAULT/admin_endpoint').with_value(param_hash['admin_endpoint'])
+        else
+          should contain_keystone_config('DEFAULT/admin_endpoint').with_ensure('absent')
+        end
+        if param_hash['public_endpoint']
+          should contain_keystone_config('DEFAULT/public_endpoint').with_value(param_hash['public_endpoint'])
+        else
+          should contain_keystone_config('DEFAULT/public_endpoint').with_ensure('absent')
+        end
       end
     end
   end
@@ -336,8 +347,8 @@ describe 'keystone' do
       {
         'admin_token' => 'service_token',
         'enable_ssl'  => true,
-        'public_endpoint'  => 'https://localhost:5000',
-        'admin_endpoint'   => 'https://localhost:35357',
+        'public_endpoint'  => 'https://localhost:5000/v2.0/',
+        'admin_endpoint'   => 'https://localhost:35357/v2.0/',
       }
     end
     it {should contain_keystone_config('ssl/enable').with_value(true)}
@@ -346,8 +357,8 @@ describe 'keystone' do
     it {should contain_keystone_config('ssl/ca_certs').with_value('/etc/keystone/ssl/certs/ca.pem')}
     it {should contain_keystone_config('ssl/ca_key').with_value('/etc/keystone/ssl/private/cakey.pem')}
     it {should contain_keystone_config('ssl/cert_subject').with_value('/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost')}
-    it {should contain_keystone_config('DEFAULT/public_endpoint').with_value('https://localhost:5000')}
-    it {should contain_keystone_config('DEFAULT/admin_endpoint').with_value('https://localhost:35357')}
+    it {should contain_keystone_config('DEFAULT/public_endpoint').with_value('https://localhost:5000/v2.0/')}
+    it {should contain_keystone_config('DEFAULT/admin_endpoint').with_value('https://localhost:35357/v2.0/')}
   end
   describe 'when disabling SSL' do
     let :params do
@@ -357,5 +368,7 @@ describe 'keystone' do
       }
     end
     it {should contain_keystone_config('ssl/enable').with_value(false)}
+    it {should contain_keystone_config('DEFAULT/public_endpoint').with_ensure('absent')}
+    it {should contain_keystone_config('DEFAULT/admin_endpoint').with_ensure('absent')}
   end
 end
