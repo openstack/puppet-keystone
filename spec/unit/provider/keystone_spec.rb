@@ -96,7 +96,13 @@ describe Puppet::Provider::Keystone do
 
     describe 'when testing keystone connection retries' do
 
-      ['[Errno 111] Connection refused', '(HTTP 400)', 'HTTP Unable to establish connection'].reverse.each do |valid_message|
+      ['(HTTP 400)',
+       '[Errno 111] Connection refused',
+       '503 Service Unavailable',
+       'Max retries exceeded',
+       'HTTP Unable to establish connection',
+       'Unable to establish connection to http://127.0.0.1:35357/v2.0/OS-KSADM/roles'
+       ].reverse.each do |valid_message|
         it "should retry when keystone is not ready with error #{valid_message}" do
           mock = {'DEFAULT' => {'admin_token' => 'foo'}}
           Puppet::Util::IniConfig::File.expects(:new).returns(mock)
