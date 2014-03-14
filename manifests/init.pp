@@ -44,6 +44,10 @@
 #   If set to boolean false, it will not log to any directory
 #   Defaults to '/var/log/keystone'
 #
+# [*log_file*]
+#   (optional) Where to log
+#   Defaults to false
+#
 #   [*public_endpoint*]
 #   (optional) The base public endpoint URL for keystone that are
 #   advertised to clients (NOTE: this does NOT affect how
@@ -114,6 +118,7 @@ class keystone(
   $verbose          = false,
   $debug            = false,
   $log_dir          = '/var/log/keystone',
+  $log_file         = false,
   $use_syslog       = false,
   $log_facility     = 'LOG_USER',
   $catalog_type     = 'sql',
@@ -208,17 +213,6 @@ class keystone(
   } else {
     keystone_config {
       'DEFAULT/admin_endpoint': ensure => absent;
-    }
-  }
-
-  # logging config
-  if $log_dir {
-    keystone_config {
-      'DEFAULT/log_dir': value => $log_dir;
-    }
-  } else {
-    keystone_config {
-      'DEFAULT/log_dir': ensure => absent;
     }
   }
 
@@ -339,12 +333,32 @@ class keystone(
   # Syslog configuration
   if $use_syslog {
     keystone_config {
-      'DEFAULT/use_syslog':           value => true;
-      'DEFAULT/syslog_log_facility':  value => $log_facility;
+      'DEFAULT/use_syslog':           value  => true;
+      'DEFAULT/syslog_log_facility':  value  => $log_facility;
     }
   } else {
     keystone_config {
       'DEFAULT/use_syslog':           value => false;
     }
   }
+
+  if $log_file {
+    keystone_config {
+      'DEFAULT/log_file': value => $log_file;
+      'DEFAULT/log_dir':  value => $log_dir;
+    }
+  } else {
+    if $log_dir {
+      keystone_config {
+        'DEFAULT/log_dir':  value  => $log_dir;
+        'DEFAULT/log_file': ensure => absent;
+      }
+    } else {
+      keystone_config {
+        'DEFAULT/log_dir':  ensure => absent;
+        'DEFAULT/log_file': ensure => absent;
+      }
+    }
+  }
+
 }
