@@ -80,7 +80,7 @@ class Puppet::Provider::Keystone < Puppet::Provider
         remove_warnings(keystone('--os-endpoint', admin_endpoint, args))
       end
     rescue Exception => e
-      if (e.message =~ /\[Errno 111\] Connection refused/) or (e.message =~ /\(HTTP 400\)/) or (e.message =~ /HTTP Unable to establish connection/)
+      if e.message =~ /(\(HTTP\s+400\))|(\[Errno 111\]\s+Connection\s+refused)|(503\s+Service\s+Unavailable)|(Max\s+retries\s+exceeded)|(Unable\s+to\s+establish\s+connection)/
         sleep 10
         withenv authenv do
           remove_warnings(keystone('--os-endpoint', admin_endpoint, args))
@@ -102,7 +102,7 @@ class Puppet::Provider::Keystone < Puppet::Provider
         remove_warnings(keystone('--os-auth-url', admin_endpoint, args))
       end
     rescue Exception => e
-      if (e.message =~ /\[Errno 111\] Connection refused/) or (e.message =~ /\(HTTP 400\)/) or (e.message =~ /HTTP Unable to establish connection/)
+      if e.message =~ /(\(HTTP\s+400\))|(\[Errno 111\]\s+Connection\s+refused)|(503\s+Service\s+Unavailable)|(Max\s+retries\s+exceeded)|(Unable\s+to\s+establish\s+connection)/
         sleep 10
         withenv authenv do
           remove_warnings(keystone('--os-auth-url', admin_endpoint, args))
