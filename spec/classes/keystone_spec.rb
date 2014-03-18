@@ -321,8 +321,32 @@ describe 'keystone' do
     it { should contain_keystone_config('DEFAULT/syslog_log_facility').with_value('LOG_LOCAL0') }
   end
 
-  describe 'with log_dir disabled' do
-    let(:params) { default_params.merge({:log_dir => false}) }
+  describe 'with log_file disabled by default' do
+    let :params do
+      default_params
+    end
+    it { should contain_keystone_config('DEFAULT/log_file').with_ensure('absent') }
+  end
+
+  describe 'with log_file and log_dir enabled' do
+    let :params do
+      default_params.merge({
+        :log_file   => 'keystone.log',
+        :log_dir    => '/var/lib/keystone'
+     })
+    end
+    it { should contain_keystone_config('DEFAULT/log_file').with_value('keystone.log') }
+    it { should contain_keystone_config('DEFAULT/log_dir').with_value('/var/lib/keystone') }
+  end
+
+    describe 'with log_file and log_dir disabled' do
+    let :params do
+      default_params.merge({
+        :log_file   => false,
+        :log_dir    => false
+     })
+    end
+    it { should contain_keystone_config('DEFAULT/log_file').with_ensure('absent') }
     it { should contain_keystone_config('DEFAULT/log_dir').with_ensure('absent') }
   end
 
