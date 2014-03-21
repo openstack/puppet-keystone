@@ -163,6 +163,30 @@ Contributors
 Release Notes
 -------------
 
+**3.1.0**
+
+* Added ability to disable pki_setup.
+* Load tenant un-lazily if needed.
+* Add log_dir param, with option to disable.
+* Updated endpoint argument.
+* Added support to enable SSL.
+* Removes setting of Keystone endpoint by default.
+* Relaxed regex when keystone refuses connections.
+
+**3.0.0**
+
+* Major release for OpenStack Havana.
+* Fixed duplicated keystone endpoints.
+* Refactored keystone_endpoint to use prefetch and flush paradigm.
+* Switched from signing/format to token/provider.
+* Created memcache_servers option to allow for multiple cache servers.
+* Enabled serving Keystone from Apache mod_wsgi.
+* Moved db_sync to its own class.
+* Removed creation of Member role.
+* Improved performance of Keystone providers.
+* Updated endpoints to support paths and ssl.
+* Added support for token expiration parameter.
+
 **2.2.0**
 
 * Optimized tenant and user queries.
