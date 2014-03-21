@@ -99,7 +99,12 @@
 #   (optional) SSL Certificate Subject (auto generated certificate)
 #   (string value)
 #   Defaults to '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost'
-
+#
+#   [*mysql_module*]
+#   (optional) The mysql puppet module version to use
+#   Tested versions include 0.9 and 2.2
+#   Default to '0.9'
+#
 # == Dependencies
 #  None
 #
@@ -151,7 +156,8 @@ class keystone(
   $enabled          = true,
   $sql_connection   = 'sqlite:////var/lib/keystone/keystone.db',
   $idle_timeout     = '200',
-  $enable_pki_setup = true
+  $enable_pki_setup = true,
+  $mysql_module     = '0.9',
 ) {
 
   validate_re($catalog_type,   'template|sql')
@@ -261,7 +267,12 @@ class keystone(
   }
 
   if($sql_connection =~ /mysql:\/\/\S+:\S+@\S+\/\S+/) {
-    require 'mysql::python'
+    if ($mysql_module >= 2.2) {
+      require 'mysql::bindings'
+      require 'mysql::bindings::python'
+    } else {
+      require 'mysql::python'
+    }
   } elsif($sql_connection =~ /postgresql:\/\/\S+:\S+@\S+\/\S+/) {
 
   } elsif($sql_connection =~ /sqlite:\/\//) {

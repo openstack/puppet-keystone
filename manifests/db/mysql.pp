@@ -18,6 +18,11 @@
 #
 # [allowed_hosts] Hosts allowed to use the database
 #
+#   [*mysql_module*]
+#   (optional) The mysql puppet module version to use
+#   Tested versions include 0.9 and 2.2
+#   Default to '0.9'
+#
 # == Dependencies
 #   Class['mysql::server']
 #
@@ -36,6 +41,8 @@ class keystone::db::mysql(
   $user          = 'keystone',
   $host          = '127.0.0.1',
   $charset       = 'latin1',
+  $collate       = 'latin1_swedish_ci',
+  $mysql_module  = '0.9',
   $allowed_hosts = undef
 ) {
 
@@ -43,15 +50,25 @@ class keystone::db::mysql(
   Class['keystone::db::mysql'] -> Service<| title == 'keystone' |>
   Mysql::Db[$dbname] ~> Exec<| title == 'keystone-manage db_sync' |>
 
-  require mysql::python
+  if ($mysql_module >= 2.2) {
+    mysql::db { $dbname:
+      user     => $user,
+      password => $password,
+      host     => $host,
+      charset  => $charset,
+      collate  => $collate,
+      require  => Service['mysql'],
+    }
+  } else {
+    require mysql::python
 
-  mysql::db { $dbname:
-    user     => $user,
-    password => $password,
-    host     => $host,
-    # TODO does it make sense to support other charsets?
-    charset  => $charset,
-    require  => Class['mysql::config'],
+    mysql::db { $dbname:
+      user     => $user,
+      password => $password,
+      host     => $host,
+      charset  => $charset,
+      require  => Class['mysql::config'],
+    }
   }
 
   # Check allowed_hosts to avoid duplicate resource declarations
@@ -63,9 +80,10 @@ class keystone::db::mysql(
 
   if $real_allowed_hosts {
     keystone::db::mysql::host_access { $real_allowed_hosts:
-      user     => $user,
-      password => $password,
-      database => $dbname,
+      user          => $user,
+      password      => $password,
+      database      => $dbname,
+      mysql_module  => $mysql_module,
     }
 
     Keystone::Db::Mysql::Host_access[$allowed_hosts] -> Exec<| title == 'keystone-manage db_sync' |>
