@@ -118,6 +118,22 @@
 #   Tested versions include 0.9 and 2.2
 #   Default to '0.9'
 #
+#   [*validate_service*]
+#   (optional) Whether to validate keystone connections after
+#   the service is started.
+#   Defaults to false
+#
+#   [*validate_insecure*]
+#   (optional) Whether to validate keystone connections
+#   using the --insecure option with keystone client.
+#   Defaults to false
+#
+#   [*validate_cacert*]
+#   (optional) Whether to validate keystone connections
+#   using the specified argument with the --os-cacert option
+#   with keystone client.
+#   Defaults to undef
+#
 # == Dependencies
 #  None
 #
@@ -181,7 +197,10 @@ class keystone(
   $rabbit_virtual_host   = '/',
   $notification_driver   = false,
   $notification_topics   = false,
-  $control_exchange      = false
+  $control_exchange      = false,
+  $validate_service      = false,
+  $validate_insecure     = false,
+  $validate_cacert       = undef,
 ) {
 
   if ! $catalog_driver {
@@ -409,13 +428,30 @@ class keystone(
     $service_ensure = 'stopped'
   }
 
-  service { 'keystone':
-    ensure     => $service_ensure,
-    name       => $::keystone::params::service_name,
-    enable     => $enabled,
-    hasstatus  => true,
-    hasrestart => true,
-    provider   => $::keystone::params::service_provider,
+  if $validate_service {
+    class { 'keystone::service':
+      ensure         => $service_ensure,
+      service_name   => $::keystone::params::service_name,
+      enable         => $enabled,
+      hasstatus      => true,
+      hasrestart     => true,
+      provider       => $::keystone::params::service_provider,
+      validate       => true,
+      admin_endpoint => $admin_endpoint,
+      admin_token    => $admin_token,
+      insecure       => $validate_insecure,
+      cacert         => $validate_cacert,
+    }
+  } else {
+    class { 'keystone::service':
+      ensure       => $service_ensure,
+      service_name => $::keystone::params::service_name,
+      enable       => $enabled,
+      hasstatus    => true,
+      hasrestart   => true,
+      provider     => $::keystone::params::service_provider,
+      validate     => false,
+    }
   }
 
   if $enabled {
