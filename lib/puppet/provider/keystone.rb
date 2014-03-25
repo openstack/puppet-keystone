@@ -25,8 +25,8 @@ class Puppet::Provider::Keystone < Puppet::Provider
     admin_port = keystone_file['DEFAULT']['admin_port'] ? keystone_file['DEFAULT']['admin_port'].strip : '35357'
     ssl = keystone_file['ssl'] && keystone_file['ssl']['enable'] ? keystone_file['ssl']['enable'].strip.downcase == 'true' : false
     protocol = ssl ? 'https' : 'http'
-    if keystone_file and keystone_file['DEFAULT'] and keystone_file['DEFAULT']['bind_host']
-      host = keystone_file['DEFAULT']['bind_host'].strip
+    if keystone_file and keystone_file['DEFAULT'] and keystone_file['DEFAULT']['admin_bind_host']
+      host = keystone_file['DEFAULT']['admin_bind_host'].strip
       if host == "0.0.0.0"
         host = "127.0.0.1"
       end
