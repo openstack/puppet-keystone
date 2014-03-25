@@ -16,6 +16,11 @@ Puppet::Type.newtype(:keystone_user) do
     newvalues(/\S+/)
   end
 
+  newparam(:ignore_default_tenant, :boolean => true) do
+    newvalues(:true, :false)
+    defaultto false
+  end
+
   newproperty(:enabled) do
     newvalues(/(t|T)rue/, /(f|F)alse/)
     defaultto('True')

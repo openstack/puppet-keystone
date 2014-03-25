@@ -99,6 +99,7 @@ Puppet::Type.type(:keystone_user).provide(
   end
 
   def tenant
+    return resource[:tenant] if resource[:ignore_default_tenant]
     user_id = user_hash[resource[:name]][:id]
     begin
       tenantId = self.class.get_keystone_object('user', user_id, 'tenantId')
