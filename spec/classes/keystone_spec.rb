@@ -31,6 +31,9 @@ describe 'keystone' do
       'sql_connection'   => 'sqlite:////var/lib/keystone/keystone.db',
       'idle_timeout'     => '200',
       'mysql_module'     => '0.9',
+      'rabbit_host'      => 'localhost',
+      'rabbit_password'  => 'guest',
+      'rabbit_userid'    => 'guest',
     }
   end
 
@@ -58,7 +61,10 @@ describe 'keystone' do
       'ssl_cert_subject' => '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
       'enabled'          => false,
       'sql_connection'   => 'mysql://a:b@c/d',
-      'idle_timeout'     => '300'
+      'idle_timeout'     => '300',
+      'rabbit_host'      => '127.0.0.1',
+      'rabbit_password'  => 'openstack',
+      'rabbit_userid'    => 'admin',
     }
   ].each do |param_set|
 
@@ -412,4 +418,28 @@ describe 'keystone' do
     it {should contain_keystone_config('DEFAULT/public_endpoint').with_ensure('absent')}
     it {should contain_keystone_config('DEFAULT/admin_endpoint').with_ensure('absent')}
   end
+  describe 'not setting notification settings by default' do
+    let :params do
+      default_params
+    end
+
+    it { should contain_keystone_config('DEFAULT/notification_driver').with_value(nil) }
+    it { should contain_keystone_config('DEFAULT/notification_topics').with_vaule(nil) }
+    it { should contain_keystone_config('DEFAULT/control_exchange').with_vaule(nil) }
+  end
+
+  describe 'setting notification settings' do
+    let :params do
+      default_params.merge({
+        :notification_driver   => 'keystone.openstack.common.notifier.rpc_notifier',
+        :notification_topics   => 'notifications',
+        :control_exchange      => 'keystone'
+      })
+    end
+
+    it { should contain_keystone_config('DEFAULT/notification_driver').with_value('keystone.openstack.common.notifier.rpc_notifier') }
+    it { should contain_keystone_config('DEFAULT/notification_topics').with_value('notifications') }
+    it { should contain_keystone_config('DEFAULT/control_exchange').with_value('keystone') }
+  end
+
 end

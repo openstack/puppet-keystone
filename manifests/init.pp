@@ -38,6 +38,15 @@
 #   [sql_conneciton] Url used to connect to database.
 #   [idle_timeout] Timeout when db connections should be reaped.
 #   [enable_pki_setup] Enable call to pki_setup.
+#   [rabbit_host] Location of rabbitmq installation. Optional. Defaults to localhost.
+#   [rabbit_port] Port for rabbitmq instance. Optional. Defaults to 5672.
+#   [rabbit_hosts] Location of rabbitmq installation. Optional. Defaults to undef.
+#   [rabbit_password] Password used to connect to rabbitmq. Optional. Defaults to guest.
+#   [rabbit_userid] User used to connect to rabbitmq. Optional. Defaults to guest.
+#   [rabbit_virtual_host] The RabbitMQ virtual host. Optional. Defaults to /.
+#   [notification_driver] RPC driver. Not enabled by default
+#   [notification_topics] AMQP topics to publish to when using the RPC notification driver.
+#   [control_exchange] AMQP exchange to connect to if using RabbitMQ or Qpid
 #
 #   [*public_bind_host*]
 #   (optional) The IP address of the public network interface to listen on
@@ -125,39 +134,48 @@
 #
 class keystone(
   $admin_token,
-  $package_ensure   = 'present',
-  $bind_host        = false,
-  $public_bind_host = '0.0.0.0',
-  $admin_bind_host  = '0.0.0.0',
-  $public_port      = '5000',
-  $admin_port       = '35357',
-  $compute_port     = '8774',
-  $verbose          = false,
-  $debug            = false,
-  $log_dir          = '/var/log/keystone',
-  $log_file         = false,
-  $use_syslog       = false,
-  $log_facility     = 'LOG_USER',
-  $catalog_type     = 'sql',
-  $token_format     = false,
-  $token_provider   = 'keystone.token.providers.pki.Provider',
-  $token_driver     = 'keystone.token.backends.sql.Token',
-  $token_expiration = 86400,
-  $public_endpoint  = false,
-  $admin_endpoint   = false,
-  $enable_ssl       = false,
-  $ssl_certfile     = '/etc/keystone/ssl/certs/keystone.pem',
-  $ssl_keyfile      = '/etc/keystone/ssl/private/keystonekey.pem',
-  $ssl_ca_certs     = '/etc/keystone/ssl/certs/ca.pem',
-  $ssl_ca_key       = '/etc/keystone/ssl/private/cakey.pem',
-  $ssl_cert_subject = '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
-  $cache_dir        = '/var/cache/keystone',
-  $memcache_servers = false,
-  $enabled          = true,
-  $sql_connection   = 'sqlite:////var/lib/keystone/keystone.db',
-  $idle_timeout     = '200',
-  $enable_pki_setup = true,
-  $mysql_module     = '0.9',
+  $package_ensure      = 'present',
+  $bind_host           = false,
+  $public_bind_host    = '0.0.0.0',
+  $admin_bind_host     = '0.0.0.0',
+  $public_port         = '5000',
+  $admin_port          = '35357',
+  $compute_port        = '8774',
+  $verbose             = false,
+  $debug               = false,
+  $log_dir             = '/var/log/keystone',
+  $log_file            = false,
+  $use_syslog          = false,
+  $log_facility        = 'LOG_USER',
+  $catalog_type        = 'sql',
+  $token_format        = false,
+  $token_provider      = 'keystone.token.providers.pki.Provider',
+  $token_driver        = 'keystone.token.backends.sql.Token',
+  $token_expiration    = 86400,
+  $public_endpoint     = false,
+  $admin_endpoint      = false,
+  $enable_ssl          = false,
+  $ssl_certfile        = '/etc/keystone/ssl/certs/keystone.pem',
+  $ssl_keyfile         = '/etc/keystone/ssl/private/keystonekey.pem',
+  $ssl_ca_certs        = '/etc/keystone/ssl/certs/ca.pem',
+  $ssl_ca_key          = '/etc/keystone/ssl/private/cakey.pem',
+  $ssl_cert_subject    = '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
+  $cache_dir           = '/var/cache/keystone',
+  $memcache_servers    = false,
+  $enabled             = true,
+  $sql_connection      = 'sqlite:////var/lib/keystone/keystone.db',
+  $idle_timeout        = '200',
+  $enable_pki_setup    = true,
+  $mysql_module        = '0.9',
+  $rabbit_host         = 'localhost',
+  $rabbit_hosts        = false,
+  $rabbit_password     = 'guest',
+  $rabbit_port         = '5672',
+  $rabbit_userid       = 'guest',
+  $rabbit_virtual_host = '/',
+  $notification_driver = false,
+  $notification_topics = false,
+  $control_exchange    = false
 ) {
 
   validate_re($catalog_type,   'template|sql')
@@ -341,6 +359,38 @@ class keystone(
     keystone_config { 'token/provider': value => 'keystone.token.providers.uuid.Provider' }
   } else {
     keystone_config { 'token/provider': value => $token_provider }
+  }
+
+  if $notification_driver {
+    keystone_config { 'DEFAULT/notification_driver': value => $notification_driver }
+  } else {
+    keystone_config { 'DEFAULT/notification_driver': ensure => absent }
+  }
+  if $notification_topics {
+    keystone_config { 'DEFAULT/notification_topics': value => $notification_topics }
+  } else {
+    keystone_config { 'DEFAULT/notification_topics': ensure => absent }
+  }
+  if $control_exchange {
+    keystone_config { 'DEFAULT/control_exchange': value => $control_exchange }
+  } else {
+    keystone_config { 'DEFAULT/control_exchange': ensure => absent }
+  }
+
+  keystone_config {
+    'DEFAULT/rabbit_password':     value => $rabbit_password;
+    'DEFAULT/rabbit_userid':       value => $rabbit_userid;
+    'DEFAULT/rabbit_virtual_host': value => $rabbit_virtual_host;
+  }
+
+  if $rabbit_hosts {
+    keystone_config { 'DEFAULT/rabbit_hosts':     value => join($rabbit_hosts, ',') }
+    keystone_config { 'DEFAULT/rabbit_ha_queues': value => true }
+  } else {
+    keystone_config { 'DEFAULT/rabbit_host':      value => $rabbit_host }
+    keystone_config { 'DEFAULT/rabbit_port':      value => $rabbit_port }
+    keystone_config { 'DEFAULT/rabbit_hosts':     value => "${rabbit_host}:${rabbit_port}" }
+    keystone_config { 'DEFAULT/rabbit_ha_queues': value => false }
   }
 
   if $enabled {
