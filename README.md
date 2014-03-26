@@ -161,6 +161,16 @@ Contributors
 Release Notes
 -------------
 
+**3.1.0**
+
+* Added ability to disable pki_setup.
+* Load tenant un-lazily if needed.
+* Add log_dir param, with option to disable.
+* Updated endpoint argument.
+* Added support to enable SSL.
+* Removes setting of Keystone endpoint by default.
+* Relaxed regex when keystone refuses connections.
+
 **3.0.0**
 
 * Major release for OpenStack Havana.
