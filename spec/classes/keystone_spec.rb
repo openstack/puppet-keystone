@@ -461,4 +461,36 @@ describe 'keystone' do
     it { should contain_keystone_config('DEFAULT/control_exchange').with_value('keystone') }
   end
 
+  describe 'setting sql (default) catalog' do
+    let :params do
+      default_params
+    end
+
+    it { should contain_keystone_config('catalog/driver').with_value('keystone.catalog.backends.sql.Catalog') }
+  end
+
+  describe 'setting default template catalog' do
+    let :params do
+      {
+        :admin_token    => 'service_token',
+        :catalog_type   => 'template'
+      }
+    end
+
+    it { should contain_keystone_config('catalog/driver').with_value('keystone.catalog.backends.templated.TemplatedCatalog') }
+    it { should contain_keystone_config('catalog/template_file').with_value('/etc/keystone/default_catalog.templates') }
+  end
+
+  describe 'setting another template catalog' do
+    let :params do
+      {
+        :admin_token            => 'service_token',
+        :catalog_type           => 'template',
+        :catalog_template_file  => '/some/template_file'
+      }
+    end
+
+    it { should contain_keystone_config('catalog/driver').with_value('keystone.catalog.backends.templated.TemplatedCatalog') }
+    it { should contain_keystone_config('catalog/template_file').with_value('/some/template_file') }
+  end
 end
