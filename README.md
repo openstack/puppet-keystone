@@ -161,6 +161,10 @@ Contributors
 Release Notes
 -------------
 
+**3.1.1**
+
+* Fixed inconsistent variable for mysql allowed hosts.
+
 **3.1.0**
 
 * Added ability to disable pki_setup.
