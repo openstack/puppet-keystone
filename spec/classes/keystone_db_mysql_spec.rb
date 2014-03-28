@@ -3,7 +3,10 @@ require 'spec_helper'
 describe 'keystone::db::mysql' do
 
   let :pre_condition do
-    'include mysql::server'
+    [
+      'include mysql::server',
+      'include keystone::db::sync'
+    ]
   end
 
   let :facts do

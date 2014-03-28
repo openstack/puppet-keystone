@@ -86,7 +86,7 @@ class keystone::db::mysql(
       mysql_module  => $mysql_module,
     }
 
-    Keystone::Db::Mysql::Host_access[$allowed_hosts] -> Exec<| title == 'keystone-manage db_sync' |>
+    Keystone::Db::Mysql::Host_access[$real_allowed_hosts] -> Exec<| title == 'keystone-manage db_sync' |>
 
   }
 
