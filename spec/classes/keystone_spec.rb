@@ -261,7 +261,7 @@ describe 'keystone' do
       }
     end
 
-    it { should contain_keystone_config("token/expiration").with_value('86400') }
+    it { should contain_keystone_config("token/expiration").with_value('3600') }
   end
 
   describe 'configure memcache servers if set' do
