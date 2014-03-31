@@ -28,7 +28,7 @@
 #   [token_driver] Driver to use for managing tokens.
 #     Optional.  Defaults to 'keystone.token.backends.sql.Token'
 #   [token_expiration] Amount of time a token should remain valid (seconds).
-#     Optional.  Defaults to 86400 (24 hours).
+#     Optional.  Defaults to 3600 (1 hour).
 #   [token_format] Deprecated: Use token_provider instead.
 #   [cache_dir] Directory created when token_provider is pki. Optional.
 #     Defaults to /var/cache/keystone.
@@ -151,7 +151,7 @@ class keystone(
   $token_format        = false,
   $token_provider      = 'keystone.token.providers.pki.Provider',
   $token_driver        = 'keystone.token.backends.sql.Token',
-  $token_expiration    = 86400,
+  $token_expiration    = 3600,
   $public_endpoint     = false,
   $admin_endpoint      = false,
   $enable_ssl          = false,
