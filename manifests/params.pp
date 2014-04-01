@@ -9,6 +9,9 @@ class keystone::params {
       $package_name              = 'keystone'
       $service_name              = 'keystone'
       $keystone_wsgi_script_path = '/usr/lib/cgi-bin/keystone'
+
+      # Apache Logroot stolen from apache::params
+      $apache_logroot            = '/var/log/apache2'
       case $::operatingsystem {
         'Debian': {
           $service_provider            = undef
@@ -26,6 +29,9 @@ class keystone::params {
       $keystone_wsgi_script_path   = '/var/www/cgi-bin/keystone'
       $service_provider            = undef
       $keystone_wsgi_script_source = 'puppet:///modules/keystone/httpd/keystone.py'
+
+      # Apache Logroot stolen from apache::params
+      $apache_logroot              = '/var/log/httpd'
     }
   }
 }

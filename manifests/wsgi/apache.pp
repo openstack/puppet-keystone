@@ -55,6 +55,10 @@
 #     apache::vhost ssl parameters.
 #     Optional. Default to apache::vhost 'ssl_*' defaults.
 #
+#   [apache_logroot]
+#     apache::logroot parameter
+#     Optional, Defaults copied from apache::params
+#
 # == Dependencies
 #
 #   requires Class['apache'] & Class['keystone']
@@ -79,21 +83,22 @@
 #   Copyright 2013 eNovance <licensing@enovance.com>
 #
 class keystone::wsgi::apache (
-  $servername    = $::fqdn,
-  $public_port   = 5000,
-  $admin_port    = 35357,
-  $bind_host     = undef,
-  $public_path   = '/',
-  $admin_path    = '/',
-  $ssl           = true,
-  $workers       = 1,
-  $ssl_cert      = undef,
-  $ssl_key       = undef,
-  $ssl_chain     = undef,
-  $ssl_ca        = undef,
-  $ssl_crl_path  = undef,
-  $ssl_crl       = undef,
-  $ssl_certs_dir = undef
+  $servername     = $::fqdn,
+  $public_port    = 5000,
+  $admin_port     = 35357,
+  $bind_host      = undef,
+  $public_path    = '/',
+  $admin_path     = '/',
+  $ssl            = true,
+  $workers        = 1,
+  $ssl_cert       = undef,
+  $ssl_key        = undef,
+  $ssl_chain      = undef,
+  $ssl_ca         = undef,
+  $ssl_crl_path   = undef,
+  $ssl_crl        = undef,
+  $ssl_certs_dir  = undef,
+  $apache_logroot = $::keystone::params::apache_logroot,
 ) {
 
   include keystone::params
@@ -121,12 +126,12 @@ class keystone::wsgi::apache (
       }
 
       # Redhat variants set ownership of WSGISocketPrefix to something that the 
-      # 'apache' user can not read, else error below is seen:  
+      # 'apache' user can not read and the error below is seen:  
       # (13)Permission denied: mod_wsgi (pid=30881): Unable to connect to WSGI
       #      daemon process 'keystone' on '/etc/httpd/logs/wsgi.30877.0.1.sock'
       #
-      # /etc/httpd/logs is symlinked to /var/log/httpd
-      file { '/var/log/httpd':
+      # By default /etc/httpd/logs is symlinked to /var/log/httpd
+      file { $apache_logroot:
          ensure   => directory,
          owner    => 'apache',
          mode     => '0700',
