@@ -112,6 +112,28 @@ class keystone::wsgi::apache (
   Service['httpd'] -> Keystone_user <| |>
   Service['httpd'] -> Keystone_user_role <| |>
 
+  # Operating System specific resources
+  case $::osfamily {
+    'RedHat': {
+      # paste deploy is not a dependancy of other installed python packages
+      package { 'python-paste-deploy':
+        ensure          => present,
+      }
+
+      # Redhat variants set ownership of WSGISocketPrefix to something that the 
+      # 'apache' user can not read, else error below is seen:  
+      # (13)Permission denied: mod_wsgi (pid=30881): Unable to connect to WSGI
+      #      daemon process 'keystone' on '/etc/httpd/logs/wsgi.30877.0.1.sock'
+      #
+      # /etc/httpd/logs is symlinked to /var/log/httpd
+      file { '/var/log/httpd':
+         ensure   => directory,
+         owner    => 'apache',
+         mode     => '0700',
+      }
+    }
+  }
+
   ## Sanitize parameters
 
   # Ensure there's no trailing '/' except if this is also the only character
