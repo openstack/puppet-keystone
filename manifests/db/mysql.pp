@@ -40,8 +40,8 @@ class keystone::db::mysql(
   $dbname        = 'keystone',
   $user          = 'keystone',
   $host          = '127.0.0.1',
-  $charset       = 'latin1',
-  $collate       = 'latin1_swedish_ci',
+  $charset       = 'utf8',
+  $collate       = 'utf8_unicode_ci',
   $mysql_module  = '0.9',
   $allowed_hosts = undef
 ) {
