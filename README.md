@@ -90,7 +90,7 @@ These two will seldom be used outside openstack related classes, like nova or ci
 
 ```puppet
 # Setup the nova keystone service
-keystone_service { 'nova'
+keystone_service { 'nova':
   ensure      => present,
   type        => 'compute',
   description => 'Openstack Compute Service',
