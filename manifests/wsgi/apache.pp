@@ -79,21 +79,21 @@
 #   Copyright 2013 eNovance <licensing@enovance.com>
 #
 class keystone::wsgi::apache (
-  $servername    = $::fqdn,
-  $public_port   = 5000,
-  $admin_port    = 35357,
-  $bind_host     = undef,
-  $public_path   = '/',
-  $admin_path    = '/',
-  $ssl           = true,
-  $workers       = 1,
-  $ssl_cert      = undef,
-  $ssl_key       = undef,
-  $ssl_chain     = undef,
-  $ssl_ca        = undef,
-  $ssl_crl_path  = undef,
-  $ssl_crl       = undef,
-  $ssl_certs_dir = undef
+  $servername     = $::fqdn,
+  $public_port    = 5000,
+  $admin_port     = 35357,
+  $bind_host      = undef,
+  $public_path    = '/',
+  $admin_path     = '/',
+  $ssl            = true,
+  $workers        = 1,
+  $ssl_cert       = undef,
+  $ssl_key        = undef,
+  $ssl_chain      = undef,
+  $ssl_ca         = undef,
+  $ssl_crl_path   = undef,
+  $ssl_crl        = undef,
+  $ssl_certs_dir  = undef,
 ) {
 
   include keystone::params
@@ -111,6 +111,12 @@ class keystone::wsgi::apache (
   Service['httpd'] -> Keystone_tenant <| |>
   Service['httpd'] -> Keystone_user <| |>
   Service['httpd'] -> Keystone_user_role <| |>
+
+  # Ensure that python paste deploy is installed
+  package { 'python-paste-deploy':
+    ensure => present,
+    name   => $::keystone::params::python_paste_deploy_package
+  }
 
   ## Sanitize parameters
 
