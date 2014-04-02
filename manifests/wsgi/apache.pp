@@ -55,10 +55,6 @@
 #     apache::vhost ssl parameters.
 #     Optional. Default to apache::vhost 'ssl_*' defaults.
 #
-#   [apache_logroot]
-#     apache::logroot parameter
-#     Optional, Defaults copied from apache::params
-#
 # == Dependencies
 #
 #   requires Class['apache'] & Class['keystone']
