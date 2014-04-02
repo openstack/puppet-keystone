@@ -98,7 +98,6 @@ class keystone::wsgi::apache (
   $ssl_crl_path   = undef,
   $ssl_crl        = undef,
   $ssl_certs_dir  = undef,
-  $apache_logroot = $::keystone::params::apache_logroot,
 ) {
 
   include keystone::params
@@ -117,26 +116,10 @@ class keystone::wsgi::apache (
   Service['httpd'] -> Keystone_user <| |>
   Service['httpd'] -> Keystone_user_role <| |>
 
-  # Operating System specific resources
-  case $::osfamily {
-    'RedHat': {
-      # paste deploy is not a dependancy of other installed python packages
-      package { 'python-paste-deploy':
-        ensure          => present,
-      }
-
-      # Redhat variants set ownership of WSGISocketPrefix to something that the 
-      # 'apache' user can not read and the error below is seen:  
-      # (13)Permission denied: mod_wsgi (pid=30881): Unable to connect to WSGI
-      #      daemon process 'keystone' on '/etc/httpd/logs/wsgi.30877.0.1.sock'
-      #
-      # By default /etc/httpd/logs is symlinked to /var/log/httpd
-      file { $apache_logroot:
-         ensure   => directory,
-         owner    => 'apache',
-         mode     => '0700',
-      }
-    }
+  # Ensure that python paste deploy is installed
+  package { 'python-paste-deploy':
+    ensure => present,
+    name   => $::keystone::params::python_paste_deploy_package
   }
 
   ## Sanitize parameters
