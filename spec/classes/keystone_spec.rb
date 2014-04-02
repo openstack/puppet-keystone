@@ -18,6 +18,7 @@ describe 'keystone' do
       'verbose'          => false,
       'debug'            => false,
       'catalog_type'     => 'sql',
+      'catalog_driver'   => false,
       'token_provider'   => 'keystone.token.providers.pki.Provider',
       'token_driver'     => 'keystone.token.backends.sql.Token',
       'cache_dir'        => '/var/cache/keystone',
@@ -206,6 +207,24 @@ describe 'keystone' do
         end
         it { should_not contain_exec('keystone-manage pki_setup') }
       end
+    end
+
+    describe 'with invalid catalog_type' do
+      let :params do
+        { :admin_token  => 'service_token',
+          :catalog_type => 'invalid' }
+      end
+
+      it_raises "a Puppet::Error", /validate_re\(\): "invalid" does not match "template|sql"/
+    end
+
+    describe 'when configuring catalog driver' do
+      let :params do
+        { :admin_token    => 'service_token',
+          :catalog_driver => 'keystone.catalog.backends.alien.AlienCatalog' }
+      end
+
+      it { should contain_keystone_config('catalog/driver').with_value(params[:catalog_driver]) }
     end
 
     describe 'when configuring deprecated token_format as UUID' do

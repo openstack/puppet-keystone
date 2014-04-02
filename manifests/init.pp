@@ -22,6 +22,8 @@
 #   [log_facility] Syslog facility to receive log lines. Optional.
 #   [catalog_type] Type of catalog that keystone uses to store endpoints,services. Optional.
 #     Defaults to sql. (Also accepts template)
+#   [catalog_driver] Catalog driver used by Keystone to store endpoints and services. Optional.
+#     Setting this value will override and ignore catalog_type.
 #   [token_provider] Format keystone uses for tokens. Optional.
 #     Defaults to 'keystone.token.providers.pki.Provider'
 #     Supports PKI and UUID.
@@ -148,6 +150,7 @@ class keystone(
   $use_syslog          = false,
   $log_facility        = 'LOG_USER',
   $catalog_type        = 'sql',
+  $catalog_driver      = false,
   $token_format        = false,
   $token_provider      = 'keystone.token.providers.pki.Provider',
   $token_driver        = 'keystone.token.backends.sql.Token',
@@ -178,7 +181,9 @@ class keystone(
   $control_exchange    = false
 ) {
 
-  validate_re($catalog_type,   'template|sql')
+  if ! $catalog_driver {
+    validate_re($catalog_type, 'template|sql')
+  }
 
   File['/etc/keystone/keystone.conf'] -> Keystone_config<||> ~> Service['keystone']
   Keystone_config<||> ~> Exec<| title == 'keystone-manage db_sync'|>
@@ -318,18 +323,20 @@ class keystone(
   }
 
   # configure based on the catalog backend
-  if($catalog_type == 'template') {
-    keystone_config {
-      'catalog/driver':
-        value => 'keystone.catalog.backends.templated.TemplatedCatalog';
-      'catalog/template_file':
-        value => '/etc/keystone/default_catalog.templates';
-    }
-  } elsif($catalog_type == 'sql' ) {
-    keystone_config { 'catalog/driver':
-      value => ' keystone.catalog.backends.sql.Catalog'
+  if $catalog_driver {
+    $catalog_driver_real = $catalog_driver
+  }
+  elsif ($catalog_type == 'template') {
+    $catalog_driver_real = 'keystone.catalog.backends.templated.TemplatedCatalog'
+    keystone_config { 'catalog/template_file':
+      value => '/etc/keystone/default_catalog.templates'
     }
   }
+  elsif ($catalog_type == 'sql') {
+    $catalog_driver_real = 'keystone.catalog.backends.sql.Catalog'
+  }
+
+  keystone_config { 'catalog/driver': value => $catalog_driver_real }
 
   if $token_format {
     warning('token_format parameter is deprecated. Use token_provider instead.')
