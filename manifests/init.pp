@@ -67,7 +67,7 @@
 #   If set to boolean false, it will not log to any directory
 #   Defaults to '/var/log/keystone'
 #
-# [*log_file*]
+#   [*log_file*]
 #   (optional) Where to log
 #   Defaults to false
 #
@@ -133,6 +133,13 @@
 #   using the specified argument with the --os-cacert option
 #   with keystone client.
 #   Defaults to undef
+#
+#   [*service_provider*]
+#   (optional) Provider, that can be used for keystone service.
+#   Default value defined in keystone::params for given operation system.
+#   If you use Pacemaker or another Cluster Resource Manager, you can make
+#   custom service provider for changing start/stop/status behavior of service,
+#   and set it here.
 #
 # == Dependencies
 #  None
@@ -201,6 +208,7 @@ class keystone(
   $validate_service      = false,
   $validate_insecure     = false,
   $validate_cacert       = undef,
+  $service_provider      = $::keystone::params::service_provider
 ) {
 
   if ! $catalog_driver {
@@ -435,7 +443,7 @@ class keystone(
       enable         => $enabled,
       hasstatus      => true,
       hasrestart     => true,
-      provider       => $::keystone::params::service_provider,
+      provider       => $service_provider,
       validate       => true,
       admin_endpoint => $admin_endpoint,
       admin_token    => $admin_token,
@@ -449,7 +457,7 @@ class keystone(
       enable       => $enabled,
       hasstatus    => true,
       hasrestart   => true,
-      provider     => $::keystone::params::service_provider,
+      provider     => $service_provider,
       validate     => false,
     }
   }

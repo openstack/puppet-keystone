@@ -493,4 +493,33 @@ describe 'keystone' do
     it { should contain_keystone_config('catalog/driver').with_value('keystone.catalog.backends.templated.Catalog') }
     it { should contain_keystone_config('catalog/template_file').with_value('/some/template_file') }
   end
+
+  describe 'setting service_provider' do
+    let :facts do
+      {:osfamily => 'RedHat'}
+    end
+
+    describe 'with default service_provider' do
+      let :params do
+        { 'admin_token'    => 'service_token' }
+      end
+
+      it { should contain_service('keystone').with(
+        :provider => nil
+      )}
+    end
+
+    describe 'with overrided service_provider' do
+      let :params do
+        {
+          'admin_token'      => 'service_token',
+          'service_provider' => 'pacemaker'
+        }
+      end
+
+      it { should contain_service('keystone').with(
+        :provider => 'pacemaker'
+      )}
+    end
+  end
 end
