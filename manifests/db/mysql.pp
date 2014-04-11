@@ -60,7 +60,7 @@ class keystone::db::mysql(
       require  => Service['mysql'],
     }
   } else {
-    require mysql::python
+    require mysql::bindings::python
 
     mysql::db { $dbname:
       user     => $user,

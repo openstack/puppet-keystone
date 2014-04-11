@@ -35,7 +35,7 @@ class keystone::db::postgresql(
 
   Class['keystone::db::postgresql'] -> Service<| title == 'keystone' |>
 
-  require postgresql::python
+  require postgresql::lib::python
 
   postgresql::db { $dbname:
     user      => $user,
