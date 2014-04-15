@@ -161,6 +161,11 @@ Contributors
 Release Notes
 -------------
 
+**3.2.0**
+
+* Added ability to configure any catalog driver.
+* Ensures log_file is absent when using syslog.
+
 **3.1.1**
 
 * Fixed inconsistent variable for mysql allowed hosts.
