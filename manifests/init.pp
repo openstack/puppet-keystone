@@ -321,8 +321,8 @@ class keystone(
 
   # db connection config
   keystone_config {
-    'sql/connection':   value => $sql_connection, secret => true;
-    'sql/idle_timeout': value => $idle_timeout;
+    'database/connection':   value => $sql_connection, secret => true;
+    'database/idle_timeout': value => $idle_timeout;
   }
 
   # configure based on the catalog backend

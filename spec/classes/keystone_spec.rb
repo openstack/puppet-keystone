@@ -118,7 +118,7 @@ describe 'keystone' do
           should contain_exec('keystone-manage db_sync').with(
             :user        => 'keystone',
             :refreshonly => true,
-            :subscribe   => ['Package[keystone]', 'Keystone_config[sql/connection]'],
+            :subscribe   => ['Package[keystone]', 'Keystone_config[database/connection]'],
             :require     => 'User[keystone]'
           )
         end
@@ -143,8 +143,8 @@ describe 'keystone' do
       end
 
       it 'should contain correct mysql config' do
-        should contain_keystone_config('sql/idle_timeout').with_value(param_hash['idle_timeout'])
-        should contain_keystone_config('sql/connection').with_value(param_hash['sql_connection']).with_secret(true)
+        should contain_keystone_config('database/idle_timeout').with_value(param_hash['idle_timeout'])
+        should contain_keystone_config('database/connection').with_value(param_hash['sql_connection']).with_secret(true)
       end
 
       it { should contain_keystone_config('token/provider').with_value(

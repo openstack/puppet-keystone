@@ -6,7 +6,7 @@ class keystone::db::sync {
     path        => '/usr/bin',
     user        => 'keystone',
     refreshonly => true,
-    subscribe   => [Package['keystone'], Keystone_config['sql/connection']],
+    subscribe   => [Package['keystone'], Keystone_config['database/connection']],
     require     => User['keystone'],
   }
 }
