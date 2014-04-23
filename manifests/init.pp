@@ -293,7 +293,7 @@ class keystone(
   }
 
   if($sql_connection =~ /mysql:\/\/\S+:\S+@\S+\/\S+/) {
-    if ($mysql_module >= 2.2) {
+    if versioncmp($mysql_module, '2.2') >= 0 {
       require 'mysql::bindings'
       require 'mysql::bindings::python'
     } else {

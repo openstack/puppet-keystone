@@ -50,7 +50,7 @@ class keystone::db::mysql(
   Class['keystone::db::mysql'] -> Service<| title == 'keystone' |>
   Mysql::Db[$dbname] ~> Exec<| title == 'keystone-manage db_sync' |>
 
-  if ($mysql_module >= 2.2) {
+  if versioncmp($mysql_module, '2.2') >= 0 {
     mysql::db { $dbname:
       user     => $user,
       password => $password,
