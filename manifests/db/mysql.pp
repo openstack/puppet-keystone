@@ -57,7 +57,7 @@ class keystone::db::mysql(
       host     => $host,
       charset  => $charset,
       collate  => $collate,
-      require  => Service['mysql'],
+      require  => Service['mysqld'],
     }
   } else {
     require mysql::python
