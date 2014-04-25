@@ -39,7 +39,7 @@
 #   [memcache_servers] List of memcache servers/ports. Optional. Used with
 #     token_driver keystone.token.backends.memcache.Token.  Defaults to false.
 #   [enabled] If the keystone services should be enabled. Optional. Default to true.
-#   [sql_conneciton] Url used to connect to database.
+#   [sql_connection] Url used to connect to database.
 #   [idle_timeout] Timeout when db connections should be reaped.
 #   [enable_pki_setup] Enable call to pki_setup.
 #   [rabbit_host] Location of rabbitmq installation. Optional. Defaults to localhost.
