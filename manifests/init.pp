@@ -40,6 +40,11 @@
 #   [sql_conneciton] Url used to connect to database.
 #   [idle_timeout] Timeout when db connections should be reaped.
 #   [enable_pki_setup] Enable call to pki_setup.
+#   [pki_cert] Use this cert file for signing pki tokens. Optional. Must specify with pki_key, 
+#     and disables calling pki_setup, regardless of enable_pki_setup parameter.
+#   [pki_key] Use this key file for signing pki tokens. Optional. Must specify with pki_cert,
+#     and disables calling pki_setup, regardless of enable_pki_setup parameter.
+#   [pki_cacert] Use this CA cert file along with pki_cert/pki_key for signing pki tokens. Optional
 #   [rabbit_host] Location of rabbitmq installation. Optional. Defaults to localhost.
 #   [rabbit_port] Port for rabbitmq instance. Optional. Defaults to 5672.
 #   [rabbit_hosts] Location of rabbitmq installation. Optional. Defaults to undef.
@@ -169,6 +174,9 @@ class keystone(
   $sql_connection      = 'sqlite:////var/lib/keystone/keystone.db',
   $idle_timeout        = '200',
   $enable_pki_setup    = true,
+  $pki_cert              = '',
+  $pki_key               = '',
+  $pki_cacert            = '',
   $mysql_module        = '0.9',
   $rabbit_host         = 'localhost',
   $rabbit_hosts        = false,
@@ -351,15 +359,41 @@ class keystone(
       ensure => directory,
     }
 
-    if $enable_pki_setup {
-      exec { 'keystone-manage pki_setup':
-        path        => '/usr/bin',
-        user        => 'keystone',
-        refreshonly => true,
-        creates     => '/etc/keystone/ssl/private/signing_key.pem',
-        notify      => Service['keystone'],
-        subscribe   => Package['keystone'],
-        require     => User['keystone'],
+    if ($pki_cert != '' and $pki_key == '') or ($pki_cert == '' and $pki_key != '') {
+      fail('pki_cert and pki_key parameters must be specified together.')
+    }
+
+    # Only do pki_setup if we were asked to do so AND not given external cert
+    if $pki_cert != '' and $pki_key != '' {
+      keystone_config {
+        'token/certfile': value => $pki_cert;
+        'token/keyfile':  value => $pki_key;
+      }
+
+      # Configure ca cert if we got it
+      if $pki_cacert != '' {
+        keystone_config {
+          'token/ca_certs': value => $pki_cacert;
+        }
+      }
+    } else {
+      if $enable_pki_setup {
+        exec { 'keystone-manage pki_setup':
+          path        => '/usr/bin',
+          user        => 'keystone',
+          refreshonly => true,
+          creates     => '/etc/keystone/ssl/private/signing_key.pem',
+          notify      => Service['keystone'],
+          subscribe   => Package['keystone'],
+          require     => User['keystone'],
+        }
+
+        # Use keystone defaults for token signing cert
+        keystone_config {
+          'token/certfile':   ensure => absent;
+          'token/keyfile':    ensure => absent;
+          'token/ca_certs':   ensure => absent;
+        }
       }
     }
   } elsif $token_format == 'UUID' {
