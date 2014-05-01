@@ -1,6 +1,8 @@
 keystone
 =======
 
+4.0.0 - 2014.1.0 - Icehouse
+
 #### Table of Contents
 
 1. [Overview - What is the keystone module?](#overview)
@@ -162,6 +164,29 @@ Contributors
 
 Release Notes
 -------------
+
+**4.0.0**
+
+* Stable Icehouse release.
+* Added template_file parameter to specify catalog.
+* Added keystone::config to handle additional custom options.
+* Added notification parameters.
+* Added support for puppetlabs-mysql 2.2 and greater.
+* Fixed deprecated sql section header in keystone.conf.
+* Fixed deprecated bind_host parameter.
+* Fixed example for native type keystone_service.
+* Fixed LDAP module bugs.
+* Fixed variable for host_access dependency.
+* Reduced default token duration to one hour.
+
+**3.2.0**
+
+* Added ability to configure any catalog driver.
+* Ensures log_file is absent when using syslog.
+
+**3.1.1**
+
+* Fixed inconsistent variable for mysql allowed hosts.
 
 **3.1.0**
 
