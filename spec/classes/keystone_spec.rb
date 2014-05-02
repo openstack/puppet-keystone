@@ -477,7 +477,7 @@ describe 'keystone' do
       }
     end
 
-    it { should contain_keystone_config('catalog/driver').with_value('keystone.catalog.backends.templated.TemplatedCatalog') }
+    it { should contain_keystone_config('catalog/driver').with_value('keystone.catalog.backends.templated.Catalog') }
     it { should contain_keystone_config('catalog/template_file').with_value('/etc/keystone/default_catalog.templates') }
   end
 
@@ -490,7 +490,7 @@ describe 'keystone' do
       }
     end
 
-    it { should contain_keystone_config('catalog/driver').with_value('keystone.catalog.backends.templated.TemplatedCatalog') }
+    it { should contain_keystone_config('catalog/driver').with_value('keystone.catalog.backends.templated.Catalog') }
     it { should contain_keystone_config('catalog/template_file').with_value('/some/template_file') }
   end
 end

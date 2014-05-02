@@ -330,7 +330,7 @@ class keystone(
     $catalog_driver_real = $catalog_driver
   }
   elsif ($catalog_type == 'template') {
-    $catalog_driver_real = 'keystone.catalog.backends.templated.TemplatedCatalog'
+    $catalog_driver_real = 'keystone.catalog.backends.templated.Catalog'
   }
   elsif ($catalog_type == 'sql') {
     $catalog_driver_real = 'keystone.catalog.backends.sql.Catalog'
