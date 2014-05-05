@@ -1,5 +1,5 @@
 name    'puppetlabs-keystone'
-version '4.0.0-devel'
+version '4.0.0'
 source  'https://github.com/stackforge/puppet-keystone'
 author  'Puppet Labs'
 license 'Apache License 2.0'
@@ -9,5 +9,5 @@ project_page 'https://launchpad.net/puppet-keystone'
 
 dependency 'puppetlabs/apache', '>=1.0.0 <2.0.0'
 dependency 'puppetlabs/inifile', '>=1.0.0 <2.0.0'
-dependency 'puppetlabs/mysql', '>=0.9.0 <1.0.0'
+dependency 'puppetlabs/mysql', '>=0.9.0 <3.0.0'
 dependency 'puppetlabs/stdlib', '>= 3.2.0'
