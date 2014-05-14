@@ -53,7 +53,7 @@ Puppet::Type.newtype(:keystone_user) do
   end
 
   newproperty(:email) do
-    newvalues(/\S+@\S+/)
+    newvalues(/^(\S+@\S+)|$/)
   end
 
   newproperty(:id) do
