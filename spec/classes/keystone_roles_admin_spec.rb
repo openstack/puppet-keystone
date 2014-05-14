@@ -22,11 +22,12 @@ describe 'keystone::roles::admin' do
       :description => 'admin tenant'
     )}
     it { should contain_keystone_user('admin').with(
-      :ensure      => 'present',
-      :enabled     => true,
-      :tenant      => 'openstack',
-      :email       => 'foo@bar',
-      :password    => 'ChangeMe'
+      :ensure                 => 'present',
+      :enabled                => true,
+      :tenant                 => 'openstack',
+      :email                  => 'foo@bar',
+      :password               => 'ChangeMe',
+      :ignore_default_tenant  => 'false'
     )}
     ['admin', '_member_'].each do |role_name|
       it { should contain_keystone_role(role_name).with_ensure('present') }
@@ -42,11 +43,12 @@ describe 'keystone::roles::admin' do
 
     let :params do
       {
-        :admin          => 'admin',
-        :email          => 'foo@baz',
-        :password       => 'foo',
-        :admin_tenant   => 'admin',
-        :service_tenant => 'foobar'
+        :admin                  => 'admin',
+        :email                  => 'foo@baz',
+        :password               => 'foo',
+        :admin_tenant           => 'admin',
+        :service_tenant         => 'foobar',
+        :ignore_default_tenant  => 'true'
       }
     end
 
@@ -61,11 +63,12 @@ describe 'keystone::roles::admin' do
       :description => 'admin tenant'
     )}
     it { should contain_keystone_user('admin').with(
-      :ensure      => 'present',
-      :enabled     => true,
-      :tenant      => 'admin',
-      :email       => 'foo@baz',
-      :password    => 'foo'
+      :ensure                 => 'present',
+      :enabled                => true,
+      :tenant                 => 'admin',
+      :email                  => 'foo@baz',
+      :password               => 'foo',
+      :ignore_default_tenant  => 'true'
     )}
     it { should contain_keystone_user_role('admin@admin').with(
       :roles  => 'admin',
