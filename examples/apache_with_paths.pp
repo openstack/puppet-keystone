@@ -32,6 +32,7 @@ class { 'keystone':
   admin_token    => 'admin_token',
   enabled        => true,
 }
+class { 'keystone::cron::token_flush': }
 class { 'keystone::roles::admin':
   email    => 'test@puppetlabs.com',
   password => 'ChangeMe',
