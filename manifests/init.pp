@@ -259,7 +259,7 @@ class keystone(
 
   # default config
   keystone_config {
-    'DEFAULT/admin_token':      value => $admin_token ,secret => true;
+    'DEFAULT/admin_token':      value => $admin_token, secret => true;
     'DEFAULT/public_bind_host': value => $public_bind_host_real;
     'DEFAULT/admin_bind_host':  value => $admin_bind_host_real;
     'DEFAULT/public_port':      value => $public_port;
