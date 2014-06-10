@@ -447,6 +447,46 @@ describe 'keystone' do
     it { should contain_keystone_config('DEFAULT/control_exchange').with_vaule(nil) }
   end
 
+  describe 'with RabbitMQ communication SSLed' do
+    let :params do
+      default_params.merge!({
+        :rabbit_use_ssl     => true,
+        :kombu_ssl_ca_certs => '/path/to/ssl/ca/certs',
+        :kombu_ssl_certfile => '/path/to/ssl/cert/file',
+        :kombu_ssl_keyfile  => '/path/to/ssl/keyfile',
+        :kombu_ssl_version  => 'SSLv3'
+      })
+    end
+
+    it do
+      should contain_keystone_config('DEFAULT/rabbit_use_ssl').with_value('true')
+      should contain_keystone_config('DEFAULT/kombu_ssl_ca_certs').with_value('/path/to/ssl/ca/certs')
+      should contain_keystone_config('DEFAULT/kombu_ssl_certfile').with_value('/path/to/ssl/cert/file')
+      should contain_keystone_config('DEFAULT/kombu_ssl_keyfile').with_value('/path/to/ssl/keyfile')
+      should contain_keystone_config('DEFAULT/kombu_ssl_version').with_value('SSLv3')
+    end
+  end
+
+  describe 'with RabbitMQ communication not SSLed' do
+    let :params do
+      default_params.merge!({
+        :rabbit_use_ssl     => false,
+        :kombu_ssl_ca_certs => 'undef',
+        :kombu_ssl_certfile => 'undef',
+        :kombu_ssl_keyfile  => 'undef',
+        :kombu_ssl_version  => 'SSLv3'
+      })
+    end
+
+    it do
+      should contain_keystone_config('DEFAULT/rabbit_use_ssl').with_value('false')
+      should contain_keystone_config('DEFAULT/kombu_ssl_ca_certs').with_ensure('absent')
+      should contain_keystone_config('DEFAULT/kombu_ssl_certfile').with_ensure('absent')
+      should contain_keystone_config('DEFAULT/kombu_ssl_keyfile').with_ensure('absent')
+      should contain_keystone_config('DEFAULT/kombu_ssl_version').with_ensure('absent')
+    end
+  end
+
   describe 'setting notification settings' do
     let :params do
       default_params.merge({

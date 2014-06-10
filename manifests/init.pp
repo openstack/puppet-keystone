@@ -48,6 +48,29 @@
 #   [rabbit_password] Password used to connect to rabbitmq. Optional. Defaults to guest.
 #   [rabbit_userid] User used to connect to rabbitmq. Optional. Defaults to guest.
 #   [rabbit_virtual_host] The RabbitMQ virtual host. Optional. Defaults to /.
+#
+#   [*rabbit_use_ssl*]
+#     (optional) Connect over SSL for RabbitMQ
+#     Defaults to false
+#
+#   [*kombu_ssl_ca_certs*]
+#     (optional) SSL certification authority file (valid only if SSL enabled).
+#     Defaults to undef
+#
+#   [*kombu_ssl_certfile*]
+#     (optional) SSL cert file (valid only if SSL enabled).
+#     Defaults to undef
+#
+#   [*kombu_ssl_keyfile*]
+#     (optional) SSL key file (valid only if SSL enabled).
+#     Defaults to undef
+#
+#   [*kombu_ssl_version*]
+#     (optional) SSL version to use (valid only if SSL enabled).
+#     Valid values are TLSv1, SSLv23 and SSLv3. SSLv2 may be
+#     available on some distributions.
+#     Defaults to 'SSLv3'
+#
 #   [notification_driver] RPC driver. Not enabled by default
 #   [notification_topics] AMQP topics to publish to when using the RPC notification driver.
 #   [control_exchange] AMQP exchange to connect to if using RabbitMQ or Qpid
@@ -202,6 +225,11 @@ class keystone(
   $rabbit_port           = '5672',
   $rabbit_userid         = 'guest',
   $rabbit_virtual_host   = '/',
+  $rabbit_use_ssl        = false,
+  $kombu_ssl_ca_certs    = undef,
+  $kombu_ssl_certfile    = undef,
+  $kombu_ssl_keyfile     = undef,
+  $kombu_ssl_version     = 'SSLv3',
   $notification_driver   = false,
   $notification_topics   = false,
   $control_exchange      = false,
@@ -220,6 +248,18 @@ class keystone(
   Keystone_config<||> ~> Exec<| title == 'keystone-manage pki_setup'|>
 
   include keystone::params
+
+  if $rabbit_use_ssl {
+    if !$kombu_ssl_ca_certs {
+      fail('The kombu_ssl_ca_certs parameter is required when rabbit_use_ssl is set to true')
+    }
+    if !$kombu_ssl_certfile {
+      fail('The kombu_ssl_certfile parameter is required when rabbit_use_ssl is set to true')
+    }
+    if !$kombu_ssl_keyfile {
+      fail('The kombu_ssl_keyfile parameter is required when rabbit_use_ssl is set to true')
+    }
+  }
 
   File {
     ensure  => present,
@@ -428,6 +468,23 @@ class keystone(
     keystone_config { 'DEFAULT/rabbit_port':      value => $rabbit_port }
     keystone_config { 'DEFAULT/rabbit_hosts':     value => "${rabbit_host}:${rabbit_port}" }
     keystone_config { 'DEFAULT/rabbit_ha_queues': value => false }
+  }
+
+  keystone_config { 'DEFAULT/rabbit_use_ssl': value => $rabbit_use_ssl }
+  if $rabbit_use_ssl {
+    keystone_config {
+      'DEFAULT/kombu_ssl_ca_certs': value => $kombu_ssl_ca_certs;
+      'DEFAULT/kombu_ssl_certfile': value => $kombu_ssl_certfile;
+      'DEFAULT/kombu_ssl_keyfile':  value => $kombu_ssl_keyfile;
+      'DEFAULT/kombu_ssl_version':  value => $kombu_ssl_version;
+    }
+  } else {
+    keystone_config {
+      'DEFAULT/kombu_ssl_ca_certs': ensure => absent;
+      'DEFAULT/kombu_ssl_certfile': ensure => absent;
+      'DEFAULT/kombu_ssl_keyfile':  ensure => absent;
+      'DEFAULT/kombu_ssl_version':  ensure => absent;
+    }
   }
 
   if $enabled {
