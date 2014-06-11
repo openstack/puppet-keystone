@@ -167,6 +167,10 @@ describe 'keystone' do
           should contain_keystone_config('DEFAULT/public_endpoint').with_ensure('absent')
         end
       end
+
+      it 'should contain correct rabbit_password' do
+        should contain_keystone_config('DEFAULT/rabbit_password').with_value(param_hash['rabbit_password']).with_secret(true)
+      end
     end
   end
 
