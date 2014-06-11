@@ -455,7 +455,7 @@ class keystone(
   }
 
   keystone_config {
-    'DEFAULT/rabbit_password':     value => $rabbit_password;
+    'DEFAULT/rabbit_password':     value => $rabbit_password, secret => true;
     'DEFAULT/rabbit_userid':       value => $rabbit_userid;
     'DEFAULT/rabbit_virtual_host': value => $rabbit_virtual_host;
   }
