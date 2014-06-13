@@ -39,6 +39,15 @@ describe provider_class do
       provider.expects(:auth_keystone).with('user-password-update', '--pass', 'newpassword', 'id')
       provider.password=('newpassword')
     end
+
+    it 'should call user-update to change email' do
+      provider.expects(:auth_keystone).with('user-update', '--email', 'bar@bar.com', 'id')
+      provider.email=('bar@bar.com')
+    end
+
+    it 'should call user-update to set email to blank' do
+      provider.expects(:auth_keystone).with('user-update', '--email', '', 'id')
+      provider.email=('')
+    end
   end
 end
-
