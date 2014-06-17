@@ -8,64 +8,64 @@ describe 'keystone' do
 
   let :default_params do
     {
-      'package_ensure'   => 'present',
-      'public_bind_host' => '0.0.0.0',
-      'admin_bind_host'  => '0.0.0.0',
-      'public_port'      => '5000',
-      'admin_port'       => '35357',
-      'admin_token'      => 'service_token',
-      'compute_port'     => '8774',
-      'verbose'          => false,
-      'debug'            => false,
-      'catalog_type'     => 'sql',
-      'catalog_driver'   => false,
-      'token_provider'   => 'keystone.token.providers.pki.Provider',
-      'token_driver'     => 'keystone.token.backends.sql.Token',
-      'cache_dir'        => '/var/cache/keystone',
-      'enable_ssl'       => false,
-      'ssl_certfile'     => '/etc/keystone/ssl/certs/keystone.pem',
-      'ssl_keyfile'      => '/etc/keystone/ssl/private/keystonekey.pem',
-      'ssl_ca_certs'     => '/etc/keystone/ssl/certs/ca.pem',
-      'ssl_ca_key'       => '/etc/keystone/ssl/private/cakey.pem',
-      'ssl_cert_subject' => '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
-      'enabled'          => true,
-      'sql_connection'   => 'sqlite:////var/lib/keystone/keystone.db',
-      'idle_timeout'     => '200',
-      'mysql_module'     => '0.9',
-      'rabbit_host'      => 'localhost',
-      'rabbit_password'  => 'guest',
-      'rabbit_userid'    => 'guest',
+      'package_ensure'        => 'present',
+      'public_bind_host'      => '0.0.0.0',
+      'admin_bind_host'       => '0.0.0.0',
+      'public_port'           => '5000',
+      'admin_port'            => '35357',
+      'admin_token'           => 'service_token',
+      'compute_port'          => '8774',
+      'verbose'               => false,
+      'debug'                 => false,
+      'catalog_type'          => 'sql',
+      'catalog_driver'        => false,
+      'token_provider'        => 'keystone.token.providers.pki.Provider',
+      'token_driver'          => 'keystone.token.backends.sql.Token',
+      'cache_dir'             => '/var/cache/keystone',
+      'enable_ssl'            => false,
+      'ssl_certfile'          => '/etc/keystone/ssl/certs/keystone.pem',
+      'ssl_keyfile'           => '/etc/keystone/ssl/private/keystonekey.pem',
+      'ssl_ca_certs'          => '/etc/keystone/ssl/certs/ca.pem',
+      'ssl_ca_key'            => '/etc/keystone/ssl/private/cakey.pem',
+      'ssl_cert_subject'      => '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
+      'enabled'               => true,
+      'database_connection'   => 'sqlite:////var/lib/keystone/keystone.db',
+      'database_idle_timeout' => '200',
+      'mysql_module'          => '0.9',
+      'rabbit_host'           => 'localhost',
+      'rabbit_password'       => 'guest',
+      'rabbit_userid'         => 'guest',
     }
   end
 
   [{'admin_token'     => 'service_token'},
    {
-      'package_ensure'   => 'latest',
-      'public_bind_host' => '0.0.0.0',
-      'admin_bind_host'  => '0.0.0.0',
-      'public_port'      => '5001',
-      'admin_port'       => '35358',
-      'admin_token'      => 'service_token_override',
-      'compute_port'     => '8778',
-      'verbose'          => true,
-      'debug'            => true,
-      'catalog_type'     => 'template',
-      'token_provider'   => 'keystone.token.providers.uuid.Provider',
-      'token_driver'     => 'keystone.token.backends.kvs.Token',
-      'public_endpoint'  => 'https://localhost:5000/v2.0/',
-      'admin_endpoint'   => 'https://localhost:35357/v2.0/',
-      'enable_ssl'       => true,
-      'ssl_certfile'     => '/etc/keystone/ssl/certs/keystone.pem',
-      'ssl_keyfile'      => '/etc/keystone/ssl/private/keystonekey.pem',
-      'ssl_ca_certs'     => '/etc/keystone/ssl/certs/ca.pem',
-      'ssl_ca_key'       => '/etc/keystone/ssl/private/cakey.pem',
-      'ssl_cert_subject' => '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
-      'enabled'          => false,
-      'sql_connection'   => 'mysql://a:b@c/d',
-      'idle_timeout'     => '300',
-      'rabbit_host'      => '127.0.0.1',
-      'rabbit_password'  => 'openstack',
-      'rabbit_userid'    => 'admin',
+      'package_ensure'        => 'latest',
+      'public_bind_host'      => '0.0.0.0',
+      'admin_bind_host'       => '0.0.0.0',
+      'public_port'           => '5001',
+      'admin_port'            => '35358',
+      'admin_token'           => 'service_token_override',
+      'compute_port'          => '8778',
+      'verbose'               => true,
+      'debug'                 => true,
+      'catalog_type'          => 'template',
+      'token_provider'        => 'keystone.token.providers.uuid.Provider',
+      'token_driver'          => 'keystone.token.backends.kvs.Token',
+      'public_endpoint'       => 'https://localhost:5000/v2.0/',
+      'admin_endpoint'        => 'https://localhost:35357/v2.0/',
+      'enable_ssl'            => true,
+      'ssl_certfile'          => '/etc/keystone/ssl/certs/keystone.pem',
+      'ssl_keyfile'           => '/etc/keystone/ssl/private/keystonekey.pem',
+      'ssl_ca_certs'          => '/etc/keystone/ssl/certs/ca.pem',
+      'ssl_ca_key'            => '/etc/keystone/ssl/private/cakey.pem',
+      'ssl_cert_subject'      => '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
+      'enabled'               => false,
+      'database_connection'   => 'mysql://a:b@c/d',
+      'database_idle_timeout' => '300',
+      'rabbit_host'           => '127.0.0.1',
+      'rabbit_password'       => 'openstack',
+      'rabbit_userid'         => 'admin',
     }
   ].each do |param_set|
 
@@ -143,8 +143,8 @@ describe 'keystone' do
       end
 
       it 'should contain correct mysql config' do
-        should contain_keystone_config('database/idle_timeout').with_value(param_hash['idle_timeout'])
-        should contain_keystone_config('database/connection').with_value(param_hash['sql_connection']).with_secret(true)
+        should contain_keystone_config('database/idle_timeout').with_value(param_hash['database_idle_timeout'])
+        should contain_keystone_config('database/connection').with_value(param_hash['database_connection']).with_secret(true)
       end
 
       it { should contain_keystone_config('token/provider').with_value(
@@ -172,6 +172,24 @@ describe 'keystone' do
         should contain_keystone_config('DEFAULT/rabbit_password').with_value(param_hash['rabbit_password']).with_secret(true)
       end
     end
+  end
+
+  describe 'with deprecated sql_connection parameter' do
+    let :params do
+      { :admin_token    => 'service_token',
+        :sql_connection => 'mysql://a:b@c/d' }
+    end
+
+    it { should contain_keystone_config('database/connection').with_value(params[:sql_connection]) }
+  end
+
+  describe 'with deprecated idle_timeout parameter' do
+    let :params do
+      { :admin_token  => 'service_token',
+        :idle_timeout => 365 }
+    end
+
+    it { should contain_keystone_config('database/idle_timeout').with_value(params[:idle_timeout]) }
   end
 
   describe 'when configuring signing token provider' do
