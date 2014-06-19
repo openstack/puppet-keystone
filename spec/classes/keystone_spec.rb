@@ -31,6 +31,11 @@ describe 'keystone' do
       'enabled'               => true,
       'database_connection'   => 'sqlite:////var/lib/keystone/keystone.db',
       'database_idle_timeout' => '200',
+      'enable_pki_setup'      => true,
+      'signing_certfile'      => '/etc/keystone/ssl/certs/signing_cert.pem',
+      'signing_keyfile'       => '/etc/keystone/ssl/private/signing_key.pem',
+      'signing_ca_certs'      => '/etc/keystone/ssl/certs/ca.pem',
+      'signing_ca_key'        => '/etc/keystone/ssl/private/cakey.pem',
       'mysql_module'          => '0.9',
       'rabbit_host'           => 'localhost',
       'rabbit_password'       => 'guest',
@@ -63,6 +68,11 @@ describe 'keystone' do
       'enabled'               => false,
       'database_connection'   => 'mysql://a:b@c/d',
       'database_idle_timeout' => '300',
+      'enable_pki_setup'      => true,
+      'signing_certfile'      => '/etc/keystone/ssl/certs/signing_cert.pem',
+      'signing_keyfile'       => '/etc/keystone/ssl/private/signing_key.pem',
+      'signing_ca_certs'      => '/etc/keystone/ssl/certs/ca.pem',
+      'signing_ca_key'        => '/etc/keystone/ssl/private/cakey.pem',
       'rabbit_host'           => '127.0.0.1',
       'rabbit_password'       => 'openstack',
       'rabbit_userid'         => 'admin',
@@ -231,6 +241,38 @@ describe 'keystone' do
       end
     end
 
+    describe 'when configuring PKI signing cert paths with pki_setup disabled' do
+      let :params do
+        {
+          'admin_token'       => 'service_token',
+          'token_provider'    => 'keystone.token.providers.pki.Provider',
+          'enable_pki_setup'  => false,
+          'signing_certfile'  => 'signing_certfile',
+          'signing_keyfile'   => 'signing_keyfile',
+          'signing_ca_certs'  => 'signing_ca_certs',
+          'signing_ca_key'    => 'signing_ca_key'
+        }
+      end
+
+      it { should_not contain_exec('keystone-manage pki_setup') }
+
+      it 'should contain correct PKI certfile config' do
+        should contain_keystone_config('signing/certfile').with_value('signing_certfile')
+      end
+
+      it 'should contain correct PKI keyfile config' do
+        should contain_keystone_config('signing/keyfile').with_value('signing_keyfile')
+      end
+
+      it 'should contain correct PKI ca_certs config' do
+        should contain_keystone_config('signing/ca_certs').with_value('signing_ca_certs')
+      end
+
+      it 'should contain correct PKI ca_key config' do
+        should contain_keystone_config('signing/ca_key').with_value('signing_ca_key')
+      end
+    end
+
     describe 'with invalid catalog_type' do
       let :params do
         { :admin_token  => 'service_token',
@@ -259,16 +301,38 @@ describe 'keystone' do
       it { should_not contain_exec('keystone-manage pki_setup') }
     end
 
-    describe 'when configuring deprecated token_format as PKI' do
+    describe 'when configuring deprecated token_format as PKI with enable_pki_setup' do
       let :params do
         {
-          'admin_token'    => 'service_token',
-          'token_format'   => 'PKI'
+          'admin_token'       => 'service_token',
+          'token_format'      => 'PKI',
         }
       end
       it { should contain_exec('keystone-manage pki_setup').with(
         :creates => '/etc/keystone/ssl/private/signing_key.pem'
       ) }
+      it { should contain_file('/var/cache/keystone').with_ensure('directory') }
+      describe 'when overriding the cache dir' do
+        let :params do
+          {
+            'admin_token'    => 'service_token',
+            'token_provider' => 'keystone.token.providers.pki.Provider',
+            'cache_dir'      => '/var/lib/cache/keystone'
+          }
+        end
+        it { should contain_file('/var/lib/cache/keystone') }
+      end
+    end
+
+    describe 'when configuring deprecated token_format as PKI without enable_pki_setup' do
+      let :params do
+        {
+          'admin_token'       => 'service_token',
+          'token_format'      => 'PKI',
+          'enable_pki_setup'  => false
+        }
+      end
+      it { should_not contain_exec('keystone-manage pki_setup') }
       it { should contain_file('/var/cache/keystone').with_ensure('directory') }
       describe 'when overriding the cache dir' do
         let :params do
