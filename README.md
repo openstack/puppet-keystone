@@ -165,6 +165,13 @@ Contributors
 Release Notes
 -------------
 
+**4.1.0**
+
+* Added token flushing with cron.
+* Updated database api for consistency with other projects.
+* Fixed admin_token with secret parameter.
+* Fixed deprecated catalog driver.
+
 **4.0.0**
 
 * Stable Icehouse release.
