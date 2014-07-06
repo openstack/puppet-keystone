@@ -366,6 +366,13 @@ class keystone(
       'DEFAULT/admin_endpoint': ensure => absent;
     }
   }
+  # requirements for memcache token driver
+  if ($token_driver =~ /memcache/ ) {
+    package { 'python-memcache':
+      ensure => present,
+      name   => $::keystone::params::python_memcache_package_name,
+    }
+  }
 
   # token driver config
   keystone_config {

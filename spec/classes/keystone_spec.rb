@@ -315,6 +315,10 @@ describe 'keystone' do
     end
 
     it { should contain_keystone_config("memcache/servers").with_value('SERVER1:11211,SERVER2:11211') }
+    it { should contain_package('python-memcache').with(
+      :name   => 'python-memcache',
+      :ensure => 'present'
+    ) }
   end
 
   describe 'do not configure memcache servers when not set' do
