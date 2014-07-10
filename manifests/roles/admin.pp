@@ -15,6 +15,8 @@
 # [password] The admin password. Required.
 # [admin_tenant] The name of the tenant to be used for admin privileges. Optional. Defaults to openstack.
 # [admin] Admin user. Optional. Defaults to admin.
+# [admin_tenant_desc] Optional. Description for admin tenant, defaults to 'admin tenant'
+# [service_tenant_desc] Optional. Description for admin tenant, defaults to 'Tenant for the openstack services'
 #
 # == Dependencies
 # == Examples
@@ -29,20 +31,22 @@
 class keystone::roles::admin(
   $email,
   $password,
-  $admin          = 'admin',
-  $admin_tenant   = 'openstack',
-  $service_tenant = 'services'
+  $admin                  = 'admin',
+  $admin_tenant           = 'openstack',
+  $service_tenant         = 'services',
+  $admin_tenant_desc      = 'admin tenant',
+  $service_tenant_desc    = 'Tenant for the openstack services',
 ) {
 
   keystone_tenant { $service_tenant:
     ensure      => present,
     enabled     => true,
-    description => 'Tenant for the openstack services',
+    description => $service_tenant_desc,
   }
   keystone_tenant { $admin_tenant:
     ensure      => present,
     enabled     => true,
-    description => 'admin tenant',
+    description => $admin_tenant_desc,
   }
   keystone_user { $admin:
     ensure      => present,
