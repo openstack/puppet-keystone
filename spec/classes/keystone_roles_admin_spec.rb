@@ -48,19 +48,21 @@ describe 'keystone::roles::admin' do
         :password               => 'foo',
         :admin_tenant           => 'admin',
         :service_tenant         => 'foobar',
-        :ignore_default_tenant  => 'true'
+        :ignore_default_tenant  => 'true',
+        :admin_tenant_desc      => 'admin something else',
+        :service_tenant_desc    => 'foobar description',
       }
     end
 
     it { should contain_keystone_tenant('foobar').with(
       :ensure  => 'present',
       :enabled => true,
-      :description => 'Tenant for the openstack services'
+      :description => 'foobar description'
     )}
     it { should contain_keystone_tenant('admin').with(
       :ensure      => 'present',
       :enabled     => true,
-      :description => 'admin tenant'
+      :description => 'admin something else'
     )}
     it { should contain_keystone_user('admin').with(
       :ensure                 => 'present',
