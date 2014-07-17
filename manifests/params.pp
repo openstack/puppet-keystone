@@ -15,6 +15,9 @@ class keystone::params {
           $keystone_wsgi_script_source = '/usr/share/keystone/wsgi.py'
         }
         default: {
+          # NOTE: Ubuntu does not currently provide the keystone wsgi script in the
+          # keystone packages.  When Ubuntu does provide the script, change this
+          # to use the correct path (which I'm assuming will be the same as Debian).
           $service_provider            = 'upstart'
           $keystone_wsgi_script_source = 'puppet:///modules/keystone/httpd/keystone.py'
         }
@@ -25,7 +28,7 @@ class keystone::params {
       $service_name                = 'openstack-keystone'
       $keystone_wsgi_script_path   = '/var/www/cgi-bin/keystone'
       $service_provider            = undef
-      $keystone_wsgi_script_source = 'puppet:///modules/keystone/httpd/keystone.py'
+      $keystone_wsgi_script_source = '/usr/share/keystone/keystone.wsgi'
     }
   }
 }

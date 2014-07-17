@@ -131,6 +131,22 @@
 #   Tested versions include 0.9 and 2.2
 #   Default to '0.9'
 #
+#   [*service_name*]
+#   (optional) Name of the service that will be providing the
+#   server functionality of keystone.  For example, the default
+#   is just 'keystone', which means keystone will be run as a
+#   standalone eventlet service, and will able to be managed
+#   separately by the operating system's service manager.  For
+#   example, you will be able to use
+#   service openstack-keystone restart
+#   to restart the service.
+#   If the value is 'httpd', this means keystone will be a web
+#   service, and you must use another class to configure that
+#   web service.  For example, after calling class {'keystone'...}
+#   use class { 'keystone::wsgi::apache'...} to make keystone be
+#   a web app using apache mod_wsgi.
+#   Defaults to 'keystone'
+#
 # == Dependencies
 #  None
 #
@@ -139,6 +155,17 @@
 #   class { 'keystone':
 #     log_verbose => 'True',
 #     admin_token => 'my_special_token',
+#   }
+#
+#   OR
+#
+#   class { 'keystone':
+#      ...
+#      service_name => 'httpd',
+#      ...
+#   }
+#   class { 'keystone::wsgi::apache':
+#      ...
 #   }
 #
 # == Authors
@@ -195,6 +222,7 @@ class keystone(
   $notification_driver   = false,
   $notification_topics   = false,
   $control_exchange      = false,
+  $service_name          = 'keystone',
   # DEPRECATED PARAMETERS
   $sql_connection        = undef,
   $idle_timeout          = undef,
@@ -218,19 +246,10 @@ class keystone(
     $database_idle_timeout_real = $database_idle_timeout
   }
 
-  File['/etc/keystone/keystone.conf'] -> Keystone_config<||> ~> Service['keystone']
+  File['/etc/keystone/keystone.conf'] -> Keystone_config<||> ~> Service[$service_name]
   Keystone_config<||> ~> Exec<| title == 'keystone-manage db_sync'|>
   Keystone_config<||> ~> Exec<| title == 'keystone-manage pki_setup'|>
-
-  include keystone::params
-
-  File {
-    ensure  => present,
-    owner   => 'keystone',
-    group   => 'keystone',
-    require => Package['keystone'],
-    notify  => Service['keystone'],
-  }
+  include ::keystone::params
 
   package { 'keystone':
     ensure => $package_ensure,
@@ -253,10 +272,19 @@ class keystone(
   file { ['/etc/keystone', '/var/log/keystone', '/var/lib/keystone']:
     ensure  => directory,
     mode    => '0750',
+    owner   => 'keystone',
+    group   => 'keystone',
+    require => Package['keystone'],
+    notify  => Service[$service_name],
   }
 
   file { '/etc/keystone/keystone.conf':
+    ensure  => present,
     mode    => '0600',
+    owner   => 'keystone',
+    group   => 'keystone',
+    require => Package['keystone'],
+    notify  => Service[$service_name],
   }
 
   if $bind_host {
@@ -390,7 +418,7 @@ class keystone(
         user        => 'keystone',
         refreshonly => true,
         creates     => '/etc/keystone/ssl/private/signing_key.pem',
-        notify      => Service['keystone'],
+        notify      => Service[$service_name],
         subscribe   => Package['keystone'],
         require     => User['keystone'],
       }
@@ -439,18 +467,20 @@ class keystone(
     $service_ensure = 'stopped'
   }
 
-  service { 'keystone':
-    ensure     => $service_ensure,
-    name       => $::keystone::params::service_name,
-    enable     => $enabled,
-    hasstatus  => true,
-    hasrestart => true,
-    provider   => $::keystone::params::service_provider,
+  if $service_name == 'keystone' {
+    service { 'keystone':
+      ensure     => $service_ensure,
+      name       => $::keystone::params::service_name,
+      enable     => $enabled,
+      hasstatus  => true,
+      hasrestart => true,
+      provider   => $::keystone::params::service_provider,
+    }
   }
 
   if $enabled {
-    include keystone::db::sync
-    Class['keystone::db::sync'] ~> Service['keystone']
+    include ::keystone::db::sync
+    Class['::keystone::db::sync'] ~> Service[$service_name]
   }
 
   # Syslog configuration
