@@ -2,12 +2,24 @@ require 'spec_helper'
 
 describe 'keystone' do
 
-  let :facts do
-    {:osfamily => 'Debian'}
+  let :global_facts do
+    {
+      :processorcount => 42,
+      :concat_basedir => '/var/lib/puppet/concat',
+      :fqdn           => 'some.host.tld'
+    }
   end
 
-  let :default_params do
-    {
+  let :facts do
+    global_facts.merge({
+      :osfamily               => 'Debian',
+      :operatingsystem        => 'Debian',
+      :operatingsystemrelease => '7.0'
+    })
+  end
+
+  default_params = {
+      'admin_token'           => 'service_token',
       'package_ensure'        => 'present',
       'public_bind_host'      => '0.0.0.0',
       'admin_bind_host'       => '0.0.0.0',
@@ -40,10 +52,8 @@ describe 'keystone' do
       'rabbit_password'       => 'guest',
       'rabbit_userid'         => 'guest',
     }
-  end
 
-  [{'admin_token'     => 'service_token'},
-   {
+  override_params = {
       'package_ensure'        => 'latest',
       'public_bind_host'      => '0.0.0.0',
       'admin_bind_host'       => '0.0.0.0',
@@ -76,44 +86,107 @@ describe 'keystone' do
       'rabbit_password'       => 'openstack',
       'rabbit_userid'         => 'admin',
     }
-  ].each do |param_set|
 
-    describe "when #{param_set == {} ? "using default" : "specifying"} class parameters" do
-      let :param_hash do
-        default_params.merge(param_set)
+  httpd_params = {'service_name' => 'httpd'}.merge(default_params)
+
+  shared_examples_for 'core keystone examples' do |param_hash|
+    it { should contain_class('keystone::params') }
+
+    it { should contain_package('keystone').with(
+      'ensure' => param_hash['package_ensure']
+    ) }
+
+    it { should contain_group('keystone').with(
+      'ensure' => 'present',
+      'system' => true
+    ) }
+
+    it { should contain_user('keystone').with(
+      'ensure' => 'present',
+      'gid'    => 'keystone',
+      'system' => true
+    ) }
+
+    it 'should contain the expected directories' do
+      ['/etc/keystone', '/var/log/keystone', '/var/lib/keystone'].each do |d|
+        should contain_file(d).with(
+          'ensure'     => 'directory',
+          'owner'      => 'keystone',
+          'group'      => 'keystone',
+          'mode'       => '0750',
+          'require'    => 'Package[keystone]'
+        )
       end
+    end
+
+    it 'should only synchronize the db if $enabled is true' do
+      if param_hash['enabled']
+        should contain_exec('keystone-manage db_sync').with(
+          :user        => 'keystone',
+          :refreshonly => true,
+          :subscribe   => ['Package[keystone]', 'Keystone_config[database/connection]'],
+          :require     => 'User[keystone]'
+        )
+      end
+    end
+
+    it 'should contain correct config' do
+      [
+       'public_bind_host',
+       'admin_bind_host',
+       'public_port',
+       'admin_port',
+       'compute_port',
+       'verbose',
+       'debug'
+      ].each do |config|
+        should contain_keystone_config("DEFAULT/#{config}").with_value(param_hash[config])
+      end
+    end
+
+    it 'should contain correct admin_token config' do
+      should contain_keystone_config('DEFAULT/admin_token').with_value(param_hash['admin_token']).with_secret(true)
+    end
+
+    it 'should contain correct mysql config' do
+      should contain_keystone_config('database/idle_timeout').with_value(param_hash['database_idle_timeout'])
+      should contain_keystone_config('database/connection').with_value(param_hash['database_connection']).with_secret(true)
+    end
+
+    it { should contain_keystone_config('token/provider').with_value(
+      param_hash['token_provider']
+    ) }
+
+    it 'should contain correct token driver' do
+      should contain_keystone_config('token/driver').with_value(param_hash['token_driver'])
+    end
+
+    it 'should ensure proper setting of admin_endpoint and public_endpoint' do
+      if param_hash['admin_endpoint']
+        should contain_keystone_config('DEFAULT/admin_endpoint').with_value(param_hash['admin_endpoint'])
+      else
+        should contain_keystone_config('DEFAULT/admin_endpoint').with_ensure('absent')
+      end
+      if param_hash['public_endpoint']
+        should contain_keystone_config('DEFAULT/public_endpoint').with_value(param_hash['public_endpoint'])
+      else
+        should contain_keystone_config('DEFAULT/public_endpoint').with_ensure('absent')
+      end
+    end
+
+    it 'should contain correct rabbit_password' do
+      should contain_keystone_config('DEFAULT/rabbit_password').with_value(param_hash['rabbit_password']).with_secret(true)
+    end
+  end
+
+  [default_params, override_params].each do |param_hash|
+    describe "when #{param_hash == default_params ? "using default" : "specifying"} class parameters for service" do
 
       let :params do
-        param_set
+        param_hash
       end
 
-      it { should contain_class('keystone::params') }
-
-      it { should contain_package('keystone').with(
-        'ensure' => param_hash['package_ensure']
-      ) }
-
-      it { should contain_group('keystone').with(
-          'ensure' => 'present',
-          'system' => true
-      ) }
-      it { should contain_user('keystone').with(
-        'ensure' => 'present',
-        'gid'    => 'keystone',
-        'system' => true
-      ) }
-
-      it 'should contain the expected directories' do
-        ['/etc/keystone', '/var/log/keystone', '/var/lib/keystone'].each do |d|
-          should contain_file(d).with(
-            'ensure'     => 'directory',
-            'owner'      => 'keystone',
-            'group'      => 'keystone',
-            'mode'       => '0750',
-            'require'    => 'Package[keystone]'
-          )
-        end
-      end
+      it_configures 'core keystone examples', param_hash
 
       it { should contain_service('keystone').with(
         'ensure'     => param_hash['enabled'] ? 'running' : 'stopped',
@@ -122,65 +195,26 @@ describe 'keystone' do
         'hasrestart' => true
       ) }
 
-      it 'should only migrate the db if $enabled is true' do
-        if param_hash['enabled']
-          should contain_exec('keystone-manage db_sync').with(
-            :user        => 'keystone',
-            :refreshonly => true,
-            :subscribe   => ['Package[keystone]', 'Keystone_config[database/connection]'],
-            :require     => 'User[keystone]'
-          )
-        end
-      end
-
-      it 'should contain correct config' do
-        [
-          'public_bind_host',
-          'admin_bind_host',
-          'public_port',
-          'admin_port',
-          'compute_port',
-          'verbose',
-          'debug'
-        ].each do |config|
-          should contain_keystone_config("DEFAULT/#{config}").with_value(param_hash[config])
-        end
-      end
-
-      it 'should contain correct admin_token config' do
-        should contain_keystone_config('DEFAULT/admin_token').with_value(param_hash['admin_token']).with_secret(true)
-      end
-
-      it 'should contain correct mysql config' do
-        should contain_keystone_config('database/idle_timeout').with_value(param_hash['database_idle_timeout'])
-        should contain_keystone_config('database/connection').with_value(param_hash['database_connection']).with_secret(true)
-      end
-
-      it { should contain_keystone_config('token/provider').with_value(
-        param_hash['token_provider']
-      ) }
-
-      it 'should contain correct token driver' do
-        should contain_keystone_config('token/driver').with_value(param_hash['token_driver'])
-      end
-
-      it 'should ensure proper setting of admin_endpoint and public_endpoint' do
-        if param_hash['admin_endpoint']
-          should contain_keystone_config('DEFAULT/admin_endpoint').with_value(param_hash['admin_endpoint'])
-        else
-          should contain_keystone_config('DEFAULT/admin_endpoint').with_ensure('absent')
-        end
-        if param_hash['public_endpoint']
-          should contain_keystone_config('DEFAULT/public_endpoint').with_value(param_hash['public_endpoint'])
-        else
-          should contain_keystone_config('DEFAULT/public_endpoint').with_ensure('absent')
-        end
-      end
-
-      it 'should contain correct rabbit_password' do
-        should contain_keystone_config('DEFAULT/rabbit_password').with_value(param_hash['rabbit_password']).with_secret(true)
-      end
     end
+  end
+
+  describe "when using default class parameters for httpd" do
+    let :params do
+      httpd_params
+    end
+
+    let :pre_condition do
+      'include ::apache'
+    end
+
+    it_configures 'core keystone examples', httpd_params
+
+    it do
+      expect {
+        should contain_service('keystone')
+      }.to raise_error(RSpec::Expectations::ExpectationNotMetError, /expected that the catalogue would contain Service\[keystone\]/)
+    end
+
   end
 
   describe 'with deprecated sql_connection parameter' do
@@ -719,7 +753,10 @@ describe 'keystone' do
 
   describe 'setting service_provider' do
     let :facts do
-      {:osfamily => 'RedHat'}
+      global_facts.merge({
+        :osfamily               => 'RedHat',
+        :operatingsystemrelease => '6.0'
+      })
     end
 
     describe 'with default service_provider' do

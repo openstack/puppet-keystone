@@ -11,8 +11,30 @@ describe 'keystone::wsgi::apache' do
   end
 
   let :pre_condition do
-    'include apache
-     class { keystone: admin_token => "dummy" }'
+    [
+     'class { keystone: admin_token => "dummy", service_name => "httpd", enable_ssl => true }'
+    ]
+  end
+
+  #   concat::fragment { "${name}-wsgi":
+  # $filename = regsubst($name, ' ', '_', 'G')
+  #     target  => "${priority_real}-${filename}.conf",
+  # $safe_name        = regsubst($name, '[/:\n]', '_', 'GM')
+  # $safe_target_name = regsubst($target, '[/:\n]', '_', 'GM')
+  # $concatdir        = $concat::setup::concatdir
+  # $fragdir          = "${concatdir}/${safe_target_name}"
+  # file { "${fragdir}/fragments/${order}_${safe_name}":
+  def get_concat_name(base_name)
+#    pp subject.resources
+    priority = 10
+    order = 250
+    base_dir = facts[:concat_basedir]
+    safe_name = base_name.gsub(/[\/:\n]/m, '_') + '-wsgi'
+    target = "#{priority}-#{base_name}.conf"
+    safe_target_name = target.gsub(/[\/:\n]/m, '_')
+    frag_dir = "#{base_dir}/#{safe_target_name}"
+    full_name = "#{frag_dir}/fragments/#{order}_#{safe_name}"
+    return full_name
   end
 
   shared_examples_for 'apache serving keystone with mod_wsgi' do
@@ -38,7 +60,7 @@ describe 'keystone::wsgi::apache' do
         'owner'   => 'keystone',
         'group'   => 'keystone',
         'mode'    => '0644',
-        'require' => "File[#{platform_parameters[:wsgi_script_path]}]"
+        'require' => ["File[#{platform_parameters[:wsgi_script_path]}]", "Package[keystone]"]
       )}
 
       it { should contain_file('keystone_wsgi_main').with(
@@ -48,7 +70,7 @@ describe 'keystone::wsgi::apache' do
         'owner'   => 'keystone',
         'group'   => 'keystone',
         'mode'    => '0644',
-        'require' => "File[#{platform_parameters[:wsgi_script_path]}]"
+        'require' => ["File[#{platform_parameters[:wsgi_script_path]}]", "Package[keystone]"]
       )}
 
       it { should contain_apache__vhost('keystone_wsgi_admin').with(
@@ -59,9 +81,10 @@ describe 'keystone::wsgi::apache' do
         'docroot_owner'               => 'keystone',
         'docroot_group'               => 'keystone',
         'ssl'                         => 'true',
-        'wsgi_process_group'          => 'keystone',
+        'wsgi_daemon_process'         => 'keystone_admin',
+        'wsgi_process_group'          => 'keystone_admin',
         'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/admin" },
-        'require'                     => ['Class[Apache::Mod::Wsgi]', 'File[keystone_wsgi_admin]']
+        'require'                     => 'File[keystone_wsgi_admin]'
       )}
 
       it { should contain_apache__vhost('keystone_wsgi_main').with(
@@ -72,16 +95,18 @@ describe 'keystone::wsgi::apache' do
         'docroot_owner'               => 'keystone',
         'docroot_group'               => 'keystone',
         'ssl'                         => 'true',
-        'wsgi_daemon_process'         => 'keystone',
-        'wsgi_process_group'          => 'keystone',
+        'wsgi_daemon_process'         => 'keystone_main',
+        'wsgi_process_group'          => 'keystone_main',
         'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/main" },
-        'require'                     => ['Class[Apache::Mod::Wsgi]', 'File[keystone_wsgi_main]']
+        'require'                     => 'File[keystone_wsgi_main]'
       )}
-      it "should set keystone wsgi options" do
-        contain_file('25-keystone_wsgi_main.conf').with_content(
-          /^  WSGIDaemonProcess keystone group=keystone processes=1 threads=1 user=keystone$/
-        )
-      end
+      it { should contain_file(get_concat_name('keystone_wsgi_main')).with_content(
+          /^  WSGIDaemonProcess keystone_main group=keystone processes=1 threads=#{facts[:processorcount]} user=keystone$/
+      )}
+      it { should contain_file(get_concat_name('keystone_wsgi_admin')).with_content(
+          /^  WSGIDaemonProcess keystone_admin group=keystone processes=1 threads=#{facts[:processorcount]} user=keystone$/
+      )}
+      it { should contain_file("#{platform_parameters[:httpd_ports_file]}") }
     end
 
     describe 'when overriding parameters using different ports' do
@@ -104,9 +129,10 @@ describe 'keystone::wsgi::apache' do
         'docroot_owner'               => 'keystone',
         'docroot_group'               => 'keystone',
         'ssl'                         => 'false',
-        'wsgi_process_group'          => 'keystone',
+        'wsgi_daemon_process'         => 'keystone_admin',
+        'wsgi_process_group'          => 'keystone_admin',
         'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/admin" },
-        'require'                     => ['Class[Apache::Mod::Wsgi]', 'File[keystone_wsgi_admin]']
+        'require'                     => 'File[keystone_wsgi_admin]'
       )}
 
       it { should contain_apache__vhost('keystone_wsgi_main').with(
@@ -117,16 +143,18 @@ describe 'keystone::wsgi::apache' do
         'docroot_owner'               => 'keystone',
         'docroot_group'               => 'keystone',
         'ssl'                         => 'false',
-        'wsgi_daemon_process'         => 'keystone',
-        'wsgi_process_group'          => 'keystone',
+        'wsgi_daemon_process'         => 'keystone_main',
+        'wsgi_process_group'          => 'keystone_main',
         'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/main" },
-        'require'                     => ['Class[Apache::Mod::Wsgi]', 'File[keystone_wsgi_main]']
+        'require'                     => 'File[keystone_wsgi_main]'
       )}
-      it "should set keystone wsgi options" do
-        contain_file('25-keystone_wsgi_main.conf').with_content(
-          /^  WSGIDaemonProcess keystone group=keystone processes=37 threads=1 user=keystone$/
-        )
-      end
+      it { should contain_file(get_concat_name('keystone_wsgi_main')).with_content(
+          /^  WSGIDaemonProcess keystone_main group=keystone processes=#{params[:workers]} threads=#{facts[:processorcount]} user=keystone$/
+      )}
+      it { should contain_file(get_concat_name('keystone_wsgi_admin')).with_content(
+          /^  WSGIDaemonProcess keystone_admin group=keystone processes=#{params[:workers]} threads=#{facts[:processorcount]} user=keystone$/
+      )}
+      it { should contain_file("#{platform_parameters[:httpd_ports_file]}") }
     end
 
     describe 'when overriding parameters using same port' do
@@ -152,18 +180,22 @@ describe 'keystone::wsgi::apache' do
         'docroot_owner'               => 'keystone',
         'docroot_group'               => 'keystone',
         'ssl'                         => 'true',
-        'wsgi_daemon_process'         => 'keystone',
-        'wsgi_process_group'          => 'keystone',
+        'wsgi_daemon_process'         => 'keystone_main',
+        'wsgi_process_group'          => 'keystone_main',
         'wsgi_script_aliases'         => {
         '/main/endpoint'  => "#{platform_parameters[:wsgi_script_path]}/main",
         '/admin/endpoint' => "#{platform_parameters[:wsgi_script_path]}/admin"
-      },
-        'require'                     => ['Class[Apache::Mod::Wsgi]', 'File[keystone_wsgi_main]']
+        },
+        'require'                     => 'File[keystone_wsgi_main]'
       )}
-      it "should set keystone wsgi options" do
-        contain_file('25-keystone_wsgi_main.conf').with_content(
-          /^  WSGIDaemonProcess keystone group=keystone processes=37 threads=1 user=keystone$/
-        )
+      it { should contain_file(get_concat_name('keystone_wsgi_main')).with_content(
+          /^  WSGIDaemonProcess keystone_main group=keystone processes=#{params[:workers]} threads=#{facts[:processorcount]} user=keystone$/
+      )}
+      it do
+        expect_file = get_concat_name('keystone_wsgi_admin')
+        expect {
+          should contain_file(expect_file)
+        }.to raise_error(RSpec::Expectations::ExpectationNotMetError, /expected that the catalogue would contain File\[#{expect_file}\]/)
       end
     end
 
@@ -195,8 +227,9 @@ describe 'keystone::wsgi::apache' do
     let :platform_parameters do
       {
         :httpd_service_name => 'httpd',
+        :httpd_ports_file   => '/etc/httpd/conf/ports.conf',
         :wsgi_script_path   => '/var/www/cgi-bin/keystone',
-        :wsgi_script_source => 'puppet:///modules/keystone/httpd/keystone.py'
+        :wsgi_script_source => '/usr/share/keystone/keystone.wsgi'
       }
     end
 
@@ -215,6 +248,7 @@ describe 'keystone::wsgi::apache' do
     let :platform_parameters do
       {
         :httpd_service_name => 'apache2',
+        :httpd_ports_file   => '/etc/apache2/ports.conf',
         :wsgi_script_path   => '/usr/lib/cgi-bin/keystone',
         :wsgi_script_source => '/usr/share/keystone/wsgi.py'
       }

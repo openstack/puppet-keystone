@@ -195,6 +195,23 @@
 #   custom service provider for changing start/stop/status behavior of service,
 #   and set it here.
 #
+#   [*service_name*]
+#   (optional) Name of the service that will be providing the
+#   server functionality of keystone.  For example, the default
+#   is just 'keystone', which means keystone will be run as a
+#   standalone eventlet service, and will able to be managed
+#   separately by the operating system's service manager.  For
+#   example, you will be able to use
+#   service openstack-keystone restart
+#   to restart the service.
+#   If the value is 'httpd', this means keystone will be a web
+#   service, and you must use another class to configure that
+#   web service.  For example, after calling class {'keystone'...}
+#   use class { 'keystone::wsgi::apache'...} to make keystone be
+#   a web app using apache mod_wsgi.
+#   Defaults to 'keystone'
+#   NOTE: validate_service only applies if the value is 'keystone'
+#
 # == Dependencies
 #  None
 #
@@ -203,6 +220,17 @@
 #   class { 'keystone':
 #     log_verbose => 'True',
 #     admin_token => 'my_special_token',
+#   }
+#
+#   OR
+#
+#   class { 'keystone':
+#      ...
+#      service_name => 'httpd',
+#      ...
+#   }
+#   class { 'keystone::wsgi::apache':
+#      ...
 #   }
 #
 # == Authors
@@ -272,6 +300,7 @@ class keystone(
   $validate_auth_url     = false,
   $validate_cacert       = undef,
   $service_provider      = $::keystone::params::service_provider,
+  $service_name          = 'keystone',
   # DEPRECATED PARAMETERS
   $mysql_module          = undef,
   $sql_connection        = undef,
@@ -308,12 +337,6 @@ class keystone(
     warning('Version string /v2.0/ should not be included in keystone::public_endpoint')
   }
 
-  File['/etc/keystone/keystone.conf'] -> Keystone_config<||> ~> Service['keystone']
-  Keystone_config<||> ~> Exec<| title == 'keystone-manage db_sync'|>
-  Keystone_config<||> ~> Exec<| title == 'keystone-manage pki_setup'|>
-
-  include keystone::params
-
   if $rabbit_use_ssl {
     if !$kombu_ssl_ca_certs {
       fail('The kombu_ssl_ca_certs parameter is required when rabbit_use_ssl is set to true')
@@ -326,13 +349,10 @@ class keystone(
     }
   }
 
-  File {
-    ensure  => present,
-    owner   => 'keystone',
-    group   => 'keystone',
-    require => Package['keystone'],
-    notify  => Service['keystone'],
-  }
+  File['/etc/keystone/keystone.conf'] -> Keystone_config<||> ~> Service[$service_name]
+  Keystone_config<||> ~> Exec<| title == 'keystone-manage db_sync'|>
+  Keystone_config<||> ~> Exec<| title == 'keystone-manage pki_setup'|>
+  include ::keystone::params
 
   package { 'keystone':
     ensure => $package_ensure,
@@ -355,10 +375,19 @@ class keystone(
   file { ['/etc/keystone', '/var/log/keystone', '/var/lib/keystone']:
     ensure  => directory,
     mode    => '0750',
+    owner   => 'keystone',
+    group   => 'keystone',
+    require => Package['keystone'],
+    notify  => Service[$service_name],
   }
 
   file { '/etc/keystone/keystone.conf':
+    ensure  => present,
     mode    => '0600',
+    owner   => 'keystone',
+    group   => 'keystone',
+    require => Package['keystone'],
+    notify  => Service[$service_name],
   }
 
   if $bind_host {
@@ -505,7 +534,7 @@ class keystone(
       user        => 'keystone',
       refreshonly => true,
       creates     => $signing_keyfile,
-      notify      => Service['keystone'],
+      notify      => Service[$service_name],
       subscribe   => Package['keystone'],
       require     => User['keystone'],
     }
@@ -574,42 +603,43 @@ class keystone(
     $service_ensure = 'stopped'
   }
 
-  if $validate_service {
+  if $service_name == 'keystone' {
+    if $validate_service {
+      if $validate_auth_url {
+        $v_auth_url = $validate_auth_url
+      } else {
+        $v_auth_url = $admin_endpoint
+      }
 
-    if $validate_auth_url {
-      $v_auth_url = $validate_auth_url
+      class { 'keystone::service':
+        ensure         => $service_ensure,
+        service_name   => $::keystone::params::service_name,
+        enable         => $enabled,
+        hasstatus      => true,
+        hasrestart     => true,
+        provider       => $service_provider,
+        validate       => true,
+        admin_endpoint => $v_auth_url,
+        admin_token    => $admin_token,
+        insecure       => $validate_insecure,
+        cacert         => $validate_cacert,
+      }
     } else {
-      $v_auth_url = $admin_endpoint
-    }
-
-    class { 'keystone::service':
-      ensure         => $service_ensure,
-      service_name   => $::keystone::params::service_name,
-      enable         => $enabled,
-      hasstatus      => true,
-      hasrestart     => true,
-      provider       => $service_provider,
-      validate       => true,
-      admin_endpoint => $v_auth_url,
-      admin_token    => $admin_token,
-      insecure       => $validate_insecure,
-      cacert         => $validate_cacert,
-    }
-  } else {
-    class { 'keystone::service':
-      ensure       => $service_ensure,
-      service_name => $::keystone::params::service_name,
-      enable       => $enabled,
-      hasstatus    => true,
-      hasrestart   => true,
-      provider     => $service_provider,
-      validate     => false,
+      class { 'keystone::service':
+        ensure       => $service_ensure,
+        service_name => $::keystone::params::service_name,
+        enable       => $enabled,
+        hasstatus    => true,
+        hasrestart   => true,
+        provider     => $service_provider,
+        validate     => false,
+      }
     }
   }
 
   if $enabled {
-    include keystone::db::sync
-    Class['keystone::db::sync'] ~> Service['keystone']
+    include ::keystone::db::sync
+    Class['::keystone::db::sync'] ~> Service[$service_name]
   }
 
   # Syslog configuration
