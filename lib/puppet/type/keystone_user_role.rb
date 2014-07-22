@@ -4,8 +4,8 @@ Puppet::Type.newtype(:keystone_user_role) do
     This is currently used to model the creation of
     keystone users roles.
 
-    User roles are an assigment of a role to a user on
-    a certain tenant. The combintation of all of these
+    User roles are an assignment of a role to a user on
+    a certain tenant. The combination of all of these
     attributes is unique.
   EOT
 
@@ -32,11 +32,11 @@ Puppet::Type.newtype(:keystone_user_role) do
   end
 
   autorequire(:keystone_user) do
-    self[:name].split('@', 2).first
+    self[:name].rpartition('@').first
   end
 
   autorequire(:keystone_tenant) do
-    self[:name].split('@', 2).last
+    self[:name].rpartition('@').last
   end
 
   autorequire(:keystone_role) do
