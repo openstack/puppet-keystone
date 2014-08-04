@@ -56,7 +56,8 @@ Puppet::Type.type(:keystone_user_role).provide(
   end
 
   def get_user_and_tenant
-    user, tenant = resource[:name].split('@', 2)
+    user = resource[:name].rpartition('@').first
+    tenant = resource[:name].rpartition('@').last
     self.class.get_user_and_tenant(user, tenant)
   end
 
