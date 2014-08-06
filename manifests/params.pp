@@ -6,9 +6,10 @@ class keystone::params {
 
   case $::osfamily {
     'Debian': {
-      $package_name              = 'keystone'
-      $service_name              = 'keystone'
-      $keystone_wsgi_script_path = '/usr/lib/cgi-bin/keystone'
+      $package_name                 = 'keystone'
+      $service_name                 = 'keystone'
+      $keystone_wsgi_script_path    = '/usr/lib/cgi-bin/keystone'
+      $python_memcache_package_name = 'python-memcache'
       case $::operatingsystem {
         'Debian': {
           $service_provider            = undef
@@ -21,11 +22,12 @@ class keystone::params {
       }
     }
     'RedHat': {
-      $package_name                = 'openstack-keystone'
-      $service_name                = 'openstack-keystone'
-      $keystone_wsgi_script_path   = '/var/www/cgi-bin/keystone'
-      $service_provider            = undef
-      $keystone_wsgi_script_source = 'puppet:///modules/keystone/httpd/keystone.py'
+      $package_name                 = 'openstack-keystone'
+      $service_name                 = 'openstack-keystone'
+      $keystone_wsgi_script_path    = '/var/www/cgi-bin/keystone'
+      $python_memcache_package_name = 'python-memcached'
+      $service_provider             = undef
+      $keystone_wsgi_script_source  = 'puppet:///modules/keystone/httpd/keystone.py'
     }
   }
 }
