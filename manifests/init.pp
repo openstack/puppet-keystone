@@ -54,7 +54,23 @@
 #   [*idle_timeout*]
 #     (optional) Deprecated. Use database_idle_timeout instead.
 #
-#   [enable_pki_setup] Enable call to pki_setup.
+#   [enable_pki_setup] Enable call to pki_setup to generate the cert for signing pki tokens,
+#     if it doesn't already exist. This generates a cert and key stored in file locations
+#     based on the signing_certfile and signing_keyfile paramters below. If you are providing
+#     your own signing cert, make this false.
+#   [signing_certfile] Location of the cert file for signing pki tokens. Optional. Note that if
+#     this file already exists (i.e. you are providing your own signing cert), the file will
+#     not be overwritten, even if enable_pki_setup is set to true.
+#     Default: /etc/keystone/ssl/certs/signing_cert.pem
+#   [signing_keyfile] Location of the key file for signing pki tokens. Optional. Note that if
+#     this file already exists (i.e. you are providing your own signing cert), the file will not
+#     be overwritten, even if enable_pki_setup is set to true.
+#     Default: /etc/keystone/ssl/private/signing_key.pem
+#   [signing_ca_certs] Use this CA certs file along with signing_certfile/signing_keyfile for
+#     signing pki tokens. Optional. Default: /etc/keystone/ssl/certs/ca.pem
+#   [signing_ca_key] Use this CA key file along with signing_certfile/signing_keyfile for signing
+#     pki tokens. Optional. Default: /etc/keystone/ssl/private/cakey.pem
+#
 #   [rabbit_host] Location of rabbitmq installation. Optional. Defaults to localhost.
 #   [rabbit_port] Port for rabbitmq instance. Optional. Defaults to 5672.
 #   [rabbit_hosts] Location of rabbitmq installation. Optional. Defaults to undef.
@@ -231,6 +247,10 @@ class keystone(
   $database_connection   = 'sqlite:////var/lib/keystone/keystone.db',
   $database_idle_timeout = '200',
   $enable_pki_setup      = true,
+  $signing_certfile      = '/etc/keystone/ssl/certs/signing_cert.pem',
+  $signing_keyfile       = '/etc/keystone/ssl/private/signing_key.pem',
+  $signing_ca_certs      = '/etc/keystone/ssl/certs/ca.pem',
+  $signing_ca_key        = '/etc/keystone/ssl/private/cakey.pem',
   $mysql_module          = '0.9',
   $rabbit_host           = 'localhost',
   $rabbit_hosts          = false,
@@ -453,17 +473,25 @@ class keystone(
   keystone_config { 'signing/token_format': ensure => absent }
 
   if ($token_format == false and $token_provider == 'keystone.token.providers.pki.Provider') or $token_format == 'PKI' {
-    keystone_config { 'token/provider': value => 'keystone.token.providers.pki.Provider' }
     file { $cache_dir:
       ensure => directory,
     }
 
+    keystone_config {
+      'token/provider':   value => $token_provider;
+      'signing/certfile': value => $signing_certfile;
+      'signing/keyfile':  value => $signing_keyfile;
+      'signing/ca_certs': value => $signing_ca_certs;
+      'signing/ca_key':   value => $signing_ca_key;
+    }
+
+    # Only do pki_setup if we were asked to do so
     if $enable_pki_setup {
       exec { 'keystone-manage pki_setup':
         path        => '/usr/bin',
         user        => 'keystone',
         refreshonly => true,
-        creates     => '/etc/keystone/ssl/private/signing_key.pem',
+        creates     => $signing_keyfile,
         notify      => Service['keystone'],
         subscribe   => Package['keystone'],
         require     => User['keystone'],
