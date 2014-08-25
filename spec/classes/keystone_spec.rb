@@ -43,6 +43,7 @@ describe 'keystone' do
       'ssl_ca_key'            => '/etc/keystone/ssl/private/cakey.pem',
       'ssl_cert_subject'      => '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
       'enabled'               => true,
+      'manage_service'        => true,
       'database_connection'   => 'sqlite:////var/lib/keystone/keystone.db',
       'database_idle_timeout' => '200',
       'enable_pki_setup'      => true,
@@ -78,6 +79,7 @@ describe 'keystone' do
       'ssl_ca_key'            => '/etc/keystone/ssl/private/cakey.pem',
       'ssl_cert_subject'      => '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
       'enabled'               => false,
+      'manage_service'        => true,
       'database_connection'   => 'mysql://a:b@c/d',
       'database_idle_timeout' => '300',
       'enable_pki_setup'      => true,
@@ -220,7 +222,7 @@ describe 'keystone' do
       it_configures 'core keystone examples', param_hash
 
       it { is_expected.to contain_service('keystone').with(
-        'ensure'     => param_hash['enabled'] ? 'running' : 'stopped',
+        'ensure'     => (param_hash['manage_service'] && param_hash['enabled']) ? 'running' : 'stopped',
         'enable'     => param_hash['enabled'],
         'hasstatus'  => true,
         'hasrestart' => true
@@ -246,6 +248,21 @@ describe 'keystone' do
       }.to raise_error(RSpec::Expectations::ExpectationNotMetError, /expected that the catalogue would contain Service\[keystone\]/)
     end
 
+  end
+
+  describe 'with disabled service managing' do
+    let :params do
+      { :admin_token    => 'service_token',
+        :manage_service => false,
+        :enabled        => false }
+    end
+
+    it { is_expected.to contain_service('keystone').with(
+      'ensure'     => nil,
+      'enable'     => false,
+      'hasstatus'  => true,
+      'hasrestart' => true
+    ) }
   end
 
   describe 'when configuring signing token provider' do

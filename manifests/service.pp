@@ -10,7 +10,7 @@
 #
 # [*ensure*]
 #   (optional) The desired state of the keystone service
-#   Defaults to 'running'
+#   Defaults to undef
 #
 # [*service_name*]
 #   (optional) The name of the keystone service
@@ -64,7 +64,7 @@
 #   Defaults to undef
 #
 class keystone::service(
-  $ensure         = 'running',
+  $ensure         = undef,
   $service_name   = $::keystone::params::service_name,
   $enable         = true,
   $hasstatus      = true,
