@@ -6,7 +6,6 @@
 #   * "admin" tenant (defaults to "openstack")
 #   * admin user (that defaults to the "admin" tenant)
 #   * admin role
-#   * _member_ role
 #   * adds admin role to admin user on the "admin" tenant
 #
 # [*Parameters*]
@@ -58,7 +57,7 @@ class keystone::roles::admin(
     password              => $password,
     ignore_default_tenant => $ignore_default_tenant,
   }
-  keystone_role { ['admin', '_member_']:
+  keystone_role { 'admin':
     ensure => present,
   }
   keystone_user_role { "${admin}@${admin_tenant}":

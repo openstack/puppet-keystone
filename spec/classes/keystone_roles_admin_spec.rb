@@ -29,9 +29,7 @@ describe 'keystone::roles::admin' do
       :password               => 'ChangeMe',
       :ignore_default_tenant  => 'false'
     )}
-    ['admin', '_member_'].each do |role_name|
-      it { should contain_keystone_role(role_name).with_ensure('present') }
-    end
+    it { should contain_keystone_role('admin').with_ensure('present') }
     it { should contain_keystone_user_role('admin@openstack').with(
       :roles  => 'admin',
       :ensure => 'present'
