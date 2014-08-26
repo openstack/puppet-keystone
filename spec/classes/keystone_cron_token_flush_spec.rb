@@ -8,7 +8,7 @@ describe 'keystone::cron::token_flush' do
 
   it 'configures a cron' do
     should contain_cron('keystone-manage token_flush').with(
-      :command     => 'keystone-manage token_flush >/var/log/keystone/keystone-tokenflush.log 2>&1',
+      :command     => 'keystone-manage token_flush >>/var/log/keystone/keystone-tokenflush.log 2>&1',
       :environment => 'PATH=/bin:/usr/bin:/usr/sbin',
       :user        => 'keystone',
       :minute      => 1,

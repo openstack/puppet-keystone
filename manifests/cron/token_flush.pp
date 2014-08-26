@@ -45,7 +45,7 @@ class keystone::cron::token_flush (
 ) {
 
   cron { 'keystone-manage token_flush':
-    command     => 'keystone-manage token_flush >/var/log/keystone/keystone-tokenflush.log 2>&1',
+    command     => 'keystone-manage token_flush >>/var/log/keystone/keystone-tokenflush.log 2>&1',
     environment => 'PATH=/bin:/usr/bin:/usr/sbin',
     user        => 'keystone',
     minute      => $minute,
