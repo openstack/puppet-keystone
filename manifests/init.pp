@@ -166,9 +166,7 @@
 #   Defaults to '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost'
 #
 #   [*mysql_module*]
-#   (optional) The mysql puppet module version to use
-#   Tested versions include 0.9 and 2.2
-#   Default to '0.9'
+#   (optional) Deprecated. Does nothing.
 #
 #   [*validate_service*]
 #   (optional) Whether to validate keystone connections after
@@ -251,7 +249,6 @@ class keystone(
   $signing_keyfile       = '/etc/keystone/ssl/private/signing_key.pem',
   $signing_ca_certs      = '/etc/keystone/ssl/certs/ca.pem',
   $signing_ca_key        = '/etc/keystone/ssl/private/cakey.pem',
-  $mysql_module          = '0.9',
   $rabbit_host           = 'localhost',
   $rabbit_hosts          = false,
   $rabbit_password       = 'guest',
@@ -271,12 +268,17 @@ class keystone(
   $validate_cacert       = undef,
   $service_provider      = $::keystone::params::service_provider,
   # DEPRECATED PARAMETERS
+  $mysql_module          = undef,
   $sql_connection        = undef,
   $idle_timeout          = undef,
 ) {
 
   if ! $catalog_driver {
     validate_re($catalog_type, 'template|sql')
+  }
+
+  if $mysql_module {
+    warning('The mysql_module parameter is deprecated. The latest 2.x mysql module will be used.')
   }
 
   if $sql_connection {
@@ -417,12 +419,8 @@ class keystone(
   }
 
   if($database_connection_real =~ /mysql:\/\/\S+:\S+@\S+\/\S+/) {
-    if ($mysql_module >= 2.2) {
-      require 'mysql::bindings'
-      require 'mysql::bindings::python'
-    } else {
-      require 'mysql::python'
-    }
+    require 'mysql::bindings'
+    require 'mysql::bindings::python'
   } elsif($database_connection_real =~ /postgresql:\/\/\S+:\S+@\S+\/\S+/) {
 
   } elsif($database_connection_real =~ /sqlite:\/\//) {
