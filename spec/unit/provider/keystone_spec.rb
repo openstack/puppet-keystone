@@ -88,7 +88,14 @@ describe Puppet::Provider::Keystone do
     end
 
     it 'should use the defined admin_endpoint if available' do
-      mock = {'DEFAULT' => {'admin_endpoint' => 'https://keystone.example.com/v2.0/' }, 'ssl' => {'enable' => 'False'}}
+      mock = {'DEFAULT' => {'admin_endpoint' => 'https://keystone.example.com' }, 'ssl' => {'enable' => 'False'}}
+      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
+      mock.expects(:read).with('/etc/keystone/keystone.conf')
+      klass.get_admin_endpoint.should == 'https://keystone.example.com/v2.0/'
+    end
+
+    it 'should handle an admin_endpoint with a trailing slash' do
+      mock = {'DEFAULT' => {'admin_endpoint' => 'https://keystone.example.com/' }, 'ssl' => {'enable' => 'False'}}
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)
       mock.expects(:read).with('/etc/keystone/keystone.conf')
       klass.get_admin_endpoint.should == 'https://keystone.example.com/v2.0/'

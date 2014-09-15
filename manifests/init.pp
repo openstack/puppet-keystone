@@ -128,7 +128,7 @@
 #   advertised to clients (NOTE: this does NOT affect how
 #   keystone listens for connections) (string value)
 #   If set to false, no public_endpoint will be defined in keystone.conf.
-#   Sample value: 'http://localhost:5000/v2.0/'
+#   Sample value: 'http://localhost:5000/'
 #   Defaults to false
 #
 #   [*admin_endpoint*]
@@ -136,7 +136,7 @@
 #   advertised to clients (NOTE: this does NOT affect how keystone listens
 #   for connections) (string value)
 #   If set to false, no admin_endpoint will be defined in keystone.conf.
-#   Sample value: 'http://localhost:35357/v2.0/'
+#   Sample value: 'http://localhost:35357/'
 #   Defaults to false
 #
 #   [*enable_ssl*]
@@ -182,6 +182,10 @@
 #   (optional) Whether to validate keystone connections
 #   using the specified argument with the --os-cacert option
 #   with keystone client.
+#   Defaults to undef
+#
+#   [*validate_auth_url*]
+#   (optional) The url to validate keystone against
 #   Defaults to undef
 #
 #   [*service_provider*]
@@ -265,6 +269,7 @@ class keystone(
   $control_exchange      = false,
   $validate_service      = false,
   $validate_insecure     = false,
+  $validate_auth_url     = false,
   $validate_cacert       = undef,
   $service_provider      = $::keystone::params::service_provider,
   # DEPRECATED PARAMETERS
@@ -293,6 +298,14 @@ class keystone(
     $database_idle_timeout_real = $idle_timeout
   } else {
     $database_idle_timeout_real = $database_idle_timeout
+  }
+
+  if ($admin_endpoint and 'v2.0' in $admin_endpoint) {
+    warning('Version string /v2.0/ should not be included in keystone::admin_endpoint')
+  }
+
+  if ($public_endpoint and 'v2.0' in $public_endpoint) {
+    warning('Version string /v2.0/ should not be included in keystone::public_endpoint')
   }
 
   File['/etc/keystone/keystone.conf'] -> Keystone_config<||> ~> Service['keystone']
@@ -557,6 +570,13 @@ class keystone(
   }
 
   if $validate_service {
+
+    if $validate_auth_url {
+      $v_auth_url = $validate_auth_url
+    } else {
+      $v_auth_url = $admin_endpoint
+    }
+
     class { 'keystone::service':
       ensure         => $service_ensure,
       service_name   => $::keystone::params::service_name,
@@ -565,7 +585,7 @@ class keystone(
       hasrestart     => true,
       provider       => $service_provider,
       validate       => true,
-      admin_endpoint => $admin_endpoint,
+      admin_endpoint => $v_auth_url,
       admin_token    => $admin_token,
       insecure       => $validate_insecure,
       cacert         => $validate_cacert,

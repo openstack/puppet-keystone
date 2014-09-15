@@ -610,6 +610,38 @@ describe 'keystone' do
     it { should contain_keystone_config('catalog/template_file').with_value('/etc/keystone/default_catalog.templates') }
   end
 
+  describe 'with overridden validation_auth_url' do
+    let :params do
+      {
+        :admin_token            => 'service_token',
+        :validate_service       => true,
+        :validate_auth_url      => 'http://some.host:35357/v2.0',
+        :admin_endpoint         => 'http://some.host:35357'
+      }
+    end
+
+    it { should contain_keystone_config('DEFAULT/admin_endpoint').with_value('http://some.host:35357') }
+    it { should contain_class('keystone::service').with(
+      'validate'       => true,
+      'admin_endpoint' => 'http://some.host:35357/v2.0'
+    )}
+  end
+
+  describe 'with service validation' do
+    let :params do
+      {
+        :admin_token            => 'service_token',
+        :validate_service       => true,
+        :admin_endpoint         => 'http://some.host:35357'
+      }
+    end
+
+    it { should contain_class('keystone::service').with(
+      'validate'       => true,
+      'admin_endpoint' => 'http://some.host:35357'
+    )}
+  end
+
   describe 'setting another template catalog' do
     let :params do
       {
