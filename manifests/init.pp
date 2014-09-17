@@ -271,7 +271,7 @@ class keystone(
   $validate_insecure     = false,
   $validate_auth_url     = false,
   $validate_cacert       = undef,
-  $service_provider      = $::keystone::params::service_provider,
+  $service_provider      = undef,
   # DEPRECATED PARAMETERS
   $mysql_module          = undef,
   $sql_connection        = undef,
@@ -577,13 +577,17 @@ class keystone(
       $v_auth_url = $admin_endpoint
     }
 
+    if ! $service_provider {
+      $real_service_provider = $::keystone::params::service_provider
+    }
+
     class { 'keystone::service':
       ensure         => $service_ensure,
       service_name   => $::keystone::params::service_name,
       enable         => $enabled,
       hasstatus      => true,
       hasrestart     => true,
-      provider       => $service_provider,
+      provider       => $real_service_provider,
       validate       => true,
       admin_endpoint => $v_auth_url,
       admin_token    => $admin_token,
@@ -597,7 +601,7 @@ class keystone(
       enable       => $enabled,
       hasstatus    => true,
       hasrestart   => true,
-      provider     => $service_provider,
+      provider     => $real_service_provider,
       validate     => false,
     }
   }
