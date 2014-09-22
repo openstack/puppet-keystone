@@ -23,6 +23,11 @@ Puppet::Type.newtype(:keystone_user_role) do
   end
 
   newproperty(:roles,  :array_matching => :all) do
+    def insync?(is)
+      return false unless is.is_a? Array
+      # order of roles does not matter
+      is.sort == self.should.sort
+    end
   end
 
   newproperty(:id) do
