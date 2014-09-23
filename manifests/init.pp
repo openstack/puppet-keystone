@@ -27,7 +27,7 @@
 #   [catalog_template_file] Path to the catalog used if catalog_type equals 'template'.
 #     Defaults to '/etc/keystone/default_catalog.templates'
 #   [token_provider] Format keystone uses for tokens. Optional.
-#     Defaults to 'keystone.token.providers.pki.Provider'
+#     Defaults to 'keystone.token.providers.uuid.Provider'
 #     Supports PKI and UUID.
 #   [token_driver] Driver to use for managing tokens.
 #     Optional.  Defaults to 'keystone.token.backends.sql.Token'
@@ -232,7 +232,7 @@ class keystone(
   $catalog_driver        = false,
   $catalog_template_file = '/etc/keystone/default_catalog.templates',
   $token_format          = false,
-  $token_provider        = 'keystone.token.providers.pki.Provider',
+  $token_provider        = 'keystone.token.providers.uuid.Provider',
   $token_driver          = 'keystone.token.backends.sql.Token',
   $token_expiration      = 3600,
   $public_endpoint       = false,

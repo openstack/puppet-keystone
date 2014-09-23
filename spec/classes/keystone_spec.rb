@@ -19,7 +19,7 @@ describe 'keystone' do
       'debug'                 => false,
       'catalog_type'          => 'sql',
       'catalog_driver'        => false,
-      'token_provider'        => 'keystone.token.providers.pki.Provider',
+      'token_provider'        => 'keystone.token.providers.uuid.Provider',
       'token_driver'          => 'keystone.token.backends.sql.Token',
       'cache_dir'             => '/var/cache/keystone',
       'enable_ssl'            => false,
@@ -475,28 +475,6 @@ describe 'keystone' do
     it { should contain_keystone_config('DEFAULT/admin_bind_host').with_value('10.0.0.2') }
   end
 
-  describe 'when configuring as SSL' do
-    let :params do
-      {
-        'admin_token' => 'service_token',
-        'enable_ssl'  => true
-      }
-    end
-    it { should contain_exec('keystone-manage pki_setup').with(
-      :creates => '/etc/keystone/ssl/private/signing_key.pem'
-    ) }
-    it { should contain_file('/var/cache/keystone').with_ensure('directory') }
-    describe 'when overriding the cache dir' do
-      let :params do
-        {
-          'admin_token' => 'service_token',
-          'enable_ssl'  => true,
-          'cache_dir'   => '/var/lib/cache/keystone'
-        }
-      end
-      it { should contain_file('/var/lib/cache/keystone') }
-    end
-  end
   describe 'when enabling SSL' do
     let :params do
       {
