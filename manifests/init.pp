@@ -54,22 +54,22 @@
 #   [*idle_timeout*]
 #     (optional) Deprecated. Use database_idle_timeout instead.
 #
-#   [enable_pki_setup] Enable call to pki_setup to generate the cert for signing pki tokens,
-#     if it doesn't already exist. This generates a cert and key stored in file locations
-#     based on the signing_certfile and signing_keyfile paramters below. If you are providing
-#     your own signing cert, make this false.
-#   [signing_certfile] Location of the cert file for signing pki tokens. Optional. Note that if
-#     this file already exists (i.e. you are providing your own signing cert), the file will
-#     not be overwritten, even if enable_pki_setup is set to true.
+#   [enable_pki_setup] Enable call to pki_setup to generate the cert for signing pki tokens and
+#     revocation lists if it doesn't already exist. This generates a cert and key stored in file
+#     locations based on the signing_certfile and signing_keyfile paramters below. If you are
+#     providing your own signing cert, make this false.
+#   [signing_certfile] Location of the cert file for signing pki tokens and revocation lists.
+#     Optional. Note that if this file already exists (i.e. you are providing your own signing cert),
+#     the file will not be overwritten, even if enable_pki_setup is set to true.
 #     Default: /etc/keystone/ssl/certs/signing_cert.pem
-#   [signing_keyfile] Location of the key file for signing pki tokens. Optional. Note that if
-#     this file already exists (i.e. you are providing your own signing cert), the file will not
-#     be overwritten, even if enable_pki_setup is set to true.
+#   [signing_keyfile] Location of the key file for signing pki tokens and revocation lists. Optional.
+#     Note that if this file already exists (i.e. you are providing your own signing cert), the file
+#     will not be overwritten, even if enable_pki_setup is set to true.
 #     Default: /etc/keystone/ssl/private/signing_key.pem
 #   [signing_ca_certs] Use this CA certs file along with signing_certfile/signing_keyfile for
-#     signing pki tokens. Optional. Default: /etc/keystone/ssl/certs/ca.pem
+#     signing pki tokens and revocation lists. Optional. Default: /etc/keystone/ssl/certs/ca.pem
 #   [signing_ca_key] Use this CA key file along with signing_certfile/signing_keyfile for signing
-#     pki tokens. Optional. Default: /etc/keystone/ssl/private/cakey.pem
+#     pki tokens and revocation lists. Optional. Default: /etc/keystone/ssl/private/cakey.pem
 #
 #   [rabbit_host] Location of rabbitmq installation. Optional. Defaults to localhost.
 #   [rabbit_port] Port for rabbitmq instance. Optional. Defaults to 5672.
@@ -483,31 +483,36 @@ class keystone(
   # remove the old format in case of an upgrade
   keystone_config { 'signing/token_format': ensure => absent }
 
+  # Set the signing key/cert configuration values.
+  keystone_config {
+    'signing/certfile': value => $signing_certfile;
+    'signing/keyfile':  value => $signing_keyfile;
+    'signing/ca_certs': value => $signing_ca_certs;
+    'signing/ca_key':   value => $signing_ca_key;
+  }
+
+  # Create cache directory used for signing.
+  file { $cache_dir:
+    ensure => directory,
+  }
+
+  # Only do pki_setup if we were asked to do so.  This is needed
+  # regardless of the token provider since token revocation lists
+  # are always signed.
+  if $enable_pki_setup {
+    exec { 'keystone-manage pki_setup':
+      path        => '/usr/bin',
+      user        => 'keystone',
+      refreshonly => true,
+      creates     => $signing_keyfile,
+      notify      => Service['keystone'],
+      subscribe   => Package['keystone'],
+      require     => User['keystone'],
+    }
+  }
+
   if ($token_format == false and $token_provider == 'keystone.token.providers.pki.Provider') or $token_format == 'PKI' {
-    file { $cache_dir:
-      ensure => directory,
-    }
-
-    keystone_config {
-      'token/provider':   value => $token_provider;
-      'signing/certfile': value => $signing_certfile;
-      'signing/keyfile':  value => $signing_keyfile;
-      'signing/ca_certs': value => $signing_ca_certs;
-      'signing/ca_key':   value => $signing_ca_key;
-    }
-
-    # Only do pki_setup if we were asked to do so
-    if $enable_pki_setup {
-      exec { 'keystone-manage pki_setup':
-        path        => '/usr/bin',
-        user        => 'keystone',
-        refreshonly => true,
-        creates     => $signing_keyfile,
-        notify      => Service['keystone'],
-        subscribe   => Package['keystone'],
-        require     => User['keystone'],
-      }
-    }
+    keystone_config { 'token/provider': value => 'keystone.token.providers.pki.Provider' }
   } elsif $token_format == 'UUID' {
     keystone_config { 'token/provider': value => 'keystone.token.providers.uuid.Provider' }
   } else {
