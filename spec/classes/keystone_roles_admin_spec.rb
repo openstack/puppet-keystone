@@ -77,4 +77,31 @@ describe 'keystone::roles::admin' do
 
   end
 
+  describe 'when disabling user configuration' do
+    before do
+      let :params do
+        {
+          :configure_user => false
+        }
+      end
+
+      it { should_not contain_keystone_user('keystone') }
+      it { should contain_keystone_user_role('keystone@openstack') }
+    end
+  end
+
+  describe 'when disabling user and role configuration' do
+    before do
+      let :params do
+        {
+          :configure_user       => false,
+          :configure_user_role  => false
+        }
+      end
+
+      it { should_not contain_keystone_user('keystone') }
+      it { should_not contain_keystone_user_role('keystone@openstack') }
+    end
+  end
+
 end

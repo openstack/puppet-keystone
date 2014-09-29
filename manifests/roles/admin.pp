@@ -17,6 +17,8 @@
 # [ignore_default_tenant] Ignore setting the default tenant value when the user is created. Optional. Defaults to false.
 # [admin_tenant_desc] Optional. Description for admin tenant, defaults to 'admin tenant'
 # [service_tenant_desc] Optional. Description for admin tenant, defaults to 'Tenant for the openstack services'
+# [configure_user] Optional. Should the admin user be created? Defaults to 'true'.
+# [configure_user_role] Optional. Should the admin role be configured for the admin user? Defaulst to 'true'.
 #
 # == Dependencies
 # == Examples
@@ -37,6 +39,8 @@ class keystone::roles::admin(
   $ignore_default_tenant  = false,
   $admin_tenant_desc      = 'admin tenant',
   $service_tenant_desc    = 'Tenant for the openstack services',
+  $configure_user         = true,
+  $configure_user_role    = true,
 ) {
 
   keystone_tenant { $service_tenant:
@@ -49,20 +53,26 @@ class keystone::roles::admin(
     enabled     => true,
     description => $admin_tenant_desc,
   }
-  keystone_user { $admin:
-    ensure                => present,
-    enabled               => true,
-    tenant                => $admin_tenant,
-    email                 => $email,
-    password              => $password,
-    ignore_default_tenant => $ignore_default_tenant,
-  }
   keystone_role { 'admin':
     ensure => present,
   }
-  keystone_user_role { "${admin}@${admin_tenant}":
-    ensure => present,
-    roles  => 'admin',
+
+  if $configure_user {
+    keystone_user { $admin:
+      ensure                => present,
+      enabled               => true,
+      tenant                => $admin_tenant,
+      email                 => $email,
+      password              => $password,
+      ignore_default_tenant => $ignore_default_tenant,
+    }
+  }
+
+  if $configure_user_role {
+    keystone_user_role { "${admin}@${admin_tenant}":
+      ensure => present,
+      roles  => 'admin',
+    }
   }
 
 }
