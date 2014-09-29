@@ -305,7 +305,7 @@ class keystone(
   $mysql_module          = undef,
   $sql_connection        = undef,
   $idle_timeout          = undef,
-) {
+) inherits keystone::params {
 
   if ! $catalog_driver {
     validate_re($catalog_type, 'template|sql')
