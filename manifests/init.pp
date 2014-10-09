@@ -36,8 +36,33 @@
 #   [token_format] Deprecated: Use token_provider instead.
 #   [cache_dir] Directory created when token_provider is pki. Optional.
 #     Defaults to /var/cache/keystone.
-#   [memcache_servers] List of memcache servers/ports. Optional. Used with
-#     token_driver keystone.token.backends.memcache.Token.  Defaults to false.
+#
+#   [memcache_servers]
+#     List of memcache servers in format of server:port.
+#     Used with token_driver 'keystone.token.backends.memcache.Token'.
+#     Optional. Defaults to false. Example: ['localhost:11211']
+#
+#   [cache_backend]
+#     Dogpile.cache backend module. It is recommended that Memcache with pooling
+#     (keystone.cache.memcache_pool) or Redis (dogpile.cache.redis) be used in production.
+#     This has no effects unless 'memcache_servers' is set.
+#     Optional. Defaults to 'keystone.common.cache.noop'
+#
+#   [cache_backend_argument]
+#     List of arguments in format of argname:value supplied to the backend module.
+#     Specify this option once per argument to be passed to the dogpile.cache backend.
+#     This has no effects unless 'memcache_servers' is set.
+#     Optional. Default to undef.
+#
+#   [debug_cache_backend]
+#     Extra debugging from the cache backend (cache keys, get/set/delete calls).
+#     This has no effects unless 'memcache_servers' is set.
+#     Optional. Default to false.
+#
+#   [token_caching]
+#     Toggle for token system caching. This has no effects unless 'memcache_servers' is set.
+#     Optional. Default to true.
+#
 #   [enabled] If the keystone services should be enabled. Optional. Default to true.
 #
 #   [*database_connection*]
@@ -251,70 +276,74 @@
 #
 class keystone(
   $admin_token,
-  $package_ensure        = 'present',
-  $bind_host             = false,
-  $public_bind_host      = '0.0.0.0',
-  $admin_bind_host       = '0.0.0.0',
-  $public_port           = '5000',
-  $admin_port            = '35357',
-  $compute_port          = '8774',
-  $verbose               = false,
-  $debug                 = false,
-  $log_dir               = '/var/log/keystone',
-  $log_file              = false,
-  $use_syslog            = false,
-  $log_facility          = 'LOG_USER',
-  $catalog_type          = 'sql',
-  $catalog_driver        = false,
-  $catalog_template_file = '/etc/keystone/default_catalog.templates',
-  $token_format          = false,
-  $token_provider        = 'keystone.token.providers.uuid.Provider',
-  $token_driver          = 'keystone.token.persistence.backends.sql.Token',
-  $token_expiration      = 3600,
-  $public_endpoint       = false,
-  $admin_endpoint        = false,
-  $enable_ssl            = false,
-  $ssl_certfile          = '/etc/keystone/ssl/certs/keystone.pem',
-  $ssl_keyfile           = '/etc/keystone/ssl/private/keystonekey.pem',
-  $ssl_ca_certs          = '/etc/keystone/ssl/certs/ca.pem',
-  $ssl_ca_key            = '/etc/keystone/ssl/private/cakey.pem',
-  $ssl_cert_subject      = '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
-  $cache_dir             = '/var/cache/keystone',
-  $memcache_servers      = false,
-  $enabled               = true,
-  $database_connection   = 'sqlite:////var/lib/keystone/keystone.db',
-  $database_idle_timeout = '200',
-  $enable_pki_setup      = true,
-  $signing_certfile      = '/etc/keystone/ssl/certs/signing_cert.pem',
-  $signing_keyfile       = '/etc/keystone/ssl/private/signing_key.pem',
-  $signing_ca_certs      = '/etc/keystone/ssl/certs/ca.pem',
-  $signing_ca_key        = '/etc/keystone/ssl/private/cakey.pem',
-  $signing_cert_subject  = '/C=US/ST=Unset/L=Unset/O=Unset/CN=www.example.com',
-  $signing_key_size      = 2048,
-  $rabbit_host           = 'localhost',
-  $rabbit_hosts          = false,
-  $rabbit_password       = 'guest',
-  $rabbit_port           = '5672',
-  $rabbit_userid         = 'guest',
-  $rabbit_virtual_host   = '/',
-  $rabbit_use_ssl        = false,
-  $kombu_ssl_ca_certs    = undef,
-  $kombu_ssl_certfile    = undef,
-  $kombu_ssl_keyfile     = undef,
-  $kombu_ssl_version     = 'SSLv3',
-  $notification_driver   = false,
-  $notification_topics   = false,
-  $control_exchange      = false,
-  $validate_service      = false,
-  $validate_insecure     = false,
-  $validate_auth_url     = false,
-  $validate_cacert       = undef,
-  $service_provider      = $::keystone::params::service_provider,
-  $service_name          = 'keystone',
+  $package_ensure         = 'present',
+  $bind_host              = false,
+  $public_bind_host       = '0.0.0.0',
+  $admin_bind_host        = '0.0.0.0',
+  $public_port            = '5000',
+  $admin_port             = '35357',
+  $compute_port           = '8774',
+  $verbose                = false,
+  $debug                  = false,
+  $log_dir                = '/var/log/keystone',
+  $log_file               = false,
+  $use_syslog             = false,
+  $log_facility           = 'LOG_USER',
+  $catalog_type           = 'sql',
+  $catalog_driver         = false,
+  $catalog_template_file  = '/etc/keystone/default_catalog.templates',
+  $token_format           = false,
+  $token_provider         = 'keystone.token.providers.uuid.Provider',
+  $token_driver           = 'keystone.token.persistence.backends.sql.Token',
+  $token_expiration       = 3600,
+  $public_endpoint        = false,
+  $admin_endpoint         = false,
+  $enable_ssl             = false,
+  $ssl_certfile           = '/etc/keystone/ssl/certs/keystone.pem',
+  $ssl_keyfile            = '/etc/keystone/ssl/private/keystonekey.pem',
+  $ssl_ca_certs           = '/etc/keystone/ssl/certs/ca.pem',
+  $ssl_ca_key             = '/etc/keystone/ssl/private/cakey.pem',
+  $ssl_cert_subject       = '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
+  $cache_dir              = '/var/cache/keystone',
+  $memcache_servers       = false,
+  $cache_backend          = 'keystone.common.cache.noop',
+  $cache_backend_argument = undef,
+  $debug_cache_backend    = false,
+  $token_caching          = true,
+  $enabled                = true,
+  $database_connection    = 'sqlite:////var/lib/keystone/keystone.db',
+  $database_idle_timeout  = '200',
+  $enable_pki_setup       = true,
+  $signing_certfile       = '/etc/keystone/ssl/certs/signing_cert.pem',
+  $signing_keyfile        = '/etc/keystone/ssl/private/signing_key.pem',
+  $signing_ca_certs       = '/etc/keystone/ssl/certs/ca.pem',
+  $signing_ca_key         = '/etc/keystone/ssl/private/cakey.pem',
+  $signing_cert_subject   = '/C=US/ST=Unset/L=Unset/O=Unset/CN=www.example.com',
+  $signing_key_size       = 2048,
+  $rabbit_host            = 'localhost',
+  $rabbit_hosts           = false,
+  $rabbit_password        = 'guest',
+  $rabbit_port            = '5672',
+  $rabbit_userid          = 'guest',
+  $rabbit_virtual_host    = '/',
+  $rabbit_use_ssl         = false,
+  $kombu_ssl_ca_certs     = undef,
+  $kombu_ssl_certfile     = undef,
+  $kombu_ssl_keyfile      = undef,
+  $kombu_ssl_version      = 'SSLv3',
+  $notification_driver    = false,
+  $notification_topics    = false,
+  $control_exchange       = false,
+  $validate_service       = false,
+  $validate_insecure      = false,
+  $validate_auth_url      = false,
+  $validate_cacert        = undef,
+  $service_provider       = $::keystone::params::service_provider,
+  $service_name           = 'keystone',
   # DEPRECATED PARAMETERS
-  $mysql_module          = undef,
-  $sql_connection        = undef,
-  $idle_timeout          = undef,
+  $mysql_module           = undef,
+  $sql_connection         = undef,
+  $idle_timeout           = undef,
 ) inherits keystone::params {
 
   if ! $catalog_driver {
@@ -484,12 +513,32 @@ class keystone(
   # memcache connection config
   if $memcache_servers {
     validate_array($memcache_servers)
+    Service<| title == 'memcached' |> -> Service['keystone']
     keystone_config {
-      'memcache/servers': value => join($memcache_servers, ',');
+      'cache/enabled':              value => true;
+      'cache/backend':              value => $cache_backend;
+      'cache/debug_cache_backend':  value => $debug_cache_backend;
+      'token/caching':              value => $token_caching;
+      'memcache/servers':           value => join($memcache_servers, ',');
+    }
+    if $cache_backend_argument {
+      validate_array($cache_backend_argument)
+      keystone_config {
+        'cache/backend_argument':   value => join($cache_backend_argument, ',');
+      }
+    } else {
+      keystone_config {
+        'cache/backend_argument':  ensure => absent;
+      }
     }
   } else {
     keystone_config {
-      'memcache/servers': ensure => absent;
+      'cache/enabled':             ensure => absent;
+      'cache/backend':             ensure => absent;
+      'cache/backend_argument':    ensure => absent;
+      'cache/debug_cache_backend': ensure => absent;
+      'token/caching':             ensure => absent;
+      'memcache/servers':          ensure => absent;
     }
   }
 
