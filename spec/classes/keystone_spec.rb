@@ -54,6 +54,8 @@ describe 'keystone' do
       'rabbit_host'           => 'localhost',
       'rabbit_password'       => 'guest',
       'rabbit_userid'         => 'guest',
+      'admin_workers'         => 20,
+      'public_workers'        => 20,
     }
 
   override_params = {
@@ -90,8 +92,6 @@ describe 'keystone' do
       'rabbit_host'           => '127.0.0.1',
       'rabbit_password'       => 'openstack',
       'rabbit_userid'         => 'admin',
-      'admin_workers'         => 20,
-      'public_workers'        => 20,
     }
 
   httpd_params = {'service_name' => 'httpd'}.merge(default_params)
@@ -231,7 +231,7 @@ describe 'keystone' do
     end
   end
 
-  describe "when using default class parameters for httpd" do
+  shared_examples_for "when using default class parameters for httpd" do
     let :params do
       httpd_params
     end
@@ -244,10 +244,22 @@ describe 'keystone' do
 
     it do
       expect {
-        is_expected.to contain_service('keystone')
-      }.to raise_error(RSpec::Expectations::ExpectationNotMetError, /expected that the catalogue would contain Service\[keystone\]/)
+        should contain_service(platform_parameters[:service_name]).with('ensure' => 'running')
+      }.to raise_error(RSpec::Expectations::ExpectationNotMetError, /expected that the catalogue would contain Service\[#{platform_parameters[:service_name]}\]/)
     end
 
+    it { should contain_class('keystone::service').with(
+      'ensure'          => 'stopped',
+      'service_name'    => platform_parameters[:service_name],
+      'enable'          => false,
+      'validate'        => false
+    )}
+  end
+
+  describe 'when using invalid service name for keystone' do
+    let (:params) { {'service_name' => 'foo'}.merge(default_params) }
+
+    it_raises 'a Puppet::Error', /Invalid service_name/
   end
 
   describe 'with disabled service managing' do
@@ -787,5 +799,40 @@ describe 'keystone' do
           '/usr/share/keystone/keystone-paste.ini'
       )}
     end
+  end
+
+  context 'on RedHat platforms' do
+    let :facts do
+      global_facts.merge({
+        :osfamily               => 'RedHat',
+        :operatingsystemrelease => '7.0'
+      })
+    end
+
+    let :platform_parameters do
+      {
+        :service_name => 'openstack-keystone'
+      }
+    end
+
+    it_configures 'when using default class parameters for httpd'
+  end
+
+  context 'on Debian platforms' do
+    let :facts do
+      global_facts.merge({
+        :osfamily               => 'Debian',
+        :operatingsystem        => 'Debian',
+        :operatingsystemrelease => '7.0'
+      })
+    end
+
+    let :platform_parameters do
+      {
+        :service_name => 'keystone'
+      }
+    end
+
+    it_configures 'when using default class parameters for httpd'
   end
 end

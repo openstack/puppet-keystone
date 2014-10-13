@@ -318,8 +318,8 @@
 #   web service.  For example, after calling class {'keystone'...}
 #   use class { 'keystone::wsgi::apache'...} to make keystone be
 #   a web app using apache mod_wsgi.
-#   Defaults to 'keystone'
-#   NOTE: validate_service only applies if the value is 'keystone'
+#   Defaults to '$::keystone::params::service_name'
+#   NOTE: validate_service only applies if the default value is used.
 #
 # [*paste_config*]
 #   (optional) Name of the paste configuration file that defines the
@@ -434,7 +434,7 @@ class keystone(
   $validate_cacert        = undef,
   $paste_config           = $::keystone::params::paste_config,
   $service_provider       = $::keystone::params::service_provider,
-  $service_name           = 'keystone',
+  $service_name           = $::keystone::params::service_name,
   $max_token_size         = undef,
   $admin_workers          = max($::processorcount, 2),
   $public_workers         = max($::processorcount, 2),
@@ -761,7 +761,7 @@ class keystone(
     }
   }
 
-  if $service_name == 'keystone' {
+  if $service_name == $::keystone::params::service_name {
     if $validate_service {
       if $validate_auth_url {
         $v_auth_url = $validate_auth_url
@@ -771,7 +771,7 @@ class keystone(
 
       class { '::keystone::service':
         ensure         => $service_ensure,
-        service_name   => $::keystone::params::service_name,
+        service_name   => $service_name,
         enable         => $enabled,
         hasstatus      => true,
         hasrestart     => true,
@@ -785,7 +785,7 @@ class keystone(
     } else {
       class { '::keystone::service':
         ensure       => $service_ensure,
-        service_name => $::keystone::params::service_name,
+        service_name => $service_name,
         enable       => $enabled,
         hasstatus    => true,
         hasrestart   => true,
@@ -793,6 +793,16 @@ class keystone(
         validate     => false,
       }
     }
+  } elsif $service_name == 'httpd' {
+    class { '::keystone::service':
+      ensure       => 'stopped',
+      service_name => $::keystone::params::service_name,
+      enable       => false,
+      provider     => $service_provider,
+      validate     => false,
+    }
+  } else {
+    fail('Invalid service_name. Either keystone/openstack-keystone for running as a standalone service, or httpd for being run by a httpd server')
   }
 
   if $enabled {
