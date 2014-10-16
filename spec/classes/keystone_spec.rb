@@ -294,13 +294,15 @@ describe 'keystone' do
     describe 'when configuring PKI signing cert paths with UUID and with pki_setup disabled' do
       let :params do
         {
-          'admin_token'       => 'service_token',
-          'token_provider'    => 'keystone.token.providers.uuid.Provider',
-          'enable_pki_setup'  => false,
-          'signing_certfile'  => 'signing_certfile',
-          'signing_keyfile'   => 'signing_keyfile',
-          'signing_ca_certs'  => 'signing_ca_certs',
-          'signing_ca_key'    => 'signing_ca_key'
+          'admin_token'          => 'service_token',
+          'token_provider'       => 'keystone.token.providers.uuid.Provider',
+          'enable_pki_setup'     => false,
+          'signing_certfile'     => 'signing_certfile',
+          'signing_keyfile'      => 'signing_keyfile',
+          'signing_ca_certs'     => 'signing_ca_certs',
+          'signing_ca_key'       => 'signing_ca_key',
+          'signing_cert_subject' => 'signing_cert_subject',
+          'signing_key_size'     => 2048
         }
       end
 
@@ -320,19 +322,29 @@ describe 'keystone' do
 
       it 'should contain correct PKI ca_key config' do
         should contain_keystone_config('signing/ca_key').with_value('signing_ca_key')
+      end
+
+      it 'should contain correct PKI cert_subject config' do
+        should contain_keystone_config('signing/cert_subject').with_value('signing_cert_subject')
+      end
+
+      it 'should contain correct PKI key_size config' do
+        should contain_keystone_config('signing/key_size').with_value('2048')
       end
     end
 
     describe 'when configuring PKI signing cert paths with pki_setup disabled' do
       let :params do
         {
-          'admin_token'       => 'service_token',
-          'token_provider'    => 'keystone.token.providers.pki.Provider',
-          'enable_pki_setup'  => false,
-          'signing_certfile'  => 'signing_certfile',
-          'signing_keyfile'   => 'signing_keyfile',
-          'signing_ca_certs'  => 'signing_ca_certs',
-          'signing_ca_key'    => 'signing_ca_key'
+          'admin_token'          => 'service_token',
+          'token_provider'       => 'keystone.token.providers.pki.Provider',
+          'enable_pki_setup'     => false,
+          'signing_certfile'     => 'signing_certfile',
+          'signing_keyfile'      => 'signing_keyfile',
+          'signing_ca_certs'     => 'signing_ca_certs',
+          'signing_ca_key'       => 'signing_ca_key',
+          'signing_cert_subject' => 'signing_cert_subject',
+          'signing_key_size'     => 2048
         }
       end
 
@@ -352,6 +364,14 @@ describe 'keystone' do
 
       it 'should contain correct PKI ca_key config' do
         should contain_keystone_config('signing/ca_key').with_value('signing_ca_key')
+      end
+
+      it 'should contain correct PKI cert_subject config' do
+        should contain_keystone_config('signing/cert_subject').with_value('signing_cert_subject')
+      end
+
+      it 'should contain correct PKI key_size config' do
+        should contain_keystone_config('signing/key_size').with_value('2048')
       end
     end
 
