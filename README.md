@@ -1,7 +1,7 @@
 keystone
 =======
 
-4.0.0 - 2014.1.0 - Icehouse
+4.2.0 - 2014.1.0 - Icehouse
 
 #### Table of Contents
 
@@ -164,6 +164,13 @@ Contributors
 
 Release Notes
 -------------
+
+**4.2.0**
+
+* Added class for extended logging options
+* Fixed rabbit password leaking
+* Added parameters to set tenant descriptions
+* Fixed keystone user authorization error handling
 
 **4.1.0**
 
