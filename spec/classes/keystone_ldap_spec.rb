@@ -19,6 +19,7 @@ describe 'keystone::ldap' do
         :user_enabled_attribute => 'UserAccountControl',
         :user_enabled_mask => '2',
         :user_enabled_default => '512',
+        :user_enabled_invert => 'False',
         :user_attribute_ignore => '',
         :user_default_project_id_attribute => 'defaultProject',
         :user_allow_create => 'False',
@@ -34,7 +35,7 @@ describe 'keystone::ldap' do
         :tenant_id_attribute => 'ou',
         :tenant_member_attribute => 'member',
         :tenant_desc_attribute => 'description',
-        :tenant_name_attribute => 'ou', 
+        :tenant_name_attribute => 'ou',
         :tenant_enabled_attribute => 'enabled',
         :tenant_domain_id_attribute => 'businessCategory',
         :tenant_attribute_ignore => '',
@@ -105,6 +106,7 @@ describe 'keystone::ldap' do
       should contain_keystone_config('ldap/user_enabled_attribute').with_value('UserAccountControl')
       should contain_keystone_config('ldap/user_enabled_mask').with_value('2')
       should contain_keystone_config('ldap/user_enabled_default').with_value('512')
+      should contain_keystone_config('ldap/user_enabled_invert').with_value('False')
       should contain_keystone_config('ldap/user_attribute_ignore').with_value('')
       should contain_keystone_config('ldap/user_default_project_id_attribute').with_value('defaultProject')
       should contain_keystone_config('ldap/user_tree_dn').with_value('cn=users,dc=example,dc=com')

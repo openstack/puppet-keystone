@@ -28,6 +28,7 @@ class keystone::ldap(
   $user_enabled_attribute              = undef,
   $user_enabled_mask                   = undef,
   $user_enabled_default                = undef,
+  $user_enabled_invert                 = undef,
   $user_attribute_ignore               = undef,
   $user_default_project_id_attribute   = undef,
   $user_allow_create                   = undef,
@@ -133,6 +134,7 @@ class keystone::ldap(
     'ldap/user_enabled_attribute':               value => $user_enabled_attribute;
     'ldap/user_enabled_mask':                    value => $user_enabled_mask;
     'ldap/user_enabled_default':                 value => $user_enabled_default;
+    'ldap/user_enabled_invert':                  value => $user_enabled_invert;
     'ldap/user_attribute_ignore':                value => $user_attribute_ignore;
     'ldap/user_default_project_id_attribute':    value => $user_default_project_id_attribute;
     'ldap/user_allow_create':                    value => $user_allow_create;
