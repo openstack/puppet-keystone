@@ -30,7 +30,7 @@
 #     Defaults to 'keystone.token.providers.uuid.Provider'
 #     Supports PKI and UUID.
 #   [token_driver] Driver to use for managing tokens.
-#     Optional.  Defaults to 'keystone.token.backends.sql.Token'
+#     Optional.  Defaults to 'keystone.token.persistence.backends.sql.Token'
 #   [token_expiration] Amount of time a token should remain valid (seconds).
 #     Optional.  Defaults to 3600 (1 hour).
 #   [token_format] Deprecated: Use token_provider instead.
@@ -269,7 +269,7 @@ class keystone(
   $catalog_template_file = '/etc/keystone/default_catalog.templates',
   $token_format          = false,
   $token_provider        = 'keystone.token.providers.uuid.Provider',
-  $token_driver          = 'keystone.token.backends.sql.Token',
+  $token_driver          = 'keystone.token.persistence.backends.sql.Token',
   $token_expiration      = 3600,
   $public_endpoint       = false,
   $admin_endpoint        = false,

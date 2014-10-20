@@ -32,7 +32,7 @@ describe 'keystone' do
       'catalog_type'          => 'sql',
       'catalog_driver'        => false,
       'token_provider'        => 'keystone.token.providers.uuid.Provider',
-      'token_driver'          => 'keystone.token.backends.sql.Token',
+      'token_driver'          => 'keystone.token.persistence.backends.sql.Token',
       'cache_dir'             => '/var/cache/keystone',
       'enable_ssl'            => false,
       'ssl_certfile'          => '/etc/keystone/ssl/certs/keystone.pem',

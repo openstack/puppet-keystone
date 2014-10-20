@@ -35,10 +35,13 @@
 #    (optional) Hash of logger (keys) and level (values) pairs.
 #    Defaults to undef.
 #    Example:
-#      { 'amqp' => 'WARN', 'amqplib' => 'WARN', 'boto' => 'WARN',
-#        'qpid' => 'WARN', 'sqlalchemy' => 'WARN', 'suds' => 'INFO',
-#        'iso8601' => 'WARN',
-#        'requests.packages.urllib3.connectionpool' => 'WARN' }
+#      { 'amqp'  => 'WARN', 'amqplib' => 'WARN', 'boto' => 'WARN',
+#           'qpid' => 'WARN', 'sqlalchemy' => 'WARN', 'suds' => 'INFO',
+#           'oslo.messaging' => 'INFO', 'iso8601' => 'WARN',
+#           'requests.packages.urllib3.connectionpool' => 'WARN',
+#           'urllib3.connectionpool' => 'WARN',
+#           'websocket' => 'WARN', 'keystonemiddleware' => 'WARN',
+#           'routes.middleware' => 'WARN', stevedore => 'WARN' }
 #
 #  [*publish_errors*]
 #    (optional) Publish error events (boolean value).
