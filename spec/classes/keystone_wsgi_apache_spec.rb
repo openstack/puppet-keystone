@@ -265,6 +265,21 @@ describe 'keystone::wsgi::apache' do
         'require' => ["File[#{platform_parameters[:wsgi_script_path]}]", "Package[keystone]"]
       )}
     end
+
+    describe 'when overriding parameters using wsgi chunked request' do
+      let :params do
+        {
+          :wsgi_chunked_request => 'On'
+        }
+      end
+
+      it { is_expected.to contain_apache__vhost('keystone_wsgi_admin').with(
+        'wsgi_chunked_request' => 'On'
+      )}
+      it { is_expected.to contain_apache__vhost('keystone_wsgi_main').with(
+        'wsgi_chunked_request' => 'On'
+      )}
+    end
   end
 
   context 'on RedHat platforms' do
