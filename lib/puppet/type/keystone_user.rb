@@ -11,9 +11,12 @@ Puppet::Type.newtype(:keystone_user) do
     newvalues(/\S+/)
   end
 
-  newparam(:ignore_default_tenant, :boolean => true) do
-    newvalues(:true, :false)
-    defaultto false
+  newparam(:ignore_default_tenant) do
+    newvalues(/(t|T)rue/, /(f|F)alse/, true, false)
+    defaultto(false)
+    munge do |value|
+      value.to_s.downcase.to_sym
+    end
   end
 
   newproperty(:enabled) do

@@ -132,6 +132,21 @@ describe Puppet::Provider::Openstack do
         expect(response.first[:description]).to match /Test tenant/
       end
 
+      it 'makes a successful show request' do
+        provider.class.stubs(:openstack)
+                      .with('project', 'show', '--format', 'shell', [['test', '--os-token', 'secrettoken', '--os-url', 'http://127.0.0.1:5000/v2.0']])
+                      .returns('ID="1cb05cfed7c24279be884ba4f6520262"
+Name="test"
+Description="Test Tenant"
+Enabled="True"
+')
+        response = provider.request('project', 'show', 'test', resource_attrs[:auth])
+        expect(response[:description]).to match /Test Tenant/
+        expect(response[:id]).to match /1cb05cfed7c24279be884ba4f6520262/
+        expect(response[:name]).to match /test/
+        expect(response[:enabled]).to match /True/
+      end
+
     end
 
     context 'with valid password credentials in environment variables' do
