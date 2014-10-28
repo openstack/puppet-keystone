@@ -182,11 +182,11 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
         raise(e)
       end
     end
-   end
+  end
 
-   def creds_keystone(name, tenant, password, *args)
-     self.class.creds_keystone(name, tenant, password, args)
-   end
+  def creds_keystone(name, tenant, password, *args)
+    self.class.creds_keystone(name, tenant, password, args)
+  end
 
   def self.parse_keystone_object(data)
     # Parse the output of [type]-{create,get} into a hash

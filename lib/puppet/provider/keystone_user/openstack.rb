@@ -1,7 +1,6 @@
 require 'net/http'
 require 'json'
 require 'puppet/provider/keystone'
-
 Puppet::Type.type(:keystone_user).provide(
   :openstack,
   :parent => Puppet::Provider::Keystone
@@ -117,11 +116,41 @@ Puppet::Type.type(:keystone_user).provide(
   end
 
   def tenant=(value)
-    @property_flush[:project] = value
+    begin
+      request('user', 'set', resource[:name], resource[:auth], '--project', value)
+    rescue Puppet::ExecutionFailure => e
+      if e.message =~ /You are not authorized to perform the requested action: LDAP user update/
+        # read-only LDAP identity backend - just fall through
+      else
+        raise e
+      end
+      # note: read-write ldap will silently fail, not raise an exception
+    end
+    set_project(value)
   end
 
   def tenant
-    instance(resource[:name])[:project]
+    return resource[:tenant] if sym_to_bool(resource[:ignore_default_tenant])
+    # use the one returned from instances
+    tenant_name = instance(resource[:name])[:project]
+    if tenant_name.nil? or tenant_name.empty?
+      # if none (i.e. ldap backend) use the given one
+      tenant_name = resource[:tenant]
+    else
+      return tenant_name
+    end
+    if tenant_name.nil? or tenant_name.empty?
+      return nil # nothing found, nothing given
+    end
+    # If the user list command doesn't report the project, it might still be there
+    # We don't need to know exactly what it is, we just need to know whether it's
+    # the one we're trying to set.
+    roles = request('user role', 'list', resource[:name], resource[:auth], ['--project', tenant_name])
+    if roles.empty?
+      return nil
+    else
+      return tenant_name
+    end
   end
 
   def email=(value)
@@ -169,6 +198,31 @@ Puppet::Type.type(:keystone_user).provide(
     @instances ||= instances.select { |instance| instance[:name] == name }.first || {}
   end
 
+  def set_project(newproject)
+    # some backends do not store the project/tenant in the user object, so we have to
+    # to modify the project/tenant instead
+    # First, see if the project actually needs to change
+    roles = request('user role', 'list', resource[:name], resource[:auth], ['--project', newproject])
+    unless roles.empty?
+      return # if already set, just skip
+    end
+    # Currently the only way to assign a user to a tenant not using user-create
+    # is to use user-role-add - this means we also need a role - there is usual
+    # a default role called _member_ which can be used for this purpose.  What
+    # usually happens in a puppet module is that immediately after calling
+    # keystone_user, the module will then assign a role to that user.  It is
+    # ok for a user to have the _member_ role and another role.
+    default_role = "_member_"
+    begin
+      request('role', 'show', default_role, resource[:auth])
+    rescue
+      debug("Keystone role #{default_role} does not exist - creating")
+      request('role', 'create', default_role, resource[:auth])
+    end
+    request('role', 'add', default_role, resource[:auth],
+            '--project', newproject, '--user', resource[:name])
+  end
+
   def flush
     options = []
     if @property_flush
@@ -177,7 +231,7 @@ Puppet::Type.type(:keystone_user).provide(
       # There is a --description flag for the set command, but it does not work if the value is empty
       (options << '--password' << resource[:password]) if @property_flush[:password]
       (options << '--email'    << resource[:email])    if @property_flush[:email]
-      (options << '--project'  << resource[:tenant])   if @property_flush[:project]
+      # project handled in tenant= separately
       request('user', 'set', resource[:name], resource[:auth], options) unless options.empty?
     end
   end
