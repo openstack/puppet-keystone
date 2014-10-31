@@ -31,7 +31,7 @@ describe 'keystone::roles::admin' do
     )}
     it { should contain_keystone_role('admin').with_ensure('present') }
     it { should contain_keystone_user_role('admin@openstack').with(
-      :roles  => 'admin',
+      :roles  => ['admin'],
       :ensure => 'present'
     )}
 
@@ -45,6 +45,7 @@ describe 'keystone::roles::admin' do
         :email                  => 'foo@baz',
         :password               => 'foo',
         :admin_tenant           => 'admin',
+        :admin_roles            => ['admin', 'heat_stack_owner'],
         :service_tenant         => 'foobar',
         :ignore_default_tenant  => 'true',
         :admin_tenant_desc      => 'admin something else',
@@ -71,7 +72,7 @@ describe 'keystone::roles::admin' do
       :ignore_default_tenant  => 'true'
     )}
     it { should contain_keystone_user_role('admin@admin').with(
-      :roles  => 'admin',
+      :roles  => ['admin', 'heat_stack_owner'],
       :ensure => 'present'
     )}
 
