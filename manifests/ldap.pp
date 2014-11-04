@@ -84,7 +84,8 @@ class keystone::ldap(
   $assignment_driver                   = undef,
 ) {
 
-  package { 'python-ldap':
+  $ldap_packages = ['python-ldap', 'python-ldappool']
+  package { $ldap_packages:
       ensure => present,
   }
 

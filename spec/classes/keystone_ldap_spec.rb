@@ -76,6 +76,7 @@ describe 'keystone::ldap' do
       }
     end
     it { should contain_package('python-ldap') }
+    it { should contain_package('python-ldappool') }
     it 'should have basic params' do
       should contain_keystone_config('ldap/url').with_value('ldap://foo')
       should contain_keystone_config('ldap/user').with_value('cn=foo,dc=example,dc=com')
