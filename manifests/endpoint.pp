@@ -95,6 +95,8 @@ class keystone::endpoint (
   $admin_port        = undef,
 ) {
 
+  warning('keystone::endpoint class is deprecated, use keystone::resource::service_identity instead.')
+
   if $public_port {
     warning('The public_port parameter is deprecated, use public_url instead.')
   }
@@ -153,17 +155,15 @@ class keystone::endpoint (
       "#{@admin_url}/#{@version}"
     end %>')
 
-  keystone_service { 'keystone':
-    ensure      => present,
-    type        => 'identity',
-    description => 'OpenStack Identity Service',
+  keystone::resource::service_identity { 'keystone':
+    configure_user      => false,
+    configure_user_role => false,
+    service_type        => 'identity',
+    service_description => 'OpenStack Identity Service',
+    public_url          => $public_url_real,
+    admin_url           => $admin_url_real,
+    internal_url        => $internal_url_real,
+    region              => $region,
   }
 
-  keystone_endpoint { "${region}/keystone":
-    ensure       => present,
-    public_url   => $public_url_real,
-    admin_url    => $admin_url_real,
-    internal_url => $internal_url_real,
-    region       => $region,
-  }
 }
