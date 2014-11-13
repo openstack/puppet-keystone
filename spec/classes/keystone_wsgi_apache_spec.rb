@@ -77,11 +77,6 @@ describe 'keystone::wsgi::apache' do
         'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/main" },
         'require'                     => ['Class[Apache::Mod::Wsgi]', 'File[keystone_wsgi_main]']
       )}
-      it "should set keystone wsgi options" do
-        contain_file('25-keystone_wsgi_main.conf').with_content(
-          /^  WSGIDaemonProcess keystone group=keystone processes=1 threads=1 user=keystone$/
-        )
-      end
     end
 
     describe 'when overriding parameters using different ports' do
@@ -122,11 +117,6 @@ describe 'keystone::wsgi::apache' do
         'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/main" },
         'require'                     => ['Class[Apache::Mod::Wsgi]', 'File[keystone_wsgi_main]']
       )}
-      it "should set keystone wsgi options" do
-        contain_file('25-keystone_wsgi_main.conf').with_content(
-          /^  WSGIDaemonProcess keystone group=keystone processes=37 threads=1 user=keystone$/
-        )
-      end
     end
 
     describe 'when overriding parameters using same port' do
@@ -160,11 +150,6 @@ describe 'keystone::wsgi::apache' do
       },
         'require'                     => ['Class[Apache::Mod::Wsgi]', 'File[keystone_wsgi_main]']
       )}
-      it "should set keystone wsgi options" do
-        contain_file('25-keystone_wsgi_main.conf').with_content(
-          /^  WSGIDaemonProcess keystone group=keystone processes=37 threads=1 user=keystone$/
-        )
-      end
     end
 
     describe 'when overriding parameters using same port and same path' do
