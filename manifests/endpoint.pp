@@ -6,30 +6,21 @@
 #
 # [*public_url*]
 #   (optional) Public url for keystone endpoint. (Defaults to 'http://127.0.0.1:5000')
+#   This url should *not* contain any version or trailing '/'.
 #
 # [*internal_url*]
 #   (optional) Internal url for keystone endpoint. (Defaults to $public_url)
+#   This url should *not* contain any version or trailing '/'.
 #
 # [*admin_url*]
 #   (optional) Admin url for keystone endpoint. (Defaults to 'http://127.0.0.1:35357')
+#   This url should *not* contain any version or trailing '/'.
 #
 # [*region*]
 #   (optional) Region for endpoint. (Defaults to 'RegionOne')
 #
 # [*version*]
 #   (optional) API version for endpoint. Appended to all endpoint urls. (Defaults to 'v2.0')
-#
-# [*public_url*]
-#   (optional) The endpoint's public url. (Defaults to 'http://127.0.0.1:5000')
-#   This url should *not* contain any version or trailing '/'.
-#
-# [*admin_url*]
-#   (optional) The endpoint's admin url. (Defaults to 'http://127.0.0.1:5000')
-#   This url should *not* contain any version or trailing '/'.
-#
-# [*internal_url*]
-#   (optional) The endpoint's internal url. (Defaults to 'http://127.0.0.1:35357')
-#   This url should *not* contain any version or trailing '/'.
 #
 # [*public_protocol*]
 #   (optional) DEPRECATED: Use public_url instead.
