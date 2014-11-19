@@ -183,6 +183,11 @@ Puppet::Type.type(:keystone_user_role).provide(
           @users["#{user[1]}@#{tenant_id}"] = user[0]
         end
       end
+      # If the user doesn't already have a role on this tenant,
+      # we need to look them up specifically
+      unless @users[user_key]
+        @users[user_key] = get_keystone_object('user', name, 'id')
+      end
       @users[user_key]
     end
 
