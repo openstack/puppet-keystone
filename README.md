@@ -1,7 +1,7 @@
 keystone
 =======
 
-4.0.0 - 2014.1.0 - Icehouse
+5.0.0 - 2014.2.0 - Juno
 
 #### Table of Contents
 
@@ -162,6 +162,45 @@ Contributors
 
 Release Notes
 -------------
+
+**5.0.0**
+
+* Stable Juno release
+* Updated token driver, logging, and ldap config parameters for Juno
+* Changed admin_roles parameter to accept an array in order to configure multiple admin roles
+* Installs python-ldappool package for ldap
+* Added new parameters to keystone class to configure pki signing
+* Changed keystone class to inherit from keystone::params
+* Changed pki_setup to run regardless of token provider
+* Made UUID the default token provider
+* Made keystone_user_role idempotent
+* Added parameters to control whether to configure users
+* Stopped managing _member_ role since it is created automatically
+* Stopped overriding token_flush log file
+* Changed the usage of admin_endpoint to not include the API version
+* Allowed keystone_user_role to accept email as username
+* Added ability to set up keystone using Apache mod_wsgi
+* Migrated the keystone::db::mysql class to use openstacklib::db::mysql and deprecated the mysql_module parameter
+* Installs python-memcache when using token driver memcache
+* Enabled setting cert and key paths for PKI token signing
+* Added parameters for SSL communication between keystone and rabbitmq
+* Added parameter ignore_default_tenant to keystone::role::admin
+* Added parameter service_provider to keystone class
+* Added parameters for service validation to keystone class
+
+**4.2.0**
+
+* Added class for extended logging options
+* Fixed rabbit password leaking
+* Added parameters to set tenant descriptions
+* Fixed keystone user authorization error handling
+
+**4.1.0**
+
+* Added token flushing with cron.
+* Updated database api for consistency with other projects.
+* Fixed admin_token with secret parameter.
+* Fixed deprecated catalog driver.
 
 **4.0.0**
 
