@@ -509,13 +509,19 @@ describe 'keystone' do
   describe 'configure memcache servers if set' do
     let :params do
       {
-        'admin_token'      => 'service_token',
-        'memcache_servers' => [ 'SERVER1:11211', 'SERVER2:11211' ],
-        'token_driver'     => 'keystone.token.backends.memcache.Token'
+        'admin_token'            => 'service_token',
+        'memcache_servers'       => [ 'SERVER1:11211', 'SERVER2:11211' ],
+        'token_driver'           => 'keystone.token.backends.memcache.Token',
+        'cache_backend'          => 'dogpile.cache.memcached',
+        'cache_backend_argument' => ['url:SERVER1:12211'],
       }
     end
 
     it { should contain_keystone_config("memcache/servers").with_value('SERVER1:11211,SERVER2:11211') }
+    it { should contain_keystone_config('cache/enabled').with_value(true) }
+    it { should contain_keystone_config('token/caching').with_value(true) }
+    it { should contain_keystone_config('cache/backend').with_value('dogpile.cache.memcached') }
+    it { should contain_keystone_config('cache/backend_argument').with_value('url:SERVER1:12211') }
     it { should contain_package('python-memcache').with(
       :name   => 'python-memcache',
       :ensure => 'present'
@@ -527,6 +533,11 @@ describe 'keystone' do
       default_params
     end
 
+    it { should contain_keystone_config("cache/enabled").with_ensure('absent') }
+    it { should contain_keystone_config("token/caching").with_ensure('absent') }
+    it { should contain_keystone_config("cache/backend").with_ensure('absent') }
+    it { should contain_keystone_config("cache/backend_argument").with_ensure('absent') }
+    it { should contain_keystone_config("cache/debug_cache_backend").with_ensure('absent') }
     it { should contain_keystone_config("memcache/servers").with_ensure('absent') }
   end
 
