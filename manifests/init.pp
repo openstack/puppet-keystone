@@ -243,6 +243,10 @@
 #   available pipelines. (string value)
 #   Defaults to '/usr/share/keystone/keystone-dist-paste.ini'
 #
+#   [*max_token_size*]
+#     (optional) maximum allowable Keystone token size
+#     Defaults to undef
+#
 # == Dependencies
 #  None
 #
@@ -338,6 +342,7 @@ class keystone(
   $paste_config           = '/usr/share/keystone/keystone-dist-paste.ini',
   $service_provider       = $::keystone::params::service_provider,
   $service_name           = 'keystone',
+  $max_token_size         = undef,
   # DEPRECATED PARAMETERS
   $mysql_module           = undef,
 ) inherits keystone::params {
@@ -571,6 +576,12 @@ class keystone(
   }
 
   keystone_config { 'token/provider': value => $token_provider }
+
+  if $max_token_size {
+    keystone_config { 'DEFAULT/max_token_size': value => $max_token_size }
+  } else {
+    keystone_config { 'DEFAULT/max_token_size': ensure => absent }
+  }
 
   if $notification_driver {
     keystone_config { 'DEFAULT/notification_driver': value => $notification_driver }
