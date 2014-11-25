@@ -86,8 +86,6 @@ class keystone::endpoint (
   $admin_port        = undef,
 ) {
 
-  warning('keystone::endpoint class is deprecated, use keystone::resource::service_identity instead.')
-
   if $public_port {
     warning('The public_port parameter is deprecated, use public_url instead.')
   }
