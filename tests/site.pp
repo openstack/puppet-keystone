@@ -28,11 +28,11 @@ node keystone_mysql {
     password => 'keystone',
   }
   class { 'keystone':
-    verbose        => true,
-    debug          => true,
-    sql_connection => 'mysql://keystone:keystone@127.0.0.1/keystone',
-    catalog_type   => 'sql',
-    admin_token    => 'admin_token',
+    verbose             => true,
+    debug               => true,
+    database_connection => 'mysql://keystone:keystone@127.0.0.1/keystone',
+    catalog_type        => 'sql',
+    admin_token         => 'admin_token',
   }
   class { 'keystone::roles::admin':
     email    => 'test@puppetlabs.com',
@@ -44,11 +44,11 @@ node keystone_mysql {
 # keystone with mysql on another node
 node keystone {
   class { 'keystone':
-    verbose        => true,
-    debug          => true,
-    sql_connection => 'mysql://keystone:password@127.0.0.1/keystone',
-    catalog_type   => 'sql',
-    admin_token    => 'admin_token',
+    verbose             => true,
+    debug               => true,
+    database_connection => 'mysql://keystone:password@127.0.0.1/keystone',
+    catalog_type        => 'sql',
+    admin_token         => 'admin_token',
   }
   class { 'keystone::db::mysql':
     password => 'keystone',

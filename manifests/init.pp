@@ -33,7 +33,6 @@
 #     Optional.  Defaults to 'keystone.token.persistence.backends.sql.Token'
 #   [token_expiration] Amount of time a token should remain valid (seconds).
 #     Optional.  Defaults to 3600 (1 hour).
-#   [token_format] Deprecated: Use token_provider instead.
 #   [cache_dir] Directory created when token_provider is pki. Optional.
 #     Defaults to /var/cache/keystone.
 #
@@ -69,15 +68,9 @@
 #     (optional) Url used to connect to database.
 #     Defaults to sqlite:////var/lib/keystone/keystone.db
 #
-#   [*sql_connection*]
-#     (optional) Deprecated. Use database_connection instead.
-#
 #   [*database_idle_timeout*]
 #     (optional) Timeout when db connections should be reaped.
 #     Defaults to 200.
-#
-#   [*idle_timeout*]
-#     (optional) Deprecated. Use database_idle_timeout instead.
 #
 #   [enable_pki_setup] Enable call to pki_setup to generate the cert for signing pki tokens and
 #     revocation lists if it doesn't already exist. This generates a cert and key stored in file
@@ -292,7 +285,6 @@ class keystone(
   $catalog_type           = 'sql',
   $catalog_driver         = false,
   $catalog_template_file  = '/etc/keystone/default_catalog.templates',
-  $token_format           = false,
   $token_provider         = 'keystone.token.providers.uuid.Provider',
   $token_driver           = 'keystone.token.persistence.backends.sql.Token',
   $token_expiration       = 3600,
@@ -342,8 +334,6 @@ class keystone(
   $service_name           = 'keystone',
   # DEPRECATED PARAMETERS
   $mysql_module           = undef,
-  $sql_connection         = undef,
-  $idle_timeout           = undef,
 ) inherits keystone::params {
 
   if ! $catalog_driver {
@@ -352,20 +342,6 @@ class keystone(
 
   if $mysql_module {
     warning('The mysql_module parameter is deprecated. The latest 2.x mysql module will be used.')
-  }
-
-  if $sql_connection {
-    warning('The sql_connection parameter is deprecated, use database_connection instead.')
-    $database_connection_real = $sql_connection
-  } else {
-    $database_connection_real = $database_connection
-  }
-
-  if $idle_timeout {
-    warning('The idle_timeout parameter is deprecated, use database_idle_timeout instead.')
-    $database_idle_timeout_real = $idle_timeout
-  } else {
-    $database_idle_timeout_real = $database_idle_timeout
   }
 
   if ($admin_endpoint and 'v2.0' in $admin_endpoint) {
@@ -429,20 +405,10 @@ class keystone(
     notify  => Service[$service_name],
   }
 
-  if $bind_host {
-    warning('The bind_host parameter is deprecated, use public_bind_host and admin_bind_host instead.')
-    $public_bind_host_real = $bind_host
-    $admin_bind_host_real  = $bind_host
-  } else {
-    $public_bind_host_real = $public_bind_host
-    $admin_bind_host_real  = $admin_bind_host
-  }
-
-  # default config
   keystone_config {
     'DEFAULT/admin_token':      value => $admin_token, secret => true;
-    'DEFAULT/public_bind_host': value => $public_bind_host_real;
-    'DEFAULT/admin_bind_host':  value => $admin_bind_host_real;
+    'DEFAULT/public_bind_host': value => $public_bind_host;
+    'DEFAULT/admin_bind_host':  value => $admin_bind_host;
     'DEFAULT/public_port':      value => $public_port;
     'DEFAULT/admin_port':       value => $admin_port;
     'DEFAULT/compute_port':     value => $compute_port;
@@ -499,15 +465,15 @@ class keystone(
     }
   }
 
-  if($database_connection_real =~ /mysql:\/\/\S+:\S+@\S+\/\S+/) {
+  if($database_connection =~ /mysql:\/\/\S+:\S+@\S+\/\S+/) {
     require 'mysql::bindings'
     require 'mysql::bindings::python'
-  } elsif($database_connection_real =~ /postgresql:\/\/\S+:\S+@\S+\/\S+/) {
+  } elsif($database_connection =~ /postgresql:\/\/\S+:\S+@\S+\/\S+/) {
 
-  } elsif($database_connection_real =~ /sqlite:\/\//) {
+  } elsif($database_connection =~ /sqlite:\/\//) {
 
   } else {
-    fail("Invalid db connection ${database_connection_real}")
+    fail("Invalid db connection ${database_connection}")
   }
 
   # memcache connection config
@@ -544,8 +510,8 @@ class keystone(
 
   # db connection config
   keystone_config {
-    'database/connection':   value => $database_connection_real, secret => true;
-    'database/idle_timeout': value => $database_idle_timeout_real;
+    'database/connection':   value => $database_connection, secret => true;
+    'database/idle_timeout': value => $database_idle_timeout;
   }
 
   # configure based on the catalog backend
@@ -563,13 +529,6 @@ class keystone(
     'catalog/driver':        value => $catalog_driver_real;
     'catalog/template_file': value => $catalog_template_file;
   }
-
-  if $token_format {
-    warning('token_format parameter is deprecated. Use token_provider instead.')
-  }
-
-  # remove the old format in case of an upgrade
-  keystone_config { 'signing/token_format': ensure => absent }
 
   # Set the signing key/cert configuration values.
   keystone_config {
@@ -601,13 +560,7 @@ class keystone(
     }
   }
 
-  if ($token_format == false and $token_provider == 'keystone.token.providers.pki.Provider') or $token_format == 'PKI' {
-    keystone_config { 'token/provider': value => 'keystone.token.providers.pki.Provider' }
-  } elsif $token_format == 'UUID' {
-    keystone_config { 'token/provider': value => 'keystone.token.providers.uuid.Provider' }
-  } else {
-    keystone_config { 'token/provider': value => $token_provider }
-  }
+  keystone_config { 'token/provider': value => $token_provider }
 
   if $notification_driver {
     keystone_config { 'DEFAULT/notification_driver': value => $notification_driver }

@@ -217,24 +217,6 @@ describe 'keystone' do
 
   end
 
-  describe 'with deprecated sql_connection parameter' do
-    let :params do
-      { :admin_token    => 'service_token',
-        :sql_connection => 'mysql://a:b@c/d' }
-    end
-
-    it { should contain_keystone_config('database/connection').with_value(params[:sql_connection]) }
-  end
-
-  describe 'with deprecated idle_timeout parameter' do
-    let :params do
-      { :admin_token  => 'service_token',
-        :idle_timeout => 365 }
-    end
-
-    it { should contain_keystone_config('database/idle_timeout').with_value(params[:idle_timeout]) }
-  end
-
   describe 'when configuring signing token provider' do
 
     describe 'when configuring as UUID' do
@@ -392,97 +374,6 @@ describe 'keystone' do
 
       it { should contain_keystone_config('catalog/driver').with_value(params[:catalog_driver]) }
     end
-
-    describe 'when configuring deprecated token_format as UUID with enable_pki_setup' do
-      let :params do
-        {
-          'admin_token'    => 'service_token',
-          'token_format'   => 'UUID'
-        }
-      end
-      it { should contain_exec('keystone-manage pki_setup').with(
-        :creates => '/etc/keystone/ssl/private/signing_key.pem'
-      ) }
-      it { should contain_file('/var/cache/keystone').with_ensure('directory') }
-      describe 'when overriding the cache dir' do
-        let :params do
-          {
-            'admin_token'    => 'service_token',
-            'token_provider' => 'keystone.token.providers.pki.Provider',
-            'cache_dir'      => '/var/lib/cache/keystone'
-          }
-        end
-        it { should contain_file('/var/lib/cache/keystone') }
-      end
-    end
-
-    describe 'when configuring deprecated token_format as UUID without enable_pki_setup' do
-      let :params do
-        {
-          'admin_token'      => 'service_token',
-          'token_format'     => 'UUID',
-          'enable_pki_setup' => false
-        }
-      end
-      it { should_not contain_exec('keystone-manage pki_setup') }
-      it { should contain_file('/var/cache/keystone').with_ensure('directory') }
-      describe 'when overriding the cache dir' do
-        let :params do
-          {
-            'admin_token'    => 'service_token',
-            'token_provider' => 'keystone.token.providers.uuid.Provider',
-            'cache_dir'      => '/var/lib/cache/keystone'
-          }
-        end
-        it { should contain_file('/var/lib/cache/keystone') }
-      end
-    end
-
-    describe 'when configuring deprecated token_format as PKI with enable_pki_setup' do
-      let :params do
-        {
-          'admin_token'       => 'service_token',
-          'token_format'      => 'PKI',
-        }
-      end
-      it { should contain_exec('keystone-manage pki_setup').with(
-        :creates => '/etc/keystone/ssl/private/signing_key.pem'
-      ) }
-      it { should contain_file('/var/cache/keystone').with_ensure('directory') }
-      describe 'when overriding the cache dir' do
-        let :params do
-          {
-            'admin_token'    => 'service_token',
-            'token_provider' => 'keystone.token.providers.pki.Provider',
-            'cache_dir'      => '/var/lib/cache/keystone'
-          }
-        end
-        it { should contain_file('/var/lib/cache/keystone') }
-      end
-    end
-
-    describe 'when configuring deprecated token_format as PKI without enable_pki_setup' do
-      let :params do
-        {
-          'admin_token'       => 'service_token',
-          'token_format'      => 'PKI',
-          'enable_pki_setup'  => false
-        }
-      end
-      it { should_not contain_exec('keystone-manage pki_setup') }
-      it { should contain_file('/var/cache/keystone').with_ensure('directory') }
-      describe 'when overriding the cache dir' do
-        let :params do
-          {
-            'admin_token'    => 'service_token',
-            'token_provider' => 'keystone.token.providers.pki.Provider',
-            'cache_dir'      => '/var/lib/cache/keystone'
-          }
-        end
-        it { should contain_file('/var/lib/cache/keystone') }
-      end
-    end
-
   end
 
   describe 'when configuring token expiration' do
@@ -612,16 +503,6 @@ describe 'keystone' do
     end
     it { should contain_keystone_config('DEFAULT/log_file').with_ensure('absent') }
     it { should contain_keystone_config('DEFAULT/log_dir').with_ensure('absent') }
-  end
-
-  describe 'when configuring api binding with deprecated parameter' do
-    let :params do
-      default_params.merge({
-        :bind_host => '10.0.0.2',
-      })
-    end
-    it { should contain_keystone_config('DEFAULT/public_bind_host').with_value('10.0.0.2') }
-    it { should contain_keystone_config('DEFAULT/admin_bind_host').with_value('10.0.0.2') }
   end
 
   describe 'when enabling SSL' do

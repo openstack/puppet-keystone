@@ -25,12 +25,12 @@ class { 'keystone::db::mysql':
   password => 'keystone',
 }
 class { 'keystone':
-  verbose        => true,
-  debug          => true,
-  sql_connection => 'mysql://keystone_admin:keystone@127.0.0.1/keystone',
-  catalog_type   => 'sql',
-  admin_token    => 'admin_token',
-  enabled        => true,
+  verbose             => true,
+  debug               => true,
+  database_connection => 'mysql://keystone_admin:keystone@127.0.0.1/keystone',
+  catalog_type        => 'sql',
+  admin_token         => 'admin_token',
+  enabled             => true,
 }
 class { 'keystone::cron::token_flush': }
 class { 'keystone::roles::admin':

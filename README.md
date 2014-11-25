@@ -45,10 +45,10 @@ To utilize the keystone module's functionality you will need to declare multiple
 
 ```puppet
 class { 'keystone':
-  verbose        => True,
-  catalog_type   => 'sql',
-  admin_token    => 'random_uuid',
-  sql_connection => 'mysql://keystone_admin:super_secret_db_password@openstack-controller.example.com/keystone',
+  verbose             => True,
+  catalog_type        => 'sql',
+  admin_token         => 'random_uuid',
+  database_connection => 'mysql://keystone_admin:super_secret_db_password@openstack-controller.example.com/keystone',
 }
 
 # Adds the admin credential to keystone.
