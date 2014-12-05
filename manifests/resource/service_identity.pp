@@ -140,6 +140,9 @@ define keystone::resource::service_identity(
       'ensure' => 'present',
       'roles'  => $roles,
     })
+    if $configure_user {
+      Keystone_user[$auth_name] -> Keystone_user_role["${auth_name}@${tenant}"]
+    }
   }
 
   if $configure_service {
