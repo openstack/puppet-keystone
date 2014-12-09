@@ -64,7 +64,7 @@ class keystone::cron::token_flush (
   cron { 'keystone-manage token_flush':
     ensure      => $ensure,
     command     => "${sleep}keystone-manage token_flush >>/var/log/keystone/keystone-tokenflush.log 2>&1",
-    environment => 'PATH=/bin:/usr/bin:/usr/sbin',
+    environment => 'PATH=/bin:/usr/bin:/usr/sbin SHELL=/bin/sh',
     user        => 'keystone',
     minute      => $minute,
     hour        => $hour,

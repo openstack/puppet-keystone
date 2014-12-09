@@ -11,7 +11,7 @@ describe 'keystone::cron::token_flush' do
       should contain_cron('keystone-manage token_flush').with(
         :ensure      => 'present',
         :command     => 'keystone-manage token_flush >>/var/log/keystone/keystone-tokenflush.log 2>&1',
-        :environment => 'PATH=/bin:/usr/bin:/usr/sbin',
+        :environment => 'PATH=/bin:/usr/bin:/usr/sbin SHELL=/bin/sh',
         :user        => 'keystone',
         :minute      => 1,
         :hour        => 0,
@@ -33,7 +33,7 @@ describe 'keystone::cron::token_flush' do
       should contain_cron('keystone-manage token_flush').with(
         :ensure      => 'present',
         :command     => 'sleep `expr ${RANDOM} \\% 600`; keystone-manage token_flush >>/var/log/keystone/keystone-tokenflush.log 2>&1',
-        :environment => 'PATH=/bin:/usr/bin:/usr/sbin',
+        :environment => 'PATH=/bin:/usr/bin:/usr/sbin SHELL=/bin/sh',
         :user        => 'keystone',
         :minute      => 1,
         :hour        => 0,
@@ -55,7 +55,7 @@ describe 'keystone::cron::token_flush' do
       should contain_cron('keystone-manage token_flush').with(
         :ensure      => 'absent',
         :command     => 'keystone-manage token_flush >>/var/log/keystone/keystone-tokenflush.log 2>&1',
-        :environment => 'PATH=/bin:/usr/bin:/usr/sbin',
+        :environment => 'PATH=/bin:/usr/bin:/usr/sbin SHELL=/bin/sh',
         :user        => 'keystone',
         :minute      => 1,
         :hour        => 0,
