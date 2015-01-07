@@ -15,34 +15,27 @@ describe Puppet::Provider::Keystone do
 
   describe 'when retrieving the security token' do
 
-    it 'should fail if there is no keystone config file' do
+    it 'should return nothing if there is no keystone config file' do
       ini_file = Puppet::Util::IniConfig::File.new
       t = Tempfile.new('foo')
       path = t.path
       t.unlink
       ini_file.read(path)
-      expect do
-        klass.get_admin_token
-      end.to raise_error(Puppet::Error, /Keystone types will not work/)
+      expect(klass.get_admin_token).to be_nil
     end
 
-    it 'should fail if the keystone config file does not have a DEFAULT section' do
+    it 'should return nothing if the keystone config file does not have a DEFAULT section' do
       mock = {}
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)
       mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect do
-
-        klass.get_admin_token
-      end.to raise_error(Puppet::Error, /Keystone types will not work/)
+      expect(klass.get_admin_token).to be_nil
     end
 
     it 'should fail if the keystone config file does not contain an admin token' do
       mock = {'DEFAULT' => {'not_a_token' => 'foo'}}
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)
       mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect do
-       klass.get_admin_token
-      end.to raise_error(Puppet::Error, /Keystone types will not work/)
+      expect(klass.get_admin_token).to be_nil
     end
 
     it 'should parse the admin token if it is in the config file' do
