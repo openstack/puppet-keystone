@@ -1,13 +1,12 @@
+require 'puppet/util/openstack'
 Puppet::Type.newtype(:keystone_service) do
 
-  desc <<-EOT
-    This is currently used to model the management of
-    keystone services.
-  EOT
+  desc 'This type can be used to manage keystone services.'
 
   ensurable
 
   newparam(:name, :namevar => true) do
+    desc 'The name of the service.'
     newvalues(/\S+/)
   end
 
@@ -18,14 +17,28 @@ Puppet::Type.newtype(:keystone_service) do
   end
 
   newproperty(:type) do
+    desc 'The type of service'
+    validate do |value|
+      fail('The service type is required.') unless value
+    end
   end
 
   newproperty(:description) do
+    desc 'A description of the service.'
+    defaultto('')
   end
 
-  # we should not do anything until the keystone service is started
+  # This ensures the service is started and therefore the keystone
+  # config is configured IF we need them for authentication.
+  # If there is no keystone config, authentication credentials
+  # need to come from another source.
   autorequire(:service) do
     ['keystone']
   end
 
+  auth_param_doc=<<EOT
+If no other credentials are present, the provider will search in
+/etc/keystone/keystone.conf for an admin token and auth url.
+EOT
+  Puppet::Util::Openstack.add_openstack_type_methods(self, auth_param_doc)
 end
