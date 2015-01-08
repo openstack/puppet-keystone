@@ -1,3 +1,5 @@
+# LP#1408531
+File.expand_path('../..', File.dirname(__FILE__)).tap { |dir| $LOAD_PATH.unshift(dir) unless $LOAD_PATH.include?(dir) }
 require 'puppet/util/openstack'
 Puppet::Type.newtype(:keystone_endpoint) do
 
