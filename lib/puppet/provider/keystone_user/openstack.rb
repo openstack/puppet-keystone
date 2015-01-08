@@ -1,3 +1,4 @@
+require 'net/http'
 require 'puppet/provider/keystone'
 
 Puppet::Type.type(:keystone_user).provide(
@@ -83,14 +84,31 @@ Puppet::Type.type(:keystone_user).provide(
         'tenant_name' => resource[:tenant],
         'auth_url'    => endpoint,
       }
-      begin
-        request('token', 'issue', nil, auth_params, nil)
-      rescue Puppet::Error::OpenstackUnauthorizedError => e
-        # Could not authenticate, so most likely password is not up to date
+      # LP#1408754
+      # Ideally this would be checked with the `openstack token issue` command,
+      # but that command is not available with version 0.3.0 of openstackclient
+      # which is what ships on Ubuntu during Juno.
+      # Instead we'll check whether the user can authenticate with curl.
+      creds_hash = {
+        :auth => {
+          :passwordCredentials => {
+            :username => auth_params['username'],
+            :password => auth_params['password'],
+          }
+        }
+      }
+      url = URI.parse(endpoint)
+      response = Net::HTTP.start(url.host, url.port) do |http|
+        http.request_post('/v2.0/tokens', creds_hash.to_json, {'Content-Type' => 'application/json'})
+      end
+      if response.code == 401 || response.code == 403 # 401 => unauthorized, 403 => userDisabled
         return nil
+      elsif ! (response.code == 200 || response.code == 203)
+        return resource[:password]
+      else
+        raise(Puppet::Error, "Received bad response while trying to authenticate user: #{response.body}")
       end
     end
-    return resource[:password]
   end
 
   def tenant=(value)
