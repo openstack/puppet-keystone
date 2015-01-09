@@ -45,29 +45,48 @@ class Puppet::Provider::Openstack < Puppet::Provider
   # Returns an array of hashes, where the keys are the downcased CSV headers
   # with underscores instead of spaces
   def self.authenticate_request(service, action, *args)
-    begin
-      if(action == 'list')
-        response = openstack(service, action, '--quiet', '--format', 'csv', args)
-        response = CSV.parse(response.to_s)
-        keys = response.delete_at(0) # ID,Name,Description,Enabled
-        response.collect do |line|
-          hash = {}
-          keys.each_index do |index|
-            key = keys[index].downcase.gsub(/ /, '_').to_sym
-            hash[key] = line[index]
+    rv = nil
+    timeout = 120
+    end_time = Time.now.to_i + timeout
+    loop do
+      begin
+        if(action == 'list')
+          response = openstack(service, action, '--quiet', '--format', 'csv', args)
+          response = CSV.parse(response.to_s)
+          keys = response.delete_at(0) # ID,Name,Description,Enabled
+          rv = response.collect do |line|
+            hash = {}
+            keys.each_index do |index|
+              key = keys[index].downcase.gsub(/ /, '_').to_sym
+              hash[key] = line[index]
+            end
+            hash
           end
-          hash
+        else
+          rv = openstack(service, action, args)
         end
-      else
-        openstack(service, action, args)
-      end
-    rescue Puppet::ExecutionFailure => e
-      if e.message =~ /HTTP 401/
-        raise(Puppet::Error::OpenstackUnauthorizedError, 'Could not authenticate.')
-      else
-        raise e
+        break
+      rescue Puppet::ExecutionFailure => e
+        if e.message =~ /HTTP 401/
+          raise(Puppet::Error::OpenstackUnauthorizedError, 'Could not authenticate.')
+        elsif e.message =~ /Unable to establish connection/
+          current_time = Time.now.to_i
+          if current_time > end_time
+            break
+          else
+            wait = end_time - current_time
+            Puppet::debug("Non-fatal error: \"#{e.message}\"; retrying for #{wait} more seconds.")
+            if wait > timeout - 2 # Only notice the first time
+              notice("#{service} service is unavailable. Will retry for up to #{wait} seconds.")
+            end
+          end
+          sleep(2)
+        else
+          raise e
+        end
       end
     end
+    return rv
   end
 
   def authenticate_request(service, action, *args)
