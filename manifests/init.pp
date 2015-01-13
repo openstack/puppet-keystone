@@ -241,7 +241,8 @@
 #   [*paste_config*]
 #   (optional) Name of the paste configuration file that defines the
 #   available pipelines. (string value)
-#   Defaults to '/usr/share/keystone/keystone-dist-paste.ini'
+#   Defaults to '/usr/share/keystone/keystone-dist-paste.ini' on RedHat and
+#   undef on other platforms.
 #
 # == Dependencies
 #  None
@@ -335,7 +336,7 @@ class keystone(
   $validate_insecure      = false,
   $validate_auth_url      = false,
   $validate_cacert        = undef,
-  $paste_config           = '/usr/share/keystone/keystone-dist-paste.ini',
+  $paste_config           = $::keystone::params::paste_config,
   $service_provider       = $::keystone::params::service_provider,
   $service_name           = 'keystone',
   # DEPRECATED PARAMETERS
@@ -697,8 +698,14 @@ class keystone(
     }
   }
 
-  keystone_config {
-      'paste_deploy/config_file':   value => $paste_config;
+  if $paste_config {
+    keystone_config {
+        'paste_deploy/config_file':   value => $paste_config;
+    }
+  } else {
+    keystone_config {
+        'paste_deploy/config_file':   ensure => absent;
+    }
   }
 
 }

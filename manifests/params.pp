@@ -10,6 +10,7 @@ class keystone::params {
       $service_name                 = 'keystone'
       $keystone_wsgi_script_path    = '/usr/lib/cgi-bin/keystone'
       $python_memcache_package_name = 'python-memcache'
+      $paste_config                 = undef
       case $::operatingsystem {
         'Debian': {
           $service_provider            = undef
@@ -31,6 +32,7 @@ class keystone::params {
       $python_memcache_package_name = 'python-memcached'
       $service_provider             = undef
       $keystone_wsgi_script_source  = '/usr/share/keystone/keystone.wsgi'
+      $paste_config                 = '/usr/share/keystone/keystone-dist-paste.ini'
     }
   }
 }

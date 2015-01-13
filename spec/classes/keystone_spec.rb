@@ -51,7 +51,6 @@ describe 'keystone' do
       'rabbit_host'           => 'localhost',
       'rabbit_password'       => 'guest',
       'rabbit_userid'         => 'guest',
-      'paste_config'          => '/usr/share/keystone/keystone-dist-paste.ini',
     }
 
   override_params = {
@@ -697,7 +696,21 @@ describe 'keystone' do
   end
 
   describe 'when configuring paste_deploy' do
-    describe 'with default paste config' do
+    describe 'with default paste config on Debian' do
+      let :params do
+        default_params
+      end
+
+      it { should contain_keystone_config('paste_deploy/config_file').with_ensure('absent')}
+    end
+
+    describe 'with default paste config on RedHat' do
+      let :facts do
+        global_facts.merge({
+          :osfamily               => 'RedHat',
+          :operatingsystemrelease => '6.0'
+        })
+      end
       let :params do
         default_params
       end
