@@ -46,7 +46,7 @@ class Puppet::Provider::Openstack < Puppet::Provider
   # with underscores instead of spaces
   def self.authenticate_request(service, action, *args)
     rv = nil
-    timeout = 120
+    timeout = 10
     end_time = Time.now.to_i + timeout
     loop do
       begin
