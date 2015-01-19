@@ -103,7 +103,7 @@ class keystone::service(
   }
 
   if $validate and $admin_token and $admin_endpoint {
-    $cmd = "keystone --os-endpoint ${admin_endpoint} --os-token ${admin_token} ${insecure_s} ${cacert_s} user-list"
+    $cmd = "openstack --os-auth-url ${admin_endpoint} --os-token ${admin_token} ${insecure_s} ${cacert_s} user list"
     $catch = 'name'
     exec { 'validate_keystone_connection':
       path          => '/usr/bin:/bin:/usr/sbin:/sbin',
