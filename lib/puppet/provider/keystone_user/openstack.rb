@@ -98,10 +98,14 @@ Puppet::Type.type(:keystone_user).provide(
         }
       }
       url = URI.parse(endpoint)
-      response = Net::HTTP.start(url.host, url.port) do |http|
-        http.request_post('/v2.0/tokens', creds_hash.to_json, {'Content-Type' => 'application/json'})
-      end
-      if response.code == 401 || response.code == 403 # 401 => unauthorized, 403 => userDisabled
+      http = Net::HTTP.new(url.host, url.port)
+      http.use_ssl = url.scheme == "https" ? true : false
+      http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+      request = Net::HTTP::Post.new('/v2.0/tokens')
+      request.body = creds_hash.to_json
+      request.content_type = 'application/json'
+      response = http.request(request)
+      if response.code.to_i == 401 || response.code.to_i == 403 # 401 => unauthorized, 403 => userDisabled
         return nil
       elsif ! (response.code == 200 || response.code == 203)
         return resource[:password]
