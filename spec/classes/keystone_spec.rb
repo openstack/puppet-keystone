@@ -177,6 +177,10 @@ describe 'keystone' do
     it 'should contain correct rabbit_password' do
       should contain_keystone_config('DEFAULT/rabbit_password').with_value(param_hash['rabbit_password']).with_secret(true)
     end
+
+    it 'should remove max_token_size param by default' do
+      should contain_keystone_config('DEFAULT/max_token_size').with_ensure('absent')
+    end
   end
 
   [default_params, override_params].each do |param_hash|
@@ -582,6 +586,14 @@ describe 'keystone' do
       should contain_keystone_config('DEFAULT/kombu_ssl_keyfile').with_ensure('absent')
       should contain_keystone_config('DEFAULT/kombu_ssl_version').with_ensure('absent')
     end
+  end
+
+  describe 'when configuring max_token_size' do
+    let :params do
+      default_params.merge({:max_token_size => '16384' })
+    end
+
+    it { should contain_keystone_config('DEFAULT/max_token_size').with_value(params[:max_token_size]) }
   end
 
   describe 'setting notification settings' do
