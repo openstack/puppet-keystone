@@ -1,5 +1,6 @@
 require 'net/http'
 require 'puppet/provider/keystone'
+require 'json'
 
 Puppet::Type.type(:keystone_user).provide(
   :openstack,
