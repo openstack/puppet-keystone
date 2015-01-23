@@ -1,4 +1,5 @@
 require 'net/http'
+require 'json'
 require 'puppet/provider/keystone'
 
 Puppet::Type.type(:keystone_user).provide(

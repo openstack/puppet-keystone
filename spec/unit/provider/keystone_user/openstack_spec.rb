@@ -6,32 +6,32 @@ provider_class = Puppet::Type.type(:keystone_user).provider(:openstack)
 
 describe provider_class do
 
-  describe 'when updating a user' do
-
-    let(:user_attrs) do
-      {
-        :name         => 'foo',
-        :ensure       => 'present',
-        :enabled      => 'True',
-        :password     => 'foo',
-        :tenant       => 'foo',
-        :email        => 'foo@example.com',
-        :auth         => {
-          'username'    => 'test',
-          'password'    => 'abc123',
-          'tenant_name' => 'foo',
-          'auth_url'    => 'http://127.0.0.1:5000/v2.0',
-        }
+  let(:user_attrs) do
+    {
+      :name         => 'foo',
+      :ensure       => 'present',
+      :enabled      => 'True',
+      :password     => 'foo',
+      :tenant       => 'foo',
+      :email        => 'foo@example.com',
+      :auth         => {
+        'username'    => 'test',
+        'password'    => 'abc123',
+        'tenant_name' => 'foo',
+        'auth_url'    => 'http://127.0.0.1:5000/v2.0',
       }
-    end
+    }
+  end
 
-    let(:resource) do
-      Puppet::Type::Keystone_user.new(user_attrs)
-    end
+  let(:resource) do
+    Puppet::Type::Keystone_user.new(user_attrs)
+  end
 
-    let(:provider) do
-      provider_class.new(resource)
-    end
+  let(:provider) do
+    provider_class.new(resource)
+  end
+
+  describe 'when updating a user' do
 
     describe '#create' do
       it 'creates a user' do
@@ -100,5 +100,55 @@ describe provider_class do
       end
     end
 
+  end
+
+  describe "#password" do
+    let(:user_attrs) do
+      {
+        :name         => 'foo',
+        :ensure       => 'present',
+        :enabled      => 'True',
+        :password     => 'foo',
+        :tenant       => 'foo',
+        :email        => 'foo@example.com',
+        :auth         => {
+          'username'    => 'test',
+          'password'    => 'abc123',
+          'tenant_name' => 'foo',
+          'auth_url'    => 'https://127.0.0.1:5000/v2.0',
+        }
+      }
+    end
+
+    it 'checks the password with HTTPS' do
+      httpobj = mock('Net::HTTP')
+      httpobj.stubs(:use_ssl=).with(true)
+      httpobj.stubs(:verify_mode=)
+      Net::HTTP.stubs(:new).returns(httpobj)
+      reqobj = mock('Net::HTTP::Post')
+      reqobj.stubs(:body=)
+      reqobj.stubs(:content_type=)
+      Net::HTTP::Post.stubs(:new).returns(reqobj)
+      respobj = mock('Net::HTTPResponse')
+      respobj.stubs(:code).returns('200')
+      httpobj.stubs(:request).returns(respobj)
+      password = provider.password
+      expect(password).to eq('foo')
+    end
+    it 'fails the password check with HTTPS' do
+      httpobj = mock('Net::HTTP')
+      httpobj.stubs(:use_ssl=).with(true)
+      httpobj.stubs(:verify_mode=)
+      Net::HTTP.stubs(:new).returns(httpobj)
+      reqobj = mock('Net::HTTP::Post')
+      reqobj.stubs(:body=)
+      reqobj.stubs(:content_type=)
+      Net::HTTP::Post.stubs(:new).returns(reqobj)
+      respobj = mock('Net::HTTPResponse')
+      respobj.stubs(:code).returns('401')
+      httpobj.stubs(:request).returns(respobj)
+      password = provider.password
+      expect(password).to eq(nil)
+    end
   end
 end
