@@ -14,7 +14,8 @@ describe 'keystone' do
     global_facts.merge({
       :osfamily               => 'Debian',
       :operatingsystem        => 'Debian',
-      :operatingsystemrelease => '7.0'
+      :operatingsystemrelease => '7.0',
+      :processorcount         => '1'
     })
   end
 
@@ -85,6 +86,8 @@ describe 'keystone' do
       'rabbit_host'           => '127.0.0.1',
       'rabbit_password'       => 'openstack',
       'rabbit_userid'         => 'admin',
+      'admin_workers'         => 20,
+      'public_workers'        => 20,
     }
 
   httpd_params = {'service_name' => 'httpd'}.merge(default_params)
@@ -180,6 +183,19 @@ describe 'keystone' do
 
     it 'should remove max_token_size param by default' do
       should contain_keystone_config('DEFAULT/max_token_size').with_ensure('absent')
+    end
+
+    it 'should ensure proper setting of admin_workers and public_workers' do
+      if param_hash['admin_workers']
+        should contain_keystone_config('DEFAULT/admin_workers').with_value(param_hash['admin_workers'])
+      else
+        should contain_keystone_config('DEFAULT/admin_workers').with_value('2')
+      end
+      if param_hash['public_workers']
+        should contain_keystone_config('DEFAULT/public_workers').with_value(param_hash['public_workers'])
+      else
+        should contain_keystone_config('DEFAULT/public_workers').with_value('2')
+      end
     end
   end
 
