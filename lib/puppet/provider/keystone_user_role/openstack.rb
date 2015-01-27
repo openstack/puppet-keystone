@@ -7,11 +7,6 @@ Puppet::Type.type(:keystone_user_role).provide(
 
   desc "Provider to manage keystone role assignments to users."
 
-  def initialize(value={})
-    super(value)
-    @property_flush = {}
-  end
-
   def create
     properties = []
     properties << '--project' << get_project
@@ -24,23 +19,46 @@ Puppet::Type.type(:keystone_user_role).provide(
   end
 
   def exists?
-    ! instance(resource[:name]).empty?
+    # If we just ran self.instances, no need to make the request again
+    # instance() will find it cached in @user_role_hash
+    if self.class.user_role_hash
+      return ! instance(resource[:name]).empty?
+    # If we don't have the hash ready, we don't need to rebuild the
+    # whole thing just to check on one particular user/role
+    else
+      roles = request('user role', 'list', nil, resource[:auth], ['--project', get_project, get_user])
+      # Since requesting every combination of users, roles, and
+      # projects is so expensive, construct the property hash here
+      # instead of in self.instances so it can be used in the role
+      # and destroy methods
+      @property_hash[:name] = resource[:name]
+      if roles.empty?
+        @property_hash[:ensure] = :absent
+      else
+        @property_hash[:ensure] = :present
+        @property_hash[:roles]  = roles.collect do |role|
+          role[:name]
+        end
+      end
+      return @property_hash[:ensure] == :present
+    end
   end
 
   def destroy
     properties = []
     properties << '--project' << get_project
     properties << '--user' << get_user
-    if resource[:roles]
-      resource[:roles].each do |role|
+    if @property_hash[:roles]
+      @property_hash[:roles].each do |role|
         request('role', 'remove', role, resource[:auth], properties)
       end
     end
+    @property_hash[:ensure] = :absent
   end
 
 
   def roles
-    instance(resource[:name])[:roles]
+    @property_hash[:roles]
   end
 
   def roles=(value)
@@ -70,18 +88,8 @@ Puppet::Type.type(:keystone_user_role).provide(
     end
   end
 
-  def instances
-    instances = build_user_role_hash
-    instances.collect do |title, roles|
-      {
-        :name  => title,
-        :roles => roles
-      }
-    end
-  end
-
   def instance(name)
-    @instances ||= instances.select { |instance| instance[:name] == name }.first || {}
+    self.class.user_role_hash.select { |role_name, roles| role_name == name } || {}
   end
 
   private
@@ -120,24 +128,19 @@ Puppet::Type.type(:keystone_user_role).provide(
     end
   end
 
-  def build_user_role_hash
-    hash = {}
-    projects = get_projects
-    projects.each do |project|
-      users = get_users(project)
-      users.each do |user|
-        user_roles = request('user role', 'list', nil, resource[:auth], ['--project', project, user])
-        user_roles.each do |role|
-          hash["#{user}@#{project}"] ||= []
-          hash["#{user}@#{project}"] << role[:name]
-        end
-      end
-    end
-    hash
+  # Class methods for caching user_role_hash so both class and instance
+  # methods can access the value
+  def self.set_user_role_hash(user_role_hash)
+    @user_role_hash = user_role_hash
+  end
+
+  def self.user_role_hash
+    @user_role_hash
   end
 
   def self.build_user_role_hash
-    hash = {}
+    hash = user_role_hash || {}
+    return hash unless hash.empty?
     projects = get_projects
     projects.each do |project|
       users = get_users(project)
@@ -149,6 +152,7 @@ Puppet::Type.type(:keystone_user_role).provide(
         end
       end
     end
+    set_user_role_hash(hash)
     hash
   end
 
