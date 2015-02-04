@@ -670,7 +670,7 @@ describe 'keystone' do
         :kombu_ssl_ca_certs => '/path/to/ssl/ca/certs',
         :kombu_ssl_certfile => '/path/to/ssl/cert/file',
         :kombu_ssl_keyfile  => '/path/to/ssl/keyfile',
-        :kombu_ssl_version  => 'SSLv3'
+        :kombu_ssl_version  => 'TLSv1'
       })
     end
 
@@ -679,7 +679,7 @@ describe 'keystone' do
       should contain_keystone_config('DEFAULT/kombu_ssl_ca_certs').with_value('/path/to/ssl/ca/certs')
       should contain_keystone_config('DEFAULT/kombu_ssl_certfile').with_value('/path/to/ssl/cert/file')
       should contain_keystone_config('DEFAULT/kombu_ssl_keyfile').with_value('/path/to/ssl/keyfile')
-      should contain_keystone_config('DEFAULT/kombu_ssl_version').with_value('SSLv3')
+      should contain_keystone_config('DEFAULT/kombu_ssl_version').with_value('TLSv1')
     end
   end
 
@@ -690,7 +690,7 @@ describe 'keystone' do
         :kombu_ssl_ca_certs => 'undef',
         :kombu_ssl_certfile => 'undef',
         :kombu_ssl_keyfile  => 'undef',
-        :kombu_ssl_version  => 'SSLv3'
+        :kombu_ssl_version  => 'TLSv1'
       })
     end
 
