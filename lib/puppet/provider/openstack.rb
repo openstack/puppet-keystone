@@ -62,6 +62,16 @@ class Puppet::Provider::Openstack < Puppet::Provider
             end
             hash
           end
+        elsif(action == 'show')
+          rv = {}
+          # shell output is name="value"\nid="value2"\ndescription="value3" etc.
+          openstack(service, action, '--format', 'shell', args).split("\n").each do |line|
+            # key is everything before the first "="
+            key, val = line.split("=", 2)
+            # value is everything after the first "=", with leading and trailing double quotes stripped
+            val = val.gsub(/\A"|"\Z/, '')
+            rv[key.downcase.to_sym] = val
+          end
         else
           rv = openstack(service, action, args)
         end
