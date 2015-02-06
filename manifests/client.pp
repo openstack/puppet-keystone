@@ -13,5 +13,6 @@ class keystone::client (
 
   package { 'python-keystoneclient':
     ensure => $ensure,
+    tag    => 'openstack',
   }
 }
