@@ -93,7 +93,8 @@ describe 'keystone' do
     it { should contain_class('keystone::params') }
 
     it { should contain_package('keystone').with(
-      'ensure' => param_hash['package_ensure']
+      'ensure' => param_hash['package_ensure'],
+      'tag'    => 'openstack'
     ) }
 
     it { should contain_group('keystone').with(
