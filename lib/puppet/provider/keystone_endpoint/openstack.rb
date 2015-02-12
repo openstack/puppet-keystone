@@ -108,7 +108,7 @@ Puppet::Type.type(:keystone_endpoint).provide(
   end
 
   def instance(name)
-    @instances ||= instances.select { |instance| instance[:name] == name }.first || {}
+    @instance ||= instances.select { |instance| instance[:name] == name }.first || {}
   end
 
   def flush
