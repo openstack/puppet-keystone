@@ -18,6 +18,7 @@ group :development, :test do
 
   gem 'json'
   gem 'webmock'
+  gem 'beaker-rspec', '~> 2.2.4', :require => false
 end
 
 if puppetversion = ENV['PUPPET_GEM_VERSION']
