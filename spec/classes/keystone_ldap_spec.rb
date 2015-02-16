@@ -73,11 +73,21 @@ describe 'keystone::ldap' do
         :tls_req_cert => 'demand',
         :identity_driver => 'keystone.identity.backends.ldap.Identity',
         :assignment_driver => 'keystone.assignment.backends.ldap.Assignment',
+        :use_pool => 'True',
+        :pool_size => 20,
+        :pool_retry_max => 2,
+        :pool_retry_delay => 0.2,
+        :pool_connection_timeout => 222,
+        :pool_connection_lifetime => 222,
+        :use_auth_pool => 'True',
+        :auth_pool_size => 20,
+        :auth_pool_connection_lifetime => 200,
       }
     end
     it { should contain_package('python-ldap') }
     it { should contain_package('python-ldappool') }
     it 'should have basic params' do
+      # basic params
       should contain_keystone_config('ldap/url').with_value('ldap://foo')
       should contain_keystone_config('ldap/user').with_value('cn=foo,dc=example,dc=com')
       should contain_keystone_config('ldap/password').with_value('abcdefg').with_secret(true)
@@ -85,6 +95,7 @@ describe 'keystone::ldap' do
       should contain_keystone_config('ldap/query_scope').with_value('sub')
       should contain_keystone_config('ldap/page_size').with_value('50')
 
+      # users
       should contain_keystone_config('ldap/user_tree_dn').with_value('cn=users,dc=example,dc=com')
       should contain_keystone_config('ldap/user_filter').with_value('(memberOf=cn=openstack,cn=groups,cn=accounts,dc=example,dc=com)')
       should contain_keystone_config('ldap/user_objectclass').with_value('inetUser')
@@ -105,6 +116,7 @@ describe 'keystone::ldap' do
       should contain_keystone_config('ldap/user_enabled_emulation_dn').with_value('cn=openstack-enabled,cn=groups,cn=accounts,dc=example,dc=com')
       should contain_keystone_config('ldap/user_additional_attribute_mapping').with_value('description:name, gecos:name')
 
+      # projects/tenants
       should contain_keystone_config('ldap/project_tree_dn').with_value('ou=projects,ou=openstack,dc=example,dc=com')
       should contain_keystone_config('ldap/project_filter').with_value('')
       should contain_keystone_config('ldap/project_objectclass').with_value('organizationalUnit')
@@ -121,6 +133,8 @@ describe 'keystone::ldap' do
       should contain_keystone_config('ldap/project_enabled_emulation').with_value('False')
       should contain_keystone_config('ldap/project_enabled_emulation_dn').with_value('True')
       should contain_keystone_config('ldap/project_additional_attribute_mapping').with_value('cn=enabled,ou=openstack,dc=example,dc=com')
+
+      # roles
       should contain_keystone_config('ldap/role_tree_dn').with_value('ou=roles,ou=openstack,dc=example,dc=com')
       should contain_keystone_config('ldap/role_filter').with_value('')
       should contain_keystone_config('ldap/role_objectclass').with_value('organizationalRole')
@@ -133,6 +147,7 @@ describe 'keystone::ldap' do
       should contain_keystone_config('ldap/role_allow_delete').with_value('True')
       should contain_keystone_config('ldap/role_additional_attribute_mapping').with_value('')
 
+      # groups
       should contain_keystone_config('ldap/group_tree_dn').with_value('ou=groups,ou=openstack,dc=example,dc=com')
       should contain_keystone_config('ldap/group_filter').with_value('cn=enabled-groups,cn=groups,cn=accounts,dc=example,dc=com')
       should contain_keystone_config('ldap/group_objectclass').with_value('organizationalRole')
@@ -145,10 +160,25 @@ describe 'keystone::ldap' do
       should contain_keystone_config('ldap/group_allow_update').with_value('False')
       should contain_keystone_config('ldap/group_allow_delete').with_value('False')
       should contain_keystone_config('ldap/group_additional_attribute_mapping').with_value('')
+
+      # tls
       should contain_keystone_config('ldap/use_tls').with_value('False')
       should contain_keystone_config('ldap/tls_cacertdir').with_value('/etc/ssl/certs/')
       should contain_keystone_config('ldap/tls_cacertfile').with_value('/etc/ssl/certs/ca-certificates.crt')
       should contain_keystone_config('ldap/tls_req_cert').with_value('demand')
+
+      # ldap pooling
+      should contain_keystone_config('ldap/use_pool').with_value('True')
+      should contain_keystone_config('ldap/pool_size').with_value('20')
+      should contain_keystone_config('ldap/pool_retry_max').with_value('2')
+      should contain_keystone_config('ldap/pool_retry_delay').with_value('0.2')
+      should contain_keystone_config('ldap/pool_connection_timeout').with_value('222')
+      should contain_keystone_config('ldap/pool_connection_lifetime').with_value('222')
+      should contain_keystone_config('ldap/use_auth_pool').with_value('True')
+      should contain_keystone_config('ldap/auth_pool_size').with_value('20')
+      should contain_keystone_config('ldap/auth_pool_connection_lifetime').with_value('200')
+
+      # drivers
       should contain_keystone_config('identity/driver').with_value('keystone.identity.backends.ldap.Identity')
       should contain_keystone_config('assignment/driver').with_value('keystone.assignment.backends.ldap.Assignment')
     end
