@@ -99,6 +99,15 @@ class keystone::ldap(
   $tls_req_cert                        = undef,
   $identity_driver                     = undef,
   $assignment_driver                   = undef,
+  $use_pool                            = false,
+  $pool_size                           = 10,
+  $pool_retry_max                      = 3,
+  $pool_retry_delay                    = 0.1,
+  $pool_connection_timeout             = -1,
+  $pool_connection_lifetime            = 600,
+  $use_auth_pool                       = false,
+  $auth_pool_size                      = 100,
+  $auth_pool_connection_lifetime       = 60,
 ) {
 
   # In Juno the term "tenant" was deprecated in the config in favor of "project"
@@ -373,6 +382,15 @@ class keystone::ldap(
     'ldap/tls_cacertdir':                        value => $tls_cacertdir;
     'ldap/tls_cacertfile':                       value => $tls_cacertfile;
     'ldap/tls_req_cert':                         value => $tls_req_cert;
+    'ldap/use_pool':                             value => $use_pool;
+    'ldap/pool_size':                            value => $pool_size;
+    'ldap/pool_retry_max':                       value => $pool_retry_max;
+    'ldap/pool_retry_delay':                     value => $pool_retry_delay;
+    'ldap/pool_connection_timeout':              value => $pool_connection_timeout;
+    'ldap/pool_connection_lifetime':             value => $pool_connection_lifetime;
+    'ldap/use_auth_pool':                        value => $use_auth_pool;
+    'ldap/auth_pool_size':                       value => $auth_pool_size;
+    'ldap/auth_pool_connection_lifetime':        value => $auth_pool_connection_lifetime;
     'identity/driver':                           value => $identity_driver;
     'assignment/driver':                         value => $assignment_driver;
   }
