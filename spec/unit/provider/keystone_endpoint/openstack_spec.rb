@@ -40,7 +40,16 @@ describe provider_class do
 "1cb05cfed7c24279be884ba4f6520262","foo","bar","","http://127.0.0.1:5000/v2.0","http://127.0.0.1:5001/v2.0","http://127.0.0.1:5002/v2.0"
 ')
         provider.class.stubs(:openstack)
-                      .with('endpoint', 'create', [['bar', '--region', 'foo', '--publicurl', 'http://127.0.0.1:5000/v2.0', '--internalurl', 'http://127.0.0.1:5001/v2.0', '--adminurl', 'http://127.0.0.1:5002/v2.0', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('endpoint', 'create', '--format', 'shell', [['bar', '--region', 'foo', '--publicurl', 'http://127.0.0.1:5000/v2.0', '--internalurl', 'http://127.0.0.1:5001/v2.0', '--adminurl', 'http://127.0.0.1:5002/v2.0', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .returns('adminurl="http://127.0.0.1:5002/v2.0"
+id="3a5c4378981e4112a0d44902a43e16ef"
+internalurl="http://127.0.0.1:5001/v2.0"
+publicurl="http://127.0.0.1:5000/v2.0"
+region="foo"
+service_id="8137d72980fd462192f276585a002426"
+service_name="bar"
+service_type="test"
+')
         provider.create
         expect(provider.exists?).to be_truthy
       end

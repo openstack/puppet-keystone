@@ -32,7 +32,7 @@ Puppet::Type.type(:keystone_user).provide(
       properties << '--email'
       properties << resource[:email]
     end
-    request('user', 'create', resource[:name], resource[:auth], properties)
+    @instance = request('user', 'create', resource[:name], resource[:auth], properties)
   end
 
   def exists?

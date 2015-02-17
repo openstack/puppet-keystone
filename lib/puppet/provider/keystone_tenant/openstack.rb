@@ -23,7 +23,7 @@ Puppet::Type.type(:keystone_tenant).provide(
       properties << '--description'
       properties << resource[:description]
     end
-    request('project', 'create', resource[:name], resource[:auth], properties)
+    @instance = request('project', 'create', resource[:name], resource[:auth], properties)
   end
 
   def exists?

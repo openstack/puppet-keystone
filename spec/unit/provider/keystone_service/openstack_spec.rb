@@ -39,7 +39,13 @@ describe provider_class do
 "1cb05cfed7c24279be884ba4f6520262","foo","foo","foo"
 ')
         provider.class.stubs(:openstack)
-                      .with('service', 'create', [['foo', '--description', 'foo', '--type', 'foo', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('service', 'create', '--format', 'shell', [['foo', '--description', 'foo', '--type', 'foo', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .returns('description="foo"
+enabled="True"
+id="8f0dd4c0abc44240998fbb3f5089ecbf"
+name="foo"
+type="foo"
+')
         provider.create
         expect(provider.exists?).to be_truthy
       end
