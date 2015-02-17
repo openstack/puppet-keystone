@@ -62,7 +62,7 @@ class Puppet::Provider::Openstack < Puppet::Provider
             end
             hash
           end
-        elsif(action == 'show')
+        elsif(action == 'show' || action == 'create')
           rv = {}
           # shell output is name="value"\nid="value2"\ndescription="value3" etc.
           openstack(service, action, '--format', 'shell', args).split("\n").each do |line|

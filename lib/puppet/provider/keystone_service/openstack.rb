@@ -22,7 +22,7 @@ Puppet::Type.type(:keystone_service).provide(
       properties << '--type'
       properties << resource[:type]
     end
-    request('service', 'create', resource[:name], resource[:auth], properties)
+    @instance = request('service', 'create', resource[:name], resource[:auth], properties)
   end
 
   def exists?

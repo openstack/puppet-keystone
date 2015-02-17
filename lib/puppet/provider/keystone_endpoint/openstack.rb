@@ -30,7 +30,7 @@ Puppet::Type.type(:keystone_endpoint).provide(
       properties << '--adminurl'
       properties << resource[:admin_url]
     end
-    request('endpoint', 'create', name, resource[:auth], properties)
+    @instance = request('endpoint', 'create', name, resource[:auth], properties)
   end
 
   def exists?
