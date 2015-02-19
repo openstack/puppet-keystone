@@ -248,6 +248,14 @@
 #     (optional) maximum allowable Keystone token size
 #     Defaults to undef
 #
+#   [*admin_workers*]
+#     (optional) The number of worker processes to serve the admin WSGI application.
+#     Defaults to max($::processorcount, 2)
+#
+#   [*public_workers*]
+#     (optional) The number of worker processes to serve the public WSGI application.
+#     Defaults to max($::processorcount, 2)
+#
 # == Dependencies
 #  None
 #
@@ -344,6 +352,8 @@ class keystone(
   $service_provider       = $::keystone::params::service_provider,
   $service_name           = 'keystone',
   $max_token_size         = undef,
+  $admin_workers          = max($::processorcount, 2),
+  $public_workers         = max($::processorcount, 2),
   # DEPRECATED PARAMETERS
   $mysql_module           = undef,
 ) inherits keystone::params {
@@ -633,6 +643,11 @@ class keystone(
       'DEFAULT/kombu_ssl_keyfile':  ensure => absent;
       'DEFAULT/kombu_ssl_version':  ensure => absent;
     }
+  }
+
+  keystone_config {
+    'DEFAULT/admin_workers':  value => $admin_workers;
+    'DEFAULT/public_workers': value => $public_workers;
   }
 
   if $enabled {
