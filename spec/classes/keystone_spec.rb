@@ -22,6 +22,7 @@ describe 'keystone' do
   default_params = {
       'admin_token'           => 'service_token',
       'package_ensure'        => 'present',
+      'client_package_ensure' => 'present',
       'public_bind_host'      => '0.0.0.0',
       'admin_bind_host'       => '0.0.0.0',
       'public_port'           => '5000',
@@ -56,6 +57,7 @@ describe 'keystone' do
 
   override_params = {
       'package_ensure'        => 'latest',
+      'client_package_ensure' => 'latest',
       'public_bind_host'      => '0.0.0.0',
       'admin_bind_host'       => '0.0.0.0',
       'public_port'           => '5001',
@@ -97,6 +99,11 @@ describe 'keystone' do
 
     it { should contain_package('keystone').with(
       'ensure' => param_hash['package_ensure'],
+      'tag'    => 'openstack'
+    ) }
+
+    it { should contain_package('python-openstackclient').with(
+      'ensure' => param_hash['client_package_ensure'],
       'tag'    => 'openstack'
     ) }
 

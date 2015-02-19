@@ -5,6 +5,8 @@
 #
 #   [package_ensure] Desired ensure state of packages. Optional. Defaults to present.
 #     accepts latest or specific versions.
+#   [client_package_ensure] Desired ensure state of the client package. Optional. Defaults to present.
+#     accepts latest or specific versions.
 #   [bind_host] Host that keystone binds to.
 #   [bind_port] Port that keystone binds to.
 #   [public_port]
@@ -288,6 +290,7 @@
 class keystone(
   $admin_token,
   $package_ensure         = 'present',
+  $client_package_ensure  = 'present',
   $bind_host              = false,
   $public_bind_host       = '0.0.0.0',
   $admin_bind_host        = '0.0.0.0',
@@ -398,7 +401,7 @@ class keystone(
   }
   # TODO: Move this to openstacklib::openstackclient in Kilo
   package { 'python-openstackclient':
-    ensure => present,
+    ensure => $client_package_ensure,
     tag    => 'openstack',
   }
 
