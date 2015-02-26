@@ -118,8 +118,8 @@ describe provider_class do
 ')
         provider.class.expects(:openstack)
                       .with('user role', 'list', '--quiet', '--format', 'csv', [['foo', '--project', 'foo', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
-                      .returns('"Project"
-"foo"
+                      .returns('"ID","Name","Project","User"
+"1cb05cfed7c24279be884ba4f6520262","foo","foo","foo"
 ')
         tenant = provider.tenant
         expect(tenant).to eq('foo')
@@ -132,8 +132,8 @@ describe provider_class do
                         .with('user', 'set', [['foo', '--project', 'bar', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
            provider.class.expects(:openstack)
                          .with('user role', 'list', '--quiet', '--format', 'csv', [['foo', '--project', 'bar', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
-                         .returns('"Project"
-"bar"
+                         .returns('"ID","Name","Project","User"
+"1cb05cfed7c24279be884ba4f6520262","foo","foo","foo"
 ')
           provider.tenant=('bar')
         end

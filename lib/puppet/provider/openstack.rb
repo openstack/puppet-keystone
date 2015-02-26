@@ -52,6 +52,9 @@ class Puppet::Provider::Openstack < Puppet::Provider
       begin
         if(action == 'list')
           response = openstack(service, action, '--quiet', '--format', 'csv', args)
+          # Ignore warnings - assume legitimate output starts with a double quote
+          # Errors will be caught and raised prior to this
+          response = response.split("\n").select { |line| line =~ /^\".*\",\".*\"/ }.join("\n")
           response = CSV.parse(response.to_s)
           keys = response.delete_at(0) # ID,Name,Description,Enabled
           rv = response.collect do |line|
@@ -68,6 +71,7 @@ class Puppet::Provider::Openstack < Puppet::Provider
           openstack(service, action, '--format', 'shell', args).split("\n").each do |line|
             # key is everything before the first "="
             key, val = line.split("=", 2)
+            next unless val # Ignore warnings
             # value is everything after the first "=", with leading and trailing double quotes stripped
             val = val.gsub(/\A"|"\Z/, '')
             rv[key.downcase.to_sym] = val
