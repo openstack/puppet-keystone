@@ -9,7 +9,7 @@ Puppet::Type.type(:keystone_role).provide(
 
   def create
     properties = []
-    request('role', 'create', resource[:name], resource[:auth], properties)
+    @instance = request('role', 'create', resource[:name], resource[:auth], properties)
   end
 
   def exists?

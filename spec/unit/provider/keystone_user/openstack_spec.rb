@@ -41,7 +41,14 @@ describe provider_class do
 "1cb05cfed7c24279be884ba4f6520262","foo","foo","foo@example.com",True
 ')
         provider.class.stubs(:openstack)
-                      .with('user', 'create', [['foo', '--enable', '--password', 'foo', '--project', 'foo', '--email', 'foo@example.com', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('user', 'create', '--format', 'shell', [['foo', '--enable', '--password', 'foo', '--project', 'foo', '--email', 'foo@example.com', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .returns('email="foo@example.com"
+enabled="True"
+id="12b23f07d4a3448d8189521ab09610b0"
+name="foo"
+project_id="5e2001b2248540f191ff22627dc0c2d7"
+username="foo"
+')
         provider.create
         expect(provider.exists?).to be_truthy
       end
@@ -162,7 +169,8 @@ describe provider_class do
                         .with('role', 'show', '--format', 'shell', [['_member_', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                         .raises(Puppet::ExecutionFailure, 'no such role _member_')
           provider.class.expects(:openstack)
-                        .with('role', 'create', [['_member_', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                        .with('role', 'create', '--format', 'shell', [['_member_', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])                      
+                        .returns('name="_member_"')
           provider.class.expects(:openstack)
                         .with('role', 'add', [['_member_', '--project', 'bar', '--user', 'foo', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
           provider.tenant=('bar')
