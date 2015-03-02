@@ -35,6 +35,7 @@ describe 'keystone' do
       'catalog_driver'        => false,
       'token_provider'        => 'keystone.token.providers.uuid.Provider',
       'token_driver'          => 'keystone.token.persistence.backends.sql.Token',
+      'revoke_driver'         => 'keystone.contrib.revoke.backends.sql.Revoke',
       'cache_dir'             => '/var/cache/keystone',
       'enable_ssl'            => false,
       'ssl_certfile'          => '/etc/keystone/ssl/certs/keystone.pem',
@@ -69,6 +70,7 @@ describe 'keystone' do
       'catalog_type'          => 'template',
       'token_provider'        => 'keystone.token.providers.uuid.Provider',
       'token_driver'          => 'keystone.token.backends.kvs.Token',
+      'revoke_driver'         => 'keystone.contrib.revoke.backends.kvs.Revoke',
       'public_endpoint'       => 'https://localhost:5000/v2.0/',
       'admin_endpoint'        => 'https://localhost:35357/v2.0/',
       'enable_ssl'            => true,
@@ -170,6 +172,10 @@ describe 'keystone' do
 
     it 'should contain correct token driver' do
       should contain_keystone_config('token/driver').with_value(param_hash['token_driver'])
+    end
+
+    it 'should contain correct revoke driver' do
+      should contain_keystone_config('revoke/driver').with_value(param_hash['revoke_driver'])
     end
 
     it 'should ensure proper setting of admin_endpoint and public_endpoint' do
