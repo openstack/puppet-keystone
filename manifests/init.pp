@@ -477,10 +477,8 @@ class keystone(
     name   => $::keystone::params::package_name,
     tag    => 'openstack',
   }
-  # TODO: Move this to openstacklib::openstackclient in Kilo
-  package { 'python-openstackclient':
-    ensure => $client_package_ensure,
-    tag    => 'openstack',
+  class { 'openstacklib::openstackclient':
+    package_ensure => $client_package_ensure,
   }
 
   group { 'keystone':
