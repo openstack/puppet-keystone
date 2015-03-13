@@ -35,6 +35,8 @@
 #     Optional.  Defaults to 'keystone.token.persistence.backends.sql.Token'
 #   [token_expiration] Amount of time a token should remain valid (seconds).
 #     Optional.  Defaults to 3600 (1 hour).
+#   [revoke_driver] Driver for token revocation.
+#     Optional.  Defaults to 'keystone.contrib.revoke.backends.sql.Revoke'
 #   [cache_dir] Directory created when token_provider is pki. Optional.
 #     Defaults to /var/cache/keystone.
 #
@@ -309,6 +311,7 @@ class keystone(
   $token_provider         = 'keystone.token.providers.uuid.Provider',
   $token_driver           = 'keystone.token.persistence.backends.sql.Token',
   $token_expiration       = 3600,
+  $revoke_driver          = 'keystone.contrib.revoke.backends.sql.Revoke',
   $public_endpoint        = false,
   $admin_endpoint         = false,
   $enable_ssl             = false,
@@ -478,6 +481,16 @@ class keystone(
   keystone_config {
     'token/driver':     value => $token_driver;
     'token/expiration': value => $token_expiration;
+  }
+
+  if $revoke_driver {
+    keystone_config {
+      'revoke/driver':    value => $revoke_driver;
+    }
+  } else {
+    keystone_config {
+      'revoke/driver':    ensure => absent;
+    }
   }
 
   # ssl config
