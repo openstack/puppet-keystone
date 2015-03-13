@@ -7,10 +7,12 @@
 #     accepts latest or specific versions.
 #   [client_package_ensure] Desired ensure state of the client package. Optional. Defaults to present.
 #     accepts latest or specific versions.
-#   [bind_host] Host that keystone binds to.
-#   [bind_port] Port that keystone binds to.
 #   [public_port]
+#
 #   [compute_port]
+#     (optional) DEPRECATED. The port for the compute service.
+#     Defaults to 8774.
+#
 #   [admin_port]
 #   [admin_port] Port that can be used for admin tasks.
 #   [admin_token] Admin token that can be used to authenticate as a keystone
@@ -136,12 +138,10 @@
 #
 #   [*public_bind_host*]
 #   (optional) The IP address of the public network interface to listen on
-#   Deprecates bind_host
 #   Default to '0.0.0.0'.
 #
 #   [*admin_bind_host*]
 #   (optional) The IP address of the public network interface to listen on
-#   Deprecates bind_host
 #   Default to '0.0.0.0'.
 #
 #   [*log_dir*]
@@ -293,7 +293,6 @@ class keystone(
   $admin_token,
   $package_ensure         = 'present',
   $client_package_ensure  = 'present',
-  $bind_host              = false,
   $public_bind_host       = '0.0.0.0',
   $admin_bind_host        = '0.0.0.0',
   $public_port            = '5000',
@@ -362,6 +361,7 @@ class keystone(
   $public_workers         = max($::processorcount, 2),
   # DEPRECATED PARAMETERS
   $mysql_module           = undef,
+  $compute_port           = undef,
 ) inherits keystone::params {
 
   if ! $catalog_driver {
@@ -445,9 +445,19 @@ class keystone(
     'DEFAULT/admin_bind_host':  value => $admin_bind_host;
     'DEFAULT/public_port':      value => $public_port;
     'DEFAULT/admin_port':       value => $admin_port;
-    'DEFAULT/compute_port':     value => $compute_port;
     'DEFAULT/verbose':          value => $verbose;
     'DEFAULT/debug':            value => $debug;
+  }
+
+  if $compute_port {
+    warning('The compute_port parameter is deprecated and will be removed in L')
+    keystone_config {
+      'DEFAULT/compute_port': value => $compute_port;
+    }
+  } else {
+    keystone_config {
+      'DEFAULT/compute_port': ensure => absent;
+    }
   }
 
   # Endpoint configuration
