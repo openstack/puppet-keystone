@@ -98,9 +98,13 @@ Puppet::Type.type(:keystone_user).provide(
         }
       }
       url = URI.parse(endpoint)
-      http = Net::HTTP.new(url.host, url.port)
-      http.use_ssl = url.scheme == "https" ? true : false
-      http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+      # There is issue with ipv6 where address has to be in brackets, this causes the
+      # underlying ruby TCPSocket to fail. Net::HTTP.new will fail without brackets on
+      # joining the ipv6 address with :port or passing brackets to TCPSocket. It was
+      # found that if we use Net::HTTP.start with url.hostname the incriminated code
+      # won't be hit.
+      use_ssl = url.scheme == "https" ? true : false
+      http = Net::HTTP.start(url.hostname, url.port, {:use_ssl => use_ssl})
       request = Net::HTTP::Post.new('/v2.0/tokens')
       request.body = creds_hash.to_json
       request.content_type = 'application/json'
