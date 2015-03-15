@@ -22,76 +22,76 @@
 # == Parameters:
 #
 # [*password*]
-# Password to create for the service user;
-# string; required
+#   Password to create for the service user;
+#   string; required
 #
 # [*auth_name*]
-# The name of the service user;
-# string; optional; default to the $title of the resource, i.e. 'nova'
+#   The name of the service user;
+#   string; optional; default to the $title of the resource, i.e. 'nova'
 #
 # [*service_name*]
-# Name of the service;
-# string; required
+#   Name of the service;
+#   string; required
 #
 # [*service_type*]
-# Type of the service;
-# string; required
+#   Type of the service;
+#   string; required
 #
 # [*service_description*]
-# Description of the service;
-# string; optional: default to '$name service'
+#   Description of the service;
+#   string; optional: default to '$name service'
 #
 # [*public_url*]
-# Public endpoint URL;
-# string; required
+#   Public endpoint URL;
+#   string; required
 #
 # [*internal_url*]
-# Internal endpoint URL;
-# string; required
+#   Internal endpoint URL;
+#   string; required
 #
 # [*admin_url*]
-# Admin endpoint URL;
-# string; required
+#   Admin endpoint URL;
+#   string; required
 #
 # [*region*]
-# Endpoint region;
-# string; optional: default to 'RegionOne'
+#   Endpoint region;
+#   string; optional: default to 'RegionOne'
 #
 # [*tenant*]
-# Service tenant;
-# string; optional: default to 'services'
+#   Service tenant;
+#   string; optional: default to 'services'
 #
 # [*ignore_default_tenant*]
-# Ignore setting the default tenant value when the user is created.
-# string; optional: default to false
+#   Ignore setting the default tenant value when the user is created.
+#   string; optional: default to false
 #
 # [*roles*]
-# List of roles;
-# string; optional: default to ['admin']
+#   List of roles;
+#   string; optional: default to ['admin']
 #
 # [*domain*]
-# User domain (keystone v3), not implemented yet.
-# string; optional: default to undef
+#   User domain (keystone v3), not implemented yet.
+#   string; optional: default to undef
 #
 # [*email*]
-# Service email;
-# string; optional: default to '$auth_name@localhost'
+#   Service email;
+#   string; optional: default to '$auth_name@localhost'
 #
 # [*configure_endpoint*]
-# Whether to create the endpoint.
-# string; optional: default to True
+#   Whether to create the endpoint.
+#   string; optional: default to True
 #
 # [*configure_user*]
-# Whether to create the user.
-# string; optional: default to True
+#   Whether to create the user.
+#   string; optional: default to True
 #
 # [*configure_user_role*]
-# Whether to create the user role.
-# string; optional: default to True
+#   Whether to create the user role.
+#   string; optional: default to True
 #
 # [*configure_service*]
-# Whether to create the service.
-# string; optional: default to True
+#   Whether to create the service.
+#   string; optional: default to True
 #
 define keystone::resource::service_identity(
   $admin_url             = false,

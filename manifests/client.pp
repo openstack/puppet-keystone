@@ -5,7 +5,8 @@
 # === Parameters
 #
 # [*ensure*]
-#   (optional) Ensure state of the package. Defaults to 'present'.
+#   (optional) Ensure state of the package.
+#   Defaults to 'present'.
 #
 class keystone::client (
   $ensure = 'present'

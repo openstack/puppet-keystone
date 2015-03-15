@@ -5,19 +5,39 @@
 #
 # == parameters
 #
-# [password] Password that will be used for the keystone db user.
-#   Optional. Defaults to: 'keystone_default_password'
+# [*password*]
+#   (Mandatory) Password to connect to the database.
+#   Defaults to 'false'.
 #
-# [dbname] Name of keystone database. Optional. Defaults to keystone.
+# [*dbname*]
+#   (Optional) Name of the database.
+#   Defaults to 'keystone'.
 #
-# [user] Name of keystone user. Optional. Defaults to keystone.
+# [*user*]
+#   (Optional) User to connect to the database.
+#   Defaults to 'keystone'.
 #
-# [host] Host where user should be allowed all priveleges for database.
-# Optional. Defaults to 127.0.0.1.
+# [*host*]
+#   (Optional) The default source host user is allowed to connect from.
+#   Defaults to '127.0.0.1'
 #
-# [allowed_hosts] Hosts allowed to use the database
+# [*allowed_hosts*]
+#   (Optional) Other hosts the user is allowed to connect from.
+#   Defaults to 'undef'.
 #
-# [*mysql_module*] Deprecated. Does nothing.
+# [*charset*]
+#   (Optional) The database charset.
+#   Defaults to 'utf8'
+#
+# [*collate*]
+#   (Optional) The database collate.
+#   Only used with mysql modules >= 2.2.
+#   Defaults to 'utf8_unicode_ci'
+#
+# === Deprecated Parameters
+#
+# [*mysql_module*]
+#   (Optional) Does nothing.
 #
 # == Dependencies
 #   Class['mysql::server']
