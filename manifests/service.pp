@@ -9,60 +9,59 @@
 # === Parameters
 #
 # [*ensure*]
-# (optional) The desired state of the keystone service
-# Defaults to 'running'
+#   (optional) The desired state of the keystone service
+#   Defaults to 'running'
 #
 # [*service_name*]
-# (optional) The name of the keystone service
-# Defaults to $::keystone::params::service_name
+#   (optional) The name of the keystone service
+#   Defaults to $::keystone::params::service_name
 #
 # [*enable*]
-# (optional) Whether to enable the keystone service
-# Defaults to true
+#   (optional) Whether to enable the keystone service
+#   Defaults to true
 #
 # [*hasstatus*]
-# (optional) Whether the keystone service has status
-# Defaults to true
+#   (optional) Whether the keystone service has status
+#   Defaults to true
 #
 # [*hasrestart*]
-# (optional) Whether the keystone service has restart
-# Defaults to true
+#   (optional) Whether the keystone service has restart
+#   Defaults to true
 #
 # [*provider*]
-# (optional) Provider for keystone service
-# Defaults to $::keystone::params::service_provider
+#   (optional) Provider for keystone service
+#   Defaults to $::keystone::params::service_provider
 #
 # [*validate*]
-# (optional) Whether to validate the service is working
-# after any service refreshes
-# Defaults to false
+#   (optional) Whether to validate the service is working after any service refreshes
+#   Defaults to false
 #
 # [*admin_token*]
-# (optional) The admin token to use for validation
-# Defaults to undef
+#   (optional) The admin token to use for validation
+#   Defaults to undef
 #
 # [*admin_endpoint*]
-# (optional) The admin endpont to use for validation
-# Defaults to 'http://localhost:35357/v2.0'
+#   (optional) The admin endpont to use for validation
+#   Defaults to 'http://localhost:35357/v2.0'
 #
 # [*retries*]
-# (optional) Number of times to retry validation
-# Defaults to 10
+#   (optional) Number of times to retry validation
+#   Defaults to 10
 #
 # [*delay*]
-# (optional) Number of seconds between validation attempts
-# Defaults to 2
+#   (optional) Number of seconds between validation attempts
+#   Defaults to 2
 #
 # [*insecure*]
-# (optional) Whether to validate keystone connections
-# using the --insecure option with keystone client.
-# Defaults to false
+#   (optional) Whether to validate keystone connections
+#   using the --insecure option with keystone client.
+#   Defaults to false
 #
 # [*cacert*]
-# (optional) Whether to validate keystone connections
-# using the specified argument with the --os-cacert option
-# with keystone client.
-# Defaults to undef
+#   (optional) Whether to validate keystone connections
+#   using the specified argument with the --os-cacert option
+#   with keystone client.
+#   Defaults to undef
 #
 class keystone::service(
   $ensure         = 'running',
@@ -106,13 +105,13 @@ class keystone::service(
     $cmd = "openstack --os-auth-url ${admin_endpoint} --os-token ${admin_token} ${insecure_s} ${cacert_s} user list"
     $catch = 'name'
     exec { 'validate_keystone_connection':
-      path          => '/usr/bin:/bin:/usr/sbin:/sbin',
-      provider      => shell,
-      command       => $cmd,
-      subscribe     => Service['keystone'],
-      refreshonly   => true,
-      tries         => $retries,
-      try_sleep     => $delay
+      path        => '/usr/bin:/bin:/usr/sbin:/sbin',
+      provider    => shell,
+      command     => $cmd,
+      subscribe   => Service['keystone'],
+      refreshonly => true,
+      tries       => $retries,
+      try_sleep   => $delay
     }
 
     Exec['validate_keystone_connection'] -> Keystone_user<||>

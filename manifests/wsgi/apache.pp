@@ -46,14 +46,40 @@
 #     Optional. Defaults to 1
 #
 #   [*ssl_cert*]
+#     (optional) Path to SSL certificate
+#     Default to apache::vhost 'ssl_*' defaults.
+#
 #   [*ssl_key*]
+#     (optional) Path to SSL key
+#     Default to apache::vhost 'ssl_*' defaults.
+#
 #   [*ssl_chain*]
+#     (optional) SSL chain
+#     Default to apache::vhost 'ssl_*' defaults.
+#
 #   [*ssl_ca*]
+#     (optional) Path to SSL certificate authority
+#     Default to apache::vhost 'ssl_*' defaults.
+#
 #   [*ssl_crl_path*]
+#     (optional) Path to SSL certificate revocation list
+#     Default to apache::vhost 'ssl_*' defaults.
+#
 #   [*ssl_crl*]
+#     (optional) SSL certificate revocation list name
+#     Default to apache::vhost 'ssl_*' defaults.
+#
 #   [*ssl_certs_dir*]
 #     apache::vhost ssl parameters.
 #     Optional. Default to apache::vhost 'ssl_*' defaults.
+#
+# [*priority*]
+#   (optional) The priority for the vhost.
+#   Defaults to '10'
+#
+# [*threads*]
+#   (optional) The number of threads for the vhost.
+#   Defaults to $::processorcount
 #
 # == Dependencies
 #

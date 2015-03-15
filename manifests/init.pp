@@ -3,157 +3,232 @@
 #
 # == Parameters
 #
-#   [package_ensure] Desired ensure state of packages. Optional. Defaults to present.
-#     accepts latest or specific versions.
-#   [client_package_ensure] Desired ensure state of the client package. Optional. Defaults to present.
-#     accepts latest or specific versions.
-#   [public_port]
+# [*package_ensure*]
+#   (optional) Desired ensure state of packages.
+#   accepts latest or specific versions.
+#   Defaults to present.
 #
-#   [compute_port]
-#     (optional) DEPRECATED. The port for the compute service.
-#     Defaults to 8774.
+# [*client_package_ensure*]
+#   (optional) Desired ensure state of the client package.
+#   accepts latest or specific versions.
+#   Defaults to present.
 #
-#   [admin_port]
-#   [admin_port] Port that can be used for admin tasks.
-#   [admin_token] Admin token that can be used to authenticate as a keystone
-#     admin. Required.
-#   [verbose] Rather keystone should log at verbose level. Optional.
-#     Defaults to False.
-#   [debug] Rather keystone should log at debug level. Optional.
-#     Defaults to False.
-#   [use_syslog] Use syslog for logging. Optional.
-#     Defaults to False.
-#   [log_facility] Syslog facility to receive log lines. Optional.
-#   [catalog_type] Type of catalog that keystone uses to store endpoints,services. Optional.
-#     Defaults to sql. (Also accepts template)
-#   [catalog_driver] Catalog driver used by Keystone to store endpoints and services. Optional.
-#     Setting this value will override and ignore catalog_type.
-#   [catalog_template_file] Path to the catalog used if catalog_type equals 'template'.
-#     Defaults to '/etc/keystone/default_catalog.templates'
-#   [token_provider] Format keystone uses for tokens. Optional.
-#     Defaults to 'keystone.token.providers.uuid.Provider'
-#     Supports PKI and UUID.
-#   [token_driver] Driver to use for managing tokens.
-#     Optional.  Defaults to 'keystone.token.persistence.backends.sql.Token'
-#   [token_expiration] Amount of time a token should remain valid (seconds).
-#     Optional.  Defaults to 3600 (1 hour).
-#   [revoke_driver] Driver for token revocation.
-#     Optional.  Defaults to 'keystone.contrib.revoke.backends.sql.Revoke'
-#   [cache_dir] Directory created when token_provider is pki. Optional.
-#     Defaults to /var/cache/keystone.
+# [*public_port*]
+#   (optional) Port that keystone binds to.
+#   Defaults to '5000'
 #
-#   [memcache_servers]
-#     List of memcache servers in format of server:port.
-#     Used with token_driver 'keystone.token.backends.memcache.Token'.
-#     Optional. Defaults to false. Example: ['localhost:11211']
+# [*compute_port*]
+#   (optional) DEPRECATED The port for compute servie.
+#   Defaults to '8774'
 #
-#   [cache_backend]
-#     Dogpile.cache backend module. It is recommended that Memcache with pooling
-#     (keystone.cache.memcache_pool) or Redis (dogpile.cache.redis) be used in production.
-#     This has no effects unless 'memcache_servers' is set.
-#     Optional. Defaults to 'keystone.common.cache.noop'
+# [*admin_port*]
+#   (optional) Port that can be used for admin tasks.
+#   Defaults to '35357'
 #
-#   [cache_backend_argument]
-#     List of arguments in format of argname:value supplied to the backend module.
-#     Specify this option once per argument to be passed to the dogpile.cache backend.
-#     This has no effects unless 'memcache_servers' is set.
-#     Optional. Default to undef.
+# [*admin_token*]
+#   Admin token that can be used to authenticate as a keystone
+#   admin. Required.
 #
-#   [debug_cache_backend]
-#     Extra debugging from the cache backend (cache keys, get/set/delete calls).
-#     This has no effects unless 'memcache_servers' is set.
-#     Optional. Default to false.
+# [*verbose*]
+#   (optional) Rather keystone should log at verbose level.
+#   Defaults to false.
 #
-#   [token_caching]
-#     Toggle for token system caching. This has no effects unless 'memcache_servers' is set.
-#     Optional. Default to true.
+# [*debug*]
+#   (optional) Rather keystone should log at debug level.
+#   Defaults to False.
 #
-#   [enabled] If the keystone services should be enabled. Optional. Default to true.
+# [*use_syslog*]
+#   (optional) Use syslog for logging.
+#   Defaults to false.
 #
-#   [*database_connection*]
-#     (optional) Url used to connect to database.
-#     Defaults to sqlite:////var/lib/keystone/keystone.db
+# [*log_facility*]
+#   (optional) Syslog facility to receive log lines.
+#   Defaults to 'LOG_USER'.
 #
-#   [*database_idle_timeout*]
-#     (optional) Timeout when db connections should be reaped.
-#     Defaults to 200.
+# [*catalog_type*]
+#   (optional) Type of catalog that keystone uses to store endpoints,services.
+#   Defaults to sql. (Also accepts template)
 #
-#   [enable_pki_setup] Enable call to pki_setup to generate the cert for signing pki tokens and
-#     revocation lists if it doesn't already exist. This generates a cert and key stored in file
-#     locations based on the signing_certfile and signing_keyfile paramters below. If you are
-#     providing your own signing cert, make this false.
-#   [signing_certfile] Location of the cert file for signing pki tokens and revocation lists.
-#     Optional. Note that if this file already exists (i.e. you are providing your own signing cert),
-#     the file will not be overwritten, even if enable_pki_setup is set to true.
-#     Default: /etc/keystone/ssl/certs/signing_cert.pem
-#   [signing_keyfile] Location of the key file for signing pki tokens and revocation lists. Optional.
-#     Note that if this file already exists (i.e. you are providing your own signing cert), the file
-#     will not be overwritten, even if enable_pki_setup is set to true.
-#     Default: /etc/keystone/ssl/private/signing_key.pem
-#   [signing_ca_certs] Use this CA certs file along with signing_certfile/signing_keyfile for
-#     signing pki tokens and revocation lists. Optional. Default: /etc/keystone/ssl/certs/ca.pem
-#   [signing_ca_key] Use this CA key file along with signing_certfile/signing_keyfile for signing
-#     pki tokens and revocation lists. Optional. Default: /etc/keystone/ssl/private/cakey.pem
+# [*catalog_driver*]
+#   (optional) Catalog driver used by Keystone to store endpoints and services.
+#   Setting this value will override and ignore catalog_type.
+#   Defaults to false.
 #
-#   [*signing_cert_subject*]
+# [*catalog_template_file*]
+#   (optional) Path to the catalog used if catalog_type equals 'template'.
+#   Defaults to '/etc/keystone/default_catalog.templates'
+#
+# [*token_provider*]
+#   (optional) Format keystone uses for tokens.
+#   Defaults to 'keystone.token.providers.uuid.Provider'
+#   Supports PKI and UUID.
+#
+# [*token_driver*]
+#   (optional) Driver to use for managing tokens.
+#   Defaults to 'keystone.token.persistence.backends.sql.Token'
+#
+# [*token_expiration*]
+#   (optional) Amount of time a token should remain valid (seconds).
+#   Defaults to 3600 (1 hour).
+#
+# [*revoke_driver*]
+#   (optional) Driver for token revocation.
+#   Defaults to 'keystone.contrib.revoke.backends.sql.Revoke'
+#
+# [*cache_dir*]
+#   (optional) Directory created when token_provider is pki.
+#   Defaults to /var/cache/keystone.
+#
+# [*memcache_servers*]
+#   (optional) List of memcache servers in format of server:port.
+#   Used with token_driver 'keystone.token.backends.memcache.Token'.
+#   Defaults to false. Example: ['localhost:11211']
+#
+# [*cache_backend*]
+#   (optional) Dogpile.cache backend module. It is recommended that Memcache with pooling
+#   (keystone.cache.memcache_pool) or Redis (dogpile.cache.redis) be used in production.
+#   This has no effects unless 'memcache_servers' is set.
+#   Defaults to 'keystone.common.cache.noop'
+#
+# [*cache_backend_argument*]
+#   (optional) List of arguments in format of argname:value supplied to the backend module.
+#   Specify this option once per argument to be passed to the dogpile.cache backend.
+#   This has no effects unless 'memcache_servers' is set.
+#   Default to undef.
+#
+# [*debug_cache_backend*]
+#   (optional) Extra debugging from the cache backend (cache keys, get/set/delete calls).
+#   This has no effects unless 'memcache_servers' is set.
+#   Default to false.
+#
+# [*token_caching*]
+#   (optional) Toggle for token system caching. This has no effects unless 'memcache_servers' is set.
+#   Default to true.
+#
+# [*enabled*]
+#  (optional) If the keystone services should be enabled.
+#   Default to true.
+#
+# [*database_connection*]
+#   (optional) Url used to connect to database.
+#   Defaults to sqlite:////var/lib/keystone/keystone.db
+#
+# [*database_idle_timeout*]
+#   (optional) Timeout when db connections should be reaped.
+#   Defaults to 200.
+#
+# [*enable_pki_setup*]
+#   (optional) Enable call to pki_setup to generate the cert for signing pki tokens and
+#   revocation lists if it doesn't already exist. This generates a cert and key stored in file
+#   locations based on the signing_certfile and signing_keyfile paramters below. If you are
+#   providing your own signing cert, make this false.
+#   Default to true.
+#
+# [*signing_certfile*]
+#   (optional) Location of the cert file for signing pki tokens and revocation lists.
+#   Note that if this file already exists (i.e. you are providing your own signing cert),
+#   the file will not be overwritten, even if enable_pki_setup is set to true.
+#   Default: /etc/keystone/ssl/certs/signing_cert.pem
+#
+# [*signing_keyfile*]
+#   (optional) Location of the key file for signing pki tokens and revocation lists.
+#   Note that if this file already exists (i.e. you are providing your own signing cert), the file
+#   will not be overwritten, even if enable_pki_setup is set to true.
+#   Default: /etc/keystone/ssl/private/signing_key.pem
+#
+# [*signing_ca_certs*]
+#   (optional) Use this CA certs file along with signing_certfile/signing_keyfile for
+#   signing pki tokens and revocation lists.
+#   Default: /etc/keystone/ssl/certs/ca.pem
+#
+# [*signing_ca_key*]
+#   (optional) Use this CA key file along with signing_certfile/signing_keyfile for signing
+#   pki tokens and revocation lists.
+#   Default: /etc/keystone/ssl/private/cakey.pem
+#
+# [*signing_cert_subject*]
 #   (optional) Certificate subject (auto generated certificate) for token signing.
 #   Defaults to '/C=US/ST=Unset/L=Unset/O=Unset/CN=www.example.com'
 #
-#   [*signing_key_size*]
+# [*signing_key_size*]
 #   (optional) Key size (in bits) for token signing cert (auto generated certificate)
 #   Defaults to 2048
 #
-#   [rabbit_host] Location of rabbitmq installation. Optional. Defaults to localhost.
-#   [rabbit_port] Port for rabbitmq instance. Optional. Defaults to 5672.
-#   [rabbit_hosts] Location of rabbitmq installation. Optional. Defaults to undef.
-#   [rabbit_password] Password used to connect to rabbitmq. Optional. Defaults to guest.
-#   [rabbit_userid] User used to connect to rabbitmq. Optional. Defaults to guest.
-#   [rabbit_virtual_host] The RabbitMQ virtual host. Optional. Defaults to /.
+# [*rabbit_host*]
+#   (optional) Location of rabbitmq installation.
+#    Defaults to localhost.
 #
-#   [*rabbit_use_ssl*]
-#     (optional) Connect over SSL for RabbitMQ
-#     Defaults to false
+# [*rabbit_port*]
+#   (optional) Port for rabbitmq instance.
+#   Defaults to 5672.
 #
-#   [*kombu_ssl_ca_certs*]
-#     (optional) SSL certification authority file (valid only if SSL enabled).
-#     Defaults to undef
+# [*rabbit_hosts*]
+#   (optional) Location of rabbitmq installation.
+#   Defaults to undef.
 #
-#   [*kombu_ssl_certfile*]
-#     (optional) SSL cert file (valid only if SSL enabled).
-#     Defaults to undef
+# [*rabbit_password*]
+#   (optional) Password used to connect to rabbitmq.
+#   Defaults to guest.
 #
-#   [*kombu_ssl_keyfile*]
-#     (optional) SSL key file (valid only if SSL enabled).
-#     Defaults to undef
+# [*rabbit_userid*]
+#   (optional) User used to connect to rabbitmq.
+#   Defaults to guest.
 #
-#   [*kombu_ssl_version*]
-#     (optional) SSL version to use (valid only if SSL enabled).
-#     Valid values are TLSv1, SSLv23 and SSLv3. SSLv2 may be
-#     available on some distributions.
-#     Defaults to 'TLSv1'
+# [*rabbit_virtual_host*]
+#   (optional) The RabbitMQ virtual host.
+#   Defaults to /.
 #
-#   [notification_driver] RPC driver. Not enabled by default
-#   [notification_topics] AMQP topics to publish to when using the RPC notification driver.
-#   [control_exchange] AMQP exchange to connect to if using RabbitMQ or Qpid
+# [*rabbit_use_ssl*]
+#   (optional) Connect over SSL for RabbitMQ
+#   Defaults to false
 #
-#   [*public_bind_host*]
+# [*kombu_ssl_ca_certs*]
+#   (optional) SSL certification authority file (valid only if SSL enabled).
+#   Defaults to undef
+#
+# [*kombu_ssl_certfile*]
+#   (optional) SSL cert file (valid only if SSL enabled).
+#   Defaults to undef
+#
+# [*kombu_ssl_keyfile*]
+#   (optional) SSL key file (valid only if SSL enabled).
+#   Defaults to undef
+#
+# [*kombu_ssl_version*]
+#   (optional) SSL version to use (valid only if SSL enabled).
+#   Valid values are TLSv1, SSLv23 and SSLv3. SSLv2 may be
+#   available on some distributions.
+#   Defaults to 'TLSv1'
+#
+# [*notification_driver*]
+#   RPC driver. Not enabled by default
+#
+# [*notification_topics*]
+#   (optional) AMQP topics to publish to when using the RPC notification driver.
+#   Default to false.
+#
+# [*control_exchange*]
+#   (optional) AMQP exchange to connect to if using RabbitMQ or Qpid
+#   Default to false.
+#
+# [*public_bind_host*]
 #   (optional) The IP address of the public network interface to listen on
 #   Default to '0.0.0.0'.
 #
-#   [*admin_bind_host*]
+# [*admin_bind_host*]
 #   (optional) The IP address of the public network interface to listen on
 #   Default to '0.0.0.0'.
 #
-#   [*log_dir*]
+# [*log_dir*]
 #   (optional) Directory where logs should be stored
 #   If set to boolean false, it will not log to any directory
 #   Defaults to '/var/log/keystone'
 #
-#   [*log_file*]
+# [*log_file*]
 #   (optional) Where to log
 #   Defaults to false
 #
-#   [*public_endpoint*]
+# [*public_endpoint*]
 #   (optional) The base public endpoint URL for keystone that are
 #   advertised to clients (NOTE: this does NOT affect how
 #   keystone listens for connections) (string value)
@@ -161,7 +236,7 @@
 #   Sample value: 'http://localhost:5000/'
 #   Defaults to false
 #
-#   [*admin_endpoint*]
+# [*admin_endpoint*]
 #   (optional) The base admin endpoint URL for keystone that are
 #   advertised to clients (NOTE: this does NOT affect how keystone listens
 #   for connections) (string value)
@@ -169,63 +244,63 @@
 #   Sample value: 'http://localhost:35357/'
 #   Defaults to false
 #
-#   [*enable_ssl*]
+# [*enable_ssl*]
 #   (optional) Toggle for SSL support on the keystone eventlet servers.
 #   (boolean value)
 #   Defaults to false
 #
-#   [*ssl_certfile*]
+# [*ssl_certfile*]
 #   (optional) Path of the certfile for SSL. (string value)
 #   Defaults to '/etc/keystone/ssl/certs/keystone.pem'
 #
-#   [*ssl_keyfile*]
+# [*ssl_keyfile*]
 #   (optional) Path of the keyfile for SSL. (string value)
 #   Defaults to '/etc/keystone/ssl/private/keystonekey.pem'
 #
-#   [*ssl_ca_certs*]
+# [*ssl_ca_certs*]
 #   (optional) Path of the ca cert file for SSL. (string value)
 #   Defaults to '/etc/keystone/ssl/certs/ca.pem'
 #
-#   [*ssl_ca_key*]
+# [*ssl_ca_key*]
 #   (optional) Path of the CA key file for SSL (string value)
 #   Defaults to '/etc/keystone/ssl/private/cakey.pem'
 #
-#   [*ssl_cert_subject*]
+# [*ssl_cert_subject*]
 #   (optional) SSL Certificate Subject (auto generated certificate)
 #   (string value)
 #   Defaults to '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost'
 #
-#   [*mysql_module*]
+# [*mysql_module*]
 #   (optional) Deprecated. Does nothing.
 #
-#   [*validate_service*]
+# [*validate_service*]
 #   (optional) Whether to validate keystone connections after
 #   the service is started.
 #   Defaults to false
 #
-#   [*validate_insecure*]
+# [*validate_insecure*]
 #   (optional) Whether to validate keystone connections
 #   using the --insecure option with keystone client.
 #   Defaults to false
 #
-#   [*validate_cacert*]
+# [*validate_cacert*]
 #   (optional) Whether to validate keystone connections
 #   using the specified argument with the --os-cacert option
 #   with keystone client.
 #   Defaults to undef
 #
-#   [*validate_auth_url*]
+# [*validate_auth_url*]
 #   (optional) The url to validate keystone against
 #   Defaults to undef
 #
-#   [*service_provider*]
+# [*service_provider*]
 #   (optional) Provider, that can be used for keystone service.
 #   Default value defined in keystone::params for given operation system.
 #   If you use Pacemaker or another Cluster Resource Manager, you can make
 #   custom service provider for changing start/stop/status behavior of service,
 #   and set it here.
 #
-#   [*service_name*]
+# [*service_name*]
 #   (optional) Name of the service that will be providing the
 #   server functionality of keystone.  For example, the default
 #   is just 'keystone', which means keystone will be run as a
@@ -242,23 +317,23 @@
 #   Defaults to 'keystone'
 #   NOTE: validate_service only applies if the value is 'keystone'
 #
-#   [*paste_config*]
+# [*paste_config*]
 #   (optional) Name of the paste configuration file that defines the
 #   available pipelines. (string value)
 #   Defaults to '/usr/share/keystone/keystone-dist-paste.ini' on RedHat and
 #   undef on other platforms.
 #
-#   [*max_token_size*]
-#     (optional) maximum allowable Keystone token size
-#     Defaults to undef
+# [*max_token_size*]
+#   (optional) maximum allowable Keystone token size
+#   Defaults to undef
 #
-#   [*admin_workers*]
-#     (optional) The number of worker processes to serve the admin WSGI application.
-#     Defaults to max($::processorcount, 2)
+# [*admin_workers*]
+#   (optional) The number of worker processes to serve the admin WSGI application.
+#   Defaults to max($::processorcount, 2)
 #
-#   [*public_workers*]
-#     (optional) The number of worker processes to serve the public WSGI application.
-#     Defaults to max($::processorcount, 2)
+# [*public_workers*]
+#   (optional) The number of worker processes to serve the public WSGI application.
+#   Defaults to max($::processorcount, 2)
 #
 # == Dependencies
 #  None

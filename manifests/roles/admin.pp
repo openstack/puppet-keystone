@@ -1,3 +1,4 @@
+# == Class: keystone::roles::admin
 #
 # This class implements some reasonable admin defaults for keystone.
 #
@@ -8,18 +9,49 @@
 #   * admin role
 #   * adds admin role to admin user on the "admin" tenant
 #
-# [*Parameters*]
+# === Parameters:
 #
-# [email] The email address for the admin. Required.
-# [password] The admin password. Required.
-# [admin_roles] The list of the roles with admin privileges. Optional. Defaults to ['admin'].
-# [admin_tenant] The name of the tenant to be used for admin privileges. Optional. Defaults to openstack.
-# [admin] Admin user. Optional. Defaults to admin.
-# [ignore_default_tenant] Ignore setting the default tenant value when the user is created. Optional. Defaults to false.
-# [admin_tenant_desc] Optional. Description for admin tenant, defaults to 'admin tenant'
-# [service_tenant_desc] Optional. Description for admin tenant, defaults to 'Tenant for the openstack services'
-# [configure_user] Optional. Should the admin user be created? Defaults to 'true'.
-# [configure_user_role] Optional. Should the admin role be configured for the admin user? Defaulst to 'true'.
+# [*email*]
+#   The email address for the admin. Required.
+#
+# [*password*]
+#   The admin password. Required.
+#
+# [*admin_roles*]
+#   The list of the roles with admin privileges. Optional.
+#   Defaults to ['admin'].
+#
+# [*admin_tenant*]
+#   The name of the tenant to be used for admin privileges. Optional.
+#   Defaults to openstack.
+#
+# [*service_tenant*]
+#   The name of service keystone tenant. Optional.
+#   Defaults to 'services'.
+#
+# [*admin*]
+#   Admin user. Optional.
+#   Defaults to admin.
+#
+# [*ignore_default_tenant*]
+#   Ignore setting the default tenant value when the user is created. Optional.
+#   Defaults to false.
+#
+# [*admin_tenant_desc*]
+#   Optional. Description for admin tenant,
+#   Defaults to 'admin tenant'
+#
+# [*service_tenant_desc*]
+#   Optional. Description for admin tenant,
+#   Defaults to 'Tenant for the openstack services'
+#
+# [*configure_user*]
+#   Optional. Should the admin user be created?
+#   Defaults to 'true'.
+#
+# [*configure_user_role*]
+#   Optional. Should the admin role be configured for the admin user?
+#   Defaulst to 'true'.
 #
 # == Dependencies
 # == Examples
