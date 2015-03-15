@@ -95,24 +95,24 @@ describe 'keystone' do
   httpd_params = {'service_name' => 'httpd'}.merge(default_params)
 
   shared_examples_for 'core keystone examples' do |param_hash|
-    it { should contain_class('keystone::params') }
+    it { is_expected.to contain_class('keystone::params') }
 
-    it { should contain_package('keystone').with(
+    it { is_expected.to contain_package('keystone').with(
       'ensure' => param_hash['package_ensure'],
       'tag'    => 'openstack'
     ) }
 
-    it { should contain_package('python-openstackclient').with(
+    it { is_expected.to contain_package('python-openstackclient').with(
       'ensure' => param_hash['client_package_ensure'],
       'tag'    => 'openstack'
     ) }
 
-    it { should contain_group('keystone').with(
+    it { is_expected.to contain_group('keystone').with(
       'ensure' => 'present',
       'system' => true
     ) }
 
-    it { should contain_user('keystone').with(
+    it { is_expected.to contain_user('keystone').with(
       'ensure' => 'present',
       'gid'    => 'keystone',
       'system' => true
@@ -120,7 +120,7 @@ describe 'keystone' do
 
     it 'should contain the expected directories' do
       ['/etc/keystone', '/var/log/keystone', '/var/lib/keystone'].each do |d|
-        should contain_file(d).with(
+        is_expected.to contain_file(d).with(
           'ensure'     => 'directory',
           'owner'      => 'keystone',
           'group'      => 'keystone',
@@ -132,7 +132,7 @@ describe 'keystone' do
 
     it 'should only synchronize the db if $enabled is true' do
       if param_hash['enabled']
-        should contain_exec('keystone-manage db_sync').with(
+        is_expected.to contain_exec('keystone-manage db_sync').with(
           :user        => 'keystone',
           :refreshonly => true,
           :subscribe   => ['Package[keystone]', 'Keystone_config[database/connection]'],
@@ -150,25 +150,25 @@ describe 'keystone' do
        'verbose',
        'debug'
       ].each do |config|
-        should contain_keystone_config("DEFAULT/#{config}").with_value(param_hash[config])
+        is_expected.to contain_keystone_config("DEFAULT/#{config}").with_value(param_hash[config])
       end
     end
 
     it 'should contain correct admin_token config' do
-      should contain_keystone_config('DEFAULT/admin_token').with_value(param_hash['admin_token']).with_secret(true)
+      is_expected.to contain_keystone_config('DEFAULT/admin_token').with_value(param_hash['admin_token']).with_secret(true)
     end
 
     it 'should contain correct mysql config' do
-      should contain_keystone_config('database/idle_timeout').with_value(param_hash['database_idle_timeout'])
-      should contain_keystone_config('database/connection').with_value(param_hash['database_connection']).with_secret(true)
+      is_expected.to contain_keystone_config('database/idle_timeout').with_value(param_hash['database_idle_timeout'])
+      is_expected.to contain_keystone_config('database/connection').with_value(param_hash['database_connection']).with_secret(true)
     end
 
-    it { should contain_keystone_config('token/provider').with_value(
+    it { is_expected.to contain_keystone_config('token/provider').with_value(
       param_hash['token_provider']
     ) }
 
     it 'should contain correct token driver' do
-      should contain_keystone_config('token/driver').with_value(param_hash['token_driver'])
+      is_expected.to contain_keystone_config('token/driver').with_value(param_hash['token_driver'])
     end
 
     it 'should contain correct revoke driver' do
@@ -177,35 +177,35 @@ describe 'keystone' do
 
     it 'should ensure proper setting of admin_endpoint and public_endpoint' do
       if param_hash['admin_endpoint']
-        should contain_keystone_config('DEFAULT/admin_endpoint').with_value(param_hash['admin_endpoint'])
+        is_expected.to contain_keystone_config('DEFAULT/admin_endpoint').with_value(param_hash['admin_endpoint'])
       else
-        should contain_keystone_config('DEFAULT/admin_endpoint').with_ensure('absent')
+        is_expected.to contain_keystone_config('DEFAULT/admin_endpoint').with_ensure('absent')
       end
       if param_hash['public_endpoint']
-        should contain_keystone_config('DEFAULT/public_endpoint').with_value(param_hash['public_endpoint'])
+        is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value(param_hash['public_endpoint'])
       else
-        should contain_keystone_config('DEFAULT/public_endpoint').with_ensure('absent')
+        is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_ensure('absent')
       end
     end
 
     it 'should contain correct rabbit_password' do
-      should contain_keystone_config('DEFAULT/rabbit_password').with_value(param_hash['rabbit_password']).with_secret(true)
+      is_expected.to contain_keystone_config('DEFAULT/rabbit_password').with_value(param_hash['rabbit_password']).with_secret(true)
     end
 
     it 'should remove max_token_size param by default' do
-      should contain_keystone_config('DEFAULT/max_token_size').with_ensure('absent')
+      is_expected.to contain_keystone_config('DEFAULT/max_token_size').with_ensure('absent')
     end
 
     it 'should ensure proper setting of admin_workers and public_workers' do
       if param_hash['admin_workers']
-        should contain_keystone_config('DEFAULT/admin_workers').with_value(param_hash['admin_workers'])
+        is_expected.to contain_keystone_config('DEFAULT/admin_workers').with_value(param_hash['admin_workers'])
       else
-        should contain_keystone_config('DEFAULT/admin_workers').with_value('2')
+        is_expected.to contain_keystone_config('DEFAULT/admin_workers').with_value('2')
       end
       if param_hash['public_workers']
-        should contain_keystone_config('DEFAULT/public_workers').with_value(param_hash['public_workers'])
+        is_expected.to contain_keystone_config('DEFAULT/public_workers').with_value(param_hash['public_workers'])
       else
-        should contain_keystone_config('DEFAULT/public_workers').with_value('2')
+        is_expected.to contain_keystone_config('DEFAULT/public_workers').with_value('2')
       end
     end
   end
@@ -219,7 +219,7 @@ describe 'keystone' do
 
       it_configures 'core keystone examples', param_hash
 
-      it { should contain_service('keystone').with(
+      it { is_expected.to contain_service('keystone').with(
         'ensure'     => param_hash['enabled'] ? 'running' : 'stopped',
         'enable'     => param_hash['enabled'],
         'hasstatus'  => true,
@@ -242,7 +242,7 @@ describe 'keystone' do
 
     it do
       expect {
-        should contain_service('keystone')
+        is_expected.to contain_service('keystone')
       }.to raise_error(RSpec::Expectations::ExpectationNotMetError, /expected that the catalogue would contain Service\[keystone\]/)
     end
 
@@ -257,23 +257,23 @@ describe 'keystone' do
           'token_provider' => 'keystone.token.providers.uuid.Provider'
         }
       end
-      it { should contain_exec('keystone-manage pki_setup').with(
+      it { is_expected.to contain_exec('keystone-manage pki_setup').with(
         :creates => '/etc/keystone/ssl/private/signing_key.pem'
       ) }
-      it { should contain_file('/var/cache/keystone').with_ensure('directory') }
+      it { is_expected.to contain_file('/var/cache/keystone').with_ensure('directory') }
 
       describe 'when overriding the cache dir' do
         before do
           params.merge!(:cache_dir => '/var/lib/cache/keystone')
         end
-        it { should contain_file('/var/lib/cache/keystone') }
+        it { is_expected.to contain_file('/var/lib/cache/keystone') }
       end
 
       describe 'when disable pki_setup' do
         before do
           params.merge!(:enable_pki_setup => false)
         end
-        it { should_not contain_exec('keystone-manage pki_setup') }
+        it { is_expected.to_not contain_exec('keystone-manage pki_setup') }
       end
     end
 
@@ -284,23 +284,23 @@ describe 'keystone' do
           'token_provider' => 'keystone.token.providers.pki.Provider'
         }
       end
-      it { should contain_exec('keystone-manage pki_setup').with(
+      it { is_expected.to contain_exec('keystone-manage pki_setup').with(
         :creates => '/etc/keystone/ssl/private/signing_key.pem'
       ) }
-      it { should contain_file('/var/cache/keystone').with_ensure('directory') }
+      it { is_expected.to contain_file('/var/cache/keystone').with_ensure('directory') }
 
       describe 'when overriding the cache dir' do
         before do
           params.merge!(:cache_dir => '/var/lib/cache/keystone')
         end
-        it { should contain_file('/var/lib/cache/keystone') }
+        it { is_expected.to contain_file('/var/lib/cache/keystone') }
       end
 
       describe 'when disable pki_setup' do
         before do
           params.merge!(:enable_pki_setup => false)
         end
-        it { should_not contain_exec('keystone-manage pki_setup') }
+        it { is_expected.to_not contain_exec('keystone-manage pki_setup') }
       end
     end
 
@@ -319,30 +319,30 @@ describe 'keystone' do
         }
       end
 
-      it { should_not contain_exec('keystone-manage pki_setup') }
+      it { is_expected.to_not contain_exec('keystone-manage pki_setup') }
 
       it 'should contain correct PKI certfile config' do
-        should contain_keystone_config('signing/certfile').with_value('signing_certfile')
+        is_expected.to contain_keystone_config('signing/certfile').with_value('signing_certfile')
       end
 
       it 'should contain correct PKI keyfile config' do
-        should contain_keystone_config('signing/keyfile').with_value('signing_keyfile')
+        is_expected.to contain_keystone_config('signing/keyfile').with_value('signing_keyfile')
       end
 
       it 'should contain correct PKI ca_certs config' do
-        should contain_keystone_config('signing/ca_certs').with_value('signing_ca_certs')
+        is_expected.to contain_keystone_config('signing/ca_certs').with_value('signing_ca_certs')
       end
 
       it 'should contain correct PKI ca_key config' do
-        should contain_keystone_config('signing/ca_key').with_value('signing_ca_key')
+        is_expected.to contain_keystone_config('signing/ca_key').with_value('signing_ca_key')
       end
 
       it 'should contain correct PKI cert_subject config' do
-        should contain_keystone_config('signing/cert_subject').with_value('signing_cert_subject')
+        is_expected.to contain_keystone_config('signing/cert_subject').with_value('signing_cert_subject')
       end
 
       it 'should contain correct PKI key_size config' do
-        should contain_keystone_config('signing/key_size').with_value('2048')
+        is_expected.to contain_keystone_config('signing/key_size').with_value('2048')
       end
     end
 
@@ -361,30 +361,30 @@ describe 'keystone' do
         }
       end
 
-      it { should_not contain_exec('keystone-manage pki_setup') }
+      it { is_expected.to_not contain_exec('keystone-manage pki_setup') }
 
       it 'should contain correct PKI certfile config' do
-        should contain_keystone_config('signing/certfile').with_value('signing_certfile')
+        is_expected.to contain_keystone_config('signing/certfile').with_value('signing_certfile')
       end
 
       it 'should contain correct PKI keyfile config' do
-        should contain_keystone_config('signing/keyfile').with_value('signing_keyfile')
+        is_expected.to contain_keystone_config('signing/keyfile').with_value('signing_keyfile')
       end
 
       it 'should contain correct PKI ca_certs config' do
-        should contain_keystone_config('signing/ca_certs').with_value('signing_ca_certs')
+        is_expected.to contain_keystone_config('signing/ca_certs').with_value('signing_ca_certs')
       end
 
       it 'should contain correct PKI ca_key config' do
-        should contain_keystone_config('signing/ca_key').with_value('signing_ca_key')
+        is_expected.to contain_keystone_config('signing/ca_key').with_value('signing_ca_key')
       end
 
       it 'should contain correct PKI cert_subject config' do
-        should contain_keystone_config('signing/cert_subject').with_value('signing_cert_subject')
+        is_expected.to contain_keystone_config('signing/cert_subject').with_value('signing_cert_subject')
       end
 
       it 'should contain correct PKI key_size config' do
-        should contain_keystone_config('signing/key_size').with_value('2048')
+        is_expected.to contain_keystone_config('signing/key_size').with_value('2048')
       end
     end
 
@@ -403,7 +403,7 @@ describe 'keystone' do
           :catalog_driver => 'keystone.catalog.backends.alien.AlienCatalog' }
       end
 
-      it { should contain_keystone_config('catalog/driver').with_value(params[:catalog_driver]) }
+      it { is_expected.to contain_keystone_config('catalog/driver').with_value(params[:catalog_driver]) }
     end
   end
 
@@ -415,7 +415,7 @@ describe 'keystone' do
       }
     end
 
-    it { should contain_keystone_config("token/expiration").with_value('42') }
+    it { is_expected.to contain_keystone_config("token/expiration").with_value('42') }
   end
 
   describe 'when not configuring token expiration' do
@@ -425,7 +425,7 @@ describe 'keystone' do
       }
     end
 
-    it { should contain_keystone_config("token/expiration").with_value('3600') }
+    it { is_expected.to contain_keystone_config("token/expiration").with_value('3600') }
   end
 
   describe 'configure memcache servers if set' do
@@ -439,12 +439,12 @@ describe 'keystone' do
       }
     end
 
-    it { should contain_keystone_config("memcache/servers").with_value('SERVER1:11211,SERVER2:11211') }
-    it { should contain_keystone_config('cache/enabled').with_value(true) }
-    it { should contain_keystone_config('token/caching').with_value(true) }
-    it { should contain_keystone_config('cache/backend').with_value('dogpile.cache.memcached') }
-    it { should contain_keystone_config('cache/backend_argument').with_value('url:SERVER1:12211') }
-    it { should contain_package('python-memcache').with(
+    it { is_expected.to contain_keystone_config("memcache/servers").with_value('SERVER1:11211,SERVER2:11211') }
+    it { is_expected.to contain_keystone_config('cache/enabled').with_value(true) }
+    it { is_expected.to contain_keystone_config('token/caching').with_value(true) }
+    it { is_expected.to contain_keystone_config('cache/backend').with_value('dogpile.cache.memcached') }
+    it { is_expected.to contain_keystone_config('cache/backend_argument').with_value('url:SERVER1:12211') }
+    it { is_expected.to contain_package('python-memcache').with(
       :name   => 'python-memcache',
       :ensure => 'present'
     ) }
@@ -455,12 +455,12 @@ describe 'keystone' do
       default_params
     end
 
-    it { should contain_keystone_config("cache/enabled").with_ensure('absent') }
-    it { should contain_keystone_config("token/caching").with_ensure('absent') }
-    it { should contain_keystone_config("cache/backend").with_ensure('absent') }
-    it { should contain_keystone_config("cache/backend_argument").with_ensure('absent') }
-    it { should contain_keystone_config("cache/debug_cache_backend").with_ensure('absent') }
-    it { should contain_keystone_config("memcache/servers").with_ensure('absent') }
+    it { is_expected.to contain_keystone_config("cache/enabled").with_ensure('absent') }
+    it { is_expected.to contain_keystone_config("token/caching").with_ensure('absent') }
+    it { is_expected.to contain_keystone_config("cache/backend").with_ensure('absent') }
+    it { is_expected.to contain_keystone_config("cache/backend_argument").with_ensure('absent') }
+    it { is_expected.to contain_keystone_config("cache/debug_cache_backend").with_ensure('absent') }
+    it { is_expected.to contain_keystone_config("memcache/servers").with_ensure('absent') }
   end
 
   describe 'raise error if memcache_servers is not an array' do
@@ -471,7 +471,7 @@ describe 'keystone' do
       }
     end
 
-    it { expect { should contain_class('keystone::params') }.to \
+    it { expect { is_expected.to contain_class('keystone::params') }.to \
       raise_error(Puppet::Error, /is not an Array/) }
   end
 
@@ -480,8 +480,8 @@ describe 'keystone' do
       default_params
     end
 
-    it { should contain_keystone_config('DEFAULT/use_syslog').with_value(false) }
-    it { should_not contain_keystone_config('DEFAULT/syslog_log_facility') }
+    it { is_expected.to contain_keystone_config('DEFAULT/use_syslog').with_value(false) }
+    it { is_expected.to_not contain_keystone_config('DEFAULT/syslog_log_facility') }
   end
 
   describe 'with syslog enabled' do
@@ -491,8 +491,8 @@ describe 'keystone' do
       })
     end
 
-    it { should contain_keystone_config('DEFAULT/use_syslog').with_value(true) }
-    it { should contain_keystone_config('DEFAULT/syslog_log_facility').with_value('LOG_USER') }
+    it { is_expected.to contain_keystone_config('DEFAULT/use_syslog').with_value(true) }
+    it { is_expected.to contain_keystone_config('DEFAULT/syslog_log_facility').with_value('LOG_USER') }
   end
 
   describe 'with syslog enabled and custom settings' do
@@ -503,15 +503,15 @@ describe 'keystone' do
      })
     end
 
-    it { should contain_keystone_config('DEFAULT/use_syslog').with_value(true) }
-    it { should contain_keystone_config('DEFAULT/syslog_log_facility').with_value('LOG_LOCAL0') }
+    it { is_expected.to contain_keystone_config('DEFAULT/use_syslog').with_value(true) }
+    it { is_expected.to contain_keystone_config('DEFAULT/syslog_log_facility').with_value('LOG_LOCAL0') }
   end
 
   describe 'with log_file disabled by default' do
     let :params do
       default_params
     end
-    it { should contain_keystone_config('DEFAULT/log_file').with_ensure('absent') }
+    it { is_expected.to contain_keystone_config('DEFAULT/log_file').with_ensure('absent') }
   end
 
   describe 'with log_file and log_dir enabled' do
@@ -521,8 +521,8 @@ describe 'keystone' do
         :log_dir    => '/var/lib/keystone'
      })
     end
-    it { should contain_keystone_config('DEFAULT/log_file').with_value('keystone.log') }
-    it { should contain_keystone_config('DEFAULT/log_dir').with_value('/var/lib/keystone') }
+    it { is_expected.to contain_keystone_config('DEFAULT/log_file').with_value('keystone.log') }
+    it { is_expected.to contain_keystone_config('DEFAULT/log_dir').with_value('/var/lib/keystone') }
   end
 
     describe 'with log_file and log_dir disabled' do
@@ -532,8 +532,8 @@ describe 'keystone' do
         :log_dir    => false
      })
     end
-    it { should contain_keystone_config('DEFAULT/log_file').with_ensure('absent') }
-    it { should contain_keystone_config('DEFAULT/log_dir').with_ensure('absent') }
+    it { is_expected.to contain_keystone_config('DEFAULT/log_file').with_ensure('absent') }
+    it { is_expected.to contain_keystone_config('DEFAULT/log_dir').with_ensure('absent') }
   end
 
   describe 'when enabling SSL' do
@@ -545,14 +545,14 @@ describe 'keystone' do
         'admin_endpoint'   => 'https://localhost:35357/v2.0/',
       }
     end
-    it {should contain_keystone_config('ssl/enable').with_value(true)}
-    it {should contain_keystone_config('ssl/certfile').with_value('/etc/keystone/ssl/certs/keystone.pem')}
-    it {should contain_keystone_config('ssl/keyfile').with_value('/etc/keystone/ssl/private/keystonekey.pem')}
-    it {should contain_keystone_config('ssl/ca_certs').with_value('/etc/keystone/ssl/certs/ca.pem')}
-    it {should contain_keystone_config('ssl/ca_key').with_value('/etc/keystone/ssl/private/cakey.pem')}
-    it {should contain_keystone_config('ssl/cert_subject').with_value('/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost')}
-    it {should contain_keystone_config('DEFAULT/public_endpoint').with_value('https://localhost:5000/v2.0/')}
-    it {should contain_keystone_config('DEFAULT/admin_endpoint').with_value('https://localhost:35357/v2.0/')}
+    it {is_expected.to contain_keystone_config('ssl/enable').with_value(true)}
+    it {is_expected.to contain_keystone_config('ssl/certfile').with_value('/etc/keystone/ssl/certs/keystone.pem')}
+    it {is_expected.to contain_keystone_config('ssl/keyfile').with_value('/etc/keystone/ssl/private/keystonekey.pem')}
+    it {is_expected.to contain_keystone_config('ssl/ca_certs').with_value('/etc/keystone/ssl/certs/ca.pem')}
+    it {is_expected.to contain_keystone_config('ssl/ca_key').with_value('/etc/keystone/ssl/private/cakey.pem')}
+    it {is_expected.to contain_keystone_config('ssl/cert_subject').with_value('/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost')}
+    it {is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value('https://localhost:5000/v2.0/')}
+    it {is_expected.to contain_keystone_config('DEFAULT/admin_endpoint').with_value('https://localhost:35357/v2.0/')}
   end
   describe 'when disabling SSL' do
     let :params do
@@ -561,18 +561,18 @@ describe 'keystone' do
         'enable_ssl'  => false,
       }
     end
-    it {should contain_keystone_config('ssl/enable').with_value(false)}
-    it {should contain_keystone_config('DEFAULT/public_endpoint').with_ensure('absent')}
-    it {should contain_keystone_config('DEFAULT/admin_endpoint').with_ensure('absent')}
+    it {is_expected.to contain_keystone_config('ssl/enable').with_value(false)}
+    it {is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_ensure('absent')}
+    it {is_expected.to contain_keystone_config('DEFAULT/admin_endpoint').with_ensure('absent')}
   end
   describe 'not setting notification settings by default' do
     let :params do
       default_params
     end
 
-    it { should contain_keystone_config('DEFAULT/notification_driver').with_value(nil) }
-    it { should contain_keystone_config('DEFAULT/notification_topics').with_vaule(nil) }
-    it { should contain_keystone_config('DEFAULT/control_exchange').with_vaule(nil) }
+    it { is_expected.to contain_keystone_config('DEFAULT/notification_driver').with_value(nil) }
+    it { is_expected.to contain_keystone_config('DEFAULT/notification_topics').with_vaule(nil) }
+    it { is_expected.to contain_keystone_config('DEFAULT/control_exchange').with_vaule(nil) }
   end
 
   describe 'with RabbitMQ communication SSLed' do
@@ -587,11 +587,11 @@ describe 'keystone' do
     end
 
     it do
-      should contain_keystone_config('DEFAULT/rabbit_use_ssl').with_value('true')
-      should contain_keystone_config('DEFAULT/kombu_ssl_ca_certs').with_value('/path/to/ssl/ca/certs')
-      should contain_keystone_config('DEFAULT/kombu_ssl_certfile').with_value('/path/to/ssl/cert/file')
-      should contain_keystone_config('DEFAULT/kombu_ssl_keyfile').with_value('/path/to/ssl/keyfile')
-      should contain_keystone_config('DEFAULT/kombu_ssl_version').with_value('TLSv1')
+      is_expected.to contain_keystone_config('DEFAULT/rabbit_use_ssl').with_value('true')
+      is_expected.to contain_keystone_config('DEFAULT/kombu_ssl_ca_certs').with_value('/path/to/ssl/ca/certs')
+      is_expected.to contain_keystone_config('DEFAULT/kombu_ssl_certfile').with_value('/path/to/ssl/cert/file')
+      is_expected.to contain_keystone_config('DEFAULT/kombu_ssl_keyfile').with_value('/path/to/ssl/keyfile')
+      is_expected.to contain_keystone_config('DEFAULT/kombu_ssl_version').with_value('TLSv1')
     end
   end
 
@@ -607,11 +607,11 @@ describe 'keystone' do
     end
 
     it do
-      should contain_keystone_config('DEFAULT/rabbit_use_ssl').with_value('false')
-      should contain_keystone_config('DEFAULT/kombu_ssl_ca_certs').with_ensure('absent')
-      should contain_keystone_config('DEFAULT/kombu_ssl_certfile').with_ensure('absent')
-      should contain_keystone_config('DEFAULT/kombu_ssl_keyfile').with_ensure('absent')
-      should contain_keystone_config('DEFAULT/kombu_ssl_version').with_ensure('absent')
+      is_expected.to contain_keystone_config('DEFAULT/rabbit_use_ssl').with_value('false')
+      is_expected.to contain_keystone_config('DEFAULT/kombu_ssl_ca_certs').with_ensure('absent')
+      is_expected.to contain_keystone_config('DEFAULT/kombu_ssl_certfile').with_ensure('absent')
+      is_expected.to contain_keystone_config('DEFAULT/kombu_ssl_keyfile').with_ensure('absent')
+      is_expected.to contain_keystone_config('DEFAULT/kombu_ssl_version').with_ensure('absent')
     end
   end
 
@@ -620,7 +620,7 @@ describe 'keystone' do
       default_params.merge({:max_token_size => '16384' })
     end
 
-    it { should contain_keystone_config('DEFAULT/max_token_size').with_value(params[:max_token_size]) }
+    it { is_expected.to contain_keystone_config('DEFAULT/max_token_size').with_value(params[:max_token_size]) }
   end
 
   describe 'setting notification settings' do
@@ -632,9 +632,9 @@ describe 'keystone' do
       })
     end
 
-    it { should contain_keystone_config('DEFAULT/notification_driver').with_value('keystone.openstack.common.notifier.rpc_notifier') }
-    it { should contain_keystone_config('DEFAULT/notification_topics').with_value('notifications') }
-    it { should contain_keystone_config('DEFAULT/control_exchange').with_value('keystone') }
+    it { is_expected.to contain_keystone_config('DEFAULT/notification_driver').with_value('keystone.openstack.common.notifier.rpc_notifier') }
+    it { is_expected.to contain_keystone_config('DEFAULT/notification_topics').with_value('notifications') }
+    it { is_expected.to contain_keystone_config('DEFAULT/control_exchange').with_value('keystone') }
   end
 
   describe 'setting sql (default) catalog' do
@@ -642,7 +642,7 @@ describe 'keystone' do
       default_params
     end
 
-    it { should contain_keystone_config('catalog/driver').with_value('keystone.catalog.backends.sql.Catalog') }
+    it { is_expected.to contain_keystone_config('catalog/driver').with_value('keystone.catalog.backends.sql.Catalog') }
   end
 
   describe 'setting default template catalog' do
@@ -653,8 +653,8 @@ describe 'keystone' do
       }
     end
 
-    it { should contain_keystone_config('catalog/driver').with_value('keystone.catalog.backends.templated.Catalog') }
-    it { should contain_keystone_config('catalog/template_file').with_value('/etc/keystone/default_catalog.templates') }
+    it { is_expected.to contain_keystone_config('catalog/driver').with_value('keystone.catalog.backends.templated.Catalog') }
+    it { is_expected.to contain_keystone_config('catalog/template_file').with_value('/etc/keystone/default_catalog.templates') }
   end
 
   describe 'with overridden validation_auth_url' do
@@ -667,8 +667,8 @@ describe 'keystone' do
       }
     end
 
-    it { should contain_keystone_config('DEFAULT/admin_endpoint').with_value('http://some.host:35357') }
-    it { should contain_class('keystone::service').with(
+    it { is_expected.to contain_keystone_config('DEFAULT/admin_endpoint').with_value('http://some.host:35357') }
+    it { is_expected.to contain_class('keystone::service').with(
       'validate'       => true,
       'admin_endpoint' => 'http://some.host:35357/v2.0'
     )}
@@ -683,7 +683,7 @@ describe 'keystone' do
       }
     end
 
-    it { should contain_class('keystone::service').with(
+    it { is_expected.to contain_class('keystone::service').with(
       'validate'       => true,
       'admin_endpoint' => 'http://some.host:35357'
     )}
@@ -698,8 +698,8 @@ describe 'keystone' do
       }
     end
 
-    it { should contain_keystone_config('catalog/driver').with_value('keystone.catalog.backends.templated.Catalog') }
-    it { should contain_keystone_config('catalog/template_file').with_value('/some/template_file') }
+    it { is_expected.to contain_keystone_config('catalog/driver').with_value('keystone.catalog.backends.templated.Catalog') }
+    it { is_expected.to contain_keystone_config('catalog/template_file').with_value('/some/template_file') }
   end
 
   describe 'setting service_provider' do
@@ -715,7 +715,7 @@ describe 'keystone' do
         { 'admin_token'    => 'service_token' }
       end
 
-      it { should contain_service('keystone').with(
+      it { is_expected.to contain_service('keystone').with(
         :provider => nil
       )}
     end
@@ -728,7 +728,7 @@ describe 'keystone' do
         }
       end
 
-      it { should contain_service('keystone').with(
+      it { is_expected.to contain_service('keystone').with(
         :provider => 'pacemaker'
       )}
     end
@@ -740,7 +740,7 @@ describe 'keystone' do
         default_params
       end
 
-      it { should contain_keystone_config('paste_deploy/config_file').with_ensure('absent')}
+      it { is_expected.to contain_keystone_config('paste_deploy/config_file').with_ensure('absent')}
     end
 
     describe 'with default paste config on RedHat' do
@@ -754,7 +754,7 @@ describe 'keystone' do
         default_params
       end
 
-      it { should contain_keystone_config('paste_deploy/config_file').with_value(
+      it { is_expected.to contain_keystone_config('paste_deploy/config_file').with_value(
           '/usr/share/keystone/keystone-dist-paste.ini'
       )}
     end
@@ -766,7 +766,7 @@ describe 'keystone' do
         })
       end
 
-      it { should contain_keystone_config('paste_deploy/config_file').with_value(
+      it { is_expected.to contain_keystone_config('paste_deploy/config_file').with_value(
           '/usr/share/keystone/keystone-paste.ini'
       )}
     end

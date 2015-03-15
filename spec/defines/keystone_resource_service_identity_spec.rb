@@ -36,25 +36,25 @@ describe 'keystone::resource::service_identity' do
         required_params
       end
 
-      it { should contain_keystone_user(title).with(
+      it { is_expected.to contain_keystone_user(title).with(
         :ensure   => 'present',
         :password => 'secrete',
         :email    => 'neutron@localhost',
         :tenant   => 'services',
       )}
 
-      it { should contain_keystone_user_role("#{title}@services").with(
+      it { is_expected.to contain_keystone_user_role("#{title}@services").with(
         :ensure => 'present',
         :roles  => 'admin',
       )}
 
-      it { should contain_keystone_service(title).with(
+      it { is_expected.to contain_keystone_service(title).with(
         :ensure      => 'present',
         :type        => 'network',
         :description => 'neutron service',
       )}
 
-      it { should contain_keystone_endpoint("RegionOne/#{title}").with(
+      it { is_expected.to contain_keystone_endpoint("RegionOne/#{title}").with(
         :ensure       => 'present',
         :public_url   => 'http://7.7.7.7:9696',
         :internal_url => 'http://10.0.0.1:9696',
@@ -66,7 +66,7 @@ describe 'keystone::resource::service_identity' do
       let :params do
         required_params.delete(:password)
       end
-      it { expect { should raise_error(Puppet::Error) } }
+      it { expect { is_expected.to raise_error(Puppet::Error) } }
     end
 
   end

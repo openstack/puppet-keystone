@@ -20,7 +20,7 @@ describe 'keystone::db::mysql' do
   end
 
   describe 'with only required params' do
-    it { should contain_openstacklib__db__mysql('keystone').with(
+    it { is_expected.to contain_openstacklib__db__mysql('keystone').with(
       'user'          => 'keystone',
       'password_hash' => '*B552157B14BCEDDCEAA06767A012F31BDAA9CE3D',
       'dbname'        => 'keystone',

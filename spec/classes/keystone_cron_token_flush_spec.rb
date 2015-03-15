@@ -8,7 +8,7 @@ describe 'keystone::cron::token_flush' do
 
   describe 'with default parameters' do
     it 'configures a cron' do
-      should contain_cron('keystone-manage token_flush').with(
+      is_expected.to contain_cron('keystone-manage token_flush').with(
         :ensure      => 'present',
         :command     => 'keystone-manage token_flush >>/var/log/keystone/keystone-tokenflush.log 2>&1',
         :environment => 'PATH=/bin:/usr/bin:/usr/sbin SHELL=/bin/sh',
@@ -30,7 +30,7 @@ describe 'keystone::cron::token_flush' do
     end
 
     it 'configures a cron with delay' do
-      should contain_cron('keystone-manage token_flush').with(
+      is_expected.to contain_cron('keystone-manage token_flush').with(
         :ensure      => 'present',
         :command     => 'sleep `expr ${RANDOM} \\% 600`; keystone-manage token_flush >>/var/log/keystone/keystone-tokenflush.log 2>&1',
         :environment => 'PATH=/bin:/usr/bin:/usr/sbin SHELL=/bin/sh',
@@ -52,7 +52,7 @@ describe 'keystone::cron::token_flush' do
     end
 
     it 'configures a cron with delay' do
-      should contain_cron('keystone-manage token_flush').with(
+      is_expected.to contain_cron('keystone-manage token_flush').with(
         :ensure      => 'absent',
         :command     => 'keystone-manage token_flush >>/var/log/keystone/keystone-tokenflush.log 2>&1',
         :environment => 'PATH=/bin:/usr/bin:/usr/sbin SHELL=/bin/sh',
