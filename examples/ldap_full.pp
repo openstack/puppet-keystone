@@ -3,7 +3,7 @@
 
 # Ensure this matches what is in LDAP or keystone will try to recreate
 # the admin user
-class { 'keystone::roles::admin':
+class { '::keystone::roles::admin':
   email    => 'test@example.com',
   password => 'ChangeMe',
 }
@@ -15,7 +15,7 @@ class { 'keystone::roles::admin':
 # ldapsearch -v -x -H 'ldap://example.com:389' -D \
 # "uid=bind,cn=users,cn=accounts,dc=example,dc=com" -w SecretPass \
 # -b cn=users,cn=accounts,dc=example,dc=com
-class { 'keystone:ldap':
+class { '::keystone:ldap':
   url                          => 'ldap://ldap.example.com:389',
   user                         => 'uid=bind,cn=users,cn=accounts,dc=example,dc=com',
   password                     => 'SecretPass',

@@ -3,7 +3,7 @@
 
 # Ensure this matches what is in LDAP or keystone will try to recreate
 # the admin user
-class { 'keystone::roles::admin':
+class { '::keystone::roles::admin':
   email    => 'test@example.com',
   password => 'ChangeMe',
 }
@@ -11,7 +11,7 @@ class { 'keystone::roles::admin':
 # You can test this connection with ldapsearch first to ensure it works.
 # This was tested against a FreeIPA box, you will likely need to change the
 # attributes to match your configuration.
-class { 'keystone:ldap':
+class { '::keystone:ldap':
   identity_driver     => 'keystone.identity.backends.ldap.Identity',
   url                 => 'ldap://ldap.example.com:389',
   user                => 'uid=bind,cn=users,cn=accounts,dc=example,dc=com',

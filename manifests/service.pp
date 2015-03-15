@@ -78,7 +78,7 @@ class keystone::service(
   $insecure       = false,
   $cacert         = undef,
 ) {
-  include keystone::params
+  include ::keystone::params
 
   service { 'keystone':
     ensure     => $ensure,

@@ -20,11 +20,11 @@
 
 Exec { logoutput => 'on_failure' }
 
-class { 'mysql::server': }
-class { 'keystone::db::mysql':
+class { '::mysql::server': }
+class { '::keystone::db::mysql':
   password => 'keystone',
 }
-class { 'keystone':
+class { '::keystone':
   verbose             => true,
   debug               => true,
   database_connection => 'mysql://keystone:keystone@127.0.0.1/keystone',
@@ -32,18 +32,18 @@ class { 'keystone':
   admin_token         => 'admin_token',
   enabled             => false,
 }
-class { 'keystone::roles::admin':
+class { '::keystone::roles::admin':
   email    => 'test@puppetlabs.com',
   password => 'ChangeMe',
 }
-class { 'keystone::endpoint':
+class { '::keystone::endpoint':
   public_url => "https://${::fqdn}:5000/",
   admin_url  => "https://${::fqdn}:35357/",
 }
 
 keystone_config { 'ssl/enable': value => true }
 
-include apache
-class { 'keystone::wsgi::apache':
+include ::apache
+class { '::keystone::wsgi::apache':
   ssl => true
 }

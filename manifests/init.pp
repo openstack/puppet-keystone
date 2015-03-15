@@ -477,7 +477,7 @@ class keystone(
     name   => $::keystone::params::package_name,
     tag    => 'openstack',
   }
-  class { 'openstacklib::openstackclient':
+  class { '::openstacklib::openstackclient':
     package_ensure => $client_package_ensure,
   }
 
@@ -763,7 +763,7 @@ class keystone(
         $v_auth_url = $admin_endpoint
       }
 
-      class { 'keystone::service':
+      class { '::keystone::service':
         ensure         => $service_ensure,
         service_name   => $::keystone::params::service_name,
         enable         => $enabled,
@@ -777,7 +777,7 @@ class keystone(
         cacert         => $validate_cacert,
       }
     } else {
-      class { 'keystone::service':
+      class { '::keystone::service':
         ensure       => $service_ensure,
         service_name => $::keystone::params::service_name,
         enable       => $enabled,
