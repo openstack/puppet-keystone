@@ -12,7 +12,7 @@ class { 'keystone::roles::admin':
 # LDAP configurations are *highly* dependent on your setup and this file
 # will need to be tweaked. This sample talks to ldap.example.com, here is
 # an example of ldapsearch that will search users on this box:
-# ldapsearch -v -x -H 'ldap://69.134.70.154:389' -D \
+# ldapsearch -v -x -H 'ldap://example.com:389' -D \
 # "uid=bind,cn=users,cn=accounts,dc=example,dc=com" -w SecretPass \
 # -b cn=users,cn=accounts,dc=example,dc=com
 class { 'keystone:ldap':
