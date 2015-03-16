@@ -2,10 +2,13 @@ source 'https://rubygems.org'
 
 group :development, :test do
   gem 'puppetlabs_spec_helper', :require => false
-  gem 'puppet-lint-param-docs'
+  gem 'rspec-puppet', '~> 2.0.0', :require => false
+
   gem 'metadata-json-lint'
-  gem 'rspec-puppet', '~> 1.0.1'
-  gem 'rake', '10.1.1'
+  gem 'puppet-lint-param-docs'
+
+  gem 'json'
+  gem 'webmock'
 end
 
 if puppetversion = ENV['PUPPET_GEM_VERSION']

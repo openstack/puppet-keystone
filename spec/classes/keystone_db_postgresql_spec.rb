@@ -24,7 +24,7 @@ describe 'keystone::db::postgresql' do
         req_params
       end
 
-      it { should contain_postgresql__server__db('keystone').with(
+      it { is_expected.to contain_postgresql__server__db('keystone').with(
         :user     => 'keystone',
         :password => 'md5c530c33636c58ae83ca933f39319273e'
       )}
@@ -47,7 +47,7 @@ describe 'keystone::db::postgresql' do
         req_params
       end
 
-      it { should contain_postgresql__server__db('keystone').with(
+      it { is_expected.to contain_postgresql__server__db('keystone').with(
         :user     => 'keystone',
         :password => 'md5c530c33636c58ae83ca933f39319273e'
       )}
