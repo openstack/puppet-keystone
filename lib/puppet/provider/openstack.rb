@@ -52,10 +52,7 @@ class Puppet::Provider::Openstack < Puppet::Provider
       begin
         if(action == 'list')
           response = openstack(service, action, '--quiet', '--format', 'csv', args)
-          # Ignore warnings - assume legitimate output starts with a double quote
-          # Errors will be caught and raised prior to this
-          response = response.split("\n").select { |line| line =~ /^\".*\",\".*\"/ }.join("\n")
-          response = CSV.parse(response.to_s)
+          response = parse_csv(response)
           keys = response.delete_at(0) # ID,Name,Description,Enabled
           rv = response.collect do |line|
             hash = {}
@@ -179,6 +176,13 @@ class Puppet::Provider::Openstack < Puppet::Provider
 
   def get_credentials_from_env
     self.class.get_credentials_from_env
+  end
+
+  def self.parse_csv(text)
+    # Ignore warnings - assume legitimate output starts with a double quoted
+    # string.  Errors will be caught and raised prior to this
+    text = text.split("\n").drop_while { |line| line !~ /^\".*\"/ }.join("\n")
+    return CSV.parse(text + "\n")
   end
 
 end

@@ -200,4 +200,36 @@ Enabled="True"
     end
   end
 
+  describe 'parse_csv' do
+    context 'with mixed stderr' do
+      text = "ERROR: Testing\n\"field\",\"test\",1,2,3\n"
+      csv = Puppet::Provider::Openstack.parse_csv(text)
+      it 'should ignore non-CSV text at the beginning of the input' do
+        expect(csv).to be_kind_of(Array)
+        expect(csv[0]).to match_array(['field', 'test', '1', '2', '3'])
+        expect(csv.size).to eq(1)
+      end
+    end
+
+    context 'with \r\n line endings' do
+      text = "ERROR: Testing\r\n\"field\",\"test\",1,2,3\r\n"
+      csv = Puppet::Provider::Openstack.parse_csv(text)
+      it 'ignore the carriage returns' do
+        expect(csv).to be_kind_of(Array)
+        expect(csv[0]).to match_array(['field', 'test', '1', '2', '3'])
+        expect(csv.size).to eq(1)
+      end
+    end
+
+    context 'with embedded newlines' do
+      text = "ERROR: Testing\n\"field\",\"te\nst\",1,2,3\n"
+      csv = Puppet::Provider::Openstack.parse_csv(text)
+      it 'should parse correctly' do
+        expect(csv).to be_kind_of(Array)
+        expect(csv[0]).to match_array(['field', "te\nst", '1', '2', '3'])
+        expect(csv.size).to eq(1)
+      end
+    end
+  end
+
 end
