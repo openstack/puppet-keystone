@@ -68,6 +68,13 @@ describe Puppet::Provider::Keystone do
       klass.get_admin_endpoint.should == 'http://127.0.0.1:35357/v2.0/'
     end
 
+    it 'should use [::1] in the admin endpoint if bind_host is ::0' do
+      mock = {'DEFAULT' => { 'admin_bind_host' => '::0', 'admin_port' => '35357' }}
+      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
+      mock.expects(:read).with('/etc/keystone/keystone.conf')
+      klass.get_admin_endpoint.should == 'http://[::1]:35357/v2.0/'
+    end
+
     it 'should use localhost in the admin endpoint if bind_host is unspecified' do
       mock = {'DEFAULT' => { 'admin_port' => '35357' }}
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)

@@ -72,6 +72,8 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
           host = keystone_file['DEFAULT']['admin_bind_host'].strip
           if host == "0.0.0.0"
             host = "127.0.0.1"
+          elsif host == '::0'
+            host = '[::1]'
           end
         else
           host = "127.0.0.1"
