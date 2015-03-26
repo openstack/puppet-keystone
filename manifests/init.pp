@@ -376,7 +376,6 @@ class keystone(
   $admin_bind_host        = '0.0.0.0',
   $public_port            = '5000',
   $admin_port             = '35357',
-  $compute_port           = '8774',
   $verbose                = false,
   $debug                  = false,
   $log_dir                = '/var/log/keystone',
