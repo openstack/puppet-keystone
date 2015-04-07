@@ -24,10 +24,10 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
 
   def self.keystone_request(service, action, object, credentials, error, *properties)
     credentials = {
-      'token'    => get_admin_token,
-      'auth_url' => get_admin_endpoint,
+      'token' => get_admin_token,
+      'url'   => get_admin_endpoint,
     }
-    raise error unless (credentials['token'] && credentials['auth_url'])
+    raise error unless (credentials['token'] && credentials['url'])
     auth_args = token_auth_args(credentials)
     args = [object, properties, auth_args].flatten.compact
     authenticate_request(service, action, args)
