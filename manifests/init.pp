@@ -339,6 +339,10 @@
 #   (optional) The number of worker processes to serve the public WSGI application.
 #   Defaults to max($::processorcount, 2)
 #
+# [*sync_db*]
+#   (Optional) Run db sync on the node.
+#   Defaults to true
+#
 # == Dependencies
 #  None
 #
@@ -438,6 +442,7 @@ class keystone(
   $max_token_size         = undef,
   $admin_workers          = max($::processorcount, 2),
   $public_workers         = max($::processorcount, 2),
+  $sync_db                = true,
   # DEPRECATED PARAMETERS
   $mysql_module           = undef,
   $compute_port           = undef,
@@ -805,7 +810,7 @@ class keystone(
     fail('Invalid service_name. Either keystone/openstack-keystone for running as a standalone service, or httpd for being run by a httpd server')
   }
 
-  if $enabled {
+  if $enabled and $sync_db {
     include ::keystone::db::sync
     Class['::keystone::db::sync'] ~> Service[$service_name]
   }
