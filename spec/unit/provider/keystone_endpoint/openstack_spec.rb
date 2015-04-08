@@ -16,10 +16,10 @@ describe provider_class do
         :internal_url => 'http://127.0.0.1:5001/v2.0',
         :admin_url    => 'http://127.0.0.1:5002/v2.0',
         :auth         => {
-          'username'    => 'test',
-          'password'    => 'abc123',
-          'tenant_name' => 'foo',
-          'auth_url'    => 'http://127.0.0.1:5000/v2.0',
+          'username'     => 'test',
+          'password'     => 'abc123',
+          'project_name' => 'foo',
+          'auth_url'     => 'http://127.0.0.1:5000/v2.0',
         }
       }
     end
@@ -35,12 +35,12 @@ describe provider_class do
     describe '#create' do
       it 'creates an endpoint' do
         provider.class.stubs(:openstack)
-                      .with('endpoint', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('endpoint', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                       .returns('"ID","Region","Service Name","Service Type","PublicURL","AdminURL","InternalURL"
 "1cb05cfed7c24279be884ba4f6520262","foo","bar","","http://127.0.0.1:5000/v2.0","http://127.0.0.1:5001/v2.0","http://127.0.0.1:5002/v2.0"
 ')
         provider.class.stubs(:openstack)
-                      .with('endpoint', 'create', '--format', 'shell', [['bar', '--region', 'foo', '--publicurl', 'http://127.0.0.1:5000/v2.0', '--internalurl', 'http://127.0.0.1:5001/v2.0', '--adminurl', 'http://127.0.0.1:5002/v2.0', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('endpoint', 'create', '--format', 'shell', [['bar', '--region', 'foo', '--publicurl', 'http://127.0.0.1:5000/v2.0', '--internalurl', 'http://127.0.0.1:5001/v2.0', '--adminurl', 'http://127.0.0.1:5002/v2.0', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                       .returns('adminurl="http://127.0.0.1:5002/v2.0"
 id="3a5c4378981e4112a0d44902a43e16ef"
 internalurl="http://127.0.0.1:5001/v2.0"
@@ -58,12 +58,12 @@ service_type="test"
     describe '#destroy' do
       it 'destroys an endpoint' do
         provider.class.stubs(:openstack)
-                      .with('endpoint', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('endpoint', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                       .returns('"ID","Region","Service Name","Service Type","PublicURL","AdminURL","InternalURL"
 "1cb05cfed7c24279be884ba4f6520262","foo","bar","","http://127.0.0.1:5000/v2.0","http://127.0.0.1:5001/v2.0","http://127.0.0.1:5002/v2.0"
 ')
         provider.class.stubs(:openstack)
-                      .with('endpoint', 'delete', [['1cb05cfed7c24279be884ba4f6520262', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('endpoint', 'delete', [['1cb05cfed7c24279be884ba4f6520262', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
         expect(provider.destroy).to be_nil # We don't really care that it's nil, only that it runs successfully
       end
 
@@ -74,7 +74,7 @@ service_type="test"
 
         subject(:response) do
           provider.class.stubs(:openstack)
-                        .with('endpoint', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                        .with('endpoint', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                         .returns('"ID","Region","Service Name","Service Type","PublicURL","AdminURL","InternalURL"
 "1cb05cfed7c24279be884ba4f6520262","foo","bar","","http://127.0.0.1:5000/v2.0","http://127.0.0.1:5001/v2.0","http://127.0.0.1:5002/v2.0"
 ')
@@ -88,7 +88,7 @@ service_type="test"
 
         subject(:response) do
           provider.class.stubs(:openstack)
-                        .with('endpoint', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                        .with('endpoint', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                         .returns('"ID","Region","Service Name","Service Type","PublicURL","AdminURL","InternalURL"')
           response = provider.exists?
         end
@@ -100,7 +100,7 @@ service_type="test"
     describe '#instances' do
       it 'finds every tenant' do
         provider.class.stubs(:openstack)
-                      .with('endpoint', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('endpoint', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                       .returns('"ID","Region","Service Name","Service Type","PublicURL","AdminURL","InternalURL"
 "1cb05cfed7c24279be884ba4f6520262","foo","bar","","http://127.0.0.1:5000/v2.0","http://127.0.0.1:5001/v2.0","http://127.0.0.1:5002/v2.0"
 ')

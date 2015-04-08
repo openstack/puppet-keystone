@@ -15,10 +15,10 @@ describe provider_class do
         :ensure       => 'present',
         :enabled      => 'True',
         :auth         => {
-          'username'    => 'test',
-          'password'    => 'abc123',
-          'tenant_name' => 'foo',
-          'auth_url'    => 'http://127.0.0.1:5000/v2.0',
+          'username'     => 'test',
+          'password'     => 'abc123',
+          'project_name' => 'foo',
+          'auth_url'     => 'http://127.0.0.1:5000/v2.0',
         }
       }
     end
@@ -34,12 +34,12 @@ describe provider_class do
     describe '#create' do
       it 'creates a tenant' do
         provider.class.stubs(:openstack)
-                      .with('project', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('project', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                       .returns('"ID","Name","Description","Enabled"
 "1cb05cfed7c24279be884ba4f6520262","foo","foo",True
 ')
         provider.class.stubs(:openstack)
-                      .with('project', 'create', '--format', 'shell', [['foo', '--enable', '--description', 'foo', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('project', 'create', '--format', 'shell', [['foo', '--enable', '--description', 'foo', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                       .returns('description="foo"
 enabled="True"
 name="foo"
@@ -52,10 +52,10 @@ name="foo"
     describe '#destroy' do
       it 'destroys a tenant' do
         provider.class.stubs(:openstack)
-                      .with('project', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('project', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                       .returns('"ID","Name","Description","Enabled"')
         provider.class.stubs(:openstack)
-                      .with('project', 'delete', [['foo', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('project', 'delete', [['foo', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
         provider.destroy
         expect(provider.exists?).to be_falsey
       end
@@ -67,7 +67,7 @@ name="foo"
 
         subject(:response) do
           provider.class.stubs(:openstack)
-                        .with('project', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                        .with('project', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                         .returns('"ID","Name","Description","Enabled"
 "1cb05cfed7c24279be884ba4f6520262","foo","foo",True
 ')
@@ -81,7 +81,7 @@ name="foo"
 
         subject(:response) do
           provider.class.stubs(:openstack)
-                        .with('project', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                        .with('project', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                       .returns('"ID","Name","Description","Enabled"')
           response = provider.exists?
         end
@@ -93,7 +93,7 @@ name="foo"
     describe '#instances' do
       it 'finds every tenant' do
         provider.class.stubs(:openstack)
-                      .with('project', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('project', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                       .returns('"ID","Name","Description","Enabled"
 "1cb05cfed7c24279be884ba4f6520262","foo","foo",True
 ')

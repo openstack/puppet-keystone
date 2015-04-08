@@ -15,10 +15,10 @@ describe provider_class do
       :tenant       => 'foo',
       :email        => 'foo@example.com',
       :auth         => {
-        'username'    => 'test',
-        'password'    => 'abc123',
-        'tenant_name' => 'foo',
-        'auth_url'    => 'http://127.0.0.1:5000/v2.0',
+        'username'     => 'test',
+        'password'     => 'abc123',
+        'project_name' => 'foo',
+        'auth_url'     => 'http://127.0.0.1:5000/v2.0',
       }
     }
   end
@@ -36,12 +36,12 @@ describe provider_class do
     describe '#create' do
       it 'creates a user' do
         provider.class.stubs(:openstack)
-                      .with('user', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('user', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                       .returns('"ID","Name","Project","Email","Enabled"
 "1cb05cfed7c24279be884ba4f6520262","foo","foo","foo@example.com",True
 ')
         provider.class.stubs(:openstack)
-                      .with('user', 'create', '--format', 'shell', [['foo', '--enable', '--password', 'foo', '--project', 'foo', '--email', 'foo@example.com', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('user', 'create', '--format', 'shell', [['foo', '--enable', '--password', 'foo', '--project', 'foo', '--email', 'foo@example.com', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                       .returns('email="foo@example.com"
 enabled="True"
 id="12b23f07d4a3448d8189521ab09610b0"
@@ -57,10 +57,10 @@ username="foo"
     describe '#destroy' do
       it 'destroys a user' do
         provider.class.stubs(:openstack)
-                      .with('user', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('user', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                       .returns('"ID","Name","Project","Email","Enabled"')
         provider.class.stubs(:openstack)
-                      .with('user', 'delete', [['foo', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('user', 'delete', [['foo', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
         provider.destroy
         expect(provider.exists?).to be_falsey
       end
@@ -72,7 +72,7 @@ username="foo"
 
         subject(:response) do
           provider.class.stubs(:openstack)
-                        .with('user', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                        .with('user', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                         .returns('"ID","Name","Project","Email","Enabled"
 "1cb05cfed7c24279be884ba4f6520262","foo","foo","foo@example.com",True
 ')
@@ -86,7 +86,7 @@ username="foo"
 
         subject(:response) do
           provider.class.stubs(:openstack)
-                        .with('user', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                        .with('user', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                         .returns('"ID","Name","Project","Email","Enabled"')
           response = provider.exists?
         end
@@ -98,7 +98,7 @@ username="foo"
     describe '#instances' do
       it 'finds every user' do
         provider.class.stubs(:openstack)
-                      .with('user', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('user', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                       .returns('"ID","Name","Project","Email","Enabled"
 "1cb05cfed7c24279be884ba4f6520262","foo","foo","foo@example.com",True
 ')
@@ -110,7 +110,7 @@ username="foo"
     describe '#tenant' do
       it 'gets the tenant with default backend' do
         provider.class.stubs(:openstack)
-                      .with('user', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('user', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                       .returns('"ID","Name","Project","Email","Enabled"
 "1cb05cfed7c24279be884ba4f6520262","foo","foo","foo@example.com",True
 ')
@@ -119,12 +119,12 @@ username="foo"
       end
       it 'gets the tenant with LDAP backend' do
         provider.class.stubs(:openstack)
-                      .with('user', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('user', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                       .returns('"ID","Name","Project","Email","Enabled"
 "1cb05cfed7c24279be884ba4f6520262","foo","","foo@example.com",True
 ')
         provider.class.expects(:openstack)
-                      .with('user role', 'list', '--quiet', '--format', 'csv', [['foo', '--project', 'foo', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('user role', 'list', '--quiet', '--format', 'csv', [['foo', '--project', 'foo', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                       .returns('"ID","Name","Project","User"
 "1cb05cfed7c24279be884ba4f6520262","foo","foo","foo"
 ')
@@ -136,9 +136,9 @@ username="foo"
       context 'when using default backend' do
         it 'sets the tenant' do
           provider.class.expects(:openstack)
-                        .with('user', 'set', [['foo', '--project', 'bar', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                        .with('user', 'set', [['foo', '--project', 'bar', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
            provider.class.expects(:openstack)
-                         .with('user role', 'list', '--quiet', '--format', 'csv', [['foo', '--project', 'bar', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                         .with('user role', 'list', '--quiet', '--format', 'csv', [['foo', '--project', 'bar', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                          .returns('"ID","Name","Project","User"
 "1cb05cfed7c24279be884ba4f6520262","foo","foo","foo"
 ')
@@ -148,52 +148,52 @@ username="foo"
       context 'when using LDAP read-write backend' do
         it 'sets the tenant when _member_ role exists' do
           provider.class.expects(:openstack)
-                        .with('user', 'set', [['foo', '--project', 'bar', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                        .with('user', 'set', [['foo', '--project', 'bar', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
            provider.class.expects(:openstack)
-                         .with('user role', 'list', '--quiet', '--format', 'csv', [['foo', '--project', 'bar', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                         .with('user role', 'list', '--quiet', '--format', 'csv', [['foo', '--project', 'bar', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                          .returns('')
           provider.class.expects(:openstack)
-                        .with('role', 'show', '--format', 'shell', [['_member_', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                        .with('role', 'show', '--format', 'shell', [['_member_', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                         .returns('name="_member_"')
           provider.class.expects(:openstack)
-                        .with('role', 'add', [['_member_', '--project', 'bar', '--user', 'foo', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                        .with('role', 'add', [['_member_', '--project', 'bar', '--user', 'foo', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
           provider.tenant=('bar')
         end
         it 'sets the tenant when _member_ role does not exist' do
           provider.class.expects(:openstack)
-                        .with('user', 'set', [['foo', '--project', 'bar', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                        .with('user', 'set', [['foo', '--project', 'bar', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
            provider.class.expects(:openstack)
-                         .with('user role', 'list', '--quiet', '--format', 'csv', [['foo', '--project', 'bar', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                         .with('user role', 'list', '--quiet', '--format', 'csv', [['foo', '--project', 'bar', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                          .returns('')
           provider.class.expects(:openstack)
-                        .with('role', 'show', '--format', 'shell', [['_member_', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                        .with('role', 'show', '--format', 'shell', [['_member_', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                         .raises(Puppet::ExecutionFailure, 'no such role _member_')
           provider.class.expects(:openstack)
-                        .with('role', 'create', '--format', 'shell', [['_member_', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])                      
+                        .with('role', 'create', '--format', 'shell', [['_member_', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])                      
                         .returns('name="_member_"')
           provider.class.expects(:openstack)
-                        .with('role', 'add', [['_member_', '--project', 'bar', '--user', 'foo', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                        .with('role', 'add', [['_member_', '--project', 'bar', '--user', 'foo', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
           provider.tenant=('bar')
         end
       end
       context 'when using LDAP read-only backend' do
         it 'sets the tenant when _member_ role exists' do
           provider.class.expects(:openstack)
-                        .with('user', 'set', [['foo', '--project', 'bar', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                        .with('user', 'set', [['foo', '--project', 'bar', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                         .raises(Puppet::ExecutionFailure, 'You are not authorized to perform the requested action: LDAP user update')
            provider.class.expects(:openstack)
-                         .with('user role', 'list', '--quiet', '--format', 'csv', [['foo', '--project', 'bar', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                         .with('user role', 'list', '--quiet', '--format', 'csv', [['foo', '--project', 'bar', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                          .returns('')
           provider.class.expects(:openstack)
-                        .with('role', 'show', '--format', 'shell', [['_member_', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                        .with('role', 'show', '--format', 'shell', [['_member_', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                         .returns('name="_member_"')
           provider.class.expects(:openstack)
-                        .with('role', 'add', [['_member_', '--project', 'bar', '--user', 'foo', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                        .with('role', 'add', [['_member_', '--project', 'bar', '--user', 'foo', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
           provider.tenant=('bar')
         end
         it 'sets the tenant and gets an unexpected exception message' do
           provider.class.expects(:openstack)
-                        .with('user', 'set', [['foo', '--project', 'bar', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                        .with('user', 'set', [['foo', '--project', 'bar', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                         .raises(Puppet::ExecutionFailure, 'unknown error message')
           expect{ provider.tenant=('bar') }.to raise_error(Puppet::ExecutionFailure, /unknown error message/)
         end
@@ -212,10 +212,10 @@ username="foo"
         :tenant       => 'foo',
         :email        => 'foo@example.com',
         :auth         => {
-          'username'    => 'test',
-          'password'    => 'abc123',
-          'tenant_name' => 'foo',
-          'auth_url'    => 'https://127.0.0.1:5000/v2.0',
+          'username'     => 'test',
+          'password'     => 'abc123',
+          'project_name' => 'foo',
+          'auth_url'     => 'https://127.0.0.1:5000/v2.0',
         }
       }
     end

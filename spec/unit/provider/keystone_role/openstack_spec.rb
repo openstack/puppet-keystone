@@ -13,10 +13,10 @@ describe provider_class do
         :name         => 'foo',
         :ensure       => 'present',
         :auth         => {
-          'username'    => 'test',
-          'password'    => 'abc123',
-          'tenant_name' => 'foo',
-          'auth_url'    => 'http://127.0.0.1:5000/v2.0',
+          'username'     => 'test',
+          'password'     => 'abc123',
+          'project_name' => 'foo',
+          'auth_url'     => 'http://127.0.0.1:5000/v2.0',
         }
       }
     end
@@ -32,12 +32,12 @@ describe provider_class do
     describe '#create' do
       it 'creates a role' do
         provider.class.stubs(:openstack)
-                      .with('role', 'list', '--quiet', '--format', 'csv', [['--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('role', 'list', '--quiet', '--format', 'csv', [['--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                       .returns('"ID","Name"
 "1cb05cfed7c24279be884ba4f6520262","foo"
 ')
         provider.class.stubs(:openstack)
-                      .with('role', 'create', '--format', 'shell', [['foo', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('role', 'create', '--format', 'shell', [['foo', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                       .returns('name="foo"')
         provider.create
         expect(provider.exists?).to be_truthy
@@ -47,10 +47,10 @@ describe provider_class do
     describe '#destroy' do
       it 'destroys a role' do
         provider.class.stubs(:openstack)
-                      .with('role', 'list', '--quiet', '--format', 'csv', [['--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('role', 'list', '--quiet', '--format', 'csv', [['--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                       .returns('"ID","Name"')
         provider.class.stubs(:openstack)
-                      .with('role', 'delete', [['foo', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('role', 'delete', [['foo', '--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
         provider.destroy
         expect(provider.exists?).to be_falsey
       end
@@ -62,7 +62,7 @@ describe provider_class do
 
         subject(:response) do
           provider.class.stubs(:openstack)
-                        .with('role', 'list', '--quiet', '--format', 'csv', [['--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                        .with('role', 'list', '--quiet', '--format', 'csv', [['--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                         .returns('"ID","Name"
 "1cb05cfed7c24279be884ba4f6520262","foo"
 ')
@@ -76,7 +76,7 @@ describe provider_class do
 
         subject(:response) do
           provider.class.stubs(:openstack)
-                        .with('role', 'list', '--quiet', '--format', 'csv', [['--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                        .with('role', 'list', '--quiet', '--format', 'csv', [['--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                       .returns('"ID","Name"')
           response = provider.exists?
         end
@@ -88,7 +88,7 @@ describe provider_class do
     describe '#instances' do
       it 'finds every role' do
         provider.class.stubs(:openstack)
-                      .with('role', 'list', '--quiet', '--format', 'csv', [['--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .with('role', 'list', '--quiet', '--format', 'csv', [['--os-username', 'test', '--os-password', 'abc123', '--os-project-name', 'foo', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
                       .returns('"ID","Name"
 "1cb05cfed7c24279be884ba4f6520262","foo"
 ')
