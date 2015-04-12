@@ -457,6 +457,17 @@ describe 'keystone' do
     it { is_expected.to contain_keystone_config("token/expiration").with_value('3600') }
   end
 
+  describe 'when sync_db is set to false' do
+    let :params do
+      {
+        'admin_token' => 'service_token',
+        'sync_db'     => false,
+      }
+    end
+
+    it { is_expected.not_to contain_exec('keystone-manage db_sync') }
+  end
+
   describe 'configure memcache servers if set' do
     let :params do
       {
