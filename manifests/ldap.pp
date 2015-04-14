@@ -311,6 +311,10 @@
 #   Identity backend driver. (string value)
 #   Defaults to 'undef'
 #
+# [*credential_driver*]
+#   Credential backend driver. (string value)
+#   Defaults to 'undef'
+#
 # [*assignment_driver*]
 #   Assignment backend driver. (string value)
 #   Defaults to 'undef'
@@ -469,6 +473,7 @@ class keystone::ldap(
   $tls_req_cert                        = undef,
   $identity_driver                     = undef,
   $assignment_driver                   = undef,
+  $credential_driver                   = undef,
   $use_pool                            = false,
   $pool_size                           = 10,
   $pool_retry_max                      = 3,
@@ -677,6 +682,12 @@ class keystone::ldap(
       }
   }
 
+  if ($credential_driver != undef) {
+      if ! ($credential_driver =~ /^keystone.credential.backends.*Credential$/) {
+          fail('credential driver should be of the form \'keystone.credential.backends.*Credential\'')
+      }
+  }
+
   if ($tls_cacertdir != undef) {
     file { $tls_cacertdir:
       ensure => directory
@@ -762,6 +773,7 @@ class keystone::ldap(
     'ldap/auth_pool_size':                       value => $auth_pool_size;
     'ldap/auth_pool_connection_lifetime':        value => $auth_pool_connection_lifetime;
     'identity/driver':                           value => $identity_driver;
+    'credential/driver':                         value => $credential_driver;
     'assignment/driver':                         value => $assignment_driver;
   }
 }

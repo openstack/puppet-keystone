@@ -73,6 +73,7 @@ describe 'keystone::ldap' do
         :tls_cacertfile => '/etc/ssl/certs/ca-certificates.crt',
         :tls_req_cert => 'demand',
         :identity_driver => 'keystone.identity.backends.ldap.Identity',
+        :credential_driver => 'keystone.credential.backends.ldap.Credential',
         :assignment_driver => 'keystone.assignment.backends.ldap.Assignment',
         :use_pool => 'True',
         :pool_size => 20,
@@ -182,6 +183,7 @@ describe 'keystone::ldap' do
 
       # drivers
       is_expected.to contain_keystone_config('identity/driver').with_value('keystone.identity.backends.ldap.Identity')
+      is_expected.to contain_keystone_config('credential/driver').with_value('keystone.credential.backends.ldap.Credential')
       is_expected.to contain_keystone_config('assignment/driver').with_value('keystone.assignment.backends.ldap.Assignment')
     end
   end
