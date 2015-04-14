@@ -38,8 +38,8 @@ class { '::keystone::roles::admin':
   password => 'ChangeMe',
 }
 class { '::keystone::endpoint':
-  public_url    => "https://${::fqdn}:443/main/",
-  admin_address => "https://${::fqdn}:443/admin/",
+  public_url => "https://${::fqdn}:443/main/",
+  admin_url  => "https://${::fqdn}:443/admin/",
 }
 
 keystone_config { 'ssl/enable': ensure  => absent }
