@@ -250,5 +250,39 @@ username="foo"
       password = provider.password
       expect(password).to eq(nil)
     end
+
+    describe 'when updating a user with unmanaged password' do
+
+      let(:user_attrs) do
+        {
+          :name             => 'foo',
+          :ensure           => 'present',
+          :enabled          => 'True',
+          :password         => 'foo',
+          :replace_password => 'False',
+          :tenant           => 'foo',
+          :email            => 'foo@example.com',
+          :auth             => {
+            'username'      => 'test',
+            'password'      => 'abc123',
+            'tenant_name'   => 'foo',
+            'auth_url'      => 'http://127.0.0.1:5000/v2.0',
+          }
+        }
+      end
+
+      let(:resource) do
+        Puppet::Type::Keystone_user.new(user_attrs)
+      end
+
+      let :provider do
+        provider_class.new(resource)
+      end
+
+      it 'should not try to check password' do
+        expect(provider.password).to eq('foo')
+      end
+    end
+
   end
 end

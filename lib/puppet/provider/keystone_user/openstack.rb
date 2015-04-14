@@ -62,6 +62,8 @@ Puppet::Type.type(:keystone_user).provide(
     return nil if resource[:password] == nil
     # if the user is disabled then the password can't be changed
     return resource[:password] if resource[:enabled] == :false
+    # if replacing password is disabled, then don't change it
+    return resource[:password] if resource[:replace_password] == :false
     # we can't get the value of the password but we can test to see if the one we know
     # about works, if it doesn't then return nil, causing it to be reset
     endpoint = nil
@@ -155,6 +157,14 @@ Puppet::Type.type(:keystone_user).provide(
     else
       return tenant_name
     end
+  end
+
+  def replace_password
+    instance(resource[:name])[:replace_password]
+  end
+
+  def replace_password=(value)
+    @property_flush[:replace_password] = value
   end
 
   def email=(value)
