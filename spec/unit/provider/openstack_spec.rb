@@ -175,6 +175,31 @@ Enabled="True"
       end
     end
 
+    context 'it retries on connection errors' do
+      let(:resource_attrs) do
+        {
+          :name         => 'stubresource',
+          :auth         => {
+            'username'    => 'test',
+            'password'    => 'abc123',
+            'tenant_name' => 'test',
+            'auth_url'    => 'http://127.0.0.1:5000/v2.0',
+          }
+        }
+      end
+      let(:provider) do
+        Puppet::Provider::Openstack.new(type.new(resource_attrs))
+      end
+      it 'retries' do
+        provider.class.stubs(:openstack)
+                      .with('project', 'list', '--quiet', '--format', 'csv', [['--long', '--os-username', 'test', '--os-password', 'abc123', '--os-tenant-name', 'test', '--os-auth-url', 'http://127.0.0.1:5000/v2.0']])
+                      .raises(Puppet::ExecutionFailure, 'Unable to establish connection')
+                      .then
+                      .returns('')
+        provider.class.expects(:sleep).with(2).returns(nil)
+        provider.request('project', 'list', nil, resource_attrs[:auth], '--long')
+      end
+    end
   end
 
 
@@ -198,6 +223,7 @@ Enabled="True"
         let(:provider) { Puppet::Provider::Openstack.dup }
       end
     end
+
   end
 
   describe 'parse_csv' do
