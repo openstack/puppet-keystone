@@ -25,7 +25,8 @@ describe 'keystone::db::mysql' do
       'password_hash' => '*B552157B14BCEDDCEAA06767A012F31BDAA9CE3D',
       'dbname'        => 'keystone',
       'host'          => '127.0.0.1',
-      'charset'       => 'utf8'
+      'charset'       => 'utf8',
+      :collate        => 'utf8_general_ci',
     )}
   end
 
