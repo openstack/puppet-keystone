@@ -32,7 +32,7 @@
 # [*collate*]
 #   (Optional) The database collate.
 #   Only used with mysql modules >= 2.2.
-#   Defaults to 'utf8_unicode_ci'
+#   Defaults to 'utf8_general_ci'
 #
 # === Deprecated Parameters
 #
@@ -57,7 +57,7 @@ class keystone::db::mysql(
   $user          = 'keystone',
   $host          = '127.0.0.1',
   $charset       = 'utf8',
-  $collate       = 'utf8_unicode_ci',
+  $collate       = 'utf8_general_ci',
   $mysql_module  = undef,
   $allowed_hosts = undef
 ) {
