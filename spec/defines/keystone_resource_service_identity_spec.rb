@@ -45,7 +45,7 @@ describe 'keystone::resource::service_identity' do
 
       it { is_expected.to contain_keystone_user_role("#{title}@services").with(
         :ensure => 'present',
-        :roles  => 'admin',
+        :roles  => ['admin'],
       )}
 
       it { is_expected.to contain_keystone_service(title).with(
