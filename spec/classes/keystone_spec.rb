@@ -611,8 +611,9 @@ describe 'keystone' do
     end
 
     it { is_expected.to contain_keystone_config('DEFAULT/notification_driver').with_value(nil) }
-    it { is_expected.to contain_keystone_config('DEFAULT/notification_topics').with_vaule(nil) }
-    it { is_expected.to contain_keystone_config('DEFAULT/control_exchange').with_vaule(nil) }
+    it { is_expected.to contain_keystone_config('DEFAULT/notification_topics').with_value(nil) }
+    it { is_expected.to contain_keystone_config('DEFAULT/notification_format').with_value(nil) }
+    it { is_expected.to contain_keystone_config('DEFAULT/control_exchange').with_value(nil) }
   end
 
   describe 'with RabbitMQ communication SSLed' do
@@ -668,12 +669,14 @@ describe 'keystone' do
       default_params.merge({
         :notification_driver   => 'keystone.openstack.common.notifier.rpc_notifier',
         :notification_topics   => 'notifications',
+        :notification_format   => 'cadf',
         :control_exchange      => 'keystone'
       })
     end
 
     it { is_expected.to contain_keystone_config('DEFAULT/notification_driver').with_value('keystone.openstack.common.notifier.rpc_notifier') }
     it { is_expected.to contain_keystone_config('DEFAULT/notification_topics').with_value('notifications') }
+    it { is_expected.to contain_keystone_config('DEFAULT/notification_format').with_value('cadf') }
     it { is_expected.to contain_keystone_config('DEFAULT/control_exchange').with_value('keystone') }
   end
 
