@@ -491,8 +491,12 @@ class keystone(
     name   => $::keystone::params::package_name,
     tag    => 'openstack',
   }
-  class { '::openstacklib::openstackclient':
-    package_ensure => $client_package_ensure,
+  if $client_package_ensure == 'present' {
+    include '::openstacklib::openstackclient'
+  } else {
+    class { '::openstacklib::openstackclient':
+      package_ensure => $client_package_ensure,
+    }
   }
 
   group { 'keystone':
