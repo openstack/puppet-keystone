@@ -56,6 +56,7 @@ describe 'keystone' do
       'rabbit_userid'         => 'guest',
       'admin_workers'         => 20,
       'public_workers'        => 20,
+      'sync_db'               => true,
     }
 
   override_params = {
@@ -132,8 +133,8 @@ describe 'keystone' do
       end
     end
 
-    it 'should only synchronize the db if $enabled is true' do
-      if param_hash['enabled']
+    it 'should synchronize the db if $sync_db is true' do
+      if param_hash['sync_db']
         is_expected.to contain_exec('keystone-manage db_sync').with(
           :user        => 'keystone',
           :refreshonly => true,
