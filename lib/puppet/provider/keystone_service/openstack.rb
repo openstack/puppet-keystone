@@ -7,57 +7,57 @@ Puppet::Type.type(:keystone_service).provide(
 
   desc "Provider to manage keystone services."
 
+  @credentials = Puppet::Provider::Openstack::CredentialsV2_0.new
+
   def initialize(value={})
     super(value)
     @property_flush = {}
   end
 
   def create
-    properties = []
+    properties = ['--name']
+    properties << resource[:name]
     if resource[:description]
       properties << '--description'
       properties << resource[:description]
     end
-    if resource[:type]
-      properties << '--type'
-      properties << resource[:type]
-    end
-    @instance = request('service', 'create', resource[:name], resource[:auth], properties)
+    raise(Puppet::Error, 'The service type is mandatory') unless resource[:type]
+    properties << resource[:type]
+    self.class.request('service', 'create', properties)
+    @property_hash[:ensure] = :present
   end
 
   def exists?
-    ! instance(resource[:name]).empty?
+    @property_hash[:ensure] == :present
   end
 
   def destroy
-    request('service', 'delete', resource[:name], resource[:auth])
+    self.class.request('service', 'delete', @property_hash[:id])
+    @property_hash.clear
   end
 
-
   def description=(value)
-    raise(Puppet::Error, "Updating the service is not currently supported.")
+    @property_flush[:description] = value
   end
 
   def description
-    instance(resource[:name])[:description]
+    @property_hash[:description]
   end
 
-
   def type=(value)
-    raise(Puppet::Error, "Updating the service is not currently supported.")
+    @property_flush[:type] = value
   end
 
   def type
-    instance(resource[:name])[:type]
+    @property_hash[:type]
   end
 
-
   def id
-    instance(resource[:name])[:id]
+    @property_hash[:id]
   end
 
   def self.instances
-    list = request('service', 'list', nil, nil, '--long')
+    list = request('service', 'list', '--long')
     list.collect do |service|
       new(
         :name        => service[:name],
@@ -69,30 +69,20 @@ Puppet::Type.type(:keystone_service).provide(
     end
   end
 
-  def instances
-    instances = request('service', 'list', nil, resource[:auth], '--long')
-    instances.collect do |service|
-      {
-        :name        => service[:name],
-        :type        => service[:type],
-        :description => service[:description],
-        :id          => service[:id]
-      }
+  def self.prefetch(resources)
+    services = instances
+    resources.keys.each do |name|
+       if provider = services.find{ |service| service.name == name }
+        resources[name].provider = provider
+      end
     end
-  end
-
-  def instance(name)
-    @instance ||= instances.select { |instance| instance[:name] == name }.first || {}
   end
 
   def flush
-    options = []
-    if @property_flush
-      # There is a --description flag for the set command, but it does not work if the value is empty
-      (options << '--property' << "type=#{resource[:type]}") if @property_flush[:type]
-      (options << '--property' << "description=#{resource[:description]}") if @property_flush[:description]
-      request('project', 'set', resource[:name], resource[:auth], options) unless options.empty?
+    if ! @property_flush.empty?
+      destroy
+      create
+      @property_flush.clear
     end
   end
-
 end

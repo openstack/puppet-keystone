@@ -7,25 +7,33 @@ Puppet::Type.type(:keystone_role).provide(
 
   desc 'Provider for keystone roles.'
 
-  def create
-    properties = []
-    @instance = request('role', 'create', resource[:name], resource[:auth], properties)
+  @credentials = Puppet::Provider::Openstack::CredentialsV2_0.new
+
+  def initialize(value={})
+    super(value)
+    @property_flush = {}
   end
 
-  def exists?
-    ! instance(resource[:name]).empty?
+  def create
+    self.class.request('role', 'create', name)
+    @property_hash[:ensure] = :present
   end
 
   def destroy
-    request('role', 'delete', resource[:name], resource[:auth])
+    self.class.request('role', 'delete', @property_hash[:id])
+    @property_hash.clear
+  end
+
+  def exists?
+    @property_hash[:ensure] == :present
   end
 
   def id
-    instance(resource[:name])[:id]
+    @property_hash[:id]
   end
 
   def self.instances
-    list = request('role', 'list', nil, nil)
+    list = request('role', 'list')
     list.collect do |role|
       new(
         :name        => role[:name],
@@ -35,18 +43,12 @@ Puppet::Type.type(:keystone_role).provide(
     end
   end
 
-  def instances
-    instances = request('role', 'list', nil, resource[:auth])
-    instances.collect do |role|
-      {
-        :name        => role[:name],
-        :id          => role[:id]
-      }
+  def self.prefetch(resources)
+    roles = instances
+    resources.keys.each do |name|
+       if provider = roles.find{ |role| role.name == name }
+        resources[name].provider = provider
+      end
     end
   end
-
-  def instance(name)
-    @instance ||= instances.select { |instance| instance[:name] == name }.first || {}
-  end
-
 end

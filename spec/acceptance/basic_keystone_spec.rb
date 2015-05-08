@@ -63,6 +63,7 @@ describe 'basic keystone server with resources' do
         service_type        => 'beaker',
         service_description => 'beaker service',
         service_name        => 'beaker',
+        password            => 'secret',
         public_url          => 'http://127.0.0.1:1234',
         admin_url           => 'http://127.0.0.1:1234',
         internal_url        => 'http://127.0.0.1:1234',

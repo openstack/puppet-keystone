@@ -7,6 +7,8 @@ Puppet::Type.type(:keystone_endpoint).provide(
 
   desc "Provider to manage keystone endpoints."
 
+  @credentials = Puppet::Provider::Openstack::CredentialsV2_0.new
+
   def initialize(value={})
     super(value)
     @property_flush = {}
@@ -16,6 +18,7 @@ Puppet::Type.type(:keystone_endpoint).provide(
     properties = []
     # The region property is just ignored. We should fix this in kilo.
     region, name = resource[:name].split('/')
+    properties << name
     properties << '--region'
     properties << region
     if resource[:public_url]
@@ -30,56 +33,53 @@ Puppet::Type.type(:keystone_endpoint).provide(
       properties << '--adminurl'
       properties << resource[:admin_url]
     end
-    @instance = request('endpoint', 'create', name, resource[:auth], properties)
-  end
-
-  def exists?
-    ! instance(resource[:name]).empty?
+     self.class.request('endpoint', 'create', properties)
+     @property_hash[:ensure] = :present
   end
 
   def destroy
-    id = instance(resource[:name])[:id]
-    request('endpoint', 'delete', id, resource[:auth])
+    self.class.request('endpoint', 'delete', @property_hash[:id])
+    @property_hash.clear
   end
 
+  def exists?
+    @property_hash[:ensure] == :present
+  end
 
   def region
-    instance(resource[:name])[:region]
+    @property_hash[:region]
   end
-
 
   def public_url=(value)
     @property_flush[:public_url] = value
   end
 
   def public_url
-    instance(resource[:name])[:public_url]
+    @property_hash[:public_url]
   end
-
 
   def internal_url=(value)
     @property_flush[:internal_url] = value
   end
 
   def internal_url
-    instance(resource[:name])[:internal_url]
+    @property_hash[:internal_url]
   end
-
 
   def admin_url=(value)
     @property_flush[:admin_url] = value
   end
 
   def admin_url
-    instance(resource[:name])[:admin_url]
+    @property_hash[:admin_url]
   end
 
   def id
-    instance(resource[:name])[:id]
+    @property_hash[:id]
   end
 
   def self.instances
-    list = request('endpoint', 'list', nil, nil, '--long')
+    list = request('endpoint', 'list', '--long')
     list.collect do |endpoint|
       new(
         :name         => "#{endpoint[:region]}/#{endpoint[:service_name]}",
@@ -93,30 +93,20 @@ Puppet::Type.type(:keystone_endpoint).provide(
     end
   end
 
-  def instances
-    instances = request('endpoint', 'list', nil, resource[:auth], '--long')
-    instances.collect do |endpoint|
-      {
-        :name         => "#{endpoint[:region]}/#{endpoint[:service_name]}",
-        :id           => endpoint[:id],
-        :region       => endpoint[:region],
-        :public_url   => endpoint[:publicurl],
-        :internal_url => endpoint[:internalurl],
-        :admin_url    => endpoint[:adminurl]
-      }
+  def self.prefetch(resources)
+    endpoints = instances
+    resources.keys.each do |name|
+       if provider = endpoints.find{ |endpoint| endpoint.name == name }
+        resources[name].provider = provider
+      end
     end
   end
 
-  def instance(name)
-    @instance ||= instances.select { |instance| instance[:name] == name }.first || {}
-  end
-
   def flush
-    if  ! @property_flush.empty?
+    if ! @property_flush.empty?
       destroy
       create
       @property_flush.clear
     end
   end
-
 end
