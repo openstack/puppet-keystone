@@ -9,10 +9,31 @@ describe 'basic keystone server with resources' do
       Exec { logoutput => 'on_failure' }
 
       # Common resources
-      include ::apt
-      class { '::openstack_extras::repo::debian::ubuntu':
-         release         => 'kilo',
-         package_require => true,
+      case $::osfamily {
+        'Debian': {
+          include ::apt
+          class { '::openstack_extras::repo::debian::ubuntu':
+            release => 'kilo',
+            package_require => true,
+          }
+        }
+        'RedHat': {
+          class { '::openstack_extras::repo::redhat::redhat':
+            # Kilo is not GA yet, so let's use the testing repo
+            manage_rdo => false,
+            repo_hash  => {
+              'rdo-kilo-testing' => {
+                'baseurl'  => 'https://repos.fedorapeople.org/repos/openstack/openstack-kilo/testing/el7/',
+                # packages are not GA so not signed
+                'gpgcheck' => '0',
+                'priority' => 97,
+              },
+            },
+          }
+        }
+        default: {
+          fail("Unsupported osfamily (${::osfamily})")
+        }
       }
 
       class { '::mysql::server': }
