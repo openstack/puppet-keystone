@@ -10,19 +10,11 @@ describe 'basic keystone server with resources' do
 
       # Common resources
       include ::apt
-      # some packages are not autoupgraded in trusty.
-      # it will be fixed in liberty, but broken in kilo.
-      $need_to_be_upgraded = ['python-tz', 'python-pbr']
-      apt::source { 'trusty-updates-kilo':
-        location          => 'http://ubuntu-cloud.archive.canonical.com/ubuntu/',
-        release           => 'trusty-updates',
-        required_packages => 'ubuntu-cloud-keyring',
-        repos             => 'kilo/main',
-        trusted_source    => true,
-      } ->
-      package { $need_to_be_upgraded:
-        ensure  => latest,
+      class { '::openstack_extras::repo::debian::ubuntu':
+         release         => 'kilo',
+         package_require => true,
       }
+
       class { '::mysql::server': }
 
       # Keystone resources
