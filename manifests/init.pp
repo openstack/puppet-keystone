@@ -778,6 +778,8 @@ class keystone(
     } else {
       $service_ensure = 'stopped'
     }
+  } else {
+    warning('Execution of db_sync does not depend on $enabled anymore. Please use sync_db instead.')
   }
 
   if $service_name == $::keystone::params::service_name {
@@ -824,7 +826,7 @@ class keystone(
     fail('Invalid service_name. Either keystone/openstack-keystone for running as a standalone service, or httpd for being run by a httpd server')
   }
 
-  if $enabled and $sync_db {
+  if $sync_db {
     include ::keystone::db::sync
     Class['::keystone::db::sync'] ~> Service[$service_name]
   }
