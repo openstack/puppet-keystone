@@ -61,7 +61,7 @@
 # [*token_provider*]
 #   (optional) Format keystone uses for tokens.
 #   Defaults to 'keystone.token.providers.uuid.Provider'
-#   Supports PKI and UUID.
+#   Supports PKI, PKIZ, Fernet, and UUID.
 #
 # [*token_driver*]
 #   (optional) Driver to use for managing tokens.
@@ -347,6 +347,22 @@
 #   (Optional) Run db sync on the node.
 #   Defaults to true
 #
+# [*enable_fernet_setup*]
+#   (Optional) Setup keystone for fernet tokens. This is typically only
+#   run on a single node, then the keys are replicated to the other nodes
+#   in a cluster. You would typically also pair this with a fernet token
+#   provider setting.
+#   Defaults to false
+#
+# [*fernet_key_repository*]
+#   (Optional) Location for the fernet key repository. This value must
+#   be set if enable_fernet_setup is set to true.
+#   Defaults to '/etc/keystone/fernet-keys'
+#
+# [*fernet_max_active_keys*]
+#   (Optional) Number of maximum active Fernet keys. Integer > 0.
+#   Defaults to undef
+#
 # == Dependencies
 #  None
 #
@@ -448,6 +464,9 @@ class keystone(
   $admin_workers          = max($::processorcount, 2),
   $public_workers         = max($::processorcount, 2),
   $sync_db                = true,
+  $enable_fernet_setup    = false,
+  $fernet_key_repository  = '/etc/keystone/fernet-keys',
+  $fernet_max_active_keys = undef,
   # DEPRECATED PARAMETERS
   $mysql_module           = undef,
   $compute_port           = undef,
@@ -484,6 +503,8 @@ class keystone(
   File['/etc/keystone/keystone.conf'] -> Keystone_config<||> ~> Service[$service_name]
   Keystone_config<||> ~> Exec<| title == 'keystone-manage db_sync'|>
   Keystone_config<||> ~> Exec<| title == 'keystone-manage pki_setup'|>
+  Keystone_config<||> ~> Exec<| title == 'keystone-manage fernet_setup'|>
+
   include ::keystone::params
 
   package { 'keystone':
@@ -869,6 +890,40 @@ class keystone(
   } else {
     keystone_config {
         'paste_deploy/config_file':   ensure => absent;
+    }
+  }
+
+  # Fernet tokens support
+  if $enable_fernet_setup {
+    validate_string($fernet_key_repository)
+
+    exec { 'keystone-manage fernet_setup':
+      path        => '/usr/bin',
+      user        => 'keystone',
+      refreshonly => true,
+      creates     => "${fernet_key_repository}/0",
+      notify      => Service[$service_name],
+      subscribe   => [Package['keystone'], Keystone_config['fernet_tokens/key_repository']],
+    }
+  }
+
+  if $fernet_key_repository {
+    keystone_config {
+        'fernet_tokens/key_repository':   value => $fernet_key_repository;
+    }
+  } else {
+    keystone_config {
+        'fernet_tokens/key_repository':   ensure => absent;
+    }
+  }
+
+  if $fernet_max_active_keys {
+    keystone_config {
+        'fernet_tokens/max_active_keys':   value => $fernet_max_active_keys;
+    }
+  } else {
+    keystone_config {
+        'fernet_tokens/max_active_keys':   ensure => absent;
     }
   }
 

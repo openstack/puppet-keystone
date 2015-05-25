@@ -778,6 +778,35 @@ describe 'keystone' do
     end
   end
 
+  describe 'when using fernet tokens' do
+    describe 'when enabling fernet_setup' do
+      let :params do
+        default_params.merge({
+          'enable_fernet_setup'    => true,
+          'fernet_max_active_keys' => 5,
+        })
+      end
+
+      it { is_expected.to contain_exec('keystone-manage fernet_setup').with(
+        :creates => '/etc/keystone/fernet-keys/0'
+      ) }
+      it { is_expected.to contain_keystone_config('fernet_tokens/max_active_keys').with_value(5)}
+    end
+
+    describe 'when overriding the fernet key directory' do
+      let :params do
+        default_params.merge({
+          'enable_fernet_setup'   => true,
+          'fernet_key_repository' => '/var/lib/fernet-keys',
+        })
+      end
+      it { is_expected.to contain_exec('keystone-manage fernet_setup').with(
+        :creates => '/var/lib/fernet-keys/0'
+      ) }
+
+    end
+  end
+
   describe 'when configuring paste_deploy' do
     describe 'with default paste config on Debian' do
       let :params do
