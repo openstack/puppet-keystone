@@ -499,33 +499,14 @@ class keystone(
     }
   }
 
-  group { 'keystone':
-    ensure  => present,
-    system  => true,
-    require => Package['keystone'],
-  }
-
-  user { 'keystone':
-    ensure  => 'present',
-    gid     => 'keystone',
-    system  => true,
-    require => Package['keystone'],
-  }
-
   file { ['/etc/keystone', '/var/log/keystone', '/var/lib/keystone']:
     ensure  => directory,
-    mode    => '0750',
-    owner   => 'keystone',
-    group   => 'keystone',
     require => Package['keystone'],
     notify  => Service[$service_name],
   }
 
   file { '/etc/keystone/keystone.conf':
     ensure  => present,
-    mode    => '0600',
-    owner   => 'keystone',
-    group   => 'keystone',
     require => Package['keystone'],
     notify  => Service[$service_name],
   }
