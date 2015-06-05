@@ -74,8 +74,6 @@ describe 'keystone server running with Apache/WSGI as Identity Provider' do
         password               => 'a_big_secret',
       }
       class { '::keystone::endpoint':
-        public_url     => "http://127.0.0.1:5000/",
-        admin_url      => "http://127.0.0.1:35357/",
         default_domain => 'admin',
       }
       ::keystone::resource::service_identity { 'beaker-ci':

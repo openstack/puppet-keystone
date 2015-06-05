@@ -17,7 +17,7 @@ describe provider_class do
 
     let(:endpoint_attrs) do
       {
-        :name         => 'foo/bar',
+        :name         => 'region/endpoint',
         :ensure       => 'present',
         :public_url   => 'http://127.0.0.1:5000',
         :internal_url => 'http://127.0.0.1:5001',
@@ -39,39 +39,39 @@ describe provider_class do
 
     describe '#create' do
       it 'creates an endpoint' do
-        provider.class.stubs(:openstack)
-          .with('endpoint', 'list', '--quiet', '--format', 'csv', '--long')
-          .returns('"ID","Region","Service Name","Service Type","PublicURL","AdminURL","InternalURL"
-"1cb05cfed7c24279be884ba4f6520262","foo","bar","","http://127.0.0.1:5000/v2.0","http://127.0.0.1:5001/v2.0","http://127.0.0.1:5002/v2.0"
-'
-                  )
-        provider.class.stubs(:openstack)
-          .with('endpoint', 'create', '--format', 'shell', ['bar', '--region', 'foo', '--publicurl', 'http://127.0.0.1:5000', '--internalurl', 'http://127.0.0.1:5001', '--adminurl', 'http://127.0.0.1:5002'])
-          .returns('adminurl="http://127.0.0.1:5002"
-id="3a5c4378981e4112a0d44902a43e16ef"
-internalurl="http://127.0.0.1:5001"
-publicurl="http://127.0.0.1:5000"
-region="foo"
-service_id="8137d72980fd462192f276585a002426"
-service_name="bar"
-service_type="test"
-'
-                  )
+        provider.class.expects(:openstack)
+          .with('endpoint', 'create', '--format', 'shell', ['endpoint', 'admin', 'http://127.0.0.1:5002', '--region', 'region'])
+          .returns('admin_url="http://127.0.0.1:5002"
+id="endpoint1_id"
+region="region"
+')
+        provider.class.expects(:openstack)
+          .with('endpoint', 'create', '--format', 'shell', ['endpoint', 'internal', 'http://127.0.0.1:5001', '--region', 'region'])
+          .returns('internal_url="http://127.0.0.1:5001"
+id="endpoint2_id"
+region="region"
+')
+        provider.class.expects(:openstack)
+          .with('endpoint', 'create', '--format', 'shell', ['endpoint', 'public', 'http://127.0.0.1:5000', '--region', 'region'])
+          .returns('public_url="http://127.0.0.1:5000"
+id="endpoint3_id"
+region="region"
+')
         provider.create
         expect(provider.exists?).to be_truthy
+        expect(provider.id).to eq('endpoint1_id,endpoint2_id,endpoint3_id')
       end
     end
 
     describe '#destroy' do
       it 'destroys an endpoint' do
-        provider.class.stubs(:openstack)
-          .with('endpoint', 'list', '--quiet', '--format', 'csv', '--long')
-          .returns('"ID","Region","Service Name","Service Type","PublicURL","AdminURL","InternalURL"
-"1cb05cfed7c24279be884ba4f6520262","foo","bar","test","http://127.0.0.1:5000","http://127.0.0.1:5001","http://127.0.0.1:5002"
-'
-                  )
-        provider.class.stubs(:openstack)
-          .with('endpoint', 'delete', [])
+        provider.instance_variable_get('@property_hash')[:id] = 'endpoint1_id,endpoint2_id,endpoint3_id'
+        provider.class.expects(:openstack)
+          .with('endpoint', 'delete', 'endpoint1_id')
+        provider.class.expects(:openstack)
+          .with('endpoint', 'delete', 'endpoint2_id')
+        provider.class.expects(:openstack)
+          .with('endpoint', 'delete', 'endpoint3_id')
         provider.destroy
         expect(provider.exists?).to be_falsey
       end
@@ -80,9 +80,6 @@ service_type="test"
     describe '#exists' do
       context 'when tenant does not exist' do
         subject(:response) do
-          provider.class.stubs(:openstack)
-            .with('endpoint', 'list', '--quiet', '--format', 'csv', '--long')
-            .returns('"ID","Region","Service Name","Service Type","PublicURL","AdminURL","InternalURL"')
           response = provider.exists?
         end
 
@@ -92,12 +89,13 @@ service_type="test"
 
     describe '#instances' do
       it 'finds every tenant' do
-        provider.class.stubs(:openstack)
-          .with('endpoint', 'list', '--quiet', '--format', 'csv', '--long')
-          .returns('"ID","Region","Service Name","Service Type","PublicURL","AdminURL","InternalURL"
-"3a5c4378981e4112a0d44902a43e16ef","foo","bar","test","http://127.0.0.1:5000","http://127.0.0.1:5001","http://127.0.0.1:5002"
-'
-                  )
+        provider.class.expects(:openstack)
+          .with('endpoint', 'list', '--quiet', '--format', 'csv', [])
+          .returns('"ID","Region","Service Name","Service Type","Enabled","Interface","URL"
+"endpoint1_id","RegionOne","keystone","identity",True,"admin","http://127.0.0.1:5002"
+"endpoint2_id","RegionOne","keystone","identity",True,"internal","https://127.0.0.1:5001"
+"endpoint3_id","RegionOne","keystone","identity",True,"public","https://127.0.0.1:5000"
+')
         instances = Puppet::Type::Keystone_endpoint::ProviderOpenstack.instances
         expect(instances.count).to eq(1)
       end

@@ -7,7 +7,7 @@ Puppet::Type.type(:keystone_endpoint).provide(
 
   desc "Provider to manage keystone endpoints."
 
-  @credentials = Puppet::Provider::Openstack::CredentialsV2_0.new
+  @credentials = Puppet::Provider::Openstack::CredentialsV3.new
 
   def initialize(value={})
     super(value)
@@ -15,30 +15,23 @@ Puppet::Type.type(:keystone_endpoint).provide(
   end
 
   def create
-    properties = []
-    # The region property is just ignored. We should fix this in kilo.
     region, name = resource[:name].split('/')
-    properties << name
-    properties << '--region'
-    properties << region
-    if resource[:public_url]
-      properties << '--publicurl'
-      properties << resource[:public_url]
+    ids = []
+    [:admin_url, :internal_url, :public_url].each do |scope|
+      if resource[scope]
+        ids << endpoint_create(name, region,  scope.to_s.sub(/_url$/,''),
+          resource[scope])[:id]
+      end
     end
-    if resource[:internal_url]
-      properties << '--internalurl'
-      properties << resource[:internal_url]
-    end
-    if resource[:admin_url]
-      properties << '--adminurl'
-      properties << resource[:admin_url]
-    end
-     self.class.request('endpoint', 'create', properties)
-     @property_hash[:ensure] = :present
+    @property_hash[:id] = ids.join(',')
+    @property_hash[:ensure] = :present
   end
 
   def destroy
-    self.class.request('endpoint', 'delete', @property_hash[:id])
+    ids = @property_hash[:id].split(',')
+    ids.each do |id|
+      self.class.request('endpoint', 'delete', id)
+    end
     @property_hash.clear
   end
 
@@ -46,49 +39,50 @@ Puppet::Type.type(:keystone_endpoint).provide(
     @property_hash[:ensure] == :present
   end
 
-  def region
-    @property_hash[:region]
-  end
+  mk_resource_methods
 
   def public_url=(value)
     @property_flush[:public_url] = value
-  end
-
-  def public_url
-    @property_hash[:public_url]
   end
 
   def internal_url=(value)
     @property_flush[:internal_url] = value
   end
 
-  def internal_url
-    @property_hash[:internal_url]
-  end
-
   def admin_url=(value)
     @property_flush[:admin_url] = value
   end
 
-  def admin_url
-    @property_hash[:admin_url]
-  end
-
-  def id
-    @property_hash[:id]
+  def region=(value)
+    raise(Puppet::Error, "Updating the endpoint's region is not currently supported.")
   end
 
   def self.instances
-    list = request('endpoint', 'list', '--long')
+    names=[]
+    list=[]
+    endpoints = request('endpoint', 'list')
+    endpoints.each do |current|
+      name = "#{current[:region]}/#{current[:service_name]}"
+      unless names.include?(name)
+        names << name
+        endpoint = { :name => name, current[:interface].to_sym => current }
+        endpoints.each do |ep_osc|
+          if (ep_osc[:id] != current[:id]) && (ep_osc[:service_name] == current[:service_name])
+            endpoint.merge!(ep_osc[:interface].to_sym => ep_osc)
+          end
+        end
+        list << endpoint
+      end
+    end
     list.collect do |endpoint|
       new(
-        :name         => "#{endpoint[:region]}/#{endpoint[:service_name]}",
+        :name         => endpoint[:name],
         :ensure       => :present,
-        :id           => endpoint[:id],
-        :region       => endpoint[:region],
-        :public_url   => endpoint[:publicurl],
-        :internal_url => endpoint[:internalurl],
-        :admin_url    => endpoint[:adminurl]
+        :id           => "#{endpoint[:admin][:id]},#{endpoint[:internal][:id]},#{endpoint[:public][:id]}",
+        :region       => endpoint[:admin][:region],
+        :admin_url    => endpoint[:admin][:url],
+        :internal_url => endpoint[:internal][:url],
+        :public_url   => endpoint[:public][:url]
       )
     end
   end
@@ -103,10 +97,25 @@ Puppet::Type.type(:keystone_endpoint).provide(
   end
 
   def flush
-    if ! @property_flush.empty?
-      destroy
-      create
-      @property_flush.clear
+    if @property_flush && @property_hash[:id]
+      ids = @property_hash[:id].split(',')
+      if @property_flush[:admin_url]
+        self.class.request('endpoint', 'set', [ids[0], "--url=#{resource[:admin_url]}"])
+      end
+      if @property_flush[:internal_url]
+        self.class.request('endpoint', 'set', [ids[1], "--url=#{resource[:internal_url]}"])
+      end
+      if @property_flush[:public_url]
+        self.class.request('endpoint', 'set', [ids[2], "--url=#{resource[:public_url]}"])
+      end
     end
+    @property_hash = resource.to_hash
+  end
+
+  private
+
+  def endpoint_create(name, region, interface, url)
+    properties = [name, interface, url, '--region', region]
+    self.class.request('endpoint', 'create', properties)
   end
 end
