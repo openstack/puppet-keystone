@@ -61,6 +61,13 @@ describe 'keystone::wsgi::apache' do
         'docroot_group'               => 'keystone',
         'ssl'                         => 'true',
         'wsgi_daemon_process'         => 'keystone_admin',
+        'wsgi_daemon_process_options' => {
+          'user'         => 'keystone',
+          'group'        => 'keystone',
+          'processes'    => '1',
+          'threads'      => '42',
+          'display-name' => 'keystone-admin',
+        },
         'wsgi_process_group'          => 'keystone_admin',
         'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/admin" },
         'require'                     => 'File[keystone_wsgi_admin]'
@@ -75,6 +82,13 @@ describe 'keystone::wsgi::apache' do
         'docroot_group'               => 'keystone',
         'ssl'                         => 'true',
         'wsgi_daemon_process'         => 'keystone_main',
+        'wsgi_daemon_process_options' => {
+          'user'         => 'keystone',
+          'group'        => 'keystone',
+          'processes'    => '1',
+          'threads'      => '42',
+          'display-name' => 'keystone-main',
+        },
         'wsgi_process_group'          => 'keystone_main',
         'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/main" },
         'require'                     => 'File[keystone_wsgi_main]'
@@ -103,6 +117,13 @@ describe 'keystone::wsgi::apache' do
         'docroot_group'               => 'keystone',
         'ssl'                         => 'false',
         'wsgi_daemon_process'         => 'keystone_admin',
+        'wsgi_daemon_process_options' => {
+                  'user' => 'keystone',
+                 'group' => 'keystone',
+             'processes' => '37',
+               'threads' => '42',
+          'display-name' => 'keystone-admin',
+        },
         'wsgi_process_group'          => 'keystone_admin',
         'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/admin" },
         'require'                     => 'File[keystone_wsgi_admin]'
@@ -117,6 +138,13 @@ describe 'keystone::wsgi::apache' do
         'docroot_group'               => 'keystone',
         'ssl'                         => 'false',
         'wsgi_daemon_process'         => 'keystone_main',
+        'wsgi_daemon_process_options' => {
+                  'user' => 'keystone',
+                 'group' => 'keystone',
+             'processes' => '37',
+               'threads' => '42',
+          'display-name' => 'keystone-main',
+        },
         'wsgi_process_group'          => 'keystone_main',
         'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/main" },
         'require'                     => 'File[keystone_wsgi_main]'
@@ -149,6 +177,13 @@ describe 'keystone::wsgi::apache' do
         'docroot_group'               => 'keystone',
         'ssl'                         => 'true',
         'wsgi_daemon_process'         => 'keystone_main',
+        'wsgi_daemon_process_options' => {
+                  'user' => 'keystone',
+                 'group' => 'keystone',
+             'processes' => '37',
+               'threads' => '42',
+          'display-name' => 'keystone-main',
+        },
         'wsgi_process_group'          => 'keystone_main',
         'wsgi_script_aliases'         => {
         '/main/endpoint'  => "#{platform_parameters[:wsgi_script_path]}/main",
