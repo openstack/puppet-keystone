@@ -245,11 +245,6 @@
 #   Defaults to 'keystone'
 #   NOTE: validate_service only applies if the value is 'keystone'
 #
-#   [*paste_config*]
-#   (optional) Name of the paste configuration file that defines the
-#   available pipelines. (string value)
-#   Defaults to '/usr/share/keystone/keystone-dist-paste.ini'
-#
 # == Dependencies
 #  None
 #
@@ -343,7 +338,6 @@ class keystone(
   $validate_insecure      = false,
   $validate_auth_url      = false,
   $validate_cacert        = undef,
-  $paste_config           = '/usr/share/keystone/keystone-dist-paste.ini',
   $service_provider       = $::keystone::params::service_provider,
   $service_name           = 'keystone',
   # DEPRECATED PARAMETERS
@@ -744,10 +738,6 @@ class keystone(
         'DEFAULT/log_file': ensure => absent;
       }
     }
-  }
-
-  keystone_config {
-      'paste_deploy/config_file':   value => $paste_config;
   }
 
 }

@@ -51,7 +51,6 @@ describe 'keystone' do
       'rabbit_host'           => 'localhost',
       'rabbit_password'       => 'guest',
       'rabbit_userid'         => 'guest',
-      'paste_config'          => '/usr/share/keystone/keystone-dist-paste.ini',
     }
 
   override_params = {
@@ -812,30 +811,6 @@ describe 'keystone' do
 
       it { should contain_service('keystone').with(
         :provider => 'pacemaker'
-      )}
-    end
-  end
-
-  describe 'when configuring paste_deploy' do
-    describe 'with default paste config' do
-      let :params do
-        default_params
-      end
-
-      it { should contain_keystone_config('paste_deploy/config_file').with_value(
-          '/usr/share/keystone/keystone-dist-paste.ini'
-      )}
-    end
-
-    describe 'with overrided paste_deploy' do
-      let :params do
-        default_params.merge({
-          'paste_config'    => '/usr/share/keystone/keystone-paste.ini',
-        })
-      end
-
-      it { should contain_keystone_config('paste_deploy/config_file').with_value(
-          '/usr/share/keystone/keystone-paste.ini'
       )}
     end
   end
