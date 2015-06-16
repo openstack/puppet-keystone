@@ -248,7 +248,7 @@ ac43ec53d5a74a0b9f51523ae41a29f0
       it 'fails the password check' do
         Puppet::Provider::Openstack.stubs(:openstack)
                       .with('token', 'issue', ['--format', 'value'])
-                      .returns('')
+                      .raises(Puppet::ExecutionFailure, 'HTTP 401 invalid authentication')
         password = provider.password
         expect(password).to eq(nil)
       end
