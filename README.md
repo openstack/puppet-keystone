@@ -1,7 +1,7 @@
 keystone
 =======
 
-5.0.0 - 2014.2.0 - Juno
+5.1.0 - 2014.2 - Juno
 
 #### Table of Contents
 
@@ -162,6 +162,39 @@ Contributors
 
 Release Notes
 -------------
+
+**5.1.0**
+
+* Allow disabling or delaying the token_flush cron
+* crontab: ensure the script is run with shell
+* Use openstackclient for keystone_* providers
+* Add lib directories to $LOAD_PATH if not present
+* Remove keystone.rb provider for keystone_endpoint
+* Add timeout to API requests
+* Test keystone_user password with Net::HTTP
+* service_identity: add user/role ordering
+* Fix password check for SSL endpoints
+* add require json for to_json dependency
+* spec: pin rspec-puppet to 1.0.1
+* Switch to TLSv1
+* handle missing project/tenant when using ldap backend
+* Add support for LDAP connection pools
+* Sync keystone.py with upstream to function with Juno
+* Create resource cache upon creation
+* Implement caching lookup for keystone_user_role
+* Remove warnings from openstack responses
+* Properly handle embedded newlines in csv
+* support the ldap user_enabled_invert parameter
+* Shorten HTTP request timeout length
+* Tag packages with 'openstack'
+* Allow Keystone to be queried when using IPv6 ::0
+* Add ::keystone::policy class for policy management
+* New option replace_password for keystone_user
+* Pin puppetlabs-concat to 1.2.1 in fixtures
+* Set WSGI process display-name
+* Rename resource instance variable
+* Add native types for keystone paste configuration
+* Update .gitreview file for project rename
 
 **5.0.0**
 
