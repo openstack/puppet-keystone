@@ -94,8 +94,13 @@ Puppet::Type.type(:keystone_user).provide(
       credentials.password     = resource[:password]
       credentials.project_name = resource[:tenant]
       credentials.username     = resource[:name]
-      token = Puppet::Provider::Openstack.request('token', 'issue', ['--format', 'value'], credentials)
-      res = resource[:password] unless token.empty?
+      begin
+        token = Puppet::Provider::Openstack.request('token', 'issue', ['--format', 'value'], credentials)
+      rescue Puppet::Error::OpenstackUnauthorizedError
+        # password is invalid
+      else
+        res = resource[:password] unless token.empty?
+      end
     end
     return res
   end
