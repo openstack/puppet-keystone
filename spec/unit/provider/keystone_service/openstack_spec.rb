@@ -41,7 +41,7 @@ describe provider_class do
 "1cb05cfed7c24279be884ba4f6520262","foo","foo","foo"
 ')
           provider.class.stubs(:openstack)
-                        .with('service', 'create', '--format', 'shell', ['--name', 'foo', '--description', 'foo', 'foo'])
+                        .with('service', 'create', '--format', 'shell', ['--description', 'foo', '--type', 'foo', 'foo'])
                         .returns('description="foo"
 enabled="True"
 id="8f0dd4c0abc44240998fbb3f5089ecbf"

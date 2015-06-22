@@ -15,14 +15,15 @@ Puppet::Type.type(:keystone_service).provide(
   end
 
   def create
-    properties = ['--name']
-    properties << resource[:name]
+    properties = []
     if resource[:description]
       properties << '--description'
       properties << resource[:description]
     end
     raise(Puppet::Error, 'The service type is mandatory') unless resource[:type]
+    properties << '--type'
     properties << resource[:type]
+    properties << resource[:name]
     self.class.request('service', 'create', properties)
     @property_hash[:ensure] = :present
   end
