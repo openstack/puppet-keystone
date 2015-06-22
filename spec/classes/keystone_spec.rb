@@ -20,80 +20,84 @@ describe 'keystone' do
   end
 
   default_params = {
-      'admin_token'           => 'service_token',
-      'package_ensure'        => 'present',
-      'client_package_ensure' => 'present',
-      'public_bind_host'      => '0.0.0.0',
-      'admin_bind_host'       => '0.0.0.0',
-      'public_port'           => '5000',
-      'admin_port'            => '35357',
-      'admin_token'           => 'service_token',
-      'verbose'               => false,
-      'debug'                 => false,
-      'catalog_type'          => 'sql',
-      'catalog_driver'        => false,
-      'token_provider'        => 'keystone.token.providers.uuid.Provider',
-      'token_driver'          => 'keystone.token.persistence.backends.sql.Token',
-      'revoke_driver'         => 'keystone.contrib.revoke.backends.sql.Revoke',
-      'cache_dir'             => '/var/cache/keystone',
-      'enable_ssl'            => false,
-      'ssl_certfile'          => '/etc/keystone/ssl/certs/keystone.pem',
-      'ssl_keyfile'           => '/etc/keystone/ssl/private/keystonekey.pem',
-      'ssl_ca_certs'          => '/etc/keystone/ssl/certs/ca.pem',
-      'ssl_ca_key'            => '/etc/keystone/ssl/private/cakey.pem',
-      'ssl_cert_subject'      => '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
-      'enabled'               => true,
-      'manage_service'        => true,
-      'database_connection'   => 'sqlite:////var/lib/keystone/keystone.db',
-      'database_idle_timeout' => '200',
-      'enable_pki_setup'      => true,
-      'signing_certfile'      => '/etc/keystone/ssl/certs/signing_cert.pem',
-      'signing_keyfile'       => '/etc/keystone/ssl/private/signing_key.pem',
-      'signing_ca_certs'      => '/etc/keystone/ssl/certs/ca.pem',
-      'signing_ca_key'        => '/etc/keystone/ssl/private/cakey.pem',
-      'rabbit_host'           => 'localhost',
-      'rabbit_password'       => 'guest',
-      'rabbit_userid'         => 'guest',
-      'admin_workers'         => 20,
-      'public_workers'        => 20,
-      'sync_db'               => true,
+      'admin_token'                         => 'service_token',
+      'package_ensure'                      => 'present',
+      'client_package_ensure'               => 'present',
+      'public_bind_host'                    => '0.0.0.0',
+      'admin_bind_host'                     => '0.0.0.0',
+      'public_port'                         => '5000',
+      'admin_port'                          => '35357',
+      'admin_token'                         => 'service_token',
+      'verbose'                             => false,
+      'debug'                               => false,
+      'catalog_type'                        => 'sql',
+      'catalog_driver'                      => false,
+      'token_provider'                      => 'keystone.token.providers.uuid.Provider',
+      'token_driver'                        => 'keystone.token.persistence.backends.sql.Token',
+      'revoke_driver'                       => 'keystone.contrib.revoke.backends.sql.Revoke',
+      'cache_dir'                           => '/var/cache/keystone',
+      'enable_ssl'                          => false,
+      'ssl_certfile'                        => '/etc/keystone/ssl/certs/keystone.pem',
+      'ssl_keyfile'                         => '/etc/keystone/ssl/private/keystonekey.pem',
+      'ssl_ca_certs'                        => '/etc/keystone/ssl/certs/ca.pem',
+      'ssl_ca_key'                          => '/etc/keystone/ssl/private/cakey.pem',
+      'ssl_cert_subject'                    => '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
+      'enabled'                             => true,
+      'manage_service'                      => true,
+      'database_connection'                 => 'sqlite:////var/lib/keystone/keystone.db',
+      'database_idle_timeout'               => '200',
+      'enable_pki_setup'                    => true,
+      'signing_certfile'                    => '/etc/keystone/ssl/certs/signing_cert.pem',
+      'signing_keyfile'                     => '/etc/keystone/ssl/private/signing_key.pem',
+      'signing_ca_certs'                    => '/etc/keystone/ssl/certs/ca.pem',
+      'signing_ca_key'                      => '/etc/keystone/ssl/private/cakey.pem',
+      'rabbit_host'                         => 'localhost',
+      'rabbit_password'                     => 'guest',
+      'rabbit_userid'                       => 'guest',
+      'rabbit_heartbeat_timeout_threshold'  => 0,
+      'rabbit_heartbeat_rate'               => 2,
+      'admin_workers'                       => 20,
+      'public_workers'                      => 20,
+      'sync_db'                             => true,
     }
 
   override_params = {
-      'package_ensure'        => 'latest',
-      'client_package_ensure' => 'latest',
-      'public_bind_host'      => '0.0.0.0',
-      'admin_bind_host'       => '0.0.0.0',
-      'public_port'           => '5001',
-      'admin_port'            => '35358',
-      'admin_token'           => 'service_token_override',
-      'verbose'               => true,
-      'debug'                 => true,
-      'catalog_type'          => 'template',
-      'token_provider'        => 'keystone.token.providers.uuid.Provider',
-      'token_driver'          => 'keystone.token.backends.kvs.Token',
-      'revoke_driver'         => 'keystone.contrib.revoke.backends.kvs.Revoke',
-      'public_endpoint'       => 'https://localhost:5000/v2.0/',
-      'admin_endpoint'        => 'https://localhost:35357/v2.0/',
-      'enable_ssl'            => true,
-      'ssl_certfile'          => '/etc/keystone/ssl/certs/keystone.pem',
-      'ssl_keyfile'           => '/etc/keystone/ssl/private/keystonekey.pem',
-      'ssl_ca_certs'          => '/etc/keystone/ssl/certs/ca.pem',
-      'ssl_ca_key'            => '/etc/keystone/ssl/private/cakey.pem',
-      'ssl_cert_subject'      => '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
-      'enabled'               => false,
-      'manage_service'        => true,
-      'database_connection'   => 'mysql://a:b@c/d',
-      'database_idle_timeout' => '300',
-      'enable_pki_setup'      => true,
-      'signing_certfile'      => '/etc/keystone/ssl/certs/signing_cert.pem',
-      'signing_keyfile'       => '/etc/keystone/ssl/private/signing_key.pem',
-      'signing_ca_certs'      => '/etc/keystone/ssl/certs/ca.pem',
-      'signing_ca_key'        => '/etc/keystone/ssl/private/cakey.pem',
-      'rabbit_host'           => '127.0.0.1',
-      'rabbit_password'       => 'openstack',
-      'rabbit_userid'         => 'admin',
-      'default_domain'        => 'other_domain',
+      'package_ensure'                      => 'latest',
+      'client_package_ensure'               => 'latest',
+      'public_bind_host'                    => '0.0.0.0',
+      'admin_bind_host'                     => '0.0.0.0',
+      'public_port'                         => '5001',
+      'admin_port'                          => '35358',
+      'admin_token'                         => 'service_token_override',
+      'verbose'                             => true,
+      'debug'                               => true,
+      'catalog_type'                        => 'template',
+      'token_provider'                      => 'keystone.token.providers.uuid.Provider',
+      'token_driver'                        => 'keystone.token.backends.kvs.Token',
+      'revoke_driver'                       => 'keystone.contrib.revoke.backends.kvs.Revoke',
+      'public_endpoint'                     => 'https://localhost:5000/v2.0/',
+      'admin_endpoint'                      => 'https://localhost:35357/v2.0/',
+      'enable_ssl'                          => true,
+      'ssl_certfile'                        => '/etc/keystone/ssl/certs/keystone.pem',
+      'ssl_keyfile'                         => '/etc/keystone/ssl/private/keystonekey.pem',
+      'ssl_ca_certs'                        => '/etc/keystone/ssl/certs/ca.pem',
+      'ssl_ca_key'                          => '/etc/keystone/ssl/private/cakey.pem',
+      'ssl_cert_subject'                    => '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
+      'enabled'                             => false,
+      'manage_service'                      => true,
+      'database_connection'                 => 'mysql://a:b@c/d',
+      'database_idle_timeout'               => '300',
+      'enable_pki_setup'                    => true,
+      'signing_certfile'                    => '/etc/keystone/ssl/certs/signing_cert.pem',
+      'signing_keyfile'                     => '/etc/keystone/ssl/private/signing_key.pem',
+      'signing_ca_certs'                    => '/etc/keystone/ssl/certs/ca.pem',
+      'signing_ca_key'                      => '/etc/keystone/ssl/private/cakey.pem',
+      'rabbit_host'                         => '127.0.0.1',
+      'rabbit_password'                     => 'openstack',
+      'rabbit_userid'                       => 'admin',
+      'rabbit_heartbeat_timeout_threshold'  => '60',
+      'rabbit_heartbeat_rate'               => '10',
+      'default_domain'                      => 'other_domain',
     }
 
   httpd_params = {'service_name' => 'httpd'}.merge(default_params)
@@ -193,7 +197,12 @@ describe 'keystone' do
     end
 
     it 'should contain correct rabbit_password' do
-      is_expected.to contain_keystone_config('DEFAULT/rabbit_password').with_value(param_hash['rabbit_password']).with_secret(true)
+      is_expected.to contain_keystone_config('oslo_messaging_rabbit/rabbit_password').with_value(param_hash['rabbit_password']).with_secret(true)
+    end
+
+    it 'should contain correct rabbit heartbeat configuration' do
+      is_expected.to contain_keystone_config('oslo_messaging_rabbit/heartbeat_timeout_threshold').with_value(param_hash['rabbit_heartbeat_timeout_threshold'])
+      is_expected.to contain_keystone_config('oslo_messaging_rabbit/heartbeat_rate').with_value(param_hash['rabbit_heartbeat_rate'])
     end
 
     it 'should remove max_token_size param by default' do
@@ -634,11 +643,11 @@ describe 'keystone' do
     end
 
     it do
-      is_expected.to contain_keystone_config('DEFAULT/rabbit_use_ssl').with_value('true')
-      is_expected.to contain_keystone_config('DEFAULT/kombu_ssl_ca_certs').with_value('/path/to/ssl/ca/certs')
-      is_expected.to contain_keystone_config('DEFAULT/kombu_ssl_certfile').with_value('/path/to/ssl/cert/file')
-      is_expected.to contain_keystone_config('DEFAULT/kombu_ssl_keyfile').with_value('/path/to/ssl/keyfile')
-      is_expected.to contain_keystone_config('DEFAULT/kombu_ssl_version').with_value('TLSv1')
+      is_expected.to contain_keystone_config('oslo_messaging_rabbit/rabbit_use_ssl').with_value('true')
+      is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_ssl_ca_certs').with_value('/path/to/ssl/ca/certs')
+      is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_ssl_certfile').with_value('/path/to/ssl/cert/file')
+      is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_ssl_keyfile').with_value('/path/to/ssl/keyfile')
+      is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_ssl_version').with_value('TLSv1')
     end
   end
 
@@ -654,11 +663,11 @@ describe 'keystone' do
     end
 
     it do
-      is_expected.to contain_keystone_config('DEFAULT/rabbit_use_ssl').with_value('false')
-      is_expected.to contain_keystone_config('DEFAULT/kombu_ssl_ca_certs').with_ensure('absent')
-      is_expected.to contain_keystone_config('DEFAULT/kombu_ssl_certfile').with_ensure('absent')
-      is_expected.to contain_keystone_config('DEFAULT/kombu_ssl_keyfile').with_ensure('absent')
-      is_expected.to contain_keystone_config('DEFAULT/kombu_ssl_version').with_ensure('absent')
+      is_expected.to contain_keystone_config('oslo_messaging_rabbit/rabbit_use_ssl').with_value('false')
+      is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_ssl_ca_certs').with_ensure('absent')
+      is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_ssl_certfile').with_ensure('absent')
+      is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_ssl_keyfile').with_ensure('absent')
+      is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_ssl_version').with_ensure('absent')
     end
   end
 
