@@ -17,7 +17,7 @@ keystone
 Overview
 --------
 
-The keystone module is a part of [Stackforge](https://github.com/stackfoge), an effort by the Openstack infrastructure team to provide continuous integration testing and code review for Openstack and Openstack community projects not part of the core software.  The module its self is used to flexibly configure and manage the identify service for Openstack.
+The keystone module is a part of [OpenStack](https://github.com/openstack), an effort by the Openstack infrastructure team to provide continuous integration testing and code review for Openstack and Openstack community projects as part of the core software.  The module its self is used to flexibly configure and manage the identify service for Openstack.
 
 Module Description
 ------------------
@@ -170,7 +170,7 @@ Developer documentation for the entire puppet-openstack project.
 Contributors
 ------------
 
-* https://github.com/stackforge/puppet-keystone/graphs/contributors
+* https://github.com/openstack/puppet-keystone/graphs/contributors
 
 Release Notes
 -------------
