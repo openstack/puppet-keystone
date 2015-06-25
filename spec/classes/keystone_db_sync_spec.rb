@@ -9,7 +9,6 @@ describe 'keystone::db::sync' do
           :user        => 'keystone',
           :refreshonly => true,
           :subscribe   => ['Package[keystone]', 'Keystone_config[database/connection]'],
-          :require     => 'User[keystone]'
         )
     }
   end
@@ -27,7 +26,6 @@ describe 'keystone::db::sync' do
           :user        => 'keystone',
           :refreshonly => true,
           :subscribe   => ['Package[keystone]', 'Keystone_config[database/connection]'],
-          :require     => 'User[keystone]'
         )
     }
   end
