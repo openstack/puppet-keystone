@@ -48,8 +48,8 @@ describe 'basic keystone server with resources' do
         password => 'a_big_secret',
       }
       class { '::keystone::endpoint':
-        public_url => "https://${::fqdn}:5000/",
-        admin_url  => "https://${::fqdn}:35357/",
+        public_url => "http://127.0.0.1:5000/",
+        admin_url  => "http://127.0.0.1:35357/",
       }
       ::keystone::resource::service_identity { 'beaker-ci':
         service_type        => 'beaker',
@@ -80,5 +80,37 @@ describe 'basic keystone server with resources' do
       it { should have_entry('1 0 * * * keystone-manage token_flush >>/var/log/keystone/keystone-tokenflush.log 2>&1').with_user('keystone') }
     end
 
+    describe 'test keystone user/tenant/service/role/endpoint resources' do
+      it 'should find beaker user' do
+        shell('openstack --os-username admin --os-password a_big_secret --os-tenant-name openstack --os-auth-url http://127.0.0.1:5000/v2.0 user list') do |r|
+          expect(r.stdout).to match(/beaker/)
+          expect(r.stderr).to be_empty
+        end
+      end
+      it 'should find services tenant' do
+        shell('openstack --os-username admin --os-password a_big_secret --os-tenant-name openstack --os-auth-url http://127.0.0.1:5000/v2.0 project list') do |r|
+          expect(r.stdout).to match(/services/)
+          expect(r.stderr).to be_empty
+        end
+      end
+      it 'should find beaker service' do
+        shell('openstack --os-username admin --os-password a_big_secret --os-tenant-name openstack --os-auth-url http://127.0.0.1:5000/v2.0 service list') do |r|
+          expect(r.stdout).to match(/beaker/)
+          expect(r.stderr).to be_empty
+        end
+      end
+      it 'should find admin role' do
+        shell('openstack --os-username admin --os-password a_big_secret --os-tenant-name openstack --os-auth-url http://127.0.0.1:5000/v2.0 role list') do |r|
+          expect(r.stdout).to match(/admin/)
+          expect(r.stderr).to be_empty
+        end
+      end
+      it 'should find beaker endpoints' do
+        shell('openstack --os-username admin --os-password a_big_secret --os-tenant-name openstack --os-auth-url http://127.0.0.1:5000/v2.0 endpoint list --long') do |r|
+          expect(r.stdout).to match(/1234/)
+          expect(r.stderr).to be_empty
+        end
+      end
+    end
   end
 end
