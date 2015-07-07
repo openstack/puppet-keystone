@@ -25,6 +25,8 @@ RSpec.configure do |c|
 
       repo = 'openstack/puppet-openstack-integration'
 
+      # Start out with clean moduledir, don't trust r10k to purge it
+      on host, "rm -rf /etc/puppet/modules/*"
       # Install dependent modules via git or zuul
       r = on host, "test -e /usr/zuul-env/bin/zuul-cloner", { :acceptable_exit_codes => [0,1] }
       if r.exit_code == 0
