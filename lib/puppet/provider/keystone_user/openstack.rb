@@ -36,13 +36,8 @@ Puppet::Type.type(:keystone_user).provide(
     @property_hash = self.class.request('user', 'create', properties)
     @property_hash[:domain] = user_domain
     if resource[:tenant]
-      # TODO: Deprecate the tenant parameter.  Keystone no longer supports
-      # tenant/project as a property of user entries and is deprecating it.
+      # DEPRECATED - To be removed in next release (Liberty)
       # https://bugs.launchpad.net/puppet-keystone/+bug/1472437
-      # Keystone has already removed the ability for user create --project
-      # $project to add the user as a member of the project.  However, to
-      # support current manifests that depend on this behavior, implement
-      # that feature here.
       project_id = Puppet::Resource.indirection.find("Keystone_tenant/#{resource[:tenant]}")[:id]
       set_project(resource[:tenant], project_id)
     end
@@ -145,11 +140,8 @@ Puppet::Type.type(:keystone_user).provide(
   end
 
   def find_project_for_user(projname, project_id = nil)
-    # TODO deprecate tenant - see above in create
-    # If the user list command doesn't report the project, it might still be there
-    # We don't need to know exactly what it is, we just need to know whether it's
-    # the one we're trying to set.
-    # if no domain specified in project name, use user's domain as the default
+    # DEPRECATED - To be removed in next release (Liberty)
+    # https://bugs.launchpad.net/puppet-keystone/+bug/1472437
     user_name, user_domain = self.class.name_and_domain(resource[:name], resource[:domain])
     project_name, project_domain = self.class.name_and_domain(projname, nil, user_domain)
     self.class.request('project', 'list', ['--user', id, '--long']).each do |project|
@@ -162,7 +154,8 @@ Puppet::Type.type(:keystone_user).provide(
   end
 
   def set_project(newproject, project_id = nil)
-    # TODO deprecate tenant - see above in create
+    # DEPRECATED - To be removed in next release (Liberty)
+    # https://bugs.launchpad.net/puppet-keystone/+bug/1472437
     unless project_id
       project_id = Puppet::Resource.indirection.find("Keystone_tenant/#{newproject}")[:id]
     end
@@ -183,13 +176,15 @@ Puppet::Type.type(:keystone_user).provide(
     newproject
   end
 
+  # DEPRECATED - To be removed in next release (Liberty)
+  # https://bugs.launchpad.net/puppet-keystone/+bug/1472437
   def tenant=(value)
-    # TODO deprecate tenant - see above in create
     @property_hash[:tenant] = set_project(value)
   end
 
+  # DEPRECATED - To be removed in next release (Liberty)
+  # https://bugs.launchpad.net/puppet-keystone/+bug/1472437
   def tenant
-    # TODO deprecate tenant - see above in create
     return resource[:tenant] if sym_to_bool(resource[:ignore_default_tenant])
     # use the one returned from instances
     tenant_name = @property_hash[:project]

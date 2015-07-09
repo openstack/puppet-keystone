@@ -15,9 +15,11 @@ Puppet::Type.newtype(:keystone_user) do
   end
 
   newparam(:ignore_default_tenant) do
-    # TODO: Deprecate the tenant parameter.  Keystone no longer supports
-    # tenant/project as a property of user entries and is deprecating it.
+    # DEPRECATED - To be removed in next release (Liberty)
     # https://bugs.launchpad.net/puppet-keystone/+bug/1472437
+    validate do |v|
+      Puppet.warning('The ignore_default_tenant parameter is deprecated and will be removed in the future.')
+    end
     newvalues(/(t|T)rue/, /(f|F)alse/, true, false)
     defaultto(false)
     munge do |value|
@@ -53,9 +55,11 @@ Puppet::Type.newtype(:keystone_user) do
   end
 
   newproperty(:tenant) do
-    # TODO: Deprecate the tenant parameter.  Keystone no longer supports
-    # tenant/project as a property of user entries and is deprecating it.
+    # DEPRECATED - To be removed in next release (Liberty)
     # https://bugs.launchpad.net/puppet-keystone/+bug/1472437
+    validate do |v|
+      Puppet.warning('The tenant parameter is deprecated and will be removed in the future. Please use keystone_user_role to assign a user to a project.')
+    end
     newvalues(/\S+/)
   end
 
@@ -86,8 +90,7 @@ Puppet::Type.newtype(:keystone_user) do
   end
 
   autorequire(:keystone_tenant) do
-    # TODO: Deprecate the tenant parameter.  Keystone no longer supports
-    # tenant/project as a property of user entries and is deprecating it.
+    # DEPRECATED - To be removed in next release (Liberty)
     # https://bugs.launchpad.net/puppet-keystone/+bug/1472437
     self[:tenant]
   end
