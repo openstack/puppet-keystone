@@ -34,7 +34,7 @@ Setup
 
 ### Installing keystone
 
-    example% puppet module install puppetlabs/keystone
+    example% puppet module install openstack/keystone
 
 ### Beginning with keystone
 
