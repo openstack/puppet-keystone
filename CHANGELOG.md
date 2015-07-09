@@ -1,3 +1,43 @@
+##2015-07-08 - 6.0.0
+###Summary
+
+This is a backwards-incompatible major release for OpenStack Kilo.
+
+####Backwards-incompatible changes
+- Remove deprecated parameters
+- MySQL: change default MySQL collate to utf8_general_ci
+- Move openstackclient to openstacklib
+
+####Features
+- Puppet 4.x support
+- Support Keystone v3 API
+- Allow disabling or delaying the token_flush cron
+- Migrate postgresql backend to use openstacklib::db::postgresql
+- Add max_token_size optional parameter
+- Add admin_workers and public_workers configuration options
+- Add support for LDAP connection pools
+- Add a package ensure for openstackclient
+- Enable setting the revoke/token driver
+- Add manage_service feature
+- Makes distinct use of url vs auth_url
+- Create a sync_db boolean for Keystone
+- LDAP: add support to configure credential driver
+- Support notification_format
+- Allow custom file source for wsgi scripts
+- Decouple sync_db from enabled
+- Add support for Fernet Tokens
+
+####Bugfixes
+- Crontab: ensure the script is run with bash shell
+- Copy latest keystone.py from Keystone upstream
+- Fix deprecated LDAP config options
+- Fix service keystone conflict when running in apache
+
+####Maintenance
+- Acceptance tests with Beaker
+- Fix spec tests for RSpec 3.x and Puppet 4.x
+- Restructures authentication for resource providers
+
 ##2015-06-17 - 5.1.0
 ###Summary
 
