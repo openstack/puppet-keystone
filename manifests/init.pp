@@ -182,6 +182,21 @@
 #   (optional) The RabbitMQ virtual host.
 #   Defaults to /.
 #
+# [*rabbit_heartbeat_timeout_threshold*]
+#   (optional) Number of seconds after which the RabbitMQ broker is considered
+#   down if the heartbeat keepalive fails.  Any value >0 enables heartbeats.
+#   Heartbeating helps to ensure the TCP connection to RabbitMQ isn't silently
+#   closed, resulting in missed or lost messages from the queue.
+#   (Requires kombu >= 3.0.7 and amqp >= 1.4.0)
+#   Defaults to 0
+#
+# [*rabbit_heartbeat_rate*]
+#   (optional) How often during the rabbit_heartbeat_timeout_threshold period to
+#   check the heartbeat on RabbitMQ connection.  (i.e. rabbit_heartbeat_rate=2
+#   when rabbit_heartbeat_timeout_threshold=60, the heartbeat will be checked
+#   every 30 seconds.
+#   Defaults to 2
+#
 # [*rabbit_use_ssl*]
 #   (optional) Connect over SSL for RabbitMQ
 #   Defaults to false
@@ -402,83 +417,85 @@
 #
 class keystone(
   $admin_token,
-  $package_ensure         = 'present',
-  $client_package_ensure  = 'present',
-  $public_bind_host       = '0.0.0.0',
-  $admin_bind_host        = '0.0.0.0',
-  $public_port            = '5000',
-  $admin_port             = '35357',
-  $verbose                = false,
-  $debug                  = false,
-  $log_dir                = '/var/log/keystone',
-  $log_file               = false,
-  $use_syslog             = false,
-  $log_facility           = 'LOG_USER',
-  $catalog_type           = 'sql',
-  $catalog_driver         = false,
-  $catalog_template_file  = '/etc/keystone/default_catalog.templates',
-  $token_provider         = 'keystone.token.providers.uuid.Provider',
-  $token_driver           = 'keystone.token.persistence.backends.sql.Token',
-  $token_expiration       = 3600,
-  $revoke_driver          = 'keystone.contrib.revoke.backends.sql.Revoke',
-  $public_endpoint        = false,
-  $admin_endpoint         = false,
-  $enable_ssl             = false,
-  $ssl_certfile           = '/etc/keystone/ssl/certs/keystone.pem',
-  $ssl_keyfile            = '/etc/keystone/ssl/private/keystonekey.pem',
-  $ssl_ca_certs           = '/etc/keystone/ssl/certs/ca.pem',
-  $ssl_ca_key             = '/etc/keystone/ssl/private/cakey.pem',
-  $ssl_cert_subject       = '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
-  $cache_dir              = '/var/cache/keystone',
-  $memcache_servers       = false,
-  $manage_service         = true,
-  $cache_backend          = 'keystone.common.cache.noop',
-  $cache_backend_argument = undef,
-  $debug_cache_backend    = false,
-  $token_caching          = true,
-  $enabled                = true,
-  $database_connection    = 'sqlite:////var/lib/keystone/keystone.db',
-  $database_idle_timeout  = '200',
-  $enable_pki_setup       = true,
-  $signing_certfile       = '/etc/keystone/ssl/certs/signing_cert.pem',
-  $signing_keyfile        = '/etc/keystone/ssl/private/signing_key.pem',
-  $signing_ca_certs       = '/etc/keystone/ssl/certs/ca.pem',
-  $signing_ca_key         = '/etc/keystone/ssl/private/cakey.pem',
-  $signing_cert_subject   = '/C=US/ST=Unset/L=Unset/O=Unset/CN=www.example.com',
-  $signing_key_size       = 2048,
-  $rabbit_host            = 'localhost',
-  $rabbit_hosts           = false,
-  $rabbit_password        = 'guest',
-  $rabbit_port            = '5672',
-  $rabbit_userid          = 'guest',
-  $rabbit_virtual_host    = '/',
-  $rabbit_use_ssl         = false,
-  $kombu_ssl_ca_certs     = undef,
-  $kombu_ssl_certfile     = undef,
-  $kombu_ssl_keyfile      = undef,
-  $kombu_ssl_version      = 'TLSv1',
-  $notification_driver    = false,
-  $notification_topics    = false,
-  $notification_format    = undef,
-  $control_exchange       = false,
-  $validate_service       = false,
-  $validate_insecure      = false,
-  $validate_auth_url      = false,
-  $validate_cacert        = undef,
-  $paste_config           = $::keystone::params::paste_config,
-  $service_provider       = $::keystone::params::service_provider,
-  $service_name           = $::keystone::params::service_name,
-  $max_token_size         = undef,
-  $admin_workers          = max($::processorcount, 2),
-  $public_workers         = max($::processorcount, 2),
-  $sync_db                = true,
-  $enable_fernet_setup    = false,
-  $fernet_key_repository  = '/etc/keystone/fernet-keys',
-  $fernet_max_active_keys = undef,
-  $default_domain         = undef,
+  $package_ensure                     = 'present',
+  $client_package_ensure              = 'present',
+  $public_bind_host                   = '0.0.0.0',
+  $admin_bind_host                    = '0.0.0.0',
+  $public_port                        = '5000',
+  $admin_port                         = '35357',
+  $verbose                            = false,
+  $debug                              = false,
+  $log_dir                            = '/var/log/keystone',
+  $log_file                           = false,
+  $use_syslog                         = false,
+  $log_facility                       = 'LOG_USER',
+  $catalog_type                       = 'sql',
+  $catalog_driver                     = false,
+  $catalog_template_file              = '/etc/keystone/default_catalog.templates',
+  $token_provider                     = 'keystone.token.providers.uuid.Provider',
+  $token_driver                       = 'keystone.token.persistence.backends.sql.Token',
+  $token_expiration                   = 3600,
+  $revoke_driver                      = 'keystone.contrib.revoke.backends.sql.Revoke',
+  $public_endpoint                    = false,
+  $admin_endpoint                     = false,
+  $enable_ssl                         = false,
+  $ssl_certfile                       = '/etc/keystone/ssl/certs/keystone.pem',
+  $ssl_keyfile                        = '/etc/keystone/ssl/private/keystonekey.pem',
+  $ssl_ca_certs                       = '/etc/keystone/ssl/certs/ca.pem',
+  $ssl_ca_key                         = '/etc/keystone/ssl/private/cakey.pem',
+  $ssl_cert_subject                   = '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
+  $cache_dir                          = '/var/cache/keystone',
+  $memcache_servers                   = false,
+  $manage_service                     = true,
+  $cache_backend                      = 'keystone.common.cache.noop',
+  $cache_backend_argument             = undef,
+  $debug_cache_backend                = false,
+  $token_caching                      = true,
+  $enabled                            = true,
+  $database_connection                = 'sqlite:////var/lib/keystone/keystone.db',
+  $database_idle_timeout              = '200',
+  $enable_pki_setup                   = true,
+  $signing_certfile                   = '/etc/keystone/ssl/certs/signing_cert.pem',
+  $signing_keyfile                    = '/etc/keystone/ssl/private/signing_key.pem',
+  $signing_ca_certs                   = '/etc/keystone/ssl/certs/ca.pem',
+  $signing_ca_key                     = '/etc/keystone/ssl/private/cakey.pem',
+  $signing_cert_subject               = '/C=US/ST=Unset/L=Unset/O=Unset/CN=www.example.com',
+  $signing_key_size                   = 2048,
+  $rabbit_host                        = 'localhost',
+  $rabbit_hosts                       = false,
+  $rabbit_password                    = 'guest',
+  $rabbit_port                        = '5672',
+  $rabbit_userid                      = 'guest',
+  $rabbit_virtual_host                = '/',
+  $rabbit_heartbeat_timeout_threshold = 0,
+  $rabbit_heartbeat_rate              = 2,
+  $rabbit_use_ssl                     = false,
+  $kombu_ssl_ca_certs                 = undef,
+  $kombu_ssl_certfile                 = undef,
+  $kombu_ssl_keyfile                  = undef,
+  $kombu_ssl_version                  = 'TLSv1',
+  $notification_driver                = false,
+  $notification_topics                = false,
+  $notification_format                = undef,
+  $control_exchange                   = false,
+  $validate_service                   = false,
+  $validate_insecure                  = false,
+  $validate_auth_url                  = false,
+  $validate_cacert                    = undef,
+  $paste_config                       = $::keystone::params::paste_config,
+  $service_provider                   = $::keystone::params::service_provider,
+  $service_name                       = $::keystone::params::service_name,
+  $max_token_size                     = undef,
+  $admin_workers                      = max($::processorcount, 2),
+  $public_workers                     = max($::processorcount, 2),
+  $sync_db                            = true,
+  $enable_fernet_setup                = false,
+  $fernet_key_repository              = '/etc/keystone/fernet-keys',
+  $fernet_max_active_keys             = undef,
+  $default_domain                     = undef,
   # DEPRECATED PARAMETERS
-  $mysql_module           = undef,
-  $compute_port           = undef,
+  $mysql_module                       = undef,
+  $compute_port                       = undef,
 ) inherits keystone::params {
 
   if ! $catalog_driver {
@@ -765,35 +782,37 @@ class keystone(
   }
 
   keystone_config {
-    'DEFAULT/rabbit_password':     value => $rabbit_password, secret => true;
-    'DEFAULT/rabbit_userid':       value => $rabbit_userid;
-    'DEFAULT/rabbit_virtual_host': value => $rabbit_virtual_host;
+    'oslo_messaging_rabbit/rabbit_password':              value => $rabbit_password, secret => true;
+    'oslo_messaging_rabbit/rabbit_userid':                value => $rabbit_userid;
+    'oslo_messaging_rabbit/rabbit_virtual_host':          value => $rabbit_virtual_host;
+    'oslo_messaging_rabbit/heartbeat_timeout_threshold':  value => $rabbit_heartbeat_timeout_threshold;
+    'oslo_messaging_rabbit/heartbeat_rate':               value => $rabbit_heartbeat_rate;
   }
 
   if $rabbit_hosts {
-    keystone_config { 'DEFAULT/rabbit_hosts':     value => join($rabbit_hosts, ',') }
-    keystone_config { 'DEFAULT/rabbit_ha_queues': value => true }
+    keystone_config { 'oslo_messaging_rabbit/rabbit_hosts':     value => join($rabbit_hosts, ',') }
+    keystone_config { 'oslo_messaging_rabbit/rabbit_ha_queues': value => true }
   } else {
-    keystone_config { 'DEFAULT/rabbit_host':      value => $rabbit_host }
-    keystone_config { 'DEFAULT/rabbit_port':      value => $rabbit_port }
-    keystone_config { 'DEFAULT/rabbit_hosts':     value => "${rabbit_host}:${rabbit_port}" }
-    keystone_config { 'DEFAULT/rabbit_ha_queues': value => false }
+    keystone_config { 'oslo_messaging_rabbit/rabbit_host':      value => $rabbit_host }
+    keystone_config { 'oslo_messaging_rabbit/rabbit_port':      value => $rabbit_port }
+    keystone_config { 'oslo_messaging_rabbit/rabbit_hosts':     value => "${rabbit_host}:${rabbit_port}" }
+    keystone_config { 'oslo_messaging_rabbit/rabbit_ha_queues': value => false }
   }
 
-  keystone_config { 'DEFAULT/rabbit_use_ssl': value => $rabbit_use_ssl }
+  keystone_config { 'oslo_messaging_rabbit/rabbit_use_ssl': value => $rabbit_use_ssl }
   if $rabbit_use_ssl {
     keystone_config {
-      'DEFAULT/kombu_ssl_ca_certs': value => $kombu_ssl_ca_certs;
-      'DEFAULT/kombu_ssl_certfile': value => $kombu_ssl_certfile;
-      'DEFAULT/kombu_ssl_keyfile':  value => $kombu_ssl_keyfile;
-      'DEFAULT/kombu_ssl_version':  value => $kombu_ssl_version;
+      'oslo_messaging_rabbit/kombu_ssl_ca_certs': value => $kombu_ssl_ca_certs;
+      'oslo_messaging_rabbit/kombu_ssl_certfile': value => $kombu_ssl_certfile;
+      'oslo_messaging_rabbit/kombu_ssl_keyfile':  value => $kombu_ssl_keyfile;
+      'oslo_messaging_rabbit/kombu_ssl_version':  value => $kombu_ssl_version;
     }
   } else {
     keystone_config {
-      'DEFAULT/kombu_ssl_ca_certs': ensure => absent;
-      'DEFAULT/kombu_ssl_certfile': ensure => absent;
-      'DEFAULT/kombu_ssl_keyfile':  ensure => absent;
-      'DEFAULT/kombu_ssl_version':  ensure => absent;
+      'oslo_messaging_rabbit/kombu_ssl_ca_certs': ensure => absent;
+      'oslo_messaging_rabbit/kombu_ssl_certfile': ensure => absent;
+      'oslo_messaging_rabbit/kombu_ssl_keyfile':  ensure => absent;
+      'oslo_messaging_rabbit/kombu_ssl_version':  ensure => absent;
     }
   }
 
