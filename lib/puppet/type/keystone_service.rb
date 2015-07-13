@@ -34,8 +34,8 @@ Puppet::Type.newtype(:keystone_service) do
   # config is configured IF we need them for authentication.
   # If there is no keystone config, authentication credentials
   # need to come from another source.
-  autorequire(:service) do
-    ['keystone']
+  autorequire(:anchor) do
+    ['keystone_started']
   end
 
   auth_param_doc=<<EOT

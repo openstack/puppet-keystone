@@ -21,8 +21,8 @@ Puppet::Type.newtype(:keystone_role) do
   end
 
   # we should not do anything until the keystone service is started
-  autorequire(:service) do
-    ['keystone']
+  autorequire(:anchor) do
+    ['keystone_started']
   end
 
   auth_param_doc=<<EOT

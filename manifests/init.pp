@@ -740,4 +740,7 @@ class keystone(
     }
   }
 
+  anchor { 'keystone_started':
+    require => Service[$service_name]
+  }
 }

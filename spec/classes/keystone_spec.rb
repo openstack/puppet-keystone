@@ -196,6 +196,8 @@ describe 'keystone' do
         'hasrestart' => true
       ) }
 
+      it { is_expected.to contain_anchor('keystone_started') }
+
     end
   end
 
@@ -234,6 +236,7 @@ describe 'keystone' do
     end
 
     it { should contain_keystone_config('database/idle_timeout').with_value(params[:idle_timeout]) }
+    it { is_expected.to contain_anchor('keystone_started') }
   end
 
   describe 'when configuring signing token provider' do
