@@ -46,8 +46,8 @@ Puppet::Type.newtype(:keystone_domain) do
   end
 
   # we should not do anything until the keystone service is started
-  autorequire(:service) do
-    'keystone'
+  autorequire(:anchor) do
+    ['keystone_started']
   end
 
 
