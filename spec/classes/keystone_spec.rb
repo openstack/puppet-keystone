@@ -234,6 +234,8 @@ describe 'keystone' do
         'hasrestart' => true
       ) }
 
+      it { is_expected.to contain_anchor('keystone_started') }
+
     end
   end
 
@@ -281,6 +283,7 @@ describe 'keystone' do
       'hasstatus'  => true,
       'hasrestart' => true
     ) }
+    it { is_expected.to contain_anchor('keystone_started') }
   end
 
   describe 'when configuring signing token provider' do
