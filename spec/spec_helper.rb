@@ -9,6 +9,12 @@ RSpec.configure do |c|
   c.alias_it_should_behave_like_to :it_raises, 'raises'
 end
 
+RSpec::Matchers.define :be_absent do
+  match do |actual|
+    actual == :absent
+  end
+end
+
 at_exit { RSpec::Puppet::Coverage.report! }
 
 def setup_provider_tests

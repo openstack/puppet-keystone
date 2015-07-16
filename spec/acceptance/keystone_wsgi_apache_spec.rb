@@ -68,7 +68,6 @@ describe 'keystone server running with Apache/WSGI with resources' do
       }
       EOS
 
-
       # Run it twice and test for idempotency
       apply_manifest(pp, :catch_failures => true)
       apply_manifest(pp, :catch_changes => true)
@@ -168,11 +167,14 @@ describe 'keystone server running with Apache/WSGI with resources' do
     end
     describe 'with v3 admin with v3 credentials' do
       include_examples 'keystone user/tenant/service/role/endpoint resources using v3 API',
-                       '--os-username adminv3 --os-password a_big_secret --os-project-name openstackv3 --os-user-domain-name admin_domain --os-project-domain-name admin_domain'
+        '--os-username adminv3 --os-password a_big_secret --os-project-name openstackv3' \
+        ' --os-user-domain-name admin_domain --os-project-domain-name admin_domain'
+
     end
     describe "with v3 service with v3 credentials" do
       include_examples 'keystone user/tenant/service/role/endpoint resources using v3 API',
-                       '--os-username beaker-civ3 --os-password secret --os-project-name servicesv3 --os-user-domain-name service_domain --os-project-domain-name service_domain'
+        '--os-username beaker-civ3 --os-password secret --os-project-name servicesv3 --os-user-domain-name service_domain --os-project-domain-name service_domain'
+
     end
   end
   describe 'composite namevar quick test' do
