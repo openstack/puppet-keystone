@@ -36,4 +36,22 @@ describe provider_class do
     expect(provider.setting).to eq('foo')
   end
 
+  it 'should ensure absent when <SERVICE DEFAULT> is specified as a value' do
+    resource = Puppet::Type::Keystone_config.new(
+      {:name => 'dude/foo', :value => '<SERVICE DEFAULT>'}
+    )
+    provider = provider_class.new(resource)
+    provider.exists?
+    expect(resource[:ensure]).to eq :absent
+  end
+
+  it 'should ensure absent when value matches ensure_absent_val' do
+    resource = Puppet::Type::Keystone_config.new(
+      {:name => 'dude/foo', :value => 'foo', :ensure_absent_val => 'foo' }
+    )
+    provider = provider_class.new(resource)
+    provider.exists?
+    expect(resource[:ensure]).to eq :absent
+  end
+
 end
