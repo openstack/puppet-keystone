@@ -180,7 +180,7 @@ describe 'keystone' do
     end
 
     it 'should contain correct revoke driver' do
-      should contain_keystone_config('revoke/driver').with_value(param_hash['revoke_driver'])
+      is_expected.to contain_keystone_config('revoke/driver').with_value(param_hash['revoke_driver'])
     end
 
     it 'should ensure proper setting of admin_endpoint and public_endpoint' do
@@ -261,11 +261,11 @@ describe 'keystone' do
 
     it do
       expect {
-        should contain_service(platform_parameters[:service_name]).with('ensure' => 'running')
+        is_expected.to contain_service(platform_parameters[:service_name]).with('ensure' => 'running')
       }.to raise_error(RSpec::Expectations::ExpectationNotMetError, /expected that the catalogue would contain Service\[#{platform_parameters[:service_name]}\]/)
     end
 
-    it { should contain_class('keystone::service').with(
+    it { is_expected.to contain_class('keystone::service').with(
       'ensure'          => 'stopped',
       'service_name'    => platform_parameters[:service_name],
       'enable'          => false,
