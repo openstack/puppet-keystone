@@ -18,6 +18,6 @@ describe 'Puppet::Type.type(:keystone_paste_ini)' do
   end
   it 'should accept a valid value' do
     @keystone_paste_ini[:value] = 'bar'
-    @keystone_paste_ini[:value].should == 'bar'
+    expect(@keystone_paste_ini[:value]).to eq('bar')
   end
 end
