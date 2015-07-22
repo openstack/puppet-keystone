@@ -536,7 +536,7 @@ class keystone(
   package { 'keystone':
     ensure => $package_ensure,
     name   => $::keystone::params::package_name,
-    tag    => 'openstack',
+    tag    => ['openstack', 'keystone-package'],
   }
   if $client_package_ensure == 'present' {
     include '::openstacklib::openstackclient'

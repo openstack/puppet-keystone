@@ -86,7 +86,8 @@ class keystone::service(
     enable     => $enable,
     hasstatus  => $hasstatus,
     hasrestart => $hasrestart,
-    provider   => $provider
+    provider   => $provider,
+    tag        => 'keystone-service',
   }
 
   if $insecure {

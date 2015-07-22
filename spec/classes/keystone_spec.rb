@@ -107,12 +107,12 @@ describe 'keystone' do
 
     it { is_expected.to contain_package('keystone').with(
       'ensure' => param_hash['package_ensure'],
-      'tag'    => 'openstack'
+      'tag'    => ['openstack', 'keystone-package'],
     ) }
 
     it { is_expected.to contain_package('python-openstackclient').with(
       'ensure' => param_hash['client_package_ensure'],
-      'tag'    => 'openstack'
+      'tag'    => 'openstack',
     ) }
 
     it { is_expected.to contain_group('keystone').with(
@@ -240,7 +240,8 @@ describe 'keystone' do
         'ensure'     => (param_hash['manage_service'] && param_hash['enabled']) ? 'running' : 'stopped',
         'enable'     => param_hash['enabled'],
         'hasstatus'  => true,
-        'hasrestart' => true
+        'hasrestart' => true,
+        'tag'        => 'keystone-service',
       ) }
 
       it { is_expected.to contain_anchor('keystone_started') }

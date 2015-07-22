@@ -7,7 +7,8 @@ describe 'keystone::service' do
       :ensure     => nil,
       :enable     => true,
       :hasstatus  => true,
-      :hasrestart => true
+      :hasrestart => true,
+      :tag        => 'keystone-service',
     ) }
     it { is_expected.to_not contain_exec('validate_keystone_connection') }
   end
@@ -24,7 +25,8 @@ describe 'keystone::service' do
       :ensure     => nil,
       :enable     => true,
       :hasstatus  => true,
-      :hasrestart => true
+      :hasrestart => true,
+      :tag        => 'keystone-service',
     ) }
     it { is_expected.to contain_exec('validate_keystone_connection') }
   end
