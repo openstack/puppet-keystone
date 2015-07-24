@@ -54,6 +54,6 @@ Puppet::Type.newtype(:keystone_tenant) do
   # If there is no keystone config, authentication credentials
   # need to come from another source.
   autorequire(:anchor) do
-    ['keystone_started']
+    ['keystone_started','default_domain_created']
   end
 end
