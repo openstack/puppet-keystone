@@ -92,37 +92,10 @@ class keystone::roles::admin(
   $service_project_domain = undef,
 ) {
 
-  if $service_project_domain {
-    if $service_project_domain != $admin_user_domain {
-      if $service_project_domain != $admin_project_domain {
-        keystone_domain { $service_project_domain:
-          ensure  => present,
-          enabled => true,
-        }
-      }
-    }
-  }
-
-  if $admin_project_domain {
-    if $admin_project_domain != $admin_user_domain {
-      if $service_project_domain != $admin_project_domain {
-        keystone_domain { $admin_project_domain:
-          ensure  => present,
-          enabled => true,
-        }
-      }
-    }
-  }
-
-  if $admin_user_domain {
-    if $admin_project_domain != $admin_user_domain {
-      if $service_project_domain != $admin_user_domain {
-        keystone_domain { $admin_user_domain:
-          ensure  => present,
-          enabled => true,
-        }
-      }
-    }
+  $domains = unique(delete_undef_values([ $admin_user_domain, $admin_project_domain, $service_project_domain]))
+  keystone_domain { $domains:
+    ensure  => present,
+    enabled => true,
   }
 
   keystone_tenant { $service_tenant:

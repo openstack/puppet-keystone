@@ -173,4 +173,15 @@ describe 'keystone::roles::admin' do
 
   end
 
+  describe 'when admin_user_domain and admin_project_domain are equal' do
+    let :params do
+      {
+        :email                => 'foo@bar',
+        :password             => 'ChangeMe',
+        :admin_user_domain    => 'admin_domain',
+        :admin_project_domain => 'admin_domain',
+      }
+    end
+   it { is_expected.to contain_keystone_domain('admin_domain') }
+   end
 end
