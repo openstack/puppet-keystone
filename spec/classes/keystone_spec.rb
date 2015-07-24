@@ -215,6 +215,7 @@ describe 'keystone' do
 
     if param_hash['default_domain']
       it { is_expected.to contain_keystone_domain(param_hash['default_domain']).with(:is_default => true) }
+      it { is_expected.to contain_anchor('default_domain_created') }
     end
   end
 
@@ -867,6 +868,7 @@ describe 'keystone' do
         })
       end
       it { is_expected.to contain_exec('restart_keystone') }
+      it { is_expected.to contain_anchor('default_domain_created') }
     end
     describe 'with default domain and service is not managed' do
       let :params do
@@ -876,6 +878,7 @@ describe 'keystone' do
         })
       end
       it { is_expected.to_not contain_exec('restart_keystone') }
+      it { is_expected.to contain_anchor('default_domain_created') }
     end
   end
 

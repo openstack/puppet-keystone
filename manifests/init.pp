@@ -944,6 +944,9 @@ class keystone(
       require    => File['/etc/keystone/keystone.conf'],
       notify     => Exec['restart_keystone'],
     }
+    anchor { 'default_domain_created':
+      require => Keystone_domain[$default_domain],
+    }
     # Update this code when https://bugs.launchpad.net/keystone/+bug/1472285 is addressed.
     # 1/ Keystone needs to be started before creating the default domain
     # 2/ Once the default domain is created, we can query Keystone to get the default domain ID
