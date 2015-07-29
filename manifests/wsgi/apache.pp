@@ -93,6 +93,11 @@
 #     The log format for the virtualhost.
 #     Optional. Defaults to false.
 #
+#   [*vhost_custom_fragment*]
+#     (optional) Passes a string of custom configuration
+#     directives to be placed at the end of the vhost configuration.
+#     Defaults to undef.
+#
 # == Dependencies
 #
 #   requires Class['apache'] & Class['keystone']
@@ -117,26 +122,27 @@
 #   Copyright 2013 eNovance <licensing@enovance.com>
 #
 class keystone::wsgi::apache (
-  $servername         = $::fqdn,
-  $public_port        = 5000,
-  $admin_port         = 35357,
-  $bind_host          = undef,
-  $public_path        = '/',
-  $admin_path         = '/',
-  $ssl                = true,
-  $workers            = 1,
-  $ssl_cert           = undef,
-  $ssl_key            = undef,
-  $ssl_chain          = undef,
-  $ssl_ca             = undef,
-  $ssl_crl_path       = undef,
-  $ssl_crl            = undef,
-  $ssl_certs_dir      = undef,
-  $threads            = $::processorcount,
-  $priority           = '10',
-  $wsgi_script_ensure = 'file',
-  $wsgi_script_source = undef,
-  $access_log_format  = false,
+  $servername            = $::fqdn,
+  $public_port           = 5000,
+  $admin_port            = 35357,
+  $bind_host             = undef,
+  $public_path           = '/',
+  $admin_path            = '/',
+  $ssl                   = true,
+  $workers               = 1,
+  $ssl_cert              = undef,
+  $ssl_key               = undef,
+  $ssl_chain             = undef,
+  $ssl_ca                = undef,
+  $ssl_crl_path          = undef,
+  $ssl_crl               = undef,
+  $ssl_certs_dir         = undef,
+  $threads               = $::processorcount,
+  $priority              = '10',
+  $wsgi_script_ensure    = 'file',
+  $wsgi_script_source    = undef,
+  $access_log_format     = false,
+  $vhost_custom_fragment = undef,
 ) {
 
   include ::keystone::params
@@ -249,6 +255,7 @@ class keystone::wsgi::apache (
     wsgi_daemon_process_options => $wsgi_daemon_process_options_main,
     wsgi_process_group          => 'keystone_main',
     wsgi_script_aliases         => $wsgi_script_aliases_main_real,
+    custom_fragment             => $vhost_custom_fragment,
     require                     => File['keystone_wsgi_main'],
     access_log_format           => $access_log_format,
   }
@@ -275,6 +282,7 @@ class keystone::wsgi::apache (
       wsgi_daemon_process_options => $wsgi_daemon_process_options_admin,
       wsgi_process_group          => 'keystone_admin',
       wsgi_script_aliases         => $wsgi_script_aliases_admin,
+      custom_fragment             => $vhost_custom_fragment,
       require                     => File['keystone_wsgi_admin'],
       access_log_format           => $access_log_format,
     }
