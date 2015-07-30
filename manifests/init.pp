@@ -832,6 +832,7 @@ class keystone(
   }
 
   if $service_name == $::keystone::params::service_name {
+    $service_name_real = $::keystone::params::service_name
     if $validate_service {
       if $validate_auth_url {
         $v_auth_url = $validate_auth_url
@@ -864,6 +865,7 @@ class keystone(
       }
     }
   } elsif $service_name == 'httpd' {
+    include ::apache::params
     class { '::keystone::service':
       ensure       => 'stopped',
       service_name => $::keystone::params::service_name,
@@ -871,6 +873,7 @@ class keystone(
       provider     => $service_provider,
       validate     => false,
     }
+    $service_name_real = $::apache::params::service_name
   } else {
     fail('Invalid service_name. Either keystone/openstack-keystone for running as a standalone service, or httpd for being run by a httpd server')
   }
@@ -976,7 +979,7 @@ class keystone(
     if $manage_service and $enabled {
       exec { 'restart_keystone':
         path        => ['/usr/sbin', '/usr/bin', '/sbin', '/bin/'],
-        command     => "service ${service_name} restart",
+        command     => "service ${service_name_real} restart",
         refreshonly => true,
       }
     }

@@ -864,20 +864,37 @@ describe 'keystone' do
     end
   end
 
-  describe 'when configuring default domain' do
+  shared_examples_for "when configuring default domain" do
     describe 'with default config' do
       let :params do
         default_params
       end
       it { is_expected.to_not contain_exec('restart_keystone') }
     end
-    describe 'with default domain and service is managed and enabled' do
+    describe 'with default domain and eventlet service is managed and enabled' do
       let :params do
         default_params.merge({
           'default_domain'=> 'test',
         })
       end
-      it { is_expected.to contain_exec('restart_keystone') }
+      it { is_expected.to contain_exec('restart_keystone').with(
+        'command' => "service #{platform_parameters[:service_name]} restart",
+      ) }
+      it { is_expected.to contain_anchor('default_domain_created') }
+    end
+    describe 'with default domain and wsgi service is managed and enabled' do
+      let :pre_condition do
+        'include ::apache'
+      end
+      let :params do
+        default_params.merge({
+          'default_domain'=> 'test',
+          'service_name'  => 'httpd',
+        })
+      end
+      it { is_expected.to contain_exec('restart_keystone').with(
+        'command' => "service #{platform_parameters[:httpd_service_name]} restart",
+      ) }
       it { is_expected.to contain_anchor('default_domain_created') }
     end
     describe 'with default domain and service is not managed' do
@@ -902,11 +919,13 @@ describe 'keystone' do
 
     let :platform_parameters do
       {
-        :service_name => 'openstack-keystone'
+        :service_name       => 'openstack-keystone',
+        :httpd_service_name => 'httpd',
       }
     end
 
     it_configures 'when using default class parameters for httpd'
+    it_configures 'when configuring default domain'
   end
 
   context 'on Debian platforms' do
@@ -920,10 +939,12 @@ describe 'keystone' do
 
     let :platform_parameters do
       {
-        :service_name => 'keystone'
+        :service_name       => 'keystone',
+        :httpd_service_name => 'apache2',
       }
     end
 
     it_configures 'when using default class parameters for httpd'
+    it_configures 'when configuring default domain'
   end
 end
