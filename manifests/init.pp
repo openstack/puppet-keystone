@@ -119,11 +119,32 @@
 #
 # [*database_connection*]
 #   (optional) Url used to connect to database.
-#   Defaults to sqlite:////var/lib/keystone/keystone.db
+#   Defaults to undef.
 #
 # [*database_idle_timeout*]
 #   (optional) Timeout when db connections should be reaped.
-#   Defaults to 200.
+#   Defaults to undef.
+#
+# [*database_max_retries*]
+#   (optional) Maximum number of database connection retries during startup.
+#   Setting -1 implies an infinite retry count.
+#   (Defaults to undef)
+#
+# [*database_retry_interval*]
+#   (optional) Interval between retries of opening a database connection.
+#   (Defaults to undef)
+#
+# [*database_min_pool_size*]
+#   (optional) Minimum number of SQL connections to keep open in a pool.
+#   Defaults to: undef
+#
+# [*database_max_pool_size*]
+#   (optional) Maximum number of SQL connections to keep open in a pool.
+#   Defaults to: undef
+#
+# [*database_max_overflow*]
+#   (optional) If set, use this value for max_overflow with sqlalchemy.
+#   Defaults to: undef
 #
 # [*enable_pki_setup*]
 #   (optional) Enable call to pki_setup to generate the cert for signing pki tokens and
@@ -461,8 +482,13 @@ class keystone(
   $debug_cache_backend                = false,
   $token_caching                      = true,
   $enabled                            = true,
-  $database_connection                = 'sqlite:////var/lib/keystone/keystone.db',
-  $database_idle_timeout              = '200',
+  $database_connection                = undef,
+  $database_idle_timeout              = undef,
+  $database_max_retries               = undef,
+  $database_retry_interval            = undef,
+  $database_min_pool_size             = undef,
+  $database_max_pool_size             = undef,
+  $database_max_overflow              = undef,
   $enable_pki_setup                   = true,
   $signing_certfile                   = '/etc/keystone/ssl/certs/signing_cert.pem',
   $signing_keyfile                    = '/etc/keystone/ssl/private/signing_key.pem',
@@ -540,6 +566,7 @@ class keystone(
   Keystone_config<||> ~> Exec<| title == 'keystone-manage pki_setup'|>
   Keystone_config<||> ~> Exec<| title == 'keystone-manage fernet_setup'|>
 
+  include ::keystone::db
   include ::keystone::params
 
   package { 'keystone':
@@ -667,17 +694,6 @@ class keystone(
     }
   }
 
-  if($database_connection =~ /mysql:\/\/\S+:\S+@\S+\/\S+/) {
-    require 'mysql::bindings'
-    require 'mysql::bindings::python'
-  } elsif($database_connection =~ /postgresql:\/\/\S+:\S+@\S+\/\S+/) {
-
-  } elsif($database_connection =~ /sqlite:\/\//) {
-
-  } else {
-    fail("Invalid db connection ${database_connection}")
-  }
-
   # memcache connection config
   if $memcache_servers {
     validate_array($memcache_servers)
@@ -708,12 +724,6 @@ class keystone(
       'token/caching':             ensure => absent;
       'memcache/servers':          ensure => absent;
     }
-  }
-
-  # db connection config
-  keystone_config {
-    'database/connection':   value => $database_connection, secret => true;
-    'database/idle_timeout': value => $database_idle_timeout;
   }
 
   # configure based on the catalog backend
