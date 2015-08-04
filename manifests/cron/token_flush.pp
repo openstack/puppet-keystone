@@ -45,14 +45,19 @@
 #    Induces a random delay before running the cronjob to avoid running all
 #    cron jobs at the same time on all hosts this job is configured.
 #
+#  [*destination*]
+#    (optional) Path to file to which rows should be archived
+#    Defaults to '/var/log/keystone/keystone-tokenflush.log'.
+#
 class keystone::cron::token_flush (
-  $ensure   = present,
-  $minute   = 1,
-  $hour     = 0,
-  $monthday = '*',
-  $month    = '*',
-  $weekday  = '*',
-  $maxdelay = 0,
+  $ensure      = present,
+  $minute      = 1,
+  $hour        = 0,
+  $monthday    = '*',
+  $month       = '*',
+  $weekday     = '*',
+  $maxdelay    = 0,
+  $destination = '/var/log/keystone/keystone-tokenflush.log'
 ) {
 
   if $maxdelay == 0 {
@@ -63,7 +68,7 @@ class keystone::cron::token_flush (
 
   cron { 'keystone-manage token_flush':
     ensure      => $ensure,
-    command     => "${sleep}keystone-manage token_flush >>/var/log/keystone/keystone-tokenflush.log 2>&1",
+    command     => "${sleep}keystone-manage token_flush >>${destination} 2>&1",
     environment => 'PATH=/bin:/usr/bin:/usr/sbin SHELL=/bin/sh',
     user        => 'keystone',
     minute      => $minute,

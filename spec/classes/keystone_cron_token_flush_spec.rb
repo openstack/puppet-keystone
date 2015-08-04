@@ -6,62 +6,73 @@ describe 'keystone::cron::token_flush' do
     { :osfamily => 'Debian' }
   end
 
+  let :params do
+    { :ensure      => 'present',
+      :minute      => 1,
+      :hour        => 0,
+      :monthday    => '*',
+      :month       => '*',
+      :weekday     => '*',
+      :maxdelay    => 0,
+      :destination => '/var/log/keystone/keystone-tokenflush.log' }
+  end
+
   describe 'with default parameters' do
     it 'configures a cron' do
       is_expected.to contain_cron('keystone-manage token_flush').with(
-        :ensure      => 'present',
-        :command     => 'keystone-manage token_flush >>/var/log/keystone/keystone-tokenflush.log 2>&1',
+        :ensure      => params[:ensure],
+        :command     => "keystone-manage token_flush >>#{params[:destination]} 2>&1",
         :environment => 'PATH=/bin:/usr/bin:/usr/sbin SHELL=/bin/sh',
         :user        => 'keystone',
-        :minute      => 1,
-        :hour        => 0,
-        :monthday    => '*',
-        :month       => '*',
-        :weekday     => '*'
+        :minute      => params[:minute],
+        :hour        => params[:hour],
+        :monthday    => params[:monthday],
+        :month       => params[:month],
+        :weekday     => params[:weekday]
       )
     end
   end
 
   describe 'when specifying a maxdelay param' do
-    let :params do
-      {
+    before :each do
+      params.merge!(
         :maxdelay => 600
-      }
+      )
     end
 
     it 'configures a cron with delay' do
       is_expected.to contain_cron('keystone-manage token_flush').with(
-        :ensure      => 'present',
-        :command     => 'sleep `expr ${RANDOM} \\% 600`; keystone-manage token_flush >>/var/log/keystone/keystone-tokenflush.log 2>&1',
+        :ensure      => params[:ensure],
+        :command     => "sleep `expr ${RANDOM} \\% #{params[:maxdelay]}`; keystone-manage token_flush >>#{params[:destination]} 2>&1",
         :environment => 'PATH=/bin:/usr/bin:/usr/sbin SHELL=/bin/sh',
         :user        => 'keystone',
-        :minute      => 1,
-        :hour        => 0,
-        :monthday    => '*',
-        :month       => '*',
-        :weekday     => '*'
+        :minute      => params[:minute],
+        :hour        => params[:hour],
+        :monthday    => params[:monthday],
+        :month       => params[:month],
+        :weekday     => params[:weekday]
       )
     end
   end
 
-  describe 'when specifying a maxdelay param' do
-    let :params do
-      {
+  describe 'when disabling cron job' do
+    before :each do
+      params.merge!(
         :ensure => 'absent'
-      }
+      )
     end
 
     it 'configures a cron with delay' do
       is_expected.to contain_cron('keystone-manage token_flush').with(
-        :ensure      => 'absent',
-        :command     => 'keystone-manage token_flush >>/var/log/keystone/keystone-tokenflush.log 2>&1',
+        :ensure      => params[:ensure],
+        :command     => "keystone-manage token_flush >>#{params[:destination]} 2>&1",
         :environment => 'PATH=/bin:/usr/bin:/usr/sbin SHELL=/bin/sh',
         :user        => 'keystone',
-        :minute      => 1,
-        :hour        => 0,
-        :monthday    => '*',
-        :month       => '*',
-        :weekday     => '*'
+        :minute      => params[:minute],
+        :hour        => params[:hour],
+        :monthday    => params[:monthday],
+        :month       => params[:month],
+        :weekday     => params[:weekday]
       )
     end
   end
