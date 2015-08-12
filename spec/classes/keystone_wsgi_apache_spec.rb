@@ -70,7 +70,8 @@ describe 'keystone::wsgi::apache' do
         },
         'wsgi_process_group'          => 'keystone_admin',
         'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/admin" },
-        'require'                     => 'File[keystone_wsgi_admin]'
+        'require'                     => 'File[keystone_wsgi_admin]',
+        'access_log_format'           => false,
       )}
 
       it { is_expected.to contain_apache__vhost('keystone_wsgi_main').with(
@@ -91,7 +92,8 @@ describe 'keystone::wsgi::apache' do
         },
         'wsgi_process_group'          => 'keystone_main',
         'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/main" },
-        'require'                     => 'File[keystone_wsgi_main]'
+        'require'                     => 'File[keystone_wsgi_main]',
+        'access_log_format'           => false,
       )}
       it { is_expected.to contain_file("#{platform_parameters[:httpd_ports_file]}") }
     end
@@ -207,6 +209,19 @@ describe 'keystone::wsgi::apache' do
       end
 
       it_raises 'a Puppet::Error', /When using the same port for public & private endpoints, public_path and admin_path should be different\./
+    end
+
+    describe 'when overriding default apache logging' do
+      let :params do
+        {
+          :servername        => 'dummy.host',
+          :access_log_format => 'foo',
+        }
+      end
+      it { is_expected.to contain_apache__vhost('keystone_wsgi_main').with(
+          'servername'                  => 'dummy.host',
+          'access_log_format'           => 'foo',
+          )}
     end
 
     describe 'when overriding parameters using symlink and custom file source' do
