@@ -30,6 +30,7 @@ describe 'keystone' do
       'admin_token'                         => 'service_token',
       'verbose'                             => false,
       'debug'                               => false,
+      'use_stderr'                          => true,
       'catalog_type'                        => 'sql',
       'catalog_driver'                      => false,
       'token_provider'                      => 'keystone.token.providers.uuid.Provider',
@@ -71,6 +72,7 @@ describe 'keystone' do
       'admin_token'                         => 'service_token_override',
       'verbose'                             => true,
       'debug'                               => true,
+      'use_stderr'                          => false,
       'catalog_type'                        => 'template',
       'token_provider'                      => 'keystone.token.providers.uuid.Provider',
       'token_driver'                        => 'keystone.token.backends.kvs.Token',
@@ -156,7 +158,8 @@ describe 'keystone' do
        'public_port',
        'admin_port',
        'verbose',
-       'debug'
+       'debug',
+       'use_stderr'
       ].each do |config|
         is_expected.to contain_keystone_config("DEFAULT/#{config}").with_value(param_hash[config])
       end
