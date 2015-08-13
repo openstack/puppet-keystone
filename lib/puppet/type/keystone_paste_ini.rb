@@ -40,4 +40,8 @@ Puppet::Type.newtype(:keystone_paste_ini) do
     defaultto false
   end
 
+  autorequire(:package) do
+    'keystone'
+  end
+
 end

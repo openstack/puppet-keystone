@@ -41,4 +41,8 @@ Puppet::Type.newtype(:keystone_config) do
     defaultto false
   end
 
+  autorequire(:package) do
+    'keystone'
+  end
+
 end

@@ -531,7 +531,7 @@ class keystone(
     }
   }
 
-  File['/etc/keystone/keystone.conf'] -> Keystone_config<||> ~> Service[$service_name]
+  Keystone_config<||> ~> Service[$service_name]
   Keystone_config<||> ~> Exec<| title == 'keystone-manage db_sync'|>
   Keystone_config<||> ~> Exec<| title == 'keystone-manage pki_setup'|>
   Keystone_config<||> ~> Exec<| title == 'keystone-manage fernet_setup'|>
