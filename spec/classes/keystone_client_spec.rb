@@ -7,6 +7,10 @@ describe 'keystone::client' do
         'ensure' => 'present',
         'tag'    => 'openstack'
     ) }
+    it { is_expected.to contain_package('python-openstackclient').with(
+        'ensure' => 'present',
+        'tag'    => 'openstack',
+    ) }
   end
 
   describe "with specified version" do

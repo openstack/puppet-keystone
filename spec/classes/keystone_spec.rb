@@ -112,9 +112,8 @@ describe 'keystone' do
       'tag'    => ['openstack', 'keystone-package'],
     ) }
 
-    it { is_expected.to contain_package('python-openstackclient').with(
+    it { is_expected.to contain_class('keystone::client').with(
       'ensure' => param_hash['client_package_ensure'],
-      'tag'    => 'openstack',
     ) }
 
     it { is_expected.to contain_group('keystone').with(
