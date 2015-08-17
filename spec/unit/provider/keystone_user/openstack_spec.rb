@@ -309,14 +309,13 @@ username="foo"
     it_behaves_like 'with auth-url environment variable' do
       it 'checks the password' do
         provider.instance_variable_get('@property_hash')[:id] = '1cb05cfed7c24279be884ba4f6520262'
-        mockcreds = {}
-        Puppet::Provider::Openstack::CredentialsV3.expects(:new).returns(mockcreds)
-        mockcreds.expects(:auth_url=).with('http://127.0.0.1:5000')
-        mockcreds.expects(:password=).with('foo')
-        mockcreds.expects(:username=).with('foo')
-        mockcreds.expects(:user_id=).with('1cb05cfed7c24279be884ba4f6520262')
-        mockcreds.expects(:project_id=).with('project-id-1')
-        mockcreds.expects(:to_env).returns(mockcreds)
+        mock_creds = Puppet::Provider::Openstack::CredentialsV3.new
+        mock_creds.auth_url='http://127.0.0.1:5000'
+        mock_creds.password='foo'
+        mock_creds.username='foo'
+        mock_creds.user_id='1cb05cfed7c24279be884ba4f6520262'
+        mock_creds.project_id='project-id-1'
+        Puppet::Provider::Openstack::CredentialsV3.expects(:new).returns(mock_creds)
         Puppet::Provider::Openstack.expects(:openstack)
                       .with('project', 'list', '--quiet', '--format', 'csv', ['--user', '1cb05cfed7c24279be884ba4f6520262', '--long'])
                       .returns('"ID","Name","Domain ID","Description","Enabled"
@@ -350,14 +349,13 @@ ac43ec53d5a74a0b9f51523ae41a29f0
       it 'checks the password with domain scoped token' do
         provider.instance_variable_get('@property_hash')[:id] = '1cb05cfed7c24279be884ba4f6520262'
         provider.instance_variable_get('@property_hash')[:domain] = 'foo_domain'
-        mockcreds = {}
-        Puppet::Provider::Openstack::CredentialsV3.expects(:new).returns(mockcreds)
-        mockcreds.expects(:auth_url=).with('http://127.0.0.1:5000')
-        mockcreds.expects(:password=).with('foo')
-        mockcreds.expects(:username=).with('foo')
-        mockcreds.expects(:user_id=).with('1cb05cfed7c24279be884ba4f6520262')
-        mockcreds.expects(:domain_name=).with('foo_domain')
-        mockcreds.expects(:to_env).returns(mockcreds)
+        mock_creds = Puppet::Provider::Openstack::CredentialsV3.new
+        mock_creds.auth_url='http://127.0.0.1:5000'
+        mock_creds.password='foo'
+        mock_creds.username='foo'
+        mock_creds.user_id='1cb05cfed7c24279be884ba4f6520262'
+        mock_creds.domain_name='foo_domain'
+        Puppet::Provider::Openstack::CredentialsV3.expects(:new).returns(mock_creds)
         Puppet::Provider::Openstack.expects(:openstack)
                       .with('project', 'list', '--quiet', '--format', 'csv', ['--user', '1cb05cfed7c24279be884ba4f6520262', '--long'])
                       .returns('"ID","Name","Domain ID","Description","Enabled"
