@@ -18,6 +18,18 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
     @admin_token ||= get_admin_token
   end
 
+  def self.clean_host(host)
+    host ||= '127.0.0.1'
+    case host
+    when '0.0.0.0'
+      return '127.0.0.1'
+    when '::0'
+      return '[::1]'
+    else
+      return host
+    end
+  end
+
   def self.default_domain
     domain_hash[default_domain_id]
   end
@@ -44,65 +56,51 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
   end
 
   def self.get_admin_endpoint
+    endpoint = nil
     if keystone_file
-      if keystone_file['DEFAULT']
-        if keystone_file['DEFAULT']['admin_endpoint']
-          auth_url = keystone_file['DEFAULT']['admin_endpoint'].strip.chomp('/')
-          return "#{auth_url}/v#{@credentials.version}/"
-        end
-
-        if keystone_file['DEFAULT']['admin_port']
-          admin_port = keystone_file['DEFAULT']['admin_port'].strip
-        else
-          admin_port = '35357'
-        end
-
-        if keystone_file['DEFAULT']['admin_bind_host']
-          host = keystone_file['DEFAULT']['admin_bind_host'].strip
-          if host == "0.0.0.0"
-            host = "127.0.0.1"
-          elsif host == '::0'
-            host = '[::1]'
-          end
-        else
-          host = "127.0.0.1"
-        end
-      end
-
-      if keystone_file['ssl'] && keystone_file['ssl']['enable'] && keystone_file['ssl']['enable'].strip.downcase == 'true'
-        protocol = 'https'
+      if url = get_section('DEFAULT', 'admin_endpoint')
+        endpoint = url.chomp('/')
       else
-        protocol = 'http'
+        admin_port = get_section('DEFAULT', 'admin_port') || '35357'
+        host = clean_host(get_section('DEFAULT', 'admin_bind_host'))
+        protocol = ssl? ? 'https' : 'http'
+        endpoint = "#{protocol}://#{host}:#{admin_port}"
       end
     end
-
-    "#{protocol}://#{host}:#{admin_port}/v#{@credentials.version}/"
+    return endpoint
   end
-
 
   def self.get_admin_token
-    if keystone_file and keystone_file['DEFAULT'] and keystone_file['DEFAULT']['admin_token']
-      return "#{keystone_file['DEFAULT']['admin_token'].strip}"
-    else
-      return nil
-    end
+    get_section('DEFAULT', 'admin_token')
   end
 
-  def self.get_endpoint
-    endpoint = nil
+  def self.get_auth_url
+    auth_url = nil
     if ENV['OS_AUTH_URL']
-      endpoint = ENV['OS_AUTH_URL']
+      auth_url = ENV['OS_AUTH_URL'].dup
+    elsif auth_url = get_os_vars_from_rcfile(rc_filename)['OS_AUTH_URL']
     else
-      endpoint = get_os_vars_from_rcfile(rc_filename)['OS_AUTH_URL']
-      unless endpoint
-        # This is from legacy but seems wrong, we want auth_url not url!
-        endpoint = get_admin_endpoint
-      end
+      auth_url = admin_endpoint
     end
-    unless endpoint
-      raise(Puppet::Error::OpenstackAuthInputError, 'Could not find auth url to check user password.')
+    return auth_url
+  end
+
+  def self.get_section(group, name)
+    if keystone_file && keystone_file[group] && keystone_file['DEFAULT'][name]
+      return keystone_file[group][name].strip
     end
-    endpoint
+    return nil
+  end
+
+  def self.get_service_url
+    service_url = nil
+    if ENV['OS_URL']
+      service_url = ENV['OS_URL'].dup
+    elsif admin_endpoint
+      service_url = admin_endpoint
+      service_url << "/v#{@credentials.version}"
+    end
+    return service_url
   end
 
   def self.ini_filename
@@ -151,10 +149,21 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
 
   def self.request_by_service_token(service, action, error, properties=nil)
     properties ||= []
-    @credentials.token = get_admin_token
-    @credentials.url   = get_admin_endpoint
+    @credentials.token = admin_token
+    @credentials.url   = service_url
     raise error unless @credentials.service_token_set?
     Puppet::Provider::Openstack.request(service, action, properties, @credentials)
+  end
+
+  def self.service_url
+    @service_url ||= get_service_url
+  end
+
+  def self.ssl?
+    if keystone_file && keystone_file['ssl'] && keystone_file['ssl']['enable'] && keystone_file['ssl']['enable'].strip.downcase == 'true'
+      return true
+    end
+    return false
   end
 
   # Helper functions to use on the pre-validated enabled field

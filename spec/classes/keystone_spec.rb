@@ -27,7 +27,6 @@ describe 'keystone' do
       'admin_bind_host'       => '0.0.0.0',
       'public_port'           => '5000',
       'admin_port'            => '35357',
-      'admin_token'           => 'service_token',
       'verbose'               => false,
       'debug'                 => false,
       'catalog_type'          => 'sql',

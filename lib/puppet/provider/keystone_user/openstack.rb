@@ -92,17 +92,22 @@ Puppet::Type.type(:keystone_user).provide(
   end
 
   def password
-    res = nil
-    return res if resource[:password] == nil
+    passwd = nil
+    return passwd if resource[:password] == nil
     if resource[:enabled] == :false || resource[:replace_password] == :false
       # Unchanged password
-      res = resource[:password]
+      passwd = resource[:password]
     else
       # Password validation
-      credentials                  = Puppet::Provider::Openstack::CredentialsV3.new
-      credentials.auth_url         = self.class.get_endpoint
-      credentials.password         = resource[:password]
-      credentials.user_id          = id
+      credentials = Puppet::Provider::Openstack::CredentialsV3.new
+      unless auth_url = self.class.get_auth_url
+        raise(Puppet::Error::OpenstackAuthInputError, "Could not find authentication url to validate user's password.")
+      end
+      auth_url << "/v#{credentials.version}" unless auth_url =~ /\/v\d(\.\d)?$/
+      credentials.auth_url = auth_url
+      credentials.password = resource[:password]
+      credentials.user_id = id
+
       # NOTE: The only reason we use username is so that the openstack provider
       # will know we are doing v3password auth - otherwise, it is not used.  The
       # user_id uniquely identifies the user including domain.
@@ -121,10 +126,10 @@ Puppet::Type.type(:keystone_user).provide(
       rescue Puppet::Error::OpenstackUnauthorizedError
         # password is invalid
       else
-        res = resource[:password] unless token.empty?
+        passwd = resource[:password] unless token.empty?
       end
     end
-    return res
+    return passwd
   end
 
   def password=(value)
