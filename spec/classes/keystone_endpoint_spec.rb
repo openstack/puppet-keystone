@@ -34,6 +34,21 @@ describe 'keystone::endpoint' do
     )}
   end
 
+  describe 'without a version' do
+    # We need to test empty value '' to override the default value, using undef
+    # cannot un-set classes parameters.
+    let :params do
+      { :version => '' }
+    end
+
+    it { is_expected.to contain_keystone_endpoint('RegionOne/keystone').with(
+      :ensure       => 'present',
+      :public_url   => 'http://127.0.0.1:5000',
+      :admin_url    => 'http://127.0.0.1:35357',
+      :internal_url => 'http://127.0.0.1:5000'
+    )}
+  end
+
   describe 'without internal_url parameter' do
 
     let :params do

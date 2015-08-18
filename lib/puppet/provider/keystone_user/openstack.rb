@@ -102,11 +102,9 @@ Puppet::Type.type(:keystone_user).provide(
     else
       # Password validation
       credentials = Puppet::Provider::Openstack::CredentialsV3.new
-      unless auth_url = self.class.get_auth_url
+      unless credentials.auth_url = self.class.get_auth_url
         raise(Puppet::Error::OpenstackAuthInputError, "Could not find authentication url to validate user's password.")
       end
-      auth_url << "/v#{credentials.version}" unless auth_url =~ /\/v\d(\.\d)?$/
-      credentials.auth_url = auth_url
       credentials.password = resource[:password]
       credentials.user_id = id
 
