@@ -89,6 +89,10 @@
 #     (optional) Wsgi script source.
 #     Defaults to undef.
 #
+#   [*access_log_format*]
+#     The log format for the virtualhost.
+#     Optional. Defaults to false.
+#
 # == Dependencies
 #
 #   requires Class['apache'] & Class['keystone']
@@ -132,6 +136,7 @@ class keystone::wsgi::apache (
   $priority           = '10',
   $wsgi_script_ensure = 'file',
   $wsgi_script_source = undef,
+  $access_log_format  = false,
 ) {
 
   include ::keystone::params
@@ -245,6 +250,7 @@ class keystone::wsgi::apache (
     wsgi_process_group          => 'keystone_main',
     wsgi_script_aliases         => $wsgi_script_aliases_main_real,
     require                     => File['keystone_wsgi_main'],
+    access_log_format           => $access_log_format,
   }
 
   if $public_port != $admin_port {
@@ -270,6 +276,7 @@ class keystone::wsgi::apache (
       wsgi_process_group          => 'keystone_admin',
       wsgi_script_aliases         => $wsgi_script_aliases_admin,
       require                     => File['keystone_wsgi_admin'],
+      access_log_format           => $access_log_format,
     }
   }
 }
