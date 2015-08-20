@@ -18,7 +18,7 @@ Puppet::Type.newtype(:keystone_user) do
     # DEPRECATED - To be removed in next release (Liberty)
     # https://bugs.launchpad.net/puppet-keystone/+bug/1472437
     validate do |v|
-      Puppet.warning('The ignore_default_tenant parameter is deprecated and will be removed in the future.')
+      Puppet.warning('([keystone_user]: The ignore_default_tenant parameter is deprecated and will be removed in the future.')
     end
     newvalues(/(t|T)rue/, /(f|F)alse/, true, false)
     defaultto(false)
@@ -58,7 +58,7 @@ Puppet::Type.newtype(:keystone_user) do
     # DEPRECATED - To be removed in next release (Liberty)
     # https://bugs.launchpad.net/puppet-keystone/+bug/1472437
     validate do |v|
-      Puppet.warning('The tenant parameter is deprecated and will be removed in the future. Please use keystone_user_role to assign a user to a project.')
+      Puppet.warning('([keystone_user]: The tenant parameter is deprecated and will be removed in the future. Please use keystone_user_role to assign a user to a project.')
     end
     newvalues(/\S+/)
   end
@@ -84,7 +84,7 @@ Puppet::Type.newtype(:keystone_user) do
   newproperty(:domain) do
     newvalues(nil, /\S+/)
     def insync?(is)
-      raise(Puppet::Error, "The domain cannot be changed from #{self.should} to #{is}") unless self.should == is
+      raise(Puppet::Error, "[keystone_user]: The domain cannot be changed from #{self.should} to #{is}") unless self.should == is
       true
     end
   end
