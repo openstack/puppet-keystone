@@ -1,5 +1,10 @@
-spec/fixtures/modules/*
-spec/fixtures/manifests/*
-pkg
+pkg/
 Gemfile.lock
+vendor/
+spec/fixtures/
+.vagrant/
+.bundle/
+coverage/
+.idea/
 *.swp
+*.iml
