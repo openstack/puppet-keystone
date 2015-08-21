@@ -62,11 +62,20 @@ describe 'keystone::resource::service_identity' do
       )}
     end
 
-    context 'when omitting a required parameter password' do
+    context 'when trying to create a service without service_type' do
       let :params do
-        required_params.delete(:password)
+        required_params.delete(:service_type)
+        required_params
       end
-      it { expect { is_expected.to raise_error(Puppet::Error) } }
+      it_raises 'a Puppet::Error', /When configuring a service, you need to set the service_type parameter/
+    end
+
+    context 'when trying to create an endpoint without url' do
+      let :params do
+        required_params.delete(:public_url)
+        required_params
+      end
+      it_raises 'a Puppet::Error', /When configuring an endpoint, you need to set the _url parameters/
     end
 
     context 'with user domain' do

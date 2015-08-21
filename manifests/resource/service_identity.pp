@@ -156,6 +156,9 @@ define keystone::resource::service_identity(
       'ignore_default_tenant' => $ignore_default_tenant,
       'domain'                => $user_domain_real,
     })
+    if ! $password {
+      warning("No password had been set for ${auth_name} user.")
+    }
   }
 
   if $configure_user_role {
@@ -166,19 +169,27 @@ define keystone::resource::service_identity(
   }
 
   if $configure_service {
-    ensure_resource('keystone_service', $service_name_real, {
-      'ensure'      => 'present',
-      'type'        => $service_type,
-      'description' => $service_description,
-    })
+    if $service_type {
+      ensure_resource('keystone_service', $service_name_real, {
+        'ensure'      => 'present',
+        'type'        => $service_type,
+        'description' => $service_description,
+      })
+    } else {
+      fail ('When configuring a service, you need to set the service_type parameter.')
+    }
   }
 
   if $configure_endpoint {
-    ensure_resource('keystone_endpoint', "${region}/${service_name_real}", {
-      'ensure'       => 'present',
-      'public_url'   => $public_url,
-      'admin_url'    => $admin_url,
-      'internal_url' => $internal_url,
-    })
+    if $public_url and $admin_url and $internal_url {
+      ensure_resource('keystone_endpoint', "${region}/${service_name_real}", {
+        'ensure'       => 'present',
+        'public_url'   => $public_url,
+        'admin_url'    => $admin_url,
+        'internal_url' => $internal_url,
+      })
+    } else {
+      fail ('When configuring an endpoint, you need to set the _url parameters.')
+    }
   }
 }
