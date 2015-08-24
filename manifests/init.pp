@@ -870,6 +870,7 @@ class keystone(
         validate     => false,
       }
     }
+    warning('Keystone under Eventlet has been drepecated during the Kilo cycle. Support for deploying under eventlet will be dropped as of the M-release of OpenStack.')
   } elsif $service_name == 'httpd' {
     include ::apache::params
     class { '::keystone::service':
