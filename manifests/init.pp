@@ -390,6 +390,25 @@
 #   explicitly set in the request.
 #   Defaults to undef (will use built-in Keystone default)
 #
+# [*memcache_dead_retry*]
+#   (optional) Number of seconds memcached server is considered dead before it
+#   is tried again. This is used for the cache memcache_dead_retry and the
+#   memcache dead_retry values.
+#   Defaults to undef
+#
+# [*memcache_socket_timeout*]
+#   (optional) Timeout in seconds for every call to a server.
+#   Defaults to undef
+#
+# [*memcache_pool_maxsize*]
+#   (optional) Max total number of open connections to every memcached server.
+#   Defaults to undef
+#
+# [*memcache_pool_unused_timeout*]
+#   (optional) Number of seconds a connection to memcached is held unused in
+#   the pool before it is closed.
+#   Defaults to undef.
+#
 # == Dependencies
 #  None
 #
@@ -498,6 +517,10 @@ class keystone(
   $fernet_key_repository              = '/etc/keystone/fernet-keys',
   $fernet_max_active_keys             = undef,
   $default_domain                     = undef,
+  $memcache_dead_retry                = undef,
+  $memcache_socket_timeout            = undef,
+  $memcache_pool_maxsize              = undef,
+  $memcache_pool_unused_timeout       = undef,
   # DEPRECATED PARAMETERS
   $mysql_module                       = undef,
   $compute_port                       = undef,
@@ -679,11 +702,19 @@ class keystone(
     validate_array($memcache_servers)
     Service<| title == 'memcached' |> -> Service['keystone']
     keystone_config {
-      'cache/enabled':              value => true;
-      'cache/backend':              value => $cache_backend;
-      'cache/debug_cache_backend':  value => $debug_cache_backend;
-      'token/caching':              value => $token_caching;
-      'memcache/servers':           value => join($memcache_servers, ',');
+      'cache/enabled':                      value => true;
+      'cache/backend':                      value => $cache_backend;
+      'cache/debug_cache_backend':          value => $debug_cache_backend;
+      'token/caching':                      value => $token_caching;
+      'memcache/servers':                   value => join($memcache_servers, ',');
+      'memcache/dead_retry':                value => $memcache_dead_retry;
+      'memcache/socket_timeout':            value => $memcache_socket_timeout;
+      'memcache/pool_maxsize':              value => $memcache_pool_maxsize;
+      'memcache/pool_unused_timeout':       value => $memcache_pool_unused_timeout;
+      'cache/memcache_dead_retry':          value => $memcache_dead_retry;
+      'cache/memcache_socket_timeout':      value => $memcache_socket_timeout;
+      'cache/memcache_pool_maxsize':        value => $memcache_pool_maxsize;
+      'cache/memcache_pool_unused_timeout': value => $memcache_pool_unused_timeout;
     }
     if $cache_backend_argument {
       validate_array($cache_backend_argument)
@@ -697,12 +728,21 @@ class keystone(
     }
   } else {
     keystone_config {
-      'cache/enabled':             ensure => absent;
-      'cache/backend':             ensure => absent;
-      'cache/backend_argument':    ensure => absent;
-      'cache/debug_cache_backend': ensure => absent;
-      'token/caching':             ensure => absent;
-      'memcache/servers':          ensure => absent;
+      'cache/enabled':                      ensure => absent;
+      'cache/backend':                      ensure => absent;
+      'cache/backend_argument':             ensure => absent;
+      'cache/debug_cache_backend':          ensure => absent;
+      'token/caching':                      ensure => absent;
+      'memcache/servers':                   ensure => absent;
+      'memcache/dead_retry':                ensure => absent;
+      'memcache/socket_timeout':            ensure => absent;
+      'memcache/pool_maxsize':              ensure => absent;
+      'memcache/pool_unused_timeout':       ensure => absent;
+      'cache/memcache_dead_retry':          ensure => absent;
+      'cache/memcache_socket_timeout':      ensure => absent;
+      'cache/memcache_pool_maxsize':        ensure => absent;
+      'cache/memcache_pool_unused_timeout': ensure => absent;
+
     }
   }
 
