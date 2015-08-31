@@ -8,6 +8,13 @@ describe 'basic keystone server with resources' do
       pp= <<-EOS
       Exec { logoutput => 'on_failure' }
 
+      # make sure apache is stopped before keystone eventlet
+      # in case of wsgi was run before
+      class { '::apache':
+        service_ensure => 'stopped',
+      }
+      Service['httpd'] -> Service['keystone']
+
       # Common resources
       case $::osfamily {
         'Debian': {
