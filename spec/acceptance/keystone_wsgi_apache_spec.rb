@@ -382,5 +382,96 @@ url=http://auth.com/1
 EOC
       end
     end
+    context '#ldap_backend', :clean_domain_cfg => true do
+      context 'manifest' do
+        let(:pp) do
+      <<-EOM
+      class { '::keystone':
+        verbose             => true,
+        debug               => true,
+        database_connection => 'mysql://keystone:keystone@127.0.0.1/keystone',
+        admin_token         => 'admin_token',
+        enabled             => true,
+        default_domain      => 'default_domain',
+        using_domain_config => true
+      }
+      keystone_domain { 'domain_1_ldap_backend': ensure => present }
+      keystone_domain { 'domain_2_ldap_backend': ensure => present }
+      keystone::ldap_backend { 'domain_1_ldap_backend':
+        url  => 'ldap://foo',
+        user => 'cn=foo,dc=example,dc=com',
+        identity_driver => 'keystone.identity.backends.ldap.Identity',
+        credential_driver => 'keystone.credential.backends.ldap.Credential',
+        assignment_driver => 'keystone.assignment.backends.ldap.Assignment'
+      }
+      keystone::ldap_backend { 'domain_2_ldap_backend':
+        url  => 'ldap://bar',
+        user => 'cn=bar,dc=test,dc=com',
+        identity_driver => 'keystone.identity.backends.ldap.Identity',
+        credential_driver => 'keystone.credential.backends.ldap.Credential',
+        assignment_driver => 'keystone.assignment.backends.ldap.Assignment'
+      }
+      EOM
+        end
+        it 'should apply the manifest correctly' do
+          apply_manifest(pp, :accept_all_exit_codes => true)
+          # Cannot really test it as keystone will try to connect to
+          # the ldap backend when it restarts.  But the ldap server
+          # which doesn't exit.  The next "test" clean everything up
+          # to have a working keystone again.
+
+          # TODO: Sould we add a working ldap server ?
+        end
+        context '/etc/keystone/domains/keystone.domain_1_ldap_backend.conf' do
+          it_behaves_like 'a_valid_configuration', <<-EOC
+
+[ldap]
+use_pool=False
+pool_retry_delay=0.1
+url=ldap://foo
+auth_pool_size=100
+auth_pool_connection_lifetime=60
+user=cn=foo,dc=example,dc=com
+pool_connection_timeout=-1
+use_auth_pool=False
+pool_connection_lifetime=600
+pool_size=10
+pool_retry_max=3
+EOC
+        end
+
+        context '/etc/keystone/domains/keystone.domain_2_ldap_backend.conf' do
+          it_behaves_like 'a_valid_configuration', <<-EOC
+
+[ldap]
+pool_retry_delay=0.1
+url=ldap://bar
+user=cn=bar,dc=test,dc=com
+use_pool=False
+pool_retry_max=3
+pool_size=10
+auth_pool_size=100
+auth_pool_connection_lifetime=60
+use_auth_pool=False
+pool_connection_lifetime=600
+pool_connection_timeout=-1
+EOC
+        end
+      end
+      context 'clean up', :clean_domain_cfg => true do
+        # we must revert the changes as ldap backend is not fully
+        # functional and are "domain read only".  All subsequent tests
+        # will fail without this.
+        it_behaves_like 'puppet_apply_success', <<-EOM
+        keystone_config {
+          'identity/driver': value => 'sql';
+          'credential/driver': ensure => absent;
+          'assignment/driver': ensure => absent;
+          'identity/domain_specific_drivers_enabled': ensure => absent;
+          'identity/domain_config_dir': ensure => absent;
+        }
+        EOM
+      end
+    end
   end
 end
