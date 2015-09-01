@@ -215,6 +215,7 @@ describe 'keystone server running with Apache/WSGI with resources' do
       apply_manifest(pp, :catch_changes => true)
     end
   end
+
   describe 'composite namevar for keystone_service and keystone_endpoint' do
     let(:pp) do
       <<-EOM
@@ -256,6 +257,129 @@ describe 'keystone server running with Apache/WSGI with resources' do
             .to include_regexp([/keystone_endpoint { 'RegionOne\/service_1::type_1':/,
                                 /keystone_endpoint { 'RegionOne\/service_1::type_2':/])
         end
+      end
+    end
+  end
+
+  context '#keystone_domain_config' do
+    # make sure everything is clean before playing the manifest
+    shared_examples 'clean_domain_configuration', :clean_domain_cfg => true do
+      before(:context) do
+        hosts.each do |host|
+          on host, 'rm -rf /etc/keystone/domains >/dev/null 2>&1'
+          on host, 'rm -rf /tmp/keystone.*.conf >/dev/null 2>&1'
+        end
+      end
+    end
+
+    context 'one domain configuration', :clean_domain_cfg => true  do
+      context 'simple use case' do
+        it_behaves_like 'puppet_apply_success', <<-EOM
+          file { '/etc/keystone/domains': ensure => directory }
+          keystone_domain_config { 'services::ldap/url':
+            value => 'http://auth.com/1',
+          }
+        EOM
+
+        context '/etc/keystone/domains/keystone.services.conf' do
+          # the idiom
+
+          # note: cannot use neither instance variable nor let on
+          # parameter for shared_example
+          it_behaves_like 'a_valid_configuration', <<-EOC
+
+[ldap]
+url=http://auth.com/1
+EOC
+        end
+      end
+
+      context 'with a non default identity/domain_config_dir' do
+        it_behaves_like 'puppet_apply_success', <<-EOM
+        keystone_config { 'identity/domain_config_dir': value => '/tmp' }
+        keystone_domain_config { 'services::ldap/url':
+          value => 'http://auth.com/1',
+        }
+        EOM
+
+        context '/tmp/keystone.services.conf' do
+          it_behaves_like 'a_valid_configuration', <<-EOC
+
+[ldap]
+url=http://auth.com/1
+EOC
+        end
+      end
+    end
+
+    context 'with a multiple configurations', :clean_domain_cfg => true do
+      it_behaves_like 'puppet_apply_success', <<-EOM
+      file { '/etc/keystone/domains': ensure => directory }
+      keystone_config { 'identity/domain_config_dir': value => '/etc/keystone/domains' }
+      keystone_domain_config { 'services::ldap/url':
+        value => 'http://auth.com/1',
+      }
+      keystone_domain_config { 'services::http/url':
+        value => 'http://auth.com/2',
+      }
+      keystone_domain_config { 'external::ldap/url':
+        value => 'http://ext-auth.com/1',
+      }
+      EOM
+
+      describe command('puppet resource keystone_domain_config') do
+        its(:exit_status) { is_expected.to eq(0) }
+        its(:stdout) { is_expected.to eq(<<EOO) }
+keystone_domain_config { 'external::ldap/url':
+  ensure => 'present',
+  value  => 'http://ext-auth.com/1',
+}
+keystone_domain_config { 'services::http/url':
+  ensure => 'present',
+  value  => 'http://auth.com/2',
+}
+keystone_domain_config { 'services::ldap/url':
+  ensure => 'present',
+  value  => 'http://auth.com/1',
+}
+EOO
+      end
+
+      describe '/etc/keystone/domains/keystone.services.conf' do
+        it_behaves_like 'a_valid_configuration', <<EOC
+
+[http]
+url=http://auth.com/2
+
+[ldap]
+url=http://auth.com/1
+EOC
+      end
+      describe '/etc/keystone/domains/keystone.external.conf' do
+        it_behaves_like 'a_valid_configuration', <<EOC
+
+[ldap]
+url=http://ext-auth.com/1
+EOC
+      end
+    end
+
+    context 'checking that the purge is working' do
+      it_behaves_like 'puppet_apply_success', <<-EOM
+      resources { 'keystone_domain_config': purge => true }
+      keystone_domain_config { 'services::ldap/url':
+        value => 'http://auth.com/1',
+      }
+      EOM
+
+      context '/etc/keystone/domains/keystone.services.conf' do
+        it_behaves_like 'a_valid_configuration', <<-EOC
+
+[http]
+
+[ldap]
+url=http://auth.com/1
+EOC
       end
     end
   end

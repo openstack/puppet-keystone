@@ -462,6 +462,18 @@
 #   Policy backend driver. (string value)
 #   Defaults to $::os_service_default.
 #
+# [*using_domain_config*]
+#   (optional) Eases the use of the keystone_domain_config resource type.
+#   It ensures that a directory for holding the domain configuration is present
+#   and the associated configuration in keystone.conf is set up right.
+#   Defaults to false
+#
+# [*domain_config_directory*]
+#   (optional) Specify a domain configuration directory.
+#   For this to work the using_domain_config must be set to true.  Raise an
+#   error if it's not the case.
+#   Defaults to '/etc/keystone/domains'
+#
 # == Dependencies
 #  None
 #
@@ -581,6 +593,8 @@ class keystone(
   $memcache_pool_maxsize              = $::os_service_default,
   $memcache_pool_unused_timeout       = $::os_service_default,
   $policy_driver                      = $::os_service_default,
+  $using_domain_config                = false,
+  $domain_config_directory            = '/etc/keystone/domains',
   # DEPRECATED PARAMETERS
   $admin_workers                      = max($::processorcount, 2),
   $public_workers                     = max($::processorcount, 2),
@@ -970,6 +984,39 @@ class keystone(
         refreshonly => true,
       }
     }
+  }
+  if $domain_config_directory != '/etc/keystone/domains' and !$using_domain_config {
+    fail('You must activate domain configuration using "using_domain_config" parameter to keystone class.')
+  }
+
+  if $using_domain_config {
+    validate_absolute_path($domain_config_directory)
+    # Better than ensure resource.  We don't want to conflict with any
+    # user definition even if they don't match exactly our parameters.
+    # The error catching mechanism in the provider will remind them if
+    # they did something silly, like defining a file rather than a
+    # directory.  For the permission it's their choice.
+    if (!defined(File[$domain_config_directory])) {
+      file { $domain_config_directory:
+        ensure => directory,
+        owner  => 'keystone',
+        group  => 'keystone',
+        mode   => '0750',
+        } -> File['/etc/keystone/keystone.conf']
+    }
+    # Here we want the creation to fail if the user has created those
+    # resources with different values. That means that the user
+    # wrongly uses using_domain_config parameter.
+    ensure_resource(
+      'keystone_config',
+      'identity/domain_specific_drivers_enabled',
+      {'value' => true}
+    )
+    ensure_resource(
+      'keystone_config',
+      'identity/domain_config_dir',
+      {'value' => $domain_config_directory}
+    )
   }
   anchor { 'keystone_started':
     require => Service[$service_name]

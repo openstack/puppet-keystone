@@ -106,6 +106,7 @@ describe 'keystone' do
       'rabbit_heartbeat_timeout_threshold'  => '60',
       'rabbit_heartbeat_rate'               => '10',
       'default_domain'                      => 'other_domain',
+      'using_domain_config'                 => false
     }
 
   httpd_params = {'service_name' => 'httpd'}.merge(default_params)
@@ -1007,4 +1008,65 @@ describe 'keystone' do
     it_configures 'when configuring default domain'
   end
 
+  describe "when configuring using_domain_config" do
+    describe 'with default config' do
+      let :params do
+        default_params
+      end
+      it { is_expected.to_not contain_file('/etc/keystone/domains') }
+    end
+    describe 'when using domain config' do
+      let :params do
+        default_params.merge({
+          'using_domain_config'=> true,
+        })
+      end
+      it { is_expected.to contain_file('/etc/keystone/domains').with(
+        'ensure' => "directory",
+      ) }
+      it { is_expected
+          .to contain_keystone_config('identity/domain_specific_drivers_enabled')
+          .with('value' => true,
+      ) }
+      it { is_expected
+          .to contain_keystone_config('identity/domain_config_dir')
+          .with('value' => '/etc/keystone/domains',
+      ) }
+    end
+    describe 'when using domain config and a wrong directory' do
+      let :params do
+        default_params.merge({
+          'using_domain_config'=> true,
+          'domain_config_directory' => 'this/is/not/an/absolute/path'
+        })
+      end
+      it 'should raise an error' do
+        expect { should contain_file('/etc/keystone/domains') }
+          .to raise_error(Puppet::Error, %r(this/is/not/an/absolute/path" is not))
+      end
+    end
+    describe 'when setting domain directory and not using domain config' do
+      let :params do
+        default_params.merge({
+          'using_domain_config'=> false,
+          'domain_config_directory' => '/this/is/an/absolute/path'
+        })
+      end
+      it 'should raise an error' do
+        expect { should contain_file('/etc/keystone/domains') }
+          .to raise_error(Puppet::Error, %r(You must activate domain))
+      end
+    end
+    describe 'when setting domain directory and using domain config' do
+      let :params do
+        default_params.merge({
+          'using_domain_config'=> true,
+          'domain_config_directory' => '/this/is/an/absolute/path'
+        })
+      end
+      it { is_expected.to contain_file('/this/is/an/absolute/path').with(
+        'ensure' => "directory",
+      ) }
+    end
+  end
 end

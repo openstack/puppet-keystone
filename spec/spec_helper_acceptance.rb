@@ -1,5 +1,6 @@
 require 'beaker-rspec'
 require 'beaker/puppet_install_helper'
+require 'shared_examples_acceptance'
 
 run_puppet_install_helper
 
