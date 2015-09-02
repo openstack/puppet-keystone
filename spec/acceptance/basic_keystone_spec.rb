@@ -19,11 +19,11 @@ describe 'basic keystone server with resources' do
       case $::osfamily {
         'Debian': {
           include ::apt
-          apt::ppa { 'ppa:ubuntu-cloud-archive/liberty-staging':
-            # it's false by default in 2.x series but true in 1.8.x
-            package_manage => false,
+          class { '::openstack_extras::repo::debian::ubuntu':
+            release         => 'liberty',
+            repo            => 'proposed',
+            package_require => true,
           }
-          Exec['apt_update'] -> Package<||>
         }
         'RedHat': {
           class { '::openstack_extras::repo::redhat::redhat':
