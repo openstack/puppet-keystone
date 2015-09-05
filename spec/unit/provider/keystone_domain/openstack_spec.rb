@@ -2,19 +2,9 @@ require 'puppet'
 require 'spec_helper'
 require 'puppet/provider/keystone_domain/openstack'
 
-provider_class = Puppet::Type.type(:keystone_domain).provider(:openstack)
+setup_provider_tests
 
-class Puppet::Provider::Keystone
-  def self.reset
-    @admin_endpoint = nil
-    @tenant_hash    = nil
-    @admin_token    = nil
-    @keystone_file  = nil
-    @domain_id_to_name = nil
-    @default_domain_id = nil
-    @domain_hash = nil
-  end
-end
+provider_class = Puppet::Type.type(:keystone_domain).provider(:openstack)
 
 describe provider_class do
 

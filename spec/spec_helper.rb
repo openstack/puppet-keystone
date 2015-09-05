@@ -10,3 +10,16 @@ RSpec.configure do |c|
 end
 
 at_exit { RSpec::Puppet::Coverage.report! }
+
+def setup_provider_tests
+  Puppet::Provider::Keystone.class_exec do
+    def self.reset
+      @admin_endpoint = nil
+      @tenant_hash    = nil
+      @admin_token    = nil
+      @keystone_file  = nil
+      @default_domain_id = nil
+      @domain_hash = nil
+    end
+  end
+end

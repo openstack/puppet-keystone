@@ -2,6 +2,8 @@ require 'puppet'
 require 'spec_helper'
 require 'puppet/provider/keystone_user_role/openstack'
 
+setup_provider_tests
+
 provider_class = Puppet::Type.type(:keystone_user_role).provider(:openstack)
 def user_class
   Puppet::Type.type(:keystone_user).provider(:openstack)
@@ -11,6 +13,10 @@ def project_class
 end
 
 describe provider_class do
+
+  after :each do
+    provider_class.reset
+  end
 
   # assumes Enabled is the last column - no quotes
   def list_to_csv(thelist)

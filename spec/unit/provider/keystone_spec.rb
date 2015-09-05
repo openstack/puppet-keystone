@@ -3,20 +3,12 @@ require 'spec_helper'
 require 'puppet/provider/keystone'
 require 'tempfile'
 
+setup_provider_tests
+
 klass = Puppet::Provider::Keystone
 
 class Puppet::Provider::Keystone
   @credentials = Puppet::Provider::Openstack::CredentialsV3.new
-
-  def self.reset
-    @admin_endpoint = nil
-    @tenant_hash    = nil
-    @admin_token    = nil
-    @keystone_file  = nil
-    @domain_id_to_name = nil
-    @default_domain_id = nil
-    @domain_hash = nil
-  end
 end
 
 describe Puppet::Provider::Keystone do
@@ -246,6 +238,55 @@ describe Puppet::Provider::Keystone do
 "default","Default",True,"default domain"
 ')
       expect(klass.name_and_domain('foo')).to eq(['foo', 'Default'])
+    end
+    it 'should list all domains when requesting a domain name from an ID' do
+      ENV['OS_USERNAME']     = 'test'
+      ENV['OS_PASSWORD']     = 'abc123'
+      ENV['OS_PROJECT_NAME'] = 'test'
+      ENV['OS_AUTH_URL']     = 'http://127.0.0.1:35357/v3'
+      klass.expects(:openstack)
+           .with('domain', 'list', '--quiet', '--format', 'csv', [])
+           .returns('"ID","Name","Enabled","Description"
+"somename","SomeName",True,"default domain"
+')
+      expect(klass.domain_name_from_id('somename')).to eq('SomeName')
+    end
+    it 'should lookup a domain when not found in the hash' do
+      ENV['OS_USERNAME']     = 'test'
+      ENV['OS_PASSWORD']     = 'abc123'
+      ENV['OS_PROJECT_NAME'] = 'test'
+      ENV['OS_AUTH_URL']     = 'http://127.0.0.1:35357/v3'
+      klass.expects(:openstack)
+           .with('domain', 'list', '--quiet', '--format', 'csv', [])
+           .returns('"ID","Name","Enabled","Description"
+"somename","SomeName",True,"default domain"
+')
+      klass.expects(:openstack)
+           .with('domain', 'show', '--format', 'shell', 'another')
+           .returns('
+name="AnOther"
+id="another"
+')
+      expect(klass.domain_name_from_id('somename')).to eq('SomeName')
+      expect(klass.domain_name_from_id('another')).to eq('AnOther')
+    end
+    it 'should print an error when there is no such domain' do
+      ENV['OS_USERNAME']     = 'test'
+      ENV['OS_PASSWORD']     = 'abc123'
+      ENV['OS_PROJECT_NAME'] = 'test'
+      ENV['OS_AUTH_URL']     = 'http://127.0.0.1:35357/v3'
+      klass.expects(:openstack)
+           .with('domain', 'list', '--quiet', '--format', 'csv', [])
+           .returns('"ID","Name","Enabled","Description"
+"somename","SomeName",True,"default domain"
+')
+      klass.expects(:openstack)
+           .with('domain', 'show', '--format', 'shell', 'doesnotexist')
+           .returns('
+')
+      klass.expects(:err)
+           .with('Could not find domain with id [doesnotexist]')
+      expect(klass.domain_name_from_id('doesnotexist')).to eq(nil)
     end
   end
 end
