@@ -13,8 +13,16 @@ end
 
 describe Puppet::Provider::Keystone do
 
+  let(:another_class) do
+    class AnotherKlass < Puppet::Provider::Keystone
+      @credentials = Puppet::Provider::Openstack::CredentialsV3.new
+    end
+    AnotherKlass
+  end
+
   after :each do
     klass.reset
+    another_class.reset
   end
 
   describe '#ssl?' do
@@ -222,6 +230,29 @@ describe Puppet::Provider::Keystone do
 "somename","SomeName",True,"default domain"
 ')
       expect(klass.name_and_domain('foo')).to eq(['foo', 'SomeName'])
+    end
+    it 'should return the default_domain_id from one class set in another class' do
+      ENV['OS_USERNAME']     = 'test'
+      ENV['OS_PASSWORD']     = 'abc123'
+      ENV['OS_PROJECT_NAME'] = 'test'
+      ENV['OS_AUTH_URL']     = 'http://127.0.0.1:35357/v3'
+      klass.expects(:openstack)
+           .with('domain', 'list', '--quiet', '--format', 'csv', [])
+           .returns('"ID","Name","Enabled","Description"
+"default","Default",True,"default domain"
+"somename","SomeName",True,"some domain"
+')
+      another_class.expects(:openstack)
+                   .with('domain', 'list', '--quiet', '--format', 'csv', [])
+                   .returns('"ID","Name","Enabled","Description"
+"default","Default",True,"default domain"
+"somename","SomeName",True,"some domain"
+')
+      expect(klass.default_domain).to eq('Default')
+      expect(another_class.default_domain).to eq('Default')
+      klass.default_domain_id = 'somename'
+      expect(klass.default_domain).to eq('SomeName')
+      expect(another_class.default_domain).to eq('SomeName')
     end
     it 'should return Default if default_domain_id is not configured' do
       ENV['OS_USERNAME']     = 'test'

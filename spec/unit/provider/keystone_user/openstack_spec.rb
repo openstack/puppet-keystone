@@ -22,6 +22,7 @@ describe provider_class do
 
   after :each do
     provider_class.reset
+    project_class.reset
   end
 
   let(:user_attrs) do
@@ -188,7 +189,7 @@ username="foo"
       end
 
       describe '#tenant' do
-        it 'gets the tenant with default backend', :noproject_user_cached => true do
+        it 'gets the tenant with default backend', :user_cached => true do
           project_class.expects(:openstack)
                        .with('project', 'list', '--quiet', '--format', 'csv', '--long')
                        .returns('"ID","Name","Domain ID","Description","Enabled"
@@ -205,7 +206,7 @@ username="foo"
           expect(tenant).to eq('foo')
         end
 
-        it 'gets the tenant with LDAP backend', :noproject_user_cached => true do
+        it 'gets the tenant with LDAP backend', :user_cached => true do
           provider.instance_variable_get('@property_hash')[:id] = '1cb05cfed7c24279be884ba4f6520262'
           project_class.expects(:openstack)
                        .with('project', 'list', '--quiet', '--format', 'csv', '--long')
@@ -224,8 +225,8 @@ username="foo"
           expect(tenant).to eq('foo')
         end
       end
-      describe '#tenant=' do
-        context 'when using default backend', :nohooks => true do
+      describe '#tenant=', :project_only => true do
+        context 'when using default backend' do
           it 'sets the tenant' do
             provider.instance_variable_get('@property_hash')[:id] = '1cb05cfed7c24279be884ba4f6520262'
             provider.instance_variable_get('@property_hash')[:domain] = 'foo_domain'
@@ -243,7 +244,7 @@ username="foo"
             provider.tenant=('bar')
           end
         end
-        context 'when using LDAP read-write backend', :nohooks => true do
+        context 'when using LDAP read-write backend' do
           it 'sets the tenant when _member_ role exists' do
             provider.instance_variable_get('@property_hash')[:id] = '1cb05cfed7c24279be884ba4f6520262'
             provider.instance_variable_get('@property_hash')[:domain] = 'foo_domain'
@@ -426,7 +427,7 @@ ac43ec53d5a74a0b9f51523ae41a29f0
   end
 
   it_behaves_like 'authenticated with environment variables' do
-    describe 'v3 domains with no domain in resource', :noproject_user_cached => true do
+    describe 'v3 domains with no domain in resource', :user_cached => true do
       let(:user_attrs) do
         {
           :name         => 'foo',
@@ -439,9 +440,6 @@ ac43ec53d5a74a0b9f51523ae41a29f0
       end
 
       it 'adds default domain to commands' do
-        provider_class.class_exec {
-          @default_domain_id = nil
-        }
         mock = {
           'identity' => {'default_domain_id' => 'foo_domain_id'}
         }
@@ -479,7 +477,7 @@ username="foo"
       end
     end
 
-    describe 'v3 domains with domain in resource' do
+    describe 'v3 domains with domain in resource', :project_only => true do
       let(:user_attrs) do
         {
           :name         => 'foo',
@@ -520,7 +518,7 @@ username="foo"
       end
     end
 
-    describe 'v3 domains with domain in name/title' do
+    describe 'v3 domains with domain in name/title', :project_only => true do
       let(:user_attrs) do
         {
           :name         => 'foo::bar_domain',
@@ -560,7 +558,7 @@ username="foo"
       end
     end
 
-    describe 'v3 domains with domain in name/title and in resource' do
+    describe 'v3 domains with domain in name/title and in resource', :project_only => true do
       let(:user_attrs) do
         {
           :name         => 'foo::bar_domain',
@@ -601,7 +599,7 @@ username="foo"
       end
     end
 
-    describe 'v3 domains with domain in name/title and in resource and in tenant' do
+    describe 'v3 domains with domain in name/title and in resource and in tenant', :project_only => true do
       let(:user_attrs) do
         {
           :name         => 'foo::bar_domain',

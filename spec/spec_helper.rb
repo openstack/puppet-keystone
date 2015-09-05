@@ -15,7 +15,7 @@ def setup_provider_tests
       @tenant_hash    = nil
       @admin_token    = nil
       @keystone_file  = nil
-      @default_domain_id = nil
+      Puppet::Provider::Keystone.default_domain_id = nil
       @domain_hash = nil
     end
   end

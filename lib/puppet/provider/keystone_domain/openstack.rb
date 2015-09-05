@@ -99,6 +99,7 @@ Puppet::Type.type(:keystone_domain).provide(
     end
     if changed
       self.class.keystone_file.store
+      self.class.default_domain_id = newid
       debug("The default_domain_id was changed from #{curid} to #{newid}")
     end
   end
