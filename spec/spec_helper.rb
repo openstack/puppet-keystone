@@ -7,3 +7,16 @@ RSpec.configure do |c|
   c.alias_it_should_behave_like_to :it_configures, 'configures'
   c.alias_it_should_behave_like_to :it_raises, 'raises'
 end
+
+def setup_provider_tests
+  Puppet::Provider::Keystone.class_exec do
+    def self.reset
+      @admin_endpoint = nil
+      @tenant_hash    = nil
+      @admin_token    = nil
+      @keystone_file  = nil
+      @default_domain_id = nil
+      @domain_hash = nil
+    end
+  end
+end
