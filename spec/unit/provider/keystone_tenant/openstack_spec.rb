@@ -193,6 +193,7 @@ domain_id="foo_domain_id"
         provider.create
         expect(provider.exists?).to be_truthy
         expect(provider.id).to eq("project-id")
+        expect(provider.name).to eq('foo::foo_domain')
       end
     end
 
@@ -220,6 +221,7 @@ domain_id="foo_domain_id"
         provider.create
         expect(provider.exists?).to be_truthy
         expect(provider.id).to eq("project-id")
+        expect(provider.name).to eq('foo::bar_domain')
       end
     end
   end

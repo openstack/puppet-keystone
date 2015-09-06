@@ -555,6 +555,7 @@ username="foo"
         provider.create
         expect(provider.exists?).to be_truthy
         expect(provider.id).to eq("2cb05cfed7c24279be884ba4f6520262")
+        expect(provider.name).to eq('foo::bar_domain')
       end
     end
 
@@ -596,6 +597,7 @@ username="foo"
         provider.create
         expect(provider.exists?).to be_truthy
         expect(provider.id).to eq("2cb05cfed7c24279be884ba4f6520262")
+        expect(provider.name).to eq('foo::bar_domain')
       end
     end
 
@@ -637,6 +639,7 @@ username="foo"
         provider.create
         expect(provider.exists?).to be_truthy
         expect(provider.id).to eq("2cb05cfed7c24279be884ba4f6520262")
+        expect(provider.name).to eq('foo::bar_domain')
       end
     end
   end
