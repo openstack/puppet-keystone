@@ -34,12 +34,14 @@ Puppet::Type.type(:keystone_user).provide(
       properties << user_domain
     end
     @property_hash = self.class.request('user', 'create', properties)
+    @property_hash[:name] = resource[:name]
     @property_hash[:domain] = user_domain
     if resource[:tenant]
       # DEPRECATED - To be removed in next release (Liberty)
       # https://bugs.launchpad.net/puppet-keystone/+bug/1472437
       project_id = Puppet::Resource.indirection.find("Keystone_tenant/#{resource[:tenant]}")[:id]
       set_project(resource[:tenant], project_id)
+      @property_hash[:tenant] = resource[:tenant]
     end
     @property_hash[:ensure] = :present
   end
@@ -152,7 +154,7 @@ Puppet::Type.type(:keystone_user).provide(
     self.class.request('project', 'list', ['--user', id, '--long']).each do |project|
       if (project_id == project[:id]) ||
          ((projname == project_name) && (project_domain == self.class.domain_name_from_id(project[:domain_id])))
-        return project[:name]
+        return projname
       end
     end
     return nil

@@ -32,6 +32,7 @@ Puppet::Type.type(:keystone_tenant).provide(
       properties << project_domain
     end
     @property_hash = self.class.request('project', 'create', properties)
+    @property_hash[:name] = resource[:name]
     @property_hash[:ensure] = :present
   end
 
