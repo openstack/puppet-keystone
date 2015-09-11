@@ -212,14 +212,14 @@ describe 'keystone' do
 
     it 'should ensure proper setting of admin_workers and public_workers' do
       if param_hash['admin_workers']
-        is_expected.to contain_keystone_config('DEFAULT/admin_workers').with_value(param_hash['admin_workers'])
+        is_expected.to contain_keystone_config('eventlet_server/admin_workers').with_value(param_hash['admin_workers'])
       else
-        is_expected.to contain_keystone_config('DEFAULT/admin_workers').with_value('2')
+        is_expected.to contain_keystone_config('eventlet_server/admin_workers').with_value('2')
       end
       if param_hash['public_workers']
-        is_expected.to contain_keystone_config('DEFAULT/public_workers').with_value(param_hash['public_workers'])
+        is_expected.to contain_keystone_config('eventlet_server/public_workers').with_value(param_hash['public_workers'])
       else
-        is_expected.to contain_keystone_config('DEFAULT/public_workers').with_value('2')
+        is_expected.to contain_keystone_config('eventlet_server/public_workers').with_value('2')
       end
     end
 
