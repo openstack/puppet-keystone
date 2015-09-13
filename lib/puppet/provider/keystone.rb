@@ -96,7 +96,7 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
   end
 
   def self.get_section(group, name)
-    if keystone_file && keystone_file[group] && keystone_file['DEFAULT'][name]
+    if keystone_file && keystone_file[group] && keystone_file[group][name]
       return keystone_file[group][name].strip
     end
     return nil
