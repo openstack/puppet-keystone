@@ -31,7 +31,7 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
   end
 
   def self.default_domain
-    domain_hash[default_domain_id]
+    domain_name_from_id(default_domain_id)
   end
 
   def self.default_domain_id
@@ -44,15 +44,19 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
     @default_domain_id
   end
 
-  def self.domain_hash
-    return @domain_hash if @domain_hash
-    list = request('domain', 'list')
-    @domain_hash = Hash[list.collect{|domain| [domain[:id], domain[:name]]}]
-    @domain_hash
-  end
-
   def self.domain_name_from_id(id)
-    domain_hash[id]
+    unless @domain_hash
+      list = request('domain', 'list')
+      @domain_hash = Hash[list.collect{|domain| [domain[:id], domain[:name]]}]
+    end
+    unless @domain_hash.include?(id)
+      name = request('domain', 'show', id)[:name]
+      @domain_hash[id] = name if name
+    end
+    unless @domain_hash.include?(id)
+      err("Could not find domain with id [#{id}]")
+    end
+    @domain_hash[id]
   end
 
   def self.get_admin_endpoint
