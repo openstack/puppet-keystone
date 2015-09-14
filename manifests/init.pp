@@ -355,11 +355,15 @@
 #   Defaults to undef
 #
 # [*admin_workers*]
-#   (optional) The number of worker processes to serve the admin WSGI application.
+#   (optional) The number of worker processes to serve the admin eventlet application.
+#   This option is deprecated along with eventlet and will be removed in M.
+#   This setting has no affect when using WSGI.
 #   Defaults to max($::processorcount, 2)
 #
 # [*public_workers*]
-#   (optional) The number of worker processes to serve the public WSGI application.
+#   (optional) The number of worker processes to serve the public eventlet application.
+#   This option is deprecated along with eventlet and will be removed in M.
+#   This setting has no affect when using WSGI.
 #   Defaults to max($::processorcount, 2)
 #
 # [*sync_db*]
@@ -491,14 +495,14 @@ class keystone(
   $service_provider                   = $::keystone::params::service_provider,
   $service_name                       = $::keystone::params::service_name,
   $max_token_size                     = undef,
-  $admin_workers                      = max($::processorcount, 2),
-  $public_workers                     = max($::processorcount, 2),
   $sync_db                            = true,
   $enable_fernet_setup                = false,
   $fernet_key_repository              = '/etc/keystone/fernet-keys',
   $fernet_max_active_keys             = undef,
   $default_domain                     = undef,
   # DEPRECATED PARAMETERS
+  $admin_workers                      = max($::processorcount, 2),
+  $public_workers                     = max($::processorcount, 2),
   $mysql_module                       = undef,
   $compute_port                       = undef,
 ) inherits keystone::params {
@@ -823,8 +827,8 @@ class keystone(
   }
 
   keystone_config {
-    'DEFAULT/admin_workers':  value => $admin_workers;
-    'DEFAULT/public_workers': value => $public_workers;
+    'eventlet_server/admin_workers':  value => $admin_workers;
+    'eventlet_server/public_workers': value => $public_workers;
   }
 
   if $manage_service {
