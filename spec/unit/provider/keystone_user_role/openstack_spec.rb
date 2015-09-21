@@ -137,7 +137,15 @@ describe provider_class do
     end
   end
 
+  let(:set_env) do
+    ENV['OS_USERNAME']     = 'test'
+    ENV['OS_PASSWORD']     = 'abc123'
+    ENV['OS_PROJECT_NAME'] = 'test'
+    ENV['OS_AUTH_URL']     = 'http://127.0.0.1:5000'
+  end
+
   def before_common(destroy, nolist=false, instances=false)
+    set_env
     rolelistprojectuser = [['role-id-1','foo','foo','foo'],
                            ['role-id-2','bar','foo','foo']]
     csvlist = list_to_csv(rolelistprojectuser)
@@ -186,107 +194,98 @@ describe provider_class do
     before_common(true, true, true)
   end
 
-  shared_examples 'authenticated with environment variables' do
-    ENV['OS_USERNAME']     = 'test'
-    ENV['OS_PASSWORD']     = 'abc123'
-    ENV['OS_PROJECT_NAME'] = 'test'
-    ENV['OS_AUTH_URL']     = 'http://127.0.0.1:5000'
-  end
-
   describe 'when updating a user\'s role' do
-    it_behaves_like 'authenticated with environment variables' do
+    let(:user_role_attrs) do
+      {
+        :name         => 'foo@foo',
+        :ensure       => 'present',
+        :roles        => ['foo', 'bar'],
+      }
+    end
+
+    let(:resource) do
+      Puppet::Type::Keystone_user_role.new(user_role_attrs)
+    end
+
+    let(:provider) do
+      provider_class.new(resource)
+    end
+
+    describe '#create', :default => true do
+      it 'adds all the roles to the user' do
+        provider.class.expects(:openstack)
+          .with('role', 'add', ['foo', '--project', 'project-id-1', '--user', 'user-id-1'])
+        provider.class.expects(:openstack)
+          .with('role', 'add', ['bar', '--project', 'project-id-1', '--user', 'user-id-1'])
+        provider.create
+        expect(provider.exists?).to be_truthy
+      end
+    end
+
+    describe '#destroy', :destroy => true do
+      it 'removes all the roles from a user' do
+        provider.instance_variable_get('@property_hash')[:roles] = ['foo', 'bar']
+        provider.class.expects(:openstack)
+          .with('role', 'remove', ['foo', '--project', 'project-id-1', '--user', 'user-id-1'])
+        provider.class.expects(:openstack)
+          .with('role', 'remove', ['bar', '--project', 'project-id-1', '--user', 'user-id-1'])
+        provider.destroy
+        expect(provider.exists?).to be_falsey
+      end
+
+    end
+
+    describe '#exists', :default => true do
+      subject(:response) do
+        response = provider.exists?
+      end
+
+      it { is_expected.to be_truthy }
+
+    end
+
+    describe '#instances', :instances => true do
+      it 'finds every user role' do
+        provider.class.expects(:openstack)
+          .with('role', 'list', '--quiet', '--format', 'csv', [])
+          .returns('"ID","Name"
+"foo-role-id","foo"
+"bar-role-id","bar"
+          ')
+        provider.class.expects(:openstack)
+          .with('role assignment', 'list', '--quiet', '--format', 'csv', [])
+          .returns('
+"Role","User","Group","Project","Domain"
+"foo-role-id","user-id-1","","project-id-1",""
+"bar-role-id","user-id-1","","project-id-1",""
+          ')
+        instances = provider.class.instances
+        expect(instances.count).to eq(1)
+        expect(instances[0].name).to eq('foo@example.com@foo')
+        expect(instances[0].roles).to eq(['foo', 'bar'])
+      end
+    end
+
+    describe '#roles=', :nolist => true do
       let(:user_role_attrs) do
         {
           :name         => 'foo@foo',
           :ensure       => 'present',
-          :roles        => ['foo', 'bar'],
+          :roles        => ['one', 'two'],
         }
       end
 
-      let(:resource) do
-        Puppet::Type::Keystone_user_role.new(user_role_attrs)
-      end
-
-      let(:provider) do
-        provider_class.new(resource)
-      end
-
-      describe '#create', :default => true do
-        it 'adds all the roles to the user' do
-          provider.class.expects(:openstack)
-                        .with('role', 'add', ['foo', '--project', 'project-id-1', '--user', 'user-id-1'])
-          provider.class.expects(:openstack)
-                        .with('role', 'add', ['bar', '--project', 'project-id-1', '--user', 'user-id-1'])
-          provider.create
-          expect(provider.exists?).to be_truthy
-        end
-      end
-
-      describe '#destroy', :destroy => true do
-        it 'removes all the roles from a user' do
-          provider.instance_variable_get('@property_hash')[:roles] = ['foo', 'bar']
-          provider.class.expects(:openstack)
-                        .with('role', 'remove', ['foo', '--project', 'project-id-1', '--user', 'user-id-1'])
-          provider.class.expects(:openstack)
-                        .with('role', 'remove', ['bar', '--project', 'project-id-1', '--user', 'user-id-1'])
-          provider.destroy
-          expect(provider.exists?).to be_falsey
-        end
-
-      end
-
-      describe '#exists', :default => true do
-        subject(:response) do
-          response = provider.exists?
-        end
-
-        it { is_expected.to be_truthy }
-
-      end
-
-      describe '#instances', :instances => true do
-        it 'finds every user role' do
-          provider.class.expects(:openstack)
-                        .with('role', 'list', '--quiet', '--format', 'csv', [])
-                        .returns('"ID","Name"
-"foo-role-id","foo"
-"bar-role-id","bar"
-')
-          provider.class.expects(:openstack)
-                        .with('role assignment', 'list', '--quiet', '--format', 'csv', [])
-                        .returns('
-"Role","User","Group","Project","Domain"
-"foo-role-id","user-id-1","","project-id-1",""
-"bar-role-id","user-id-1","","project-id-1",""
-')
-          instances = provider.class.instances
-          expect(instances.count).to eq(1)
-          expect(instances[0].name).to eq('foo@example.com@foo')
-          expect(instances[0].roles).to eq(['foo', 'bar'])
-        end
-      end
-
-      describe '#roles=', :nolist => true do
-        let(:user_role_attrs) do
-          {
-            :name         => 'foo@foo',
-            :ensure       => 'present',
-            :roles        => ['one', 'two'],
-          }
-        end
-
-        it 'applies the new roles' do
-          provider.instance_variable_get('@property_hash')[:roles] = ['foo', 'bar']
-          provider.class.expects(:openstack)
-                        .with('role', 'remove', ['foo', '--project', 'project-id-1', '--user', 'user-id-1'])
-          provider.class.expects(:openstack)
-                        .with('role', 'remove', ['bar', '--project', 'project-id-1', '--user', 'user-id-1'])
-          provider.class.expects(:openstack)
-                        .with('role', 'add', ['one', '--project', 'project-id-1', '--user', 'user-id-1'])
-          provider.class.expects(:openstack)
-                        .with('role', 'add', ['two', '--project', 'project-id-1', '--user', 'user-id-1'])
-          provider.roles=(['one', 'two'])
-        end
+      it 'applies the new roles' do
+        provider.instance_variable_get('@property_hash')[:roles] = ['foo', 'bar']
+        provider.class.expects(:openstack)
+          .with('role', 'remove', ['foo', '--project', 'project-id-1', '--user', 'user-id-1'])
+        provider.class.expects(:openstack)
+          .with('role', 'remove', ['bar', '--project', 'project-id-1', '--user', 'user-id-1'])
+        provider.class.expects(:openstack)
+          .with('role', 'add', ['one', '--project', 'project-id-1', '--user', 'user-id-1'])
+        provider.class.expects(:openstack)
+          .with('role', 'add', ['two', '--project', 'project-id-1', '--user', 'user-id-1'])
+        provider.roles=(['one', 'two'])
       end
     end
   end

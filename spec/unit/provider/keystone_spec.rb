@@ -200,6 +200,17 @@ describe Puppet::Provider::Keystone do
   end
 
   describe 'when using domains' do
+    let(:set_env) do
+      ENV['OS_USERNAME']     = 'test'
+      ENV['OS_PASSWORD']     = 'abc123'
+      ENV['OS_PROJECT_NAME'] = 'test'
+      ENV['OS_AUTH_URL']     = 'http://127.0.0.1:35357/v3'
+    end
+
+    before(:each) do
+      set_env
+    end
+
     it 'name_and_domain should return the resource domain' do
       expect(klass.name_and_domain('foo::in_name', 'from_resource', 'default')).to eq(['foo', 'from_resource'])
     end
@@ -210,10 +221,6 @@ describe Puppet::Provider::Keystone do
       expect(klass.name_and_domain('foo::in_name', nil, 'default')).to eq(['foo', 'in_name'])
     end
     it 'should return the default domain name using the default_domain_id from keystone.conf' do
-      ENV['OS_USERNAME']     = 'test'
-      ENV['OS_PASSWORD']     = 'abc123'
-      ENV['OS_PROJECT_NAME'] = 'test'
-      ENV['OS_AUTH_URL']     = 'http://127.0.0.1:35357/v3'
       mock = {
         'DEFAULT' => {
           'admin_endpoint' => 'http://127.0.0.1:35357',
@@ -232,10 +239,6 @@ describe Puppet::Provider::Keystone do
       expect(klass.name_and_domain('foo')).to eq(['foo', 'SomeName'])
     end
     it 'should return the default_domain_id from one class set in another class' do
-      ENV['OS_USERNAME']     = 'test'
-      ENV['OS_PASSWORD']     = 'abc123'
-      ENV['OS_PROJECT_NAME'] = 'test'
-      ENV['OS_AUTH_URL']     = 'http://127.0.0.1:35357/v3'
       klass.expects(:openstack)
            .with('domain', 'list', '--quiet', '--format', 'csv', [])
            .returns('"ID","Name","Enabled","Description"
@@ -255,10 +258,6 @@ describe Puppet::Provider::Keystone do
       expect(another_class.default_domain).to eq('SomeName')
     end
     it 'should return Default if default_domain_id is not configured' do
-      ENV['OS_USERNAME']     = 'test'
-      ENV['OS_PASSWORD']     = 'abc123'
-      ENV['OS_PROJECT_NAME'] = 'test'
-      ENV['OS_AUTH_URL']     = 'http://127.0.0.1:35357/v3'
       mock = {}
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)
       File.expects(:exists?).with('/etc/keystone/keystone.conf').returns(true)
@@ -271,10 +270,6 @@ describe Puppet::Provider::Keystone do
       expect(klass.name_and_domain('foo')).to eq(['foo', 'Default'])
     end
     it 'should list all domains when requesting a domain name from an ID' do
-      ENV['OS_USERNAME']     = 'test'
-      ENV['OS_PASSWORD']     = 'abc123'
-      ENV['OS_PROJECT_NAME'] = 'test'
-      ENV['OS_AUTH_URL']     = 'http://127.0.0.1:35357/v3'
       klass.expects(:openstack)
            .with('domain', 'list', '--quiet', '--format', 'csv', [])
            .returns('"ID","Name","Enabled","Description"
@@ -283,10 +278,6 @@ describe Puppet::Provider::Keystone do
       expect(klass.domain_name_from_id('somename')).to eq('SomeName')
     end
     it 'should lookup a domain when not found in the hash' do
-      ENV['OS_USERNAME']     = 'test'
-      ENV['OS_PASSWORD']     = 'abc123'
-      ENV['OS_PROJECT_NAME'] = 'test'
-      ENV['OS_AUTH_URL']     = 'http://127.0.0.1:35357/v3'
       klass.expects(:openstack)
            .with('domain', 'list', '--quiet', '--format', 'csv', [])
            .returns('"ID","Name","Enabled","Description"
@@ -302,10 +293,6 @@ id="another"
       expect(klass.domain_name_from_id('another')).to eq('AnOther')
     end
     it 'should print an error when there is no such domain' do
-      ENV['OS_USERNAME']     = 'test'
-      ENV['OS_PASSWORD']     = 'abc123'
-      ENV['OS_PROJECT_NAME'] = 'test'
-      ENV['OS_AUTH_URL']     = 'http://127.0.0.1:35357/v3'
       klass.expects(:openstack)
            .with('domain', 'list', '--quiet', '--format', 'csv', [])
            .returns('"ID","Name","Enabled","Description"

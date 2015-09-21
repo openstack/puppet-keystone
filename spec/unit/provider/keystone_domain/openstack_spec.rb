@@ -8,7 +8,7 @@ provider_class = Puppet::Type.type(:keystone_domain).provider(:openstack)
 
 describe provider_class do
 
-  shared_examples 'authenticated with environment variables' do
+  let(:set_env) do
     ENV['OS_USERNAME']     = 'test'
     ENV['OS_PASSWORD']     = 'abc123'
     ENV['OS_PROJECT_NAME'] = 'test'
@@ -41,61 +41,66 @@ describe provider_class do
       AnotherKlass
     end
 
+    before :each do
+      set_env
+    end
+
     after :each do
       provider_class.reset
       another_class.reset
     end
 
-    it_behaves_like 'authenticated with environment variables' do
-      describe '#create' do
-        it 'creates a domain' do
-          # keystone.conf
-          File.expects(:exists?).returns(true)
-          kcmock = {
-            'identity' => {'default_domain_id' => ' default'}
-          }
-          Puppet::Util::IniConfig::File.expects(:new).returns(kcmock)
-          kcmock.expects(:read).with('/etc/keystone/keystone.conf')
-          provider.class.expects(:openstack)
-                        .with('domain', 'create', '--format', 'shell', ['foo', '--enable', '--description', 'foo'])
-                        .returns('id="1cb05cfed7c24279be884ba4f6520262"
+    describe '#create' do
+      it 'creates a domain' do
+        # keystone.conf
+        File.expects(:exists?).returns(true)
+        kcmock = {
+          'identity' => {'default_domain_id' => ' default'}
+        }
+        Puppet::Util::IniConfig::File.expects(:new).returns(kcmock)
+        kcmock.expects(:read).with('/etc/keystone/keystone.conf')
+        provider.class.expects(:openstack)
+          .with('domain', 'create', '--format', 'shell', ['foo', '--enable', '--description', 'foo'])
+          .returns('id="1cb05cfed7c24279be884ba4f6520262"
 name="foo"
 description="foo"
 enabled=True
-')
-          provider.create
-          expect(provider.exists?).to be_truthy
-        end
-
+'
+        )
+        provider.create
+        expect(provider.exists?).to be_truthy
       end
 
-      describe '#destroy' do
-        it 'destroys a domain' do
-          provider.instance_variable_get('@property_hash')[:id] = 'my-domainid'
-          # keystone.conf
-          File.expects(:exists?).returns(true)
-          kcmock = {
-            'identity' => {'default_domain_id' => ' default'}
-          }
-          Puppet::Util::IniConfig::File.expects(:new).returns(kcmock)
-          kcmock.expects(:read).with('/etc/keystone/keystone.conf')
-          provider.class.expects(:openstack)
-                        .with('domain', 'set', ['foo', '--disable'])
-          provider.class.expects(:openstack)
-                        .with('domain', 'delete', 'foo')
-          provider.destroy
-          expect(provider.exists?).to be_falsey
-        end
+    end
 
+    describe '#destroy' do
+      it 'destroys a domain' do
+        provider.instance_variable_get('@property_hash')[:id] = 'my-domainid'
+        # keystone.conf
+        File.expects(:exists?).returns(true)
+        kcmock = {
+          'identity' => {'default_domain_id' => ' default'}
+        }
+        Puppet::Util::IniConfig::File.expects(:new).returns(kcmock)
+        kcmock.expects(:read).with('/etc/keystone/keystone.conf')
+        provider.class.expects(:openstack)
+          .with('domain', 'set', ['foo', '--disable'])
+        provider.class.expects(:openstack)
+          .with('domain', 'delete', 'foo')
+        provider.destroy
+        expect(provider.exists?).to be_falsey
       end
+
+    end
 
       describe '#instances' do
         it 'finds every domain' do
           provider.class.expects(:openstack)
-                        .with('domain', 'list', '--quiet', '--format', 'csv', [])
-                        .returns('"ID","Name","Description","Enabled"
+            .with('domain', 'list', '--quiet', '--format', 'csv', [])
+            .returns('"ID","Name","Description","Enabled"
 "1cb05cfed7c24279be884ba4f6520262","foo","foo",True
-')
+'
+                    )
           instances = provider_class.instances
           expect(instances.count).to eq(1)
         end
@@ -121,12 +126,13 @@ enabled=True
           mock.expects(:read).twice.with('/etc/keystone/keystone.conf')
           mock.expects(:store)
           provider.class.expects(:openstack)
-                        .with('domain', 'create', '--format', 'shell', ['foo', '--enable', '--description', 'foo'])
-                        .returns('id="1cb05cfed7c24279be884ba4f6520262"
+            .with('domain', 'create', '--format', 'shell', ['foo', '--enable', '--description', 'foo'])
+            .returns('id="1cb05cfed7c24279be884ba4f6520262"
 name="foo"
 description="foo"
 enabled=True
-')
+'
+                    )
           expect(provider.class.default_domain_id).to eq('default')
           expect(another_class.default_domain_id).to eq('default')
           provider.create
@@ -150,9 +156,9 @@ enabled=True
           kcmock.expects(:read).with('/etc/keystone/keystone.conf')
           kcmock.expects(:store)
           provider.class.expects(:openstack)
-                        .with('domain', 'set', ['foo', '--disable'])
+            .with('domain', 'set', ['foo', '--disable'])
           provider.class.expects(:openstack)
-                        .with('domain', 'delete', 'foo')
+            .with('domain', 'delete', 'foo')
           provider.destroy
           expect(provider.exists?).to be_falsey
           expect(kcmock['identity']['default_domain_id']).to eq('default')
@@ -174,7 +180,7 @@ enabled=True
 
         it 'changes the description' do
           provider.class.expects(:openstack)
-                        .with('domain', 'set', ['foo', '--description', 'new description'])
+            .with('domain', 'set', ['foo', '--description', 'new description'])
           provider.description=('new description')
           provider.flush
         end
@@ -191,6 +197,5 @@ enabled=True
           provider.flush
         end
       end
-    end
   end
 end
