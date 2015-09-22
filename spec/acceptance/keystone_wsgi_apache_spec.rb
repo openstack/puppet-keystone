@@ -33,7 +33,7 @@ describe 'keystone server running with Apache/WSGI with resources' do
                 'gpgcheck' => 'no',
               },
               'openstack-liberty-trunk' => {
-                'baseurl'  => 'http://trunk.rdoproject.org/centos7-liberty/current/',
+                'baseurl'  => 'http://trunk.rdoproject.org/centos7-liberty/current-passed-ci/',
                 'descr'    => 'openstack-liberty-trunk',
                 'gpgcheck' => 'no',
               },
