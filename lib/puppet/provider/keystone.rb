@@ -50,6 +50,20 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
     @@default_domain_id = id
   end
 
+  def self.default_domain_set?
+    true unless default_domain_id == 'default'
+  end
+
+  def self.domain_check(name, domain)
+    # Ongoing deprecation warning ending after Mitaka
+    # http://specs.openstack.org/openstack/puppet-openstack-specs/specs/kilo/api-v3-support.html
+    if (domain.nil? || domain.empty?) && default_domain_set?
+      warning('In Liberty, not providing a domain name (::domain) for a ' \
+        "resource name (#{name}) is deprecated when the default_domain_id is " \
+        "not 'default'")
+    end
+  end
+
   def self.domain_name_from_id(id)
     unless @domain_hash
       list = request('domain', 'list')

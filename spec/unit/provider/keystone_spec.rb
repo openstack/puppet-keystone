@@ -55,6 +55,41 @@ describe Puppet::Provider::Keystone do
       expect(klass.ssl?).to be_truthy
     end
   end
+  describe '#default_domain_set?' do
+    it 'should be false when default_domain_id is default' do
+      mock = {'identity' => {'default_domain_id' => 'default'}}
+      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
+      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
+      mock.expects(:read).with('/etc/keystone/keystone.conf')
+      expect(klass.default_domain_set?).to be_falsey
+    end
+    it 'should be true when default_domain_id is not default' do
+      mock = {'identity' => {'default_domain_id' => 'not_default'}}
+      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
+      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
+      mock.expects(:read).with('/etc/keystone/keystone.conf')
+      expect(klass.default_domain_set?).to be_truthy
+    end
+  end
+
+  describe '#domain_check' do
+    it 'should not warn when domain name is provided' do
+      klass.domain_check('name', 'domain')
+      expect(klass.domain_check('name', 'domain')).to be_nil
+    end
+    it 'should not warn when domain is not provided and default_domain_id is not set' do
+      klass.domain_check('name', '')
+      expect(klass.domain_check('name', '')).to be_nil
+    end
+    it 'should warn when domain name is empty and default_domain_id is set' do
+      mock = {'identity' => {'default_domain_id' => 'not_default'}}
+      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
+      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
+      mock.expects(:read).with('/etc/keystone/keystone.conf')
+      klass.expects(:warning).with("In Liberty, not providing a domain name (::domain) for a resource name (name) is deprecated when the default_domain_id is not 'default'")
+      klass.domain_check('name', '')
+    end
+  end
 
   describe '#get_admin_endpoint' do
     it 'should return nothing if there is no keystone config file' do
