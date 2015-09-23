@@ -141,6 +141,7 @@ describe 'keystone' do
     it 'should synchronize the db if $sync_db is true' do
       if param_hash['sync_db']
         is_expected.to contain_exec('keystone-manage db_sync').with(
+          :command     => 'keystone-manage  db_sync',
           :user        => 'keystone',
           :refreshonly => true,
           :subscribe   => ['Package[keystone]', 'Keystone_config[database/connection]'],
