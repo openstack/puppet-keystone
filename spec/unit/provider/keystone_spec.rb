@@ -142,41 +142,6 @@ id="the_user_id"
       expect(klass.fetch_user('The User', 'Default')).to eq({:name=>"The User", :id=>"the_user_id"})
     end
   end
-  describe '#default_domain_set?' do
-    it 'should be false when default_domain_id is default' do
-      mock = {'identity' => {'default_domain_id' => 'default'}}
-      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
-      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
-      mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.default_domain_set?).to be_falsey
-    end
-    it 'should be true when default_domain_id is not default' do
-      mock = {'identity' => {'default_domain_id' => 'not_default'}}
-      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
-      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
-      mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.default_domain_set?).to be_truthy
-    end
-  end
-
-  describe '#domain_check' do
-    it 'should not warn when domain name is provided' do
-      klass.domain_check('name', 'domain')
-      expect(klass.domain_check('name', 'domain')).to be_nil
-    end
-    it 'should not warn when domain is not provided and default_domain_id is not set' do
-      klass.domain_check('name', '')
-      expect(klass.domain_check('name', '')).to be_nil
-    end
-    it 'should warn when domain name is empty and default_domain_id is set' do
-      mock = {'identity' => {'default_domain_id' => 'not_default'}}
-      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
-      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
-      mock.expects(:read).with('/etc/keystone/keystone.conf')
-      klass.expects(:warning).with("In Liberty, not providing a domain name (::domain) for a resource name (name) is deprecated when the default_domain_id is not 'default'")
-      klass.domain_check('name', '')
-    end
-  end
 
   describe '#get_admin_endpoint' do
     it 'should return nothing if there is no keystone config file' do
@@ -367,64 +332,6 @@ id="other_domain_id"
       set_env
     end
 
-    it 'name_and_domain should return the resource domain' do
-      expect(klass.name_and_domain('foo::in_name', 'from_resource', 'default')).to eq(['foo', 'from_resource'])
-    end
-    it 'name_and_domain should return the default domain' do
-      expect(klass.name_and_domain('foo', nil, 'default')).to eq(['foo', 'default'])
-    end
-    it 'name_and_domain should return the domain part of the name' do
-      expect(klass.name_and_domain('foo::in_name', nil, 'default')).to eq(['foo', 'in_name'])
-    end
-    it 'should return the default domain name using the default_domain_id from keystone.conf' do
-      mock = {
-        'DEFAULT' => {
-          'admin_endpoint' => 'http://127.0.0.1:35357',
-          'admin_token'    => 'admin_token'
-        },
-        'identity' => {'default_domain_id' => 'somename'}
-      }
-      File.expects(:exists?).with('/etc/keystone/keystone.conf').returns(true)
-      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
-      mock.expects(:read).with('/etc/keystone/keystone.conf')
-      klass.expects(:openstack)
-           .with('domain', 'list', '--quiet', '--format', 'csv', [])
-           .returns('"ID","Name","Enabled","Description"
-"somename","SomeName",True,"default domain"
-')
-      expect(klass.name_and_domain('foo')).to eq(['foo', 'SomeName'])
-    end
-    it 'should return the default_domain_id from one class set in another class' do
-      klass.expects(:openstack)
-           .with('domain', 'list', '--quiet', '--format', 'csv', [])
-           .returns('"ID","Name","Enabled","Description"
-"default","Default",True,"default domain"
-"somename","SomeName",True,"some domain"
-')
-      another_class.expects(:openstack)
-                   .with('domain', 'list', '--quiet', '--format', 'csv', [])
-                   .returns('"ID","Name","Enabled","Description"
-"default","Default",True,"default domain"
-"somename","SomeName",True,"some domain"
-')
-      expect(klass.default_domain).to eq('Default')
-      expect(another_class.default_domain).to eq('Default')
-      klass.default_domain_id = 'somename'
-      expect(klass.default_domain).to eq('SomeName')
-      expect(another_class.default_domain).to eq('SomeName')
-    end
-    it 'should return Default if default_domain_id is not configured' do
-      mock = {}
-      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
-      File.expects(:exists?).with('/etc/keystone/keystone.conf').returns(true)
-      mock.expects(:read).with('/etc/keystone/keystone.conf')
-      klass.expects(:openstack)
-           .with('domain', 'list', '--quiet', '--format', 'csv', [])
-           .returns('"ID","Name","Enabled","Description"
-"default","Default",True,"default domain"
-')
-      expect(klass.name_and_domain('foo')).to eq(['foo', 'Default'])
-    end
     it 'should list all domains when requesting a domain name from an ID' do
       klass.expects(:openstack)
            .with('domain', 'list', '--quiet', '--format', 'csv', [])

@@ -61,7 +61,6 @@ describe 'keystone server running with Apache/WSGI as Identity Provider' do
         admin_token         => 'admin_token',
         enabled             => true,
         service_name        => 'httpd',
-        default_domain      => 'default_domain',
       }
       include ::apache
       class { '::keystone::wsgi::apache':
@@ -230,11 +229,11 @@ describe 'keystone server running with Apache/WSGI as Identity Provider' do
     end
     describe 'with v2 admin with v3 credentials' do
       include_examples 'keystone user/tenant/service/role/endpoint resources using v3 API',
-                       '--os-username admin --os-password a_big_secret --os-project-name openstack --os-user-domain-name default_domain --os-project-domain-name default_domain'
+                       '--os-username admin --os-password a_big_secret --os-project-name openstack --os-user-domain-name Default --os-project-domain-name Default'
     end
     describe "with v2 service with v3 credentials" do
       include_examples 'keystone user/tenant/service/role/endpoint resources using v3 API',
-                       '--os-username beaker-ci --os-password secret --os-project-name services --os-user-domain-name default_domain --os-project-domain-name default_domain'
+                       '--os-username beaker-ci --os-password secret --os-project-name services --os-user-domain-name Default --os-project-domain-name Default'
     end
     describe 'with v3 admin with v3 credentials' do
       include_examples 'keystone user/tenant/service/role/endpoint resources using v3 API',

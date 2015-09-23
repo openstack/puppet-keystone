@@ -49,6 +49,4 @@ Puppet::Type.newtype(:keystone_domain) do
   autorequire(:anchor) do
     ['keystone_started']
   end
-
-
 end

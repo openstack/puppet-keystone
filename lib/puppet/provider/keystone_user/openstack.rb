@@ -9,14 +9,15 @@ Puppet::Type.type(:keystone_user).provide(
 
   @credentials = Puppet::Provider::Openstack::CredentialsV3.new
 
+  include PuppetX::Keystone::CompositeNamevar::Helpers
+
   def initialize(value={})
     super(value)
     @property_flush = {}
   end
 
   def create
-    # see if resource[:domain], or user specified as user::domain
-    user_name, user_domain = self.class.name_and_domain(resource[:name], resource[:domain])
+    user_name, user_domain = resource[:name], resource[:domain]
     properties = [user_name]
     if resource[:enabled] == :true
       properties << '--enable'
@@ -54,12 +55,14 @@ Puppet::Type.type(:keystone_user).provide(
       options << '--email'    << resource[:email]    if @property_flush[:email]
       # project handled in tenant= separately
       unless options.empty?
-        options << @property_hash[:id]
+        options << id
         self.class.request('user', 'set', options)
       end
       @property_flush.clear
     end
   end
+
+  mk_resource_methods
 
   def exists?
     @property_hash[:ensure] == :present
@@ -74,16 +77,8 @@ Puppet::Type.type(:keystone_user).provide(
     @property_flush[:enabled] = value
   end
 
-  def email
-    @property_hash[:email]
-  end
-
   def email=(value)
     @property_flush[:email] = value
-  end
-
-  def id
-    @property_hash[:id]
   end
 
   def password
@@ -104,7 +99,7 @@ Puppet::Type.type(:keystone_user).provide(
       # NOTE: The only reason we use username is so that the openstack provider
       # will know we are doing v3password auth - otherwise, it is not used.  The
       # user_id uniquely identifies the user including domain.
-      credentials.username, unused = self.class.name_and_domain(resource[:name], domain)
+      credentials.username = resource[:name]
       # Need to specify a project id to get a project scoped token.  List
       # all of the projects for the user, and use the id from the first one.
       projects = self.class.request('project', 'list', ['--user', id, '--long'])
@@ -149,9 +144,8 @@ Puppet::Type.type(:keystone_user).provide(
     users = request('user', 'list', ['--long'])
     users.collect do |user|
       domain_name = domain_name_from_id(user[:domain])
-      user_name = set_domain_for_name(user[:name], domain_name)
       new(
-        :name        => user_name,
+        :name        => resource_to_name(domain_name, user[:name]),
         :ensure      => :present,
         :enabled     => user[:enabled].downcase.chomp == 'true' ? true : false,
         :password    => user[:password],
@@ -165,19 +159,10 @@ Puppet::Type.type(:keystone_user).provide(
   end
 
   def self.prefetch(resources)
-    users = instances
-    resources.each do |resname, resource|
-      # resname may be specified as just "name" or "name::domain"
-      name, resdomain = name_and_domain(resname, resource[:domain])
-      provider = users.find do |user|
-        # have a match if the full instance name matches the full resource name, OR
-        # the base resource name matches the base instance name, and the
-        # resource domain matches the instance domain
-        username, user_domain = name_and_domain(user.name, user.domain)
-        (user.name == resname) ||
-          ((username == name) && (user_domain == resdomain))
-      end
-      resource.provider = provider if provider
+    prefetch_composite(resources) do |sorted_namevars|
+      domain = sorted_namevars[0]
+      name   = sorted_namevars[1]
+      resource_to_name(domain, name)
     end
   end
 

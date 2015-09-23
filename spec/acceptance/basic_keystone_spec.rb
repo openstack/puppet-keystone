@@ -67,7 +67,6 @@ describe 'basic keystone server with resources' do
         database_connection => 'mysql://keystone:keystone@127.0.0.1/keystone',
         admin_token         => 'admin_token',
         enabled             => true,
-        default_domain      => 'default_domain',
       }
       # "v2" admin and service
       class { '::keystone::roles::admin':
@@ -99,15 +98,16 @@ describe 'basic keystone server with resources' do
         enabled     => true,
         description => 'Domain for admin v3 users',
       }
-      keystone_tenant { 'servicesv3::service_domain':
+      keystone_tenant { 'servicesv3':
         ensure      => present,
         enabled     => true,
         description => 'Tenant for the openstack services',
+        domain      => 'service_domain',
       }
       keystone_tenant { 'openstackv3::admin_domain':
         ensure      => present,
         enabled     => true,
-        description => 'admin tenant',
+        description => 'admin tenant'
       }
       keystone_user { 'adminv3::admin_domain':
         ensure      => present,
@@ -115,9 +115,11 @@ describe 'basic keystone server with resources' do
         email       => 'test@example.tld',
         password    => 'a_big_secret',
       }
-      keystone_user_role { 'adminv3::admin_domain@openstackv3::admin_domain':
-        ensure => present,
-        roles  => ['admin'],
+      keystone_user_role { 'adminv3@openstackv3':
+        project_domain => 'admin_domain',
+        user_domain    => 'admin_domain',
+        ensure         => present,
+        roles          => ['admin'],
       }
       # service user exists only in the service_domain - must
       # use v3 api
@@ -227,11 +229,11 @@ describe 'basic keystone server with resources' do
     end
     describe 'with v2 admin with v3 credentials' do
       include_examples 'keystone user/tenant/service/role/endpoint resources using v3 API',
-                       '--os-username admin --os-password a_big_secret --os-project-name openstack --os-user-domain-name default_domain --os-project-domain-name default_domain'
+                       '--os-username admin --os-password a_big_secret --os-project-name openstack --os-user-domain-name Default --os-project-domain-name Default'
     end
     describe "with v2 service with v3 credentials" do
       include_examples 'keystone user/tenant/service/role/endpoint resources using v3 API',
-                       '--os-username beaker-ci --os-password secret --os-project-name services --os-user-domain-name default_domain --os-project-domain-name default_domain'
+                       '--os-username beaker-ci --os-password secret --os-project-name services --os-user-domain-name Default --os-project-domain-name Default'
     end
     describe 'with v3 admin with v3 credentials' do
       include_examples 'keystone user/tenant/service/role/endpoint resources using v3 API',
@@ -241,6 +243,33 @@ describe 'basic keystone server with resources' do
       include_examples 'keystone user/tenant/service/role/endpoint resources using v3 API',
                        '--os-username beaker-civ3 --os-password secret --os-project-name servicesv3 --os-user-domain-name service_domain --os-project-domain-name service_domain'
     end
-
+  end
+  describe 'composite namevar quick test' do
+    context 'similar resources different naming' do
+      let(:pp) do
+        <<-EOM
+        keystone_tenant { 'openstackv3':
+          ensure      => present,
+          enabled     => true,
+          description => 'admin tenant',
+          domain      => 'admin_domain'
+        }
+        keystone_user { 'adminv3::useless_when_the_domain_is_set':
+          ensure      => present,
+          enabled     => true,
+          email       => 'test@example.tld',
+          password    => 'a_big_secret',
+          domain      => 'admin_domain'
+        }
+        keystone_user_role { 'adminv3::admin_domain@openstackv3::admin_domain':
+          ensure         => present,
+          roles          => ['admin'],
+        }
+        EOM
+      end
+      it 'should not do any modification' do
+        apply_manifest(pp, :catch_changes => true)
+      end
+    end
   end
 end

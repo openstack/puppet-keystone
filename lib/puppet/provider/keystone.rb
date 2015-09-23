@@ -11,6 +11,7 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
   INI_FILENAME = '/etc/keystone/keystone.conf'
 
   @@default_domain_id = nil
+  @@default_domain    = nil
 
   def self.admin_endpoint
     @admin_endpoint ||= get_admin_endpoint
@@ -32,10 +33,6 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
     end
   end
 
-  def self.default_domain
-    domain_name_from_id(default_domain_id)
-  end
-
   def self.default_domain_id
     if @@default_domain_id
       @@default_domain_id
@@ -50,18 +47,40 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
     @@default_domain_id = id
   end
 
-  def self.default_domain_set?
-    true unless default_domain_id == 'default'
+  def self.resource_to_name(domain, name, check_for_default=true)
+    raise Puppet::Error, "Domain cannot be nil for project '#{name}'. " \
+      'Please report a bug.' if domain.nil?
+    join_str = '::'
+    name_display = [name]
+    unless check_for_default && domain == default_domain
+      name_display << domain
+    end
+    name_display.join(join_str)
   end
 
-  def self.domain_check(name, domain)
-    # Ongoing deprecation warning ending after Mitaka
-    # http://specs.openstack.org/openstack/puppet-openstack-specs/specs/kilo/api-v3-support.html
-    if (domain.nil? || domain.empty?) && default_domain_set?
-      warning('In Liberty, not providing a domain name (::domain) for a ' \
-        "resource name (#{name}) is deprecated when the default_domain_id is " \
-        "not 'default'")
+  def self.name_to_resource(name)
+    uniq = name.split('::')
+    if uniq.count == 1
+      uniq.insert(0, default_domain)
+    else
+      uniq.reverse!
     end
+    uniq
+  end
+
+  # Prefix with default domain if missing from the name.
+  def self.make_full_name(name)
+    resource_to_name(*name_to_resource(name), false)
+  end
+
+  def self.default_domain
+    # Default domain class variable is filled in by
+    # user/tenant/user_role type or domain resource.
+    @@default_domain
+  end
+
+  def self.default_domain=(value)
+    @@default_domain = value
   end
 
   def self.domain_name_from_id(id)
@@ -158,31 +177,6 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
       @keystone_file.read(ini_filename)
       @keystone_file
     end
-  end
-
-  # use the domain in this order:
-  # 1 - the domain name specified in the resource definition - resource[:domain]
-  # 2 - the domain name part of the resource name/title e.g. user_name::user_domain
-  #     if passed in by name_and_domain above
-  # 3 - use the specified default_domain_name
-  # 4 - lookup the default domain
-  # 5 - use 'Default' - the "default" default domain if no other one is configured
-  # Usage: name_and_domain(resource[:name], resource[:domain], default_domain_name)
-  def self.name_and_domain(namedomstr, domain_from_resource=nil, default_domain_name=nil)
-    name, domain = Util.split_domain(namedomstr)
-    ret = [name]
-    if domain_from_resource
-      ret << domain_from_resource
-    elsif domain
-      ret << domain
-    elsif default_domain_name
-      ret << default_domain_name
-    elsif default_domain
-      ret << default_domain
-    else
-      ret << 'Default'
-    end
-    ret
   end
 
   def self.request(service, action, properties=nil)

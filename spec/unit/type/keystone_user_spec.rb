@@ -4,22 +4,49 @@ require 'puppet/type/keystone_user'
 
 describe Puppet::Type.type(:keystone_user) do
 
-  before :each do
-    @project = Puppet::Type.type(:keystone_user).new(
-    :name   => 'foo',
-    :domain => 'foo-domain',
-    )
-
-    @domain = @project.parameter('domain')
+  describe 'name::domain' do
+    include_examples 'parse title correctly',
+      :name => 'name', :domain => 'domain', :calling_default => 1
+  end
+  describe 'name' do
+    include_examples 'parse title correctly',
+      :name => 'name', :domain => 'Default', :calling_default => 2
+  end
+  describe 'name::domain::foo' do
+    include_examples 'croak on the title'
   end
 
-  it 'should not be in sync for domain changes' do
-    expect { @domain.insync?('not-the-domain') }.to raise_error(Puppet::Error, /The domain cannot be changed from/)
-    expect { @domain.insync?(nil) }.to raise_error(Puppet::Error, /The domain cannot be changed from/)
-  end
+  describe '#autorequire' do
+    let(:domain_good) do
+      Puppet::Type.type(:keystone_domain).new(:title => 'domain_user')
+    end
 
-  it 'should be in sync if domain is the same' do
-    expect(@domain.insync?('foo-domain')).to be true
-  end
+    let(:domain_bad) do
+      Puppet::Type.type(:keystone_domain).new(:title => 'another_domain')
+    end
 
+    context 'domain autorequire from title' do
+      let(:user) do
+        Puppet::Provider::Keystone.expects(:default_domain).returns('Default')
+        Puppet::Type.type(:keystone_user).new(:title  => 'foo::domain_user')
+      end
+      describe 'should require the correct domain' do
+        let(:resources) { [user, domain_good, domain_bad] }
+        include_examples 'autorequire the correct resources'
+      end
+    end
+    context 'domain autorequire from parameter' do
+      let(:user) do
+        Puppet::Provider::Keystone.expects(:default_domain).returns('Default')
+        Puppet::Type.type(:keystone_user).new(
+          :title  => 'foo',
+          :domain => 'domain_user'
+        )
+      end
+      describe 'should require the correct domain' do
+        let(:resources) { [user, domain_good, domain_bad] }
+        include_examples 'autorequire the correct resources'
+      end
+    end
+  end
 end

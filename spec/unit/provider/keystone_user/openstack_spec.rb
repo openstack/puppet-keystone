@@ -25,19 +25,20 @@ describe provider_class do
     project_class.reset
   end
 
-  let(:user_attrs) do
+  let(:resource_attrs) do
+    Puppet::Provider::Keystone.expects(:default_domain).returns('Default')
     {
       :name          => 'user1',
       :ensure        => :present,
       :enabled       => 'True',
       :password      => 'secret',
       :email         => 'user1@example.com',
-      :domain        => 'domain1',
+      :domain        => 'domain1'
     }
   end
 
   let(:resource) do
-    Puppet::Type::Keystone_user.new(user_attrs)
+    Puppet::Type::Keystone_user.new(resource_attrs)
   end
 
   let(:provider) do
@@ -84,66 +85,110 @@ username="user1"
 
     describe '#instances' do
       it 'finds every user' do
-        provider.class.expects(:openstack)
+        provider_class.expects(:openstack)
           .with('user', 'list', '--quiet', '--format', 'csv', ['--long'])
           .returns('"ID","Name","Project Id","Domain","Description","Email","Enabled"
 "user1_id","user1","project1_id","domain1_id","user1 description","user1@example.com",True
 "user2_id","user2","project2_id","domain2_id","user2 description","user2@example.com",True
 "user3_id","user3","project3_id","domain3_id","user3 description","user3@example.com",True
 ')
-      provider.class.expects(:openstack)
-        .with('domain', 'list', '--quiet', '--format', 'csv', [])
-        .returns('"ID","Name","Enabled","Description"
+        provider_class.expects(:openstack)
+          .with('domain', 'list', '--quiet', '--format', 'csv', [])
+          .returns('"ID","Name","Enabled","Description"
 "default","Default",True,"default"
 "domain1_id","domain1",True,"domain1"
 "domain2_id","domain2",True,"domain2"
 "domain3_id","domain3",True,"domain3"
 ')
-        provider.class.expects(:openstack)
-          .with('domain', 'show', '--format', 'shell', 'domain1')
-          .returns('description=""
-enabled="True"
-id="domain1_id"
-name="domain1"
-')
-        provider.class.expects(:openstack)
-          .with('domain', 'show', '--format', 'shell', 'domain2')
-          .returns('description=""
-enabled="True"
-id="domain2_id"
-name="domain2"
-')
-        provider.class.expects(:openstack)
-          .with('domain', 'show', '--format', 'shell', 'domain3')
-          .returns('description=""
-enabled="True"
-id="domain3_id"
-name="domain3"
-')
+        # for self.instances to create the name string in
+        # resource_to_name
+        Puppet::Provider::Keystone.expects(:default_domain).times(3).returns('Default')
         instances = provider.class.instances
         expect(instances.count).to eq(3)
         expect(instances[0].name).to eq('user1::domain1')
         expect(instances[0].domain).to eq('domain1')
         expect(instances[1].name).to eq('user2::domain2')
+        expect(instances[1].domain).to eq('domain2')
         expect(instances[2].name).to eq('user3::domain3')
+        expect(instances[2].domain).to eq('domain3')
+      end
+    end
+
+    describe '#prefetch' do
+      let(:resources) do
+        [Puppet::Type.type(:keystone_user).new(:title => 'exists', :ensure => :present),
+          Puppet::Type.type(:keystone_user).new(:title => 'non_exists', :ensure => :present)]
+      end
+      before(:each) do
+        provider_class.expects(:domain_name_from_id).with('default')
+          .returns('Default')
+        provider_class.expects(:domain_name_from_id).with('domain2_id')
+          .returns('bar')
+        Puppet::Provider::Keystone.expects(:default_domain).times(7)
+          .returns('Default')
+        provider_class.expects(:openstack)
+          .with('user', 'list', '--quiet', '--format', 'csv', ['--long'])
+          .returns('"ID","Name","Project Id","Domain","Description","Email","Enabled"
+"user1_id","exists","project1_id","default","user1 description","user1@example.com",True
+"user2_id","user2","project2_id","domain2_id","user2 description","user2@example.com",True
+')
+      end
+      include_examples 'prefetch the resources'
+    end
+
+    describe '#flush' do
+      context '.enable' do
+        describe '-> false' do
+          it 'properly set enable to false' do
+            provider_class.expects(:openstack)
+              .with('user', 'set', ['--disable', '37b7086693ec482389799da5dc546fa4'])
+              .returns('""')
+            provider.expects(:id).returns('37b7086693ec482389799da5dc546fa4')
+            provider.enabled = :false
+            provider.flush
+          end
+        end
+        describe '-> true' do
+          it 'properly set enable to true' do
+            provider_class.expects(:openstack)
+              .with('user', 'set', ['--enable', '37b7086693ec482389799da5dc546fa4'])
+              .returns('""')
+            provider.expects(:id).returns('37b7086693ec482389799da5dc546fa4')
+            provider.enabled = :true
+            provider.flush
+          end
+        end
+      end
+      context '.email' do
+        it 'change the mail' do
+          provider_class.expects(:openstack)
+            .with('user', 'set', ['--email', 'new email',
+                                     '37b7086693ec482389799da5dc546fa4'])
+            .returns('""')
+          provider.expects(:id).returns('37b7086693ec482389799da5dc546fa4')
+          provider.expects(:resource).returns(:email => 'new email')
+          provider.email = 'new email'
+          provider.flush
+        end
       end
     end
   end
 
-  describe "#password" do
-    let(:user_attrs) do
+  describe '#password' do
+    let(:resource_attrs) do
       {
         :name         => 'foo',
         :ensure       => 'present',
         :enabled      => 'True',
         :password     => 'foo',
         :email        => 'foo@example.com',
-        :domain       => 'domain1',
+        :domain       => 'domain1'
       }
     end
 
     let(:resource) do
-      Puppet::Type::Keystone_user.new(user_attrs)
+      Puppet::Provider::Keystone.expects(:default_domain).returns('Default')
+      Puppet::Type::Keystone_user.new(resource_attrs)
     end
 
     let :provider do
@@ -151,7 +196,6 @@ name="domain3"
     end
 
     it 'checks the password' do
-      provider.instance_variable_get('@property_hash')[:id] = 'user1_id'
       mock_creds = Puppet::Provider::Openstack::CredentialsV3.new
       mock_creds.auth_url='http://127.0.0.1:5000'
       mock_creds.password='foo'
@@ -160,20 +204,8 @@ name="domain3"
       mock_creds.project_id='project-id-1'
       Puppet::Provider::Openstack::CredentialsV3.expects(:new).returns(mock_creds)
 
-      provider.class.expects(:openstack)
-        .with('domain', 'list', '--quiet', '--format', 'csv', [])
-        .returns('"ID","Name","Enabled","Description"
-"default","Default",True,"default"
-"domain1_id","domain1",True,"domain1"
-"domain2_id","domain2",True,"domain2"
-')
-      provider.class.expects(:openstack)
+      provider_class.expects(:openstack)
         .with('project', 'list', '--quiet', '--format', 'csv', ['--user', 'user1_id', '--long'])
-        .returns('"ID","Name","Domain ID","Description","Enabled"
-"project2_id","project2","domain2_id","",True
-')
-      Puppet::Provider::Openstack.expects(:openstack)
-        .with('project', 'list', '--quiet', '--format', 'csv', ['--user', 'project1_id', '--long'])
         .returns('"ID","Name","Domain ID","Description","Enabled"
 "project-id-1","foo","domain1_id","foo",True
 ')
@@ -184,20 +216,13 @@ e664a386befa4a30878dcef20e79f167
 8dce2ae9ecd34c199d2877bf319a3d06
 ac43ec53d5a74a0b9f51523ae41a29f0
 ')
+      provider.expects(:id).times(2).returns('user1_id')
       password = provider.password
       expect(password).to eq('foo')
     end
 
     it 'fails the password check' do
-      provider.instance_variable_get('@property_hash')[:id] = 'user1_id'
-      provider.class.expects(:openstack)
-        .with('domain', 'list', '--quiet', '--format', 'csv', [])
-        .returns('"ID","Name","Enabled","Description"
-"default","Default",True,"default"
-"domain1_id","domain1",True,"domain1"
-"domain2_id","domain2",True,"domain2"
-')
-      Puppet::Provider::Openstack.expects(:openstack)
+      provider_class.expects(:openstack)
         .with('project', 'list', '--quiet', '--format', 'csv', ['--user', 'user1_id', '--long'])
         .returns('"ID","Name","Domain ID","Description","Enabled"
 "project-id-1","foo","domain1_id","foo",True
@@ -205,6 +230,7 @@ ac43ec53d5a74a0b9f51523ae41a29f0
       Puppet::Provider::Openstack.expects(:openstack)
         .with('token', 'issue', ['--format', 'value'])
         .raises(Puppet::ExecutionFailure, 'HTTP 401 invalid authentication')
+      provider.expects(:id).times(2).returns('user1_id')
       password = provider.password
       expect(password).to eq(nil)
     end
@@ -219,7 +245,7 @@ ac43ec53d5a74a0b9f51523ae41a29f0
       mock_creds.user_id='project1_id'
       mock_creds.domain_name='domain1'
       Puppet::Provider::Openstack::CredentialsV3.expects(:new).returns(mock_creds)
-      Puppet::Provider::Openstack.expects(:openstack)
+      provider_class.expects(:openstack)
         .with('project', 'list', '--quiet', '--format', 'csv', ['--user', 'project1_id', '--long'])
         .returns('"ID","Name","Domain ID","Description","Enabled"
 ')
@@ -239,7 +265,8 @@ ac43ec53d5a74a0b9f51523ae41a29f0
 
     describe 'when updating a user with unmanaged password' do
 
-      let(:user_attrs) do
+      let(:resource_attrs) do
+        Puppet::Provider::Keystone.expects(:default_domain).returns('Default')
         {
           :name             => 'user1',
           :ensure           => 'present',
@@ -247,12 +274,12 @@ ac43ec53d5a74a0b9f51523ae41a29f0
           :password         => 'secret',
           :replace_password => 'False',
           :email            => 'user1@example.com',
-          :domain           => 'domain1',
+          :domain           => 'domain1'
         }
       end
 
       let(:resource) do
-        Puppet::Type::Keystone_user.new(user_attrs)
+        Puppet::Type::Keystone_user.new(resource_attrs)
       end
 
       let :provider do
@@ -265,139 +292,114 @@ ac43ec53d5a74a0b9f51523ae41a29f0
     end
   end
 
-  describe 'v3 domains with no domain in resource' do
-    let(:user_attrs) do
-      {
-        :name          => 'user1',
-        :ensure        => 'present',
-        :enabled       => 'True',
-        :password      => 'secret',
-        :email         => 'user1@example.com',
-      }
-    end
-
-    it 'adds default domain to commands' do
-      mock = {
-        'identity' => {'default_domain_id' => 'domain1_id'}
-      }
-      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
-      File.expects(:exists?).with('/etc/keystone/keystone.conf').returns(true)
-      mock.expects(:read).with('/etc/keystone/keystone.conf')
-      provider.class.expects(:openstack)
-        .with('domain', 'list', '--quiet', '--format', 'csv', [])
-        .returns('"ID","Name","Enabled","Description"
-"domain1_id","domain1",True,"domain1"
-"domain2_id","domain2",True,"domain2"
-')
-      provider.class.expects(:openstack)
-        .with('project', 'list', '--quiet', '--format', 'csv', ['--user', 'user1_id', '--long'])
-        .returns('"ID","Name"
-')
-      provider.class.expects(:openstack)
-        .with('role', 'show', '--format', 'shell', '_member_')
-        .returns('
-name="_member_"
-')
-      provider.class.expects(:openstack)
-        .with('role', 'add', ['_member_', '--project', 'project1_id', '--user', 'user1_id'])
-      provider.class.expects(:openstack)
-        .with('user', 'create', '--format', 'shell', ['user1', '--enable', '--password', 'secret', '--email', 'user1@example.com', '--domain', 'domain1'])
-        .returns('email="user1@example.com"
+  describe 'when managing an user using v3 domains' do
+    describe '#create' do
+      before(:each) do
+        provider_class.expects(:openstack)
+          .with('user', 'create', '--format', 'shell', ['user1', '--enable', '--password', 'secret', '--email', 'user1@example.com', '--domain', 'domain1'])
+          .returns('email="user1@example.com"
 enabled="True"
 id="user1_id"
 name="user1"
 username="user1"
 ')
-      provider.class.expects(:openstack)
-        .with('project', 'show', '--format', 'shell', ['project1', '--domain', 'domain2'])
-        .returns('name="project1"
-id="project1_id"
+      end
+      include_examples 'create the correct resource', [
+        {
+          'expected_results' => {
+            :domain => 'domain1',
+            :id     => 'user1_id',
+            :name   => 'user1',
+            :domain => 'domain1'
+          }
+        },
+        {
+          :name  => 'domain1',
+          :times => 2,
+          :attributes => {
+            'Default' => {
+              :title    => 'user1',
+              :ensure   => 'present',
+              :enabled  => 'True',
+              :password => 'secret',
+              :email    => 'user1@example.com'
+            }
+          }
+        },
+        {
+          'domain in parameter' => {
+            :name     => 'user1',
+            :ensure   => 'present',
+            :enabled  => 'True',
+            :password => 'secret',
+            :email    => 'user1@example.com',
+            :domain   => 'domain1',
+            :default_domain => 1
+          }
+        },
+        {
+          'domain in title' => {
+            :title    => 'user1::domain1',
+            :ensure   => 'present',
+            :enabled  => 'True',
+            :password => 'secret',
+            :email    => 'user1@example.com',
+            :default_domain => 1
+          }
+        },
+        {
+          'domain in parameter override domain in title' => {
+            :title    => 'user1::foobar',
+            :ensure   => 'present',
+            :enabled  => 'True',
+            :password => 'secret',
+            :email    => 'user1@example.com',
+            :domain   => 'domain1',
+            :default_domain => 1
+          }
+        },
+      ]
+    end
+
+    describe '#prefetch' do
+      let(:resources) do
+        Puppet::Provider::Keystone.expects(:default_domain).twice.returns('Default')
+        [
+          Puppet::Type.type(:keystone_user)
+            .new(:title => 'exists::domain1', :ensure => :present),
+          Puppet::Type.type(:keystone_user)
+            .new(:title => 'non_exists::domain1', :ensure => :present)
+        ]
+      end
+      before(:each) do
+        # Used to make the final display name
+        provider_class.expects(:default_domain).times(3).returns('Default')
+
+        provider_class.expects(:domain_name_from_id)
+          .with('domain1_id').returns('domain1')
+        provider_class.expects(:domain_name_from_id)
+          .with('domain2_id').returns('bar')
+        provider_class.expects(:openstack)
+          .with('user', 'list', '--quiet', '--format', 'csv', ['--long'])
+          .returns('"ID","Name","Project Id","Domain","Description","Email","Enabled"
+"user1_id","exists","project1_id","domain1_id","user1 description","user1@example.com",True
+"user2_id","user2","project2_id","domain2_id","user2 description","user2@example.com",True
 ')
-      provider.create
-      expect(provider.exists?).to be_truthy
-      expect(provider.id).to eq("user1_id")
-    end
-  end
-
-  describe 'v3 domains with domain in resource' do
-    let(:user_attrs) do
-      {
-        :name          => 'user1',
-        :ensure        => 'present',
-        :enabled       => 'True',
-        :password      => 'secret',
-        :email         => 'user1@example.com',
-        :domain        => 'domain1',
-      }
+      end
+      include_examples 'prefetch the resources'
     end
 
-    it 'uses given domain in commands' do
-      provider.class.expects(:openstack)
-        .with('user', 'create', '--format', 'shell', ['user1', '--enable', '--password', 'secret', '--email', 'user1@example.com', '--domain', 'domain1'])
-        .returns('email="user1@example.com"
-enabled="True"
-id="user1_id"
-name="user1"
-username="user1"
-')
-      provider.create
-      expect(provider.exists?).to be_truthy
-      expect(provider.id).to eq("user1_id")
-    end
-  end
-
-  describe 'v3 domains with domain in name/title' do
-    let(:user_attrs) do
-      {
-        :name         => 'user1::domain1',
-        :ensure       => 'present',
-        :enabled      => 'True',
-        :password     => 'secret',
-        :email        => 'user1@example.com',
-      }
-    end
-
-    it 'uses given domain in commands' do
-      provider.class.expects(:openstack)
-        .with('user', 'create', '--format', 'shell', ['user1', '--enable', '--password', 'secret', '--email', 'user1@example.com', '--domain', 'domain1'])
-        .returns('email="user1@example.com"
-enabled="True"
-id="user1_id"
-name="user1"
-username="user1"
-')
-      provider.create
-      expect(provider.exists?).to be_truthy
-      expect(provider.id).to eq("user1_id")
-      expect(provider.name).to eq('user1::domain1')
-    end
-  end
-
-  describe 'v3 domains with domain in name/title and in resource' do
-    let(:user_attrs) do
-      {
-        :name         => 'user1::domain1',
-        :ensure       => 'present',
-        :enabled      => 'True',
-        :password     => 'secret',
-        :email        => 'user1@example.com',
-        :domain       => 'domain1',
-      }
-    end
-
-    it 'uses the resource domain in commands' do
-      provider.class.expects(:openstack)
-        .with('user', 'create', '--format', 'shell', ['user1', '--enable', '--password', 'secret', '--email', 'user1@example.com', '--domain', 'domain1'])
-        .returns('email="user1@example.com"
-enabled="True"
-id="user1_id"
-name="user1"
-username="user1"
-')
-      provider.create
-      expect(provider.exists?).to be_truthy
-      expect(provider.id).to eq("user1_id")
-      expect(provider.name).to eq('user1::domain1')
+    context 'different name, identical resource' do
+      let(:resources) do
+        Puppet::Provider::Keystone.expects(:default_domain).twice.returns('Default')
+        [
+          Puppet::Type.type(:keystone_user)
+            .new(:title => 'name::domain_one', :ensure => :present),
+          Puppet::Type.type(:keystone_user)
+            .new(:title => 'name', :domain => 'domain_one', :ensure => :present)
+        ]
+      end
+      include_examples 'detect duplicate resource'
     end
   end
 end

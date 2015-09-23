@@ -4,22 +4,63 @@ require 'puppet/type/keystone_tenant'
 
 describe Puppet::Type.type(:keystone_tenant) do
 
-  before :each do
-    @project = Puppet::Type.type(:keystone_tenant).new(
-    :name   => 'foo',
-    :domain => 'foo-domain',
+  let(:project) do
+    Puppet::Type.type(:keystone_tenant).new(
+      :id     => 'blah',
+      :name   => 'project',
+      :domain => 'domain_project'
     )
-
-    @domain = @project.parameter('domain')
   end
 
-  it 'should not be in sync for domain changes' do
-    expect { @domain.insync?('not-the-domain') }.to raise_error(Puppet::Error, /The domain cannot be changed from/)
-    expect { @domain.insync?(nil) }.to raise_error(Puppet::Error, /The domain cannot be changed from/)
+  it 'should not accept id property' do
+    Puppet::Provider::Keystone.expects(:default_domain).returns('Default')
+    expect { project }.to raise_error(Puppet::Error,
+                                      /This is a read only property/)
   end
 
-  it 'should be in sync if domain is the same' do
-    expect(@domain.insync?('foo-domain')).to be true
+  describe 'name::domain' do
+    include_examples 'parse title correctly',
+      :name => 'name',
+      :domain => 'domain',
+      :calling_default => 1
+  end
+  describe 'name' do
+    include_examples 'parse title correctly',
+      :name => 'name', :domain => 'Default', :calling_default => 2
+  end
+  describe 'name::domain::extra' do
+    include_examples 'croak on the title'
   end
 
+  describe '#autorequire' do
+    let(:domain_good) do
+      Puppet::Type.type(:keystone_domain).new(:title => 'domain_project')
+    end
+
+    let(:domain_bad) do
+      Puppet::Type.type(:keystone_domain).new(:title => 'another_domain')
+    end
+
+    context 'domain autorequire from title' do
+      let(:project) do
+        Puppet::Provider::Keystone.expects(:default_domain).returns('Default')
+        Puppet::Type.type(:keystone_tenant).new(:title  => 'tenant::domain_project')
+      end
+      describe 'should require the correct domain' do
+        let(:resources) { [project, domain_good, domain_bad] }
+        include_examples 'autorequire the correct resources'
+      end
+    end
+    context 'domain autorequire from parameter' do
+      let(:project) do
+        Puppet::Provider::Keystone.expects(:default_domain).returns('Default')
+        Puppet::Type.type(:keystone_tenant).new(:title  => 'tenant',
+                                                :domain => 'domain_project')
+      end
+      describe 'should require the correct domain' do
+        let(:resources) { [project, domain_good, domain_bad] }
+        include_examples 'autorequire the correct resources'
+      end
+    end
+  end
 end

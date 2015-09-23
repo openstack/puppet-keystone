@@ -1,12 +1,14 @@
 require 'puppet/provider/keystone'
 require 'puppet/provider/keystone/util'
+require 'puppet_x/keystone/composite_namevar'
 
 Puppet::Type.type(:keystone_user_role).provide(
   :openstack,
   :parent => Puppet::Provider::Keystone
 ) do
-
   desc "Provider to manage keystone role assignments to users."
+
+  include PuppetX::Keystone::CompositeNamevar::Helpers
 
   @credentials = Puppet::Provider::Openstack::CredentialsV3.new
 
@@ -36,17 +38,17 @@ Puppet::Type.type(:keystone_user_role).provide(
 
   def exists?
     if self.class.user_role_hash.nil? || self.class.user_role_hash.empty?
-      roles = self.class.request('role', 'list', properties)
+      roles_db = self.class.request('role', 'list', properties)
       # Since requesting every combination of users, roles, and
       # projects is so expensive, construct the property hash here
       # instead of in self.instances so it can be used in the role
       # and destroy methods
       @property_hash[:name] = resource[:name]
-      if roles.empty?
+      if roles_db.empty?
         @property_hash[:ensure] = :absent
       else
         @property_hash[:ensure] = :present
-        @property_hash[:roles]  = roles.collect do |role|
+        @property_hash[:roles]  = roles_db.collect do |role|
           role[:name]
         end
       end
@@ -54,8 +56,13 @@ Puppet::Type.type(:keystone_user_role).provide(
     return @property_hash[:ensure] == :present
   end
 
-  def roles
-    @property_hash[:roles]
+  mk_resource_methods
+
+  # Don't want :absent
+  [:user, :user_domain, :project, :project_domain, :domain].each do |attr|
+    define_method(attr) do
+      @property_hash[attr] ||= resource[attr]
+    end
   end
 
   def roles=(value)
@@ -74,110 +81,42 @@ Puppet::Type.type(:keystone_user_role).provide(
   def self.instances
     instances = build_user_role_hash
     instances.collect do |title, roles|
-      new(
+      new({
         :name   => title,
         :ensure => :present,
         :roles  => roles
-      )
+      }.merge(@user_role_parameters[title]))
     end
   end
 
   private
 
   def properties
+    return @properties if @properties
     properties = []
-    if get_project_id
+    if set?(:project)
       properties << '--project' << get_project_id
-    elsif get_domain
-      properties << '--domain' << get_domain
+    elsif set?(:domain)
+      properties << '--domain' << domain
     else
       raise(Puppet::Error, 'No project or domain specified for role')
     end
     properties << '--user' << get_user_id
-    properties
-  end
-
-  def get_user
-    resource[:name].rpartition('@').first
-  end
-
-  def get_project
-    resource[:name].rpartition('@').last
-  end
-
-  # if the role is for a domain, it will be specified as
-  # user@::domain - the "project" part will be empty
-  def get_domain
-    # use defined because @domain may be nil
-    return @domain if defined?(@domain)
-    projname, domname = Util.split_domain(get_project)
-    if projname.nil?
-      @domain = domname # no project specified, so must be a domain
-    else
-      @domain = nil # not a domain specific role
-    end
-    @domain
+    @properties = properties
   end
 
   def get_user_id
-    return @user_id if defined?(@user_id)
-    user_name, domain_name = Util.split_domain(get_user)
-    if user_name.nil?
-      @user_id = nil
-    else
-      user = self.class.fetch_user(user_name, domain_name)
-      if user.nil?
-        raise(Puppet::Error, "No user #{user_name} with domain #{domain_name} found")
-      else
-        @user_id = user[:id]
-      end
-    end
-    @user_id
+    user_db = self.class.fetch_user(user, user_domain)
+    raise(Puppet::Error, "No user #{user} with domain #{user_domain} found") if user_db.nil?
+    user_db[:id]
   end
 
   def get_project_id
-    return @project_id if defined?(@project_id)
-    project_name, domain_name = Util.split_domain(get_project)
-    if project_name.nil?
-      @project_id = nil
-    else
-      project = self.class.fetch_project(project_name, domain_name)
-      if project.nil?
-        raise(Puppet::Error, "No project #{project_name} with domain #{domain_name} found")
-      else
-        @project_id = project[:id]
-      end
+    project_db = self.class.fetch_project(project, project_domain)
+    if project_db.nil?
+      raise(Puppet::Error, "No project #{project} with domain #{project_domain} found")
     end
-    @project_id
-  end
-
-  def self.get_projects
-    request('project', 'list', '--long').collect do |project|
-      {
-        :id        => project[:id],
-        :name      => project[:name],
-        :domain_id => project[:domain_id],
-        :domain    => domain_name_from_id(project[:domain_id])
-      }
-    end
-  end
-
-  def self.get_users(project_id=nil, domain_id=nil)
-    properties = ['--long']
-    if project_id
-      properties << '--project' << project_id
-    elsif domain_id
-      properties << '--domain' << domain_id
-    end
-    request('user', 'list', properties).collect do |user|
-      {
-        :id        => user[:id],
-        :name      => user[:name],
-        # note - column is "Domain" but it is really the domain id
-        :domain_id => user[:domain],
-        :domain    => domain_name_from_id(user[:domain])
-      }
-    end
+    project_db[:id]
   end
 
   def self.user_role_hash
@@ -193,6 +132,7 @@ Puppet::Type.type(:keystone_user_role).provide(
     # given key does not exist, create it with an empty
     # array as the value for the hash key
     hash = @user_role_hash || Hash.new{|h,k| h[k] = []}
+    @user_role_parameters = {}
     return hash unless hash.empty?
     # Need a mapping of project id to names.
     project_hash = {}
@@ -210,12 +150,21 @@ Puppet::Type.type(:keystone_user_role).provide(
     # now, get all role assignments
     request('role assignment', 'list').each do |assignment|
       if assignment[:user]
-        if assignment[:project]
-          hash["#{user_hash[assignment[:user]]}@#{project_hash[assignment[:project]]}"] << role_hash[assignment[:role]]
+        user_str = user_hash[assignment[:user]]
+        if assignment[:project] && !assignment[:project].empty?
+          project_str = project_hash[assignment[:project]]
+          name = "#{user_str}@#{project_str}"
+          @user_role_parameters[name] = Hash[
+            [:user_domain, :user, :project_domain, :project]
+              .zip(name_to_resource(user_str) + name_to_resource(project_str))]
         else
-          domainname = domain_id_to_name(assignment[:domain])
-          hash["#{user_hash[assignment[:user]]}@::#{domainname}"] << role_hash[assignment[:role]]
+          domainname = domain_name_from_id(assignment[:domain])
+          name = "#{user_hash[assignment[:user]]}@::#{domainname}"
+          @user_role_parameters[name] = Hash[
+            [:user_domain, :user, :domain]
+              .zip(name_to_resource(user_str) + [domainname])]
         end
+        hash[name] << role_hash[assignment[:role]]
       end
     end
     set_user_role_hash(hash)

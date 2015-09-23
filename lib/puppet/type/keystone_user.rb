@@ -3,6 +3,8 @@ File.expand_path('../..', File.dirname(__FILE__)).tap { |dir| $LOAD_PATH.unshift
 File.expand_path('../../../../openstacklib/lib', File.dirname(__FILE__)).tap { |dir| $LOAD_PATH.unshift(dir) unless $LOAD_PATH.include?(dir) }
 
 require 'puppet/provider/keystone/util'
+require 'puppet_x/keystone/composite_namevar'
+require 'puppet_x/keystone/type'
 
 Puppet::Type.newtype(:keystone_user) do
 
@@ -26,9 +28,9 @@ Puppet::Type.newtype(:keystone_user) do
     newvalues(/\S+/)
     def change_to_s(currentvalue, newvalue)
       if currentvalue == :absent
-        return "created password"
+        return 'created password'
       else
-        return "changed password"
+        return 'changed password'
       end
     end
 
@@ -59,21 +61,22 @@ Puppet::Type.newtype(:keystone_user) do
     end
   end
 
-  newproperty(:domain) do
-    newvalues(nil, /\S+/)
-    def insync?(is)
-      raise(Puppet::Error, "[keystone_user]: The domain cannot be changed from #{self.should} to #{is}") unless self.should == is
-      true
-    end
+  newparam(:domain) do
+    isnamevar
+    include PuppetX::Keystone::Type::DefaultDomain
   end
 
   autorequire(:keystone_domain) do
     # use the domain parameter if given, or the one from name if any
-    self[:domain] or Util.split_domain(self[:name])[1]
+    self[:domain]
   end
 
   # we should not do anything until the keystone service is started
   autorequire(:anchor) do
     ['keystone_started','default_domain_created']
+  end
+
+  def self.title_patterns
+    PuppetX::Keystone::CompositeNamevar.basic_split_title_patterns(:name, :domain)
   end
 end
