@@ -104,6 +104,7 @@ describe 'keystone' do
   httpd_params = {'service_name' => 'httpd'}.merge(default_params)
 
   shared_examples_for 'core keystone examples' do |param_hash|
+    it { is_expected.to contain_class('keystone::logging') }
     it { is_expected.to contain_class('keystone::params') }
 
     it { is_expected.to contain_package('keystone').with(
@@ -554,67 +555,6 @@ describe 'keystone' do
 
     it { expect { is_expected.to contain_class('keystone::params') }.to \
       raise_error(Puppet::Error, /is not an Array/) }
-  end
-
-  describe 'with syslog disabled by default' do
-    let :params do
-      default_params
-    end
-
-    it { is_expected.to contain_keystone_config('DEFAULT/use_syslog').with_value(false) }
-    it { is_expected.to_not contain_keystone_config('DEFAULT/syslog_log_facility') }
-  end
-
-  describe 'with syslog enabled' do
-    let :params do
-      default_params.merge({
-        :use_syslog   => 'true',
-      })
-    end
-
-    it { is_expected.to contain_keystone_config('DEFAULT/use_syslog').with_value(true) }
-    it { is_expected.to contain_keystone_config('DEFAULT/syslog_log_facility').with_value('LOG_USER') }
-  end
-
-  describe 'with syslog enabled and custom settings' do
-    let :params do
-      default_params.merge({
-        :use_syslog   => 'true',
-        :log_facility => 'LOG_LOCAL0'
-     })
-    end
-
-    it { is_expected.to contain_keystone_config('DEFAULT/use_syslog').with_value(true) }
-    it { is_expected.to contain_keystone_config('DEFAULT/syslog_log_facility').with_value('LOG_LOCAL0') }
-  end
-
-  describe 'with log_file disabled by default' do
-    let :params do
-      default_params
-    end
-    it { is_expected.to contain_keystone_config('DEFAULT/log_file').with_ensure('absent') }
-  end
-
-  describe 'with log_file and log_dir enabled' do
-    let :params do
-      default_params.merge({
-        :log_file   => 'keystone.log',
-        :log_dir    => '/var/lib/keystone'
-     })
-    end
-    it { is_expected.to contain_keystone_config('DEFAULT/log_file').with_value('keystone.log') }
-    it { is_expected.to contain_keystone_config('DEFAULT/log_dir').with_value('/var/lib/keystone') }
-  end
-
-    describe 'with log_file and log_dir disabled' do
-    let :params do
-      default_params.merge({
-        :log_file   => false,
-        :log_dir    => false
-     })
-    end
-    it { is_expected.to contain_keystone_config('DEFAULT/log_file').with_ensure('absent') }
-    it { is_expected.to contain_keystone_config('DEFAULT/log_dir').with_ensure('absent') }
   end
 
   describe 'when enabling SSL' do

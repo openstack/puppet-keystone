@@ -31,23 +31,23 @@
 #
 # [*verbose*]
 #   (optional) Rather keystone should log at verbose level.
-#   Defaults to false.
+#   Defaults to undef.
 #
 # [*debug*]
 #   (optional) Rather keystone should log at debug level.
-#   Defaults to False.
+#   Defaults to undef.
 #
 # [*use_syslog*]
 #   (optional) Use syslog for logging.
-#   Defaults to false.
+#   Defaults to undef.
 #
 # [*use_stderr*]
 #   (optional) Use stderr for logging
-#   Defaults to true
+#   Defaults to undef.
 #
 # [*log_facility*]
 #   (optional) Syslog facility to receive log lines.
-#   Defaults to 'LOG_USER'.
+#   Defaults to undef.
 #
 # [*catalog_type*]
 #   (optional) Type of catalog that keystone uses to store endpoints,services.
@@ -249,11 +249,11 @@
 # [*log_dir*]
 #   (optional) Directory where logs should be stored
 #   If set to boolean false, it will not log to any directory
-#   Defaults to '/var/log/keystone'
+#   Defaults to undef.
 #
 # [*log_file*]
 #   (optional) Where to log
-#   Defaults to false
+#   Defaults to undef.
 #
 # [*public_endpoint*]
 #   (optional) The base public endpoint URL for keystone that are
@@ -450,13 +450,13 @@ class keystone(
   $admin_bind_host                    = '0.0.0.0',
   $public_port                        = '5000',
   $admin_port                         = '35357',
-  $verbose                            = false,
-  $debug                              = false,
-  $log_dir                            = '/var/log/keystone',
-  $log_file                           = false,
-  $use_syslog                         = false,
-  $use_stderr                         = true,
-  $log_facility                       = 'LOG_USER',
+  $verbose                            = undef,
+  $debug                              = undef,
+  $log_dir                            = undef,
+  $log_file                           = undef,
+  $use_syslog                         = undef,
+  $use_stderr                         = undef,
+  $log_facility                       = undef,
   $catalog_type                       = 'sql',
   $catalog_driver                     = false,
   $catalog_template_file              = '/etc/keystone/default_catalog.templates',
@@ -529,6 +529,8 @@ class keystone(
   $mysql_module                       = undef,
   $compute_port                       = undef,
 ) inherits keystone::params {
+
+  include ::keystone::logging
 
   if ! $catalog_driver {
     validate_re($catalog_type, 'template|sql')
@@ -615,9 +617,6 @@ class keystone(
     'DEFAULT/admin_bind_host':  value => $admin_bind_host;
     'DEFAULT/public_port':      value => $public_port;
     'DEFAULT/admin_port':       value => $admin_port;
-    'DEFAULT/verbose':          value => $verbose;
-    'DEFAULT/debug':            value => $debug;
-    'DEFAULT/use_stderr':       value => $use_stderr;
   }
 
   if $compute_port {
@@ -932,37 +931,6 @@ class keystone(
   if $sync_db {
     include ::keystone::db::sync
     Class['::keystone::db::sync'] ~> Service[$service_name]
-  }
-
-  # Syslog configuration
-  if $use_syslog {
-    keystone_config {
-      'DEFAULT/use_syslog':           value  => true;
-      'DEFAULT/syslog_log_facility':  value  => $log_facility;
-    }
-  } else {
-    keystone_config {
-      'DEFAULT/use_syslog':           value => false;
-    }
-  }
-
-  if $log_file {
-    keystone_config {
-      'DEFAULT/log_file': value => $log_file;
-      'DEFAULT/log_dir':  value => $log_dir;
-    }
-  } else {
-    if $log_dir {
-      keystone_config {
-        'DEFAULT/log_dir':  value  => $log_dir;
-        'DEFAULT/log_file': ensure => absent;
-      }
-    } else {
-      keystone_config {
-        'DEFAULT/log_dir':  ensure => absent;
-        'DEFAULT/log_file': ensure => absent;
-      }
-    }
   }
 
   if $paste_config {
