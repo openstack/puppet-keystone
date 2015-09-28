@@ -65,6 +65,26 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
     @domain_hash[id]
   end
 
+  def self.fetch_domain(domain)
+    request('domain', 'show', domain)
+  rescue Puppet::ExecutionFailure => e
+    raise e unless e.message =~ /No domain with a name or ID/
+  end
+
+  def self.fetch_project(name, domain)
+    domain ||= default_domain
+    request('project', 'show', [name, '--domain', domain])
+  rescue Puppet::ExecutionFailure => e
+    raise e unless e.message =~ /No project with a name or ID/
+  end
+
+  def self.fetch_user(name, domain)
+    domain ||= default_domain
+    request('user', 'show', [name, '--domain', domain])
+  rescue Puppet::ExecutionFailure => e
+    raise e unless e.message =~ /No user with a name or ID/
+  end
+
   def self.get_admin_endpoint
     endpoint = nil
     if keystone_file
@@ -167,6 +187,22 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
 
   def self.service_url
     @service_url ||= get_service_url
+  end
+
+  def self.set_domain_for_name(name, domain_name)
+    if domain_name.nil? || domain_name.empty?
+      raise(Puppet::Error, "Missing domain name for resource #{name}")
+    end
+    domain = fetch_domain(domain_name)
+    domain_id = domain ? domain[:id] : nil
+    case domain_id
+    when default_domain_id
+      name
+    when nil
+      name
+    else
+      name << "::#{domain_name}"
+    end
   end
 
   def self.ssl?

@@ -36,11 +36,11 @@ Puppet::Type.type(:keystone_user).provide(
     @property_hash = self.class.request('user', 'create', properties)
     @property_hash[:name] = resource[:name]
     @property_hash[:domain] = user_domain
+
     if resource[:tenant]
       # DEPRECATED - To be removed in next release (Liberty)
       # https://bugs.launchpad.net/puppet-keystone/+bug/1472437
-      project_id = Puppet::Resource.indirection.find("Keystone_tenant/#{resource[:tenant]}")[:id]
-      set_project(resource[:tenant], project_id)
+      set_project(resource[:tenant])
       @property_hash[:tenant] = resource[:tenant]
     end
     @property_hash[:ensure] = :present
@@ -158,11 +158,17 @@ Puppet::Type.type(:keystone_user).provide(
     return nil
   end
 
-  def set_project(newproject, project_id = nil)
+  def set_project(name)
     # DEPRECATED - To be removed in next release (Liberty)
     # https://bugs.launchpad.net/puppet-keystone/+bug/1472437
+    project_name, domain_name = self.class.name_and_domain(name)
+    project = self.class.fetch_project(project_name, domain_name)
+    project_id = project ? project[:id] : nil
     unless project_id
-      project_id = Puppet::Resource.indirection.find("Keystone_tenant/#{newproject}")[:id]
+      raise(Puppet::Error, "No project found for name #{name} and domain #{domain}")
+    end
+    if project_id  == :absent
+      raise(Puppet::Error, "Project #{newproject} missing when creating user #{resource[:name]}")
     end
     # Currently the only way to assign a user to a tenant not using user-create
     # is to use role-add - this means we also need a role - there is usual
@@ -178,13 +184,13 @@ Puppet::Type.type(:keystone_user).provide(
     end
     # finally, assign the user to the project with the role
     self.class.request('role', 'add', [default_role, '--project', project_id, '--user', id])
-    newproject
+    name
   end
 
   # DEPRECATED - To be removed in next release (Liberty)
   # https://bugs.launchpad.net/puppet-keystone/+bug/1472437
   def tenant=(value)
-    @property_hash[:tenant] = set_project(value)
+    @property_hash[:tenant] = set_project(resource[:tenant])
   end
 
   # DEPRECATED - To be removed in next release (Liberty)
@@ -202,8 +208,10 @@ Puppet::Type.type(:keystone_user).provide(
     if tenant_name.nil? or tenant_name.empty?
       return nil # nothing found, nothing given
     end
-    project_id = Puppet::Resource.indirection.find("Keystone_tenant/#{tenant_name}")[:id]
-    find_project_for_user(tenant_name, project_id)
+     project_name, domain_name = self.class.name_and_domain(tenant_name)
+     project = self.class.fetch_project(project_name, domain_name)
+     project_id = project ? project[:id] : nil
+     find_project_for_user(tenant_name, project_id)
   end
 
   def domain
@@ -215,30 +223,10 @@ Puppet::Type.type(:keystone_user).provide(
   end
 
   def self.instances
-    instance_hash = {}
-    request('user', 'list', ['--long']).each do |user|
-      # The field says "domain" but it is really the domain_id
-      domname = domain_name_from_id(user[:domain])
-      if instance_hash.include?(user[:name]) # not unique
-        curdomid = instance_hash[user[:name]][:domain]
-        if curdomid != default_domain_id
-          # Move the user from the short name slot to the long name slot
-          # because it is not in the default domain.
-          curdomname = domain_name_from_id(curdomid)
-          instance_hash["#{user[:name]}::#{curdomname}"] = instance_hash[user[:name]]
-          # Use the short name slot for the new user
-          instance_hash[user[:name]] = user
-        else
-          # Use the long name for the new user
-          instance_hash["#{user[:name]}::#{domname}"] = user
-        end
-      else
-        # Unique (for now) - store in short name slot
-        instance_hash[user[:name]] = user
-      end
-    end
-    instance_hash.keys.collect do |user_name|
-      user = instance_hash[user_name]
+    users = request('user', 'list', ['--long'])
+    users.collect do |user|
+      domain_name = domain_name_from_id(user[:domain])
+      user_name = set_domain_for_name(user[:name], domain_name)
       new(
         :name        => user_name,
         :ensure      => :present,
@@ -246,7 +234,7 @@ Puppet::Type.type(:keystone_user).provide(
         :password    => user[:password],
         :email       => user[:email],
         :description => user[:description],
-        :domain      => domain_name_from_id(user[:domain]),
+        :domain      => domain_name,
         :domain_id   => user[:domain],
         :id          => user[:id]
       )

@@ -17,16 +17,18 @@ Puppet::Type.type(:keystone_user_role).provide(
 
   def create
     if resource[:roles]
+      options = properties
       resource[:roles].each do |role|
-        self.class.request('role', 'add', [role] + properties)
+        self.class.request('role', 'add', [role] + options)
       end
     end
   end
 
   def destroy
     if @property_hash[:roles]
+      options = properties
       @property_hash[:roles].each do |role|
-        self.class.request('role', 'remove', [role] + properties)
+        self.class.request('role', 'remove', [role] + options)
       end
     end
     @property_hash[:ensure] = :absent
@@ -89,7 +91,7 @@ Puppet::Type.type(:keystone_user_role).provide(
     elsif get_domain
       properties << '--domain' << get_domain
     else
-      error("No project or domain specified for role")
+      raise(Puppet::Error, 'No project or domain specified for role')
     end
     properties << '--user' << get_user_id
     properties
@@ -118,17 +120,33 @@ Puppet::Type.type(:keystone_user_role).provide(
   end
 
   def get_user_id
-    @user_id ||= Puppet::Resource.indirection.find("Keystone_user/#{get_user}")[:id]
+    return @user_id if defined?(@user_id)
+    user_name, domain_name = Util.split_domain(get_user)
+    if user_name.nil?
+      @user_id = nil
+    else
+      user = self.class.fetch_user(user_name, domain_name)
+      if user.nil?
+        raise(Puppet::Error, "No user #{user_name} with domain #{domain_name} found")
+      else
+        @user_id = user[:id]
+      end
+    end
+    @user_id
   end
 
   def get_project_id
-    # use defined because @project_id may be nil
     return @project_id if defined?(@project_id)
-    projname, domname = Util.split_domain(get_project)
-    if projname.nil?
+    project_name, domain_name = Util.split_domain(get_project)
+    if project_name.nil?
       @project_id = nil
     else
-      @project_id ||= Puppet::Resource.indirection.find("Keystone_tenant/#{get_project}")[:id]
+      project = self.class.fetch_project(project_name, domain_name)
+      if project.nil?
+        raise(Puppet::Error, "No project #{project_name} with domain #{domain_name} found")
+      else
+        @project_id = project[:id]
+      end
     end
     @project_id
   end

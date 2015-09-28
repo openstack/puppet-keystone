@@ -70,37 +70,16 @@ Puppet::Type.type(:keystone_tenant).provide(
   end
 
   def self.instances
-    instance_hash = {}
-    list = request('project', 'list', '--long')
-    list.each do |project|
-      domname = domain_name_from_id(project[:domain_id])
-      if instance_hash.include?(project[:name]) # not unique
-        curdomid = instance_hash[project[:name]][:domain_id]
-        if curdomid != default_domain_id
-          # Move the project from the short name slot to the long name slot
-          # because it is not in the default domain.
-          curdomname = domain_name_from_id(curdomid)
-          instance_hash["#{project[:name]}::#{curdomname}"] = instance_hash[project[:name]]
-          # Use the short name slot for the new project
-          instance_hash[project[:name]] = project
-        else
-          # Use the long name for the new project
-          instance_hash["#{project[:name]}::#{domname}"] = project
-        end
-      else
-        # Unique (for now) - store in short name slot
-        instance_hash[project[:name]] = project
-      end
-    end
-    instance_hash.keys.collect do |project_name|
-      project = instance_hash[project_name]
-      domname = domain_name_from_id(project[:domain_id])
+    projects = request('project', 'list', '--long')
+    projects.collect do |project|
+      domain_name = domain_name_from_id(project[:domain_id])
+      project_name = set_domain_for_name(project[:name], domain_name)
       new(
         :name        => project_name,
         :ensure      => :present,
         :enabled     => project[:enabled].downcase.chomp == 'true' ? true : false,
         :description => project[:description],
-        :domain      => domname,
+        :domain      => domain_name,
         :domain_id   => project[:domain_id],
         :id          => project[:id]
       )
@@ -139,5 +118,4 @@ Puppet::Type.type(:keystone_tenant).provide(
       @property_flush.clear
     end
   end
-
 end

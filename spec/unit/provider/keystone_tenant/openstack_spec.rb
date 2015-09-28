@@ -106,12 +106,25 @@ domain_id="foo_domain_id"
           .returns('"ID","Name","Domain ID","Description","Enabled"
 "1cb05cfed7c24279be884ba4f6520262","foo","foo_domain_id","foo",True
 "2cb05cfed7c24279be884ba4f6520262","foo","bar_domain_id","foo",True
-'
-                  )
+')
+        provider.class.expects(:openstack)
+          .with('domain', 'show', '--format', 'shell', 'foo_domain')
+          .returns('description=""
+enabled="True"
+id="foo_domain_id"
+name="foo_domain"
+')
+        provider.class.expects(:openstack)
+          .with('domain', 'show', '--format', 'shell', 'bar_domain')
+          .returns('description=""
+enabled="True"
+id="bar_domain_id"
+name="bar_domain"
+')
         instances = provider.class.instances
-        expect(instances[0].name).to eq('foo')
-        expect(instances[0].domain).to eq('bar_domain')
-        expect(instances[1].name).to eq('foo::foo_domain')
+        expect(instances[0].name).to eq('foo::foo_domain')
+        expect(instances[0].domain).to eq('foo_domain')
+        expect(instances[1].name).to eq('foo::bar_domain')
       end
     end
   end
