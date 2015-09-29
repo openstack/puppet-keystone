@@ -40,7 +40,6 @@ describe 'keystone::resource::service_identity' do
         :ensure   => 'present',
         :password => 'secrete',
         :email    => 'neutron@localhost',
-        :tenant   => 'services',
       )}
 
       it { is_expected.to contain_keystone_user_role("#{title}@services").with(
@@ -89,7 +88,6 @@ describe 'keystone::resource::service_identity' do
         :ensure   => 'present',
         :password => 'secrete',
         :email    => 'neutron@localhost',
-        :tenant   => 'services',
         :domain   => 'userdomain',
       )}
       it { is_expected.to contain_keystone_user_role("#{title}@services").with(
@@ -108,7 +106,6 @@ describe 'keystone::resource::service_identity' do
         :ensure   => 'present',
         :password => 'secrete',
         :email    => 'neutron@localhost',
-        :tenant   => 'services',
         :domain   => 'userdomain',
       )}
       it { is_expected.to contain_keystone_domain('userdomain').with(
@@ -129,7 +126,6 @@ describe 'keystone::resource::service_identity' do
         :ensure   => 'present',
         :password => 'secrete',
         :email    => 'neutron@localhost',
-        :tenant   => 'services',
         :domain   => 'defaultdomain',
       )}
       it { is_expected.to contain_keystone_domain('defaultdomain').with(

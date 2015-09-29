@@ -152,8 +152,6 @@ define keystone::resource::service_identity(
       'enabled'               => true,
       'password'              => $password,
       'email'                 => $email,
-      'tenant'                => $tenant,
-      'ignore_default_tenant' => $ignore_default_tenant,
       'domain'                => $user_domain_real,
     })
     if ! $password {

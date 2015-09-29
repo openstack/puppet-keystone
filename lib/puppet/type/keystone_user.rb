@@ -14,19 +14,6 @@ Puppet::Type.newtype(:keystone_user) do
     newvalues(/\S+/)
   end
 
-  newparam(:ignore_default_tenant) do
-    # DEPRECATED - To be removed in next release (Liberty)
-    # https://bugs.launchpad.net/puppet-keystone/+bug/1472437
-    validate do |v|
-      Puppet.warning('([keystone_user]: The ignore_default_tenant parameter is deprecated and will be removed in the future.')
-    end
-    newvalues(/(t|T)rue/, /(f|F)alse/, true, false)
-    defaultto(false)
-    munge do |value|
-      value.to_s.downcase.to_sym
-    end
-  end
-
   newproperty(:enabled) do
     newvalues(/(t|T)rue/, /(f|F)alse/, true, false)
     defaultto(true)
@@ -54,15 +41,6 @@ Puppet::Type.newtype(:keystone_user) do
     end
   end
 
-  newproperty(:tenant) do
-    # DEPRECATED - To be removed in next release (Liberty)
-    # https://bugs.launchpad.net/puppet-keystone/+bug/1472437
-    validate do |v|
-      Puppet.warning('([keystone_user]: The tenant parameter is deprecated and will be removed in the future. Please use keystone_user_role to assign a user to a project.')
-    end
-    newvalues(/\S+/)
-  end
-
   newproperty(:email) do
     newvalues(/^(\S+@\S+)|$/)
   end
@@ -87,12 +65,6 @@ Puppet::Type.newtype(:keystone_user) do
       raise(Puppet::Error, "[keystone_user]: The domain cannot be changed from #{self.should} to #{is}") unless self.should == is
       true
     end
-  end
-
-  autorequire(:keystone_tenant) do
-    # DEPRECATED - To be removed in next release (Liberty)
-    # https://bugs.launchpad.net/puppet-keystone/+bug/1472437
-    self[:tenant]
   end
 
   autorequire(:keystone_domain) do
