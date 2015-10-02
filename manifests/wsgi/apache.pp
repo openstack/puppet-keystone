@@ -89,6 +89,15 @@
 #     (optional) Wsgi script source.
 #     Defaults to undef.
 #
+#   [*wsgi_application_group*]
+#     (optional) The application group of the WSGI script.
+#     Defaults to '%{GLOBAL}'
+#
+#   [*wsgi_pass_authorization*]
+#     (optional) Whether HTTP authorisation headers are passed through to a WSGI
+#     script when the equivalent HTTP request headers are present.
+#     Defaults to 'On'
+#
 #   [*access_log_format*]
 #     The log format for the virtualhost.
 #     Optional. Defaults to false.
@@ -122,25 +131,28 @@
 #   Copyright 2013 eNovance <licensing@enovance.com>
 #
 class keystone::wsgi::apache (
-  $servername            = $::fqdn,
-  $public_port           = 5000,
-  $admin_port            = 35357,
-  $bind_host             = undef,
-  $public_path           = '/',
-  $admin_path            = '/',
-  $ssl                   = true,
-  $workers               = 1,
-  $ssl_cert              = undef,
-  $ssl_key               = undef,
-  $ssl_chain             = undef,
-  $ssl_ca                = undef,
-  $ssl_crl_path          = undef,
-  $ssl_crl               = undef,
-  $ssl_certs_dir         = undef,
-  $threads               = $::processorcount,
-  $priority              = '10',
-  $wsgi_script_ensure    = 'file',
-  $wsgi_script_source    = undef,
+  $servername              = $::fqdn,
+  $public_port             = 5000,
+  $admin_port              = 35357,
+  $bind_host               = undef,
+  $public_path             = '/',
+  $admin_path              = '/',
+  $ssl                     = true,
+  $workers                 = 1,
+  $ssl_cert                = undef,
+  $ssl_key                 = undef,
+  $ssl_chain               = undef,
+  $ssl_ca                  = undef,
+  $ssl_crl_path            = undef,
+  $ssl_crl                 = undef,
+  $ssl_certs_dir           = undef,
+  $threads                 = $::processorcount,
+  $priority                = '10',
+  $wsgi_script_ensure      = 'file',
+  $wsgi_script_source      = undef,
+  $wsgi_application_group  = '%{GLOBAL}',
+  $wsgi_pass_authorization = 'On',
+
   $access_log_format     = false,
   $vhost_custom_fragment = undef,
 ) {
@@ -255,6 +267,8 @@ class keystone::wsgi::apache (
     wsgi_daemon_process_options => $wsgi_daemon_process_options_main,
     wsgi_process_group          => 'keystone_main',
     wsgi_script_aliases         => $wsgi_script_aliases_main_real,
+    wsgi_application_group      => $wsgi_application_group,
+    wsgi_pass_authorization     => $wsgi_pass_authorization,
     custom_fragment             => $vhost_custom_fragment,
     require                     => File['keystone_wsgi_main'],
     access_log_format           => $access_log_format,
@@ -282,6 +296,8 @@ class keystone::wsgi::apache (
       wsgi_daemon_process_options => $wsgi_daemon_process_options_admin,
       wsgi_process_group          => 'keystone_admin',
       wsgi_script_aliases         => $wsgi_script_aliases_admin,
+      wsgi_application_group      => $wsgi_application_group,
+      wsgi_pass_authorization     => $wsgi_pass_authorization,
       custom_fragment             => $vhost_custom_fragment,
       require                     => File['keystone_wsgi_admin'],
       access_log_format           => $access_log_format,
