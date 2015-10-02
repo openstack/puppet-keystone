@@ -925,6 +925,7 @@ class keystone(
       validate     => false,
     }
     $service_name_real = $::apache::params::service_name
+    Service['keystone'] ->  Service[$service_name_real]
   } else {
     fail('Invalid service_name. Either keystone/openstack-keystone for running as a standalone service, or httpd for being run by a httpd server')
   }

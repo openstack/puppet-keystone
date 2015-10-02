@@ -275,6 +275,7 @@ describe 'keystone' do
       'enable'          => false,
       'validate'        => false
     )}
+    it { is_expected.to contain_service('keystone').with_before(/Service\[#{platform_parameters[:httpd_service_name]}\]/) }
   end
 
   describe 'when using invalid service name for keystone' do
