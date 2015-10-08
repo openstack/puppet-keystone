@@ -19,6 +19,7 @@ end
 group :system_tests do
   gem 'beaker-rspec',                 :require => 'false'
   gem 'beaker-puppet_install_helper', :require => 'false'
+  gem 'r10k',                         :require => 'false'
 end
 
 if facterversion = ENV['FACTER_GEM_VERSION']
