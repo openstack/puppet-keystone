@@ -3,3 +3,4 @@ spec/fixtures/manifests/*
 pkg
 Gemfile.lock
 *.swp
+openstack/
