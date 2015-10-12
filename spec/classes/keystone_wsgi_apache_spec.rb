@@ -70,6 +70,8 @@ describe 'keystone::wsgi::apache' do
         },
         'wsgi_process_group'          => 'keystone_admin',
         'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/admin" },
+        'wsgi_application_group'      => '%{GLOBAL}',
+        'wsgi_pass_authorization'     => 'On',
         'require'                     => 'File[keystone_wsgi_admin]',
         'access_log_format'           => false,
       )}
@@ -92,6 +94,8 @@ describe 'keystone::wsgi::apache' do
         },
         'wsgi_process_group'          => 'keystone_main',
         'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/main" },
+        'wsgi_application_group'      => '%{GLOBAL}',
+        'wsgi_pass_authorization'     => 'On',
         'require'                     => 'File[keystone_wsgi_main]',
         'access_log_format'           => false,
       )}
@@ -129,6 +133,8 @@ describe 'keystone::wsgi::apache' do
         },
         'wsgi_process_group'          => 'keystone_admin',
         'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/admin" },
+        'wsgi_application_group'      => '%{GLOBAL}',
+        'wsgi_pass_authorization'     => 'On',
         'require'                     => 'File[keystone_wsgi_admin]',
         'custom_fragment'             => 'LimitRequestFieldSize 81900'
       )}
@@ -151,6 +157,8 @@ describe 'keystone::wsgi::apache' do
         },
         'wsgi_process_group'          => 'keystone_main',
         'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/main" },
+        'wsgi_application_group'      => '%{GLOBAL}',
+        'wsgi_pass_authorization'     => 'On',
         'require'                     => 'File[keystone_wsgi_main]',
         'custom_fragment'             => 'LimitRequestFieldSize 81900'
       )}
@@ -194,6 +202,8 @@ describe 'keystone::wsgi::apache' do
         '/main/endpoint'  => "#{platform_parameters[:wsgi_script_path]}/main",
         '/admin/endpoint' => "#{platform_parameters[:wsgi_script_path]}/admin"
         },
+        'wsgi_application_group'      => '%{GLOBAL}',
+        'wsgi_pass_authorization'     => 'On',
         'require'                     => 'File[keystone_wsgi_main]'
       )}
     end
