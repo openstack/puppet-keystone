@@ -12,25 +12,29 @@ describe 'keystone server running with Apache/WSGI as Identity Provider' do
       case $::osfamily {
         'Debian': {
           include ::apt
-          apt::ppa { 'ppa:ubuntu-cloud-archive/liberty-staging':
-            # it's false by default in 2.x series but true in 1.8.x
-            package_manage => false,
+          class { '::openstack_extras::repo::debian::ubuntu':
+            release         => 'liberty',
+            repo            => 'proposed',
+            package_require => true,
           }
-          Exec['apt_update'] -> Package<||>
         }
         'RedHat': {
           class { '::openstack_extras::repo::redhat::redhat':
             manage_rdo => false,
             repo_hash => {
-              # we need kilo repo to be installed for dependencies
-              'rdo-kilo' => {
-                'baseurl' => 'https://repos.fedorapeople.org/repos/openstack/openstack-kilo/el7/',
-                'descr'   => 'RDO kilo',
+              'openstack-common-testing' => {
+                'baseurl'  => 'http://cbs.centos.org/repos/cloud7-openstack-common-testing/x86_64/os/',
+                'descr'    => 'openstack-common-testing',
                 'gpgcheck' => 'no',
               },
-              'rdo-liberty' => {
-                'baseurl'  => 'http://trunk.rdoproject.org/centos7/current/',
-                'descr'    => 'RDO trunk',
+              'openstack-liberty-testing' => {
+                'baseurl'  => 'http://cbs.centos.org/repos/cloud7-openstack-liberty-testing/x86_64/os/',
+                'descr'    => 'openstack-liberty-testing',
+                'gpgcheck' => 'no',
+              },
+              'openstack-liberty-trunk' => {
+                'baseurl'  => 'http://trunk.rdoproject.org/centos7-liberty/current-passed-ci/',
+                'descr'    => 'openstack-liberty-trunk',
                 'gpgcheck' => 'no',
               },
             },
