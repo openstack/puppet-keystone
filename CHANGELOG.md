@@ -1,3 +1,31 @@
+##2015-10-15 - 6.1.0
+###Summary
+
+This is a features and bugfixes release in the Kilo series.
+
+####Features
+- Allow to change archive destination
+- admin_user_domain and admin_project_domain can now be equal
+
+
+####Bugfixes
+- Allow to use the wrong resource name for Keystone_user and Keystone_tenant
+- Allow to use the wrong value for default_domain_id
+- Fixes get_section for future use
+- Domain name from id lookups return empty
+- Fixes get_section for future use
+- WSGI: use real service name in restart_keystone Exec
+- v3: make sure default domain is created before any other resource
+- Use an Anchor when service is managed
+
+####Maintenance
+- Authentication URLs and endpoint clarity re-factor
+- Purely cosmetic change on keystone provider
+- Fix rspec 3.x syntax
+- acceptance: run keystone in a WSGI server
+- acceptance: checkout stable/kilo puppet modules
+
+
 ##2015-07-08 - 6.0.0
 ###Summary
 
