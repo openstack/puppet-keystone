@@ -112,7 +112,6 @@ describe 'basic keystone server with resources' do
       keystone_user { 'adminv3::admin_domain':
         ensure      => present,
         enabled     => true,
-        tenant      => 'openstackv3::admin_domain',
         email       => 'test@example.tld',
         password    => 'a_big_secret',
       }

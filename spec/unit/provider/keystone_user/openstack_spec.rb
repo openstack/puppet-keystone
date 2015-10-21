@@ -31,7 +31,6 @@ describe provider_class do
       :ensure        => :present,
       :enabled       => 'True',
       :password      => 'secret',
-      :tenant        => 'project2::domain2',
       :email         => 'user1@example.com',
       :domain        => 'domain1',
     }
@@ -51,22 +50,12 @@ describe provider_class do
     describe '#create' do
       it 'creates a user' do
         provider.class.expects(:openstack)
-          .with('role', 'show', '--format', 'shell', '_member_')
-          .returns('name="_member_"')
-        provider.class.expects(:openstack)
-          .with('role', 'add', ['_member_', '--project', 'project2_id', '--user', 'user1_id'])
-        provider.class.expects(:openstack)
           .with('user', 'create', '--format', 'shell', ['user1', '--enable', '--password', 'secret', '--email', 'user1@example.com', '--domain', 'domain1'])
           .returns('email="user1@example.com"
 enabled="True"
 id="user1_id"
 name="user1"
 username="user1"
-')
-        provider.class.expects(:openstack)
-          .with('project', 'show', '--format', 'shell', ['project2', '--domain', 'domain2'])
-          .returns('name="project2"
-id="project2_id"
 ')
         provider.create
         expect(provider.exists?).to be_truthy
@@ -139,114 +128,6 @@ name="domain3"
         expect(instances[2].name).to eq('user3::domain3')
       end
     end
-
-    describe '#tenant' do
-      it 'gets the tenant with default backend' do
-        provider.class.expects(:openstack)
-          .with('project', 'list', '--quiet', '--format', 'csv', ['--user', 'user1_id', '--long'])
-          .returns('"ID","Name","Domain ID","Description","Enabled"
-"project2_id","project2","domain2_id","",True
-')
-        provider.instance_variable_get('@property_hash')[:id] = 'user1_id'
-        provider.class.expects(:openstack)
-          .with('project', 'show', '--format', 'shell', ['project2', '--domain', 'domain2'])
-          .returns('name="project2"
-id="project2_id"
-')
-        tenant = provider.tenant
-        expect(tenant).to eq('project2::domain2')
-      end
-
-      it 'gets the tenant with LDAP backend' do
-        provider.instance_variable_get('@property_hash')[:id] = 'user1_id'
-        provider.class.expects(:openstack)
-          .with('project', 'list', '--quiet', '--format', 'csv', ['--user', 'user1_id', '--long'])
-          .returns('"ID","Name","Domain ID","Description","Enabled"
-"project1_id","project1","domain1_id","",True
-"project2_id","project2","domain2_id","",True
-"project3_id","project3","domain3_id","",True
-')
-        provider.class.expects(:openstack)
-          .with('project', 'show', '--format', 'shell', ['project2', '--domain', 'domain2'])
-          .returns('name="project2"
-id="project2_id"
-')
-        tenant = provider.tenant
-        expect(tenant).to eq('project2::domain2')
-      end
-    end
-
-    describe '#tenant=' do
-      context 'when using default backend' do
-        it 'sets the tenant' do
-          provider.instance_variable_get('@property_hash')[:id] = 'user1_id'
-          provider.instance_variable_get('@property_hash')[:domain] = 'domain1'
-          provider.class.expects(:openstack)
-            .with('role', 'show', '--format', 'shell', '_member_')
-            .returns('name="_member_"')
-          provider.class.expects(:openstack)
-            .with('role', 'add', ['_member_', '--project', 'project2_id', '--user', 'user1_id'])
-          provider.class.expects(:openstack)
-          .with('project', 'show', '--format', 'shell', ['project2', '--domain', 'domain2'])
-          .returns('name="project2"
-id="project2_id"
-')
-          provider.tenant=('project2::domain2')
-        end
-      end
-      context 'when using LDAP read-write backend' do
-        it 'sets the tenant when _member_ role exists' do
-          provider.instance_variable_get('@property_hash')[:id] = 'user1_id'
-          provider.instance_variable_get('@property_hash')[:domain] = 'domain1'
-          provider.class.expects(:openstack)
-            .with('role', 'show', '--format', 'shell', '_member_')
-            .returns('name="_member_"')
-          provider.class.expects(:openstack)
-            .with('role', 'add', ['_member_', '--project', 'project2_id', '--user', 'user1_id'])
-          provider.class.expects(:openstack)
-          .with('project', 'show', '--format', 'shell', ['project2', '--domain', 'domain2'])
-          .returns('name="project2"
-id="project2_id"
-')
-          provider.tenant=('project2::domain2')
-        end
-        it 'sets the tenant when _member_ role does not exist' do
-          provider.instance_variable_get('@property_hash')[:id] = 'user1_id'
-          provider.instance_variable_get('@property_hash')[:domain] = 'domain1'
-          provider.class.expects(:openstack)
-            .with('role', 'show', '--format', 'shell', '_member_')
-            .raises(Puppet::ExecutionFailure, 'no such role _member_')
-          provider.class.expects(:openstack)
-            .with('role', 'create', '--format', 'shell', '_member_')
-            .returns('name="_member_"')
-          provider.class.expects(:openstack)
-            .with('role', 'add', ['_member_', '--project', 'project2_id', '--user', 'user1_id'])
-          provider.class.expects(:openstack)
-          .with('project', 'show', '--format', 'shell', ['project2', '--domain', 'domain2'])
-          .returns('name="project2"
-id="project2_id"
-')
-          provider.tenant=('project2::domain2')
-        end
-      end
-      context 'when using LDAP read-only backend' do
-        it 'sets the tenant when _member_ role exists' do
-          provider.instance_variable_get('@property_hash')[:id] = 'user1_id'
-          provider.instance_variable_get('@property_hash')[:domain] = 'domain1'
-          provider.class.expects(:openstack)
-            .with('role', 'show', '--format', 'shell', '_member_')
-            .returns('name="_member_"')
-          provider.class.expects(:openstack)
-            .with('role', 'add', ['_member_', '--project', 'project2_id', '--user', 'user1_id'])
-          provider.class.expects(:openstack)
-            .with('project', 'show', '--format', 'shell', ['project2', '--domain', 'domain2'])
-            .returns('name="project2"
-id="project2_id"
-')
-          provider.tenant=('project2::domain2')
-        end
-      end
-    end
   end
 
   describe "#password" do
@@ -256,7 +137,6 @@ id="project2_id"
         :ensure       => 'present',
         :enabled      => 'True',
         :password     => 'foo',
-        :tenant       => 'foo',
         :email        => 'foo@example.com',
         :domain       => 'domain1',
       }
@@ -366,7 +246,6 @@ ac43ec53d5a74a0b9f51523ae41a29f0
           :enabled          => 'True',
           :password         => 'secret',
           :replace_password => 'False',
-          :tenant           => 'project2',
           :email            => 'user1@example.com',
           :domain           => 'domain1',
         }
@@ -393,7 +272,6 @@ ac43ec53d5a74a0b9f51523ae41a29f0
         :ensure        => 'present',
         :enabled       => 'True',
         :password      => 'secret',
-        :tenant        => 'project1::domain2',
         :email         => 'user1@example.com',
       }
     end
@@ -448,7 +326,6 @@ id="project1_id"
         :ensure        => 'present',
         :enabled       => 'True',
         :password      => 'secret',
-        :tenant        => 'project1::domain2',
         :email         => 'user1@example.com',
         :domain        => 'domain1',
       }
@@ -456,22 +333,12 @@ id="project1_id"
 
     it 'uses given domain in commands' do
       provider.class.expects(:openstack)
-        .with('role', 'show', '--format', 'shell', '_member_')
-        .returns('name="_member_"')
-      provider.class.expects(:openstack)
-        .with('role', 'add', ['_member_', '--project', 'project1_id', '--user', 'user1_id'])
-      provider.class.expects(:openstack)
         .with('user', 'create', '--format', 'shell', ['user1', '--enable', '--password', 'secret', '--email', 'user1@example.com', '--domain', 'domain1'])
         .returns('email="user1@example.com"
 enabled="True"
 id="user1_id"
 name="user1"
 username="user1"
-')
-      provider.class.expects(:openstack)
-        .with('project', 'show', '--format', 'shell', ['project1', '--domain', 'domain2'])
-        .returns('name="projec1"
-id="project1_id"
 ')
       provider.create
       expect(provider.exists?).to be_truthy
@@ -486,17 +353,11 @@ id="project1_id"
         :ensure       => 'present',
         :enabled      => 'True',
         :password     => 'secret',
-        :tenant       => 'project1::domain2',
         :email        => 'user1@example.com',
       }
     end
 
     it 'uses given domain in commands' do
-      provider.class.expects(:openstack)
-        .with('role', 'show', '--format', 'shell', '_member_')
-        .returns('name="_member_"')
-      provider.class.expects(:openstack)
-        .with('role', 'add', ['_member_', '--project', 'project1_id', '--user', 'user1_id'])
       provider.class.expects(:openstack)
         .with('user', 'create', '--format', 'shell', ['user1', '--enable', '--password', 'secret', '--email', 'user1@example.com', '--domain', 'domain1'])
         .returns('email="user1@example.com"
@@ -504,11 +365,6 @@ enabled="True"
 id="user1_id"
 name="user1"
 username="user1"
-')
-      provider.class.expects(:openstack)
-        .with('project', 'show', '--format', 'shell', ['project1', '--domain', 'domain2'])
-        .returns('name="project1"
-id="project1_id"
 ')
       provider.create
       expect(provider.exists?).to be_truthy
@@ -524,7 +380,6 @@ id="project1_id"
         :ensure       => 'present',
         :enabled      => 'True',
         :password     => 'secret',
-        :tenant       => 'project1::domain2',
         :email        => 'user1@example.com',
         :domain       => 'domain1',
       }
@@ -532,22 +387,12 @@ id="project1_id"
 
     it 'uses the resource domain in commands' do
       provider.class.expects(:openstack)
-        .with('role', 'show', '--format', 'shell', '_member_')
-        .returns('name="_member_"')
-      provider.class.expects(:openstack)
-        .with('role', 'add', ['_member_', '--project', 'project1_id', '--user', 'user1_id'])
-      provider.class.expects(:openstack)
         .with('user', 'create', '--format', 'shell', ['user1', '--enable', '--password', 'secret', '--email', 'user1@example.com', '--domain', 'domain1'])
         .returns('email="user1@example.com"
 enabled="True"
 id="user1_id"
 name="user1"
 username="user1"
-')
-      provider.class.expects(:openstack)
-        .with('project', 'show', '--format', 'shell', ['project1', '--domain', 'domain2'])
-        .returns('name="project1"
-id="project1_id"
 ')
       provider.create
       expect(provider.exists?).to be_truthy

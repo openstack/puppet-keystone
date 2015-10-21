@@ -33,10 +33,6 @@
 #   Admin user. Optional.
 #   Defaults to admin.
 #
-# [*ignore_default_tenant*]
-#   Ignore setting the default tenant value when the user is created. Optional.
-#   Defaults to false.
-#
 # [*admin_tenant_desc*]
 #   Optional. Description for admin tenant,
 #   Defaults to 'admin tenant'
@@ -82,7 +78,6 @@ class keystone::roles::admin(
   $admin_tenant           = 'openstack',
   $admin_roles            = ['admin'],
   $service_tenant         = 'services',
-  $ignore_default_tenant  = false,
   $admin_tenant_desc      = 'admin tenant',
   $service_tenant_desc    = 'Tenant for the openstack services',
   $configure_user         = true,
@@ -116,13 +111,11 @@ class keystone::roles::admin(
 
   if $configure_user {
     keystone_user { $admin:
-      ensure                => present,
-      enabled               => true,
-      tenant                => $admin_tenant,
-      email                 => $email,
-      password              => $password,
-      domain                => $admin_user_domain,
-      ignore_default_tenant => $ignore_default_tenant,
+      ensure   => present,
+      enabled  => true,
+      email    => $email,
+      password => $password,
+      domain   => $admin_user_domain,
     }
   }
 

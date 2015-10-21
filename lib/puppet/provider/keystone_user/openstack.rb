@@ -36,13 +36,6 @@ Puppet::Type.type(:keystone_user).provide(
     @property_hash = self.class.request('user', 'create', properties)
     @property_hash[:name] = resource[:name]
     @property_hash[:domain] = user_domain
-
-    if resource[:tenant]
-      # DEPRECATED - To be removed in next release (Liberty)
-      # https://bugs.launchpad.net/puppet-keystone/+bug/1472437
-      set_project(resource[:tenant])
-      @property_hash[:tenant] = resource[:tenant]
-    end
     @property_hash[:ensure] = :present
   end
 
@@ -142,76 +135,6 @@ Puppet::Type.type(:keystone_user).provide(
 
   def replace_password=(value)
     @property_flush[:replace_password] = value
-  end
-
-  def find_project_for_user(projname, project_id = nil)
-    # DEPRECATED - To be removed in next release (Liberty)
-    # https://bugs.launchpad.net/puppet-keystone/+bug/1472437
-    user_name, user_domain = self.class.name_and_domain(resource[:name], resource[:domain])
-    project_name, project_domain = self.class.name_and_domain(projname, nil, user_domain)
-    self.class.request('project', 'list', ['--user', id, '--long']).each do |project|
-      if (project_id == project[:id]) ||
-         ((projname == project_name) && (project_domain == self.class.domain_name_from_id(project[:domain_id])))
-        return projname
-      end
-    end
-    return nil
-  end
-
-  def set_project(name)
-    # DEPRECATED - To be removed in next release (Liberty)
-    # https://bugs.launchpad.net/puppet-keystone/+bug/1472437
-    project_name, domain_name = self.class.name_and_domain(name)
-    project = self.class.fetch_project(project_name, domain_name)
-    project_id = project ? project[:id] : nil
-    unless project_id
-      raise(Puppet::Error, "No project found for name #{name} and domain #{domain}")
-    end
-    if project_id  == :absent
-      raise(Puppet::Error, "Project #{newproject} missing when creating user #{resource[:name]}")
-    end
-    # Currently the only way to assign a user to a tenant not using user-create
-    # is to use role-add - this means we also need a role - there is usual
-    # a default role called _member_ which can be used for this purpose.  What
-    # usually happens in a puppet module is that immediately after calling
-    # keystone_user, the module will then assign a role to that user.  It is
-    # ok for a user to have the _member_ role and another role.
-    default_role = "_member_"
-    begin
-      self.class.request('role', 'show', default_role)
-    rescue
-      self.class.request('role', 'create', default_role)
-    end
-    # finally, assign the user to the project with the role
-    self.class.request('role', 'add', [default_role, '--project', project_id, '--user', id])
-    name
-  end
-
-  # DEPRECATED - To be removed in next release (Liberty)
-  # https://bugs.launchpad.net/puppet-keystone/+bug/1472437
-  def tenant=(value)
-    @property_hash[:tenant] = set_project(resource[:tenant])
-  end
-
-  # DEPRECATED - To be removed in next release (Liberty)
-  # https://bugs.launchpad.net/puppet-keystone/+bug/1472437
-  def tenant
-    return resource[:tenant] if sym_to_bool(resource[:ignore_default_tenant])
-    # use the one returned from instances
-    tenant_name = @property_hash[:project]
-    if tenant_name.nil? or tenant_name.empty?
-      # if none (i.e. ldap backend) use the given one
-      tenant_name = resource[:tenant]
-    else
-      return tenant_name
-    end
-    if tenant_name.nil? or tenant_name.empty?
-      return nil # nothing found, nothing given
-    end
-     project_name, domain_name = self.class.name_and_domain(tenant_name)
-     project = self.class.fetch_project(project_name, domain_name)
-     project_id = project ? project[:id] : nil
-     find_project_for_user(tenant_name, project_id)
   end
 
   def domain
