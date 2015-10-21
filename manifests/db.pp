@@ -64,7 +64,8 @@ class keystone::db (
         require 'mysql::bindings::python'
       }
       /^postgresql:\/\//: {
-        $backend_package = $::keystone::params::psycopg_package_name
+        $backend_package = false
+        require 'postgresql::lib::python'
       }
       /^sqlite:\/\//: {
         $backend_package = $::keystone::params::sqlite_package_name
