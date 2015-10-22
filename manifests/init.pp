@@ -318,9 +318,6 @@
 #   (string value)
 #   Defaults to '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost'
 #
-# [*mysql_module*]
-#   (optional) Deprecated. Does nothing.
-#
 # [*validate_service*]
 #   (optional) Whether to validate keystone connections after
 #   the service is started.
@@ -552,7 +549,6 @@ class keystone(
   # DEPRECATED PARAMETERS
   $admin_workers                      = max($::processorcount, 2),
   $public_workers                     = max($::processorcount, 2),
-  $mysql_module                       = undef,
   $compute_port                       = undef,
 ) inherits keystone::params {
 
@@ -560,10 +556,6 @@ class keystone(
 
   if ! $catalog_driver {
     validate_re($catalog_type, 'template|sql')
-  }
-
-  if $mysql_module {
-    warning('The mysql_module parameter is deprecated. The latest 2.x mysql module will be used.')
   }
 
   if ($admin_endpoint and 'v2.0' in $admin_endpoint) {

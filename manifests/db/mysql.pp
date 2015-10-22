@@ -36,9 +36,6 @@
 #
 # === Deprecated Parameters
 #
-# [*mysql_module*]
-#   (Optional) Does nothing.
-#
 # == Dependencies
 #   Class['mysql::server']
 #
@@ -58,13 +55,8 @@ class keystone::db::mysql(
   $host          = '127.0.0.1',
   $charset       = 'utf8',
   $collate       = 'utf8_general_ci',
-  $mysql_module  = undef,
   $allowed_hosts = undef
 ) {
-
-  if $mysql_module {
-    warning('The mysql_module parameter is deprecated. The latest 2.x mysql module will be used.')
-  }
 
   validate_string($password)
 
