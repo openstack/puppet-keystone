@@ -1,6 +1,8 @@
 # LP#1408531
 File.expand_path('../..', File.dirname(__FILE__)).tap { |dir| $LOAD_PATH.unshift(dir) unless $LOAD_PATH.include?(dir) }
 File.expand_path('../../../../openstacklib/lib', File.dirname(__FILE__)).tap { |dir| $LOAD_PATH.unshift(dir) unless $LOAD_PATH.include?(dir) }
+require 'puppet_x/keystone/composite_namevar'
+require 'puppet_x/keystone/type'
 
 Puppet::Type.newtype(:keystone_service) do
 
@@ -14,16 +16,13 @@ Puppet::Type.newtype(:keystone_service) do
   end
 
   newproperty(:id) do
-    validate do |v|
-      raise(Puppet::Error, 'This is a read only property')
-    end
+    include PuppetX::Keystone::Type::ReadOnly
   end
 
-  newproperty(:type) do
+  newparam(:type) do
+    isnamevar
     desc 'The type of service'
-    validate do |value|
-      fail('The service type is required.') unless value
-    end
+    include PuppetX::Keystone::Type::Required
   end
 
   newproperty(:description) do
@@ -37,5 +36,9 @@ Puppet::Type.newtype(:keystone_service) do
   # need to come from another source.
   autorequire(:anchor) do
     ['keystone_started']
+  end
+
+  def self.title_patterns
+    PuppetX::Keystone::CompositeNamevar.basic_split_title_patterns(:name, :type)
   end
 end

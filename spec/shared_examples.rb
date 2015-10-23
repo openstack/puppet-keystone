@@ -8,10 +8,7 @@ shared_examples_for 'parse title correctly' do |result|
   let(:title) do |example|
     example.metadata[:example_group][:description]
   end
-  let(:current_class) do |example|
-    example.metadata[:described_class]
-  end
-  let(:resource) { current_class.new(:title => title) }
+  let(:resource) { described_class.new(:title => title) }
   it 'should parse this title correctly' do
     times = result.delete(:calling_default) || 0
     Puppet::Provider::Keystone.expects(:default_domain).times(times).returns('Default')
@@ -23,12 +20,41 @@ shared_examples_for 'croak on the title' do
   let(:title) do |example|
     example.metadata[:example_group][:description]
   end
-  let(:current_class) do |example|
-    example.metadata[:described_class]
-  end
-  let(:user) { current_class.new(:title => title) }
+  let(:resource) { described_class.new(:title => title) }
   it 'croak on the title' do
-    expect { user }.to raise_error(Puppet::Error, /No set of title patterns matched the title/)
+    expect { resource }.to raise_error(Puppet::Error, /No set of title patterns matched the title/)
+  end
+end
+
+shared_examples_for 'croak on the required parameter' do |attr|
+  let(:title) do |example|
+    example.metadata[:example_group][:description]
+  end
+  prefix = attr.is_a?(String) ? attr : ''
+
+  let(:resource) { described_class.new(:title => title) }
+  it 'croak on the missing required parameter' do
+    expect { resource }
+      .to raise_error(Puppet::ResourceError, "#{prefix} Required parameter.")
+  end
+end
+
+shared_examples_for 'croak on read-only parameter' do |resource|
+  prefix = resource.delete(:_prefix)
+  it 'should raise an error' do
+    expect { described_class.new(resource) }
+      .to raise_error(Puppet::ResourceError, "#{prefix} Read-only property.")
+  end
+end
+
+shared_examples_for 'succeed with the required parameters' do |extra_params|
+  let(:title) do |example|
+    example.metadata[:example_group][:description]
+  end
+  extra_params_to_merge = extra_params || {}
+  let(:resource) { described_class.new({ :title => title }.merge(extra_params_to_merge)) }
+  it 'has all required parameters' do
+    expect { resource }.not_to raise_error
   end
 end
 
@@ -51,9 +77,6 @@ end
 
 # Let resources to [<existing>, <non_existing>]
 shared_examples_for 'prefetch the resources' do
-  let(:current_class) do |example|
-    example.metadata[:described_class]
-  end
   it 'should correctly prefetch the existing resource' do
     existing     = resources[0]
     non_existing = resources[1]
@@ -68,8 +91,8 @@ shared_examples_for 'prefetch the resources' do
     resource.expects(:values).returns(m_value)
     m_value.expects(:first).returns(m_first)
     m_first.expects(:catalog).returns(catalog)
-    m_first.expects(:class).returns(current_class.resource_type)
-    current_class.prefetch(resource)
+    m_first.expects(:class).returns(described_class.resource_type)
+    described_class.prefetch(resource)
 
     # found and not found
     expect(existing.provider.ensure).to eq(:present)
@@ -81,7 +104,8 @@ end
 # - the first hash are the expected result
 # - second are parameters to test default domain, required but can be empty
 # - the rest are the combination of attributes you want to test
-# see examples in user/user_role/tenant
+# The provider must be build from ressource_attrs
+# see examples in keystone_{user/user_role/tenant/service}
 shared_examples_for 'create the correct resource' do |attributes|
   expected_results = attributes.shift['expected_results']
   default_domain   = attributes.shift
