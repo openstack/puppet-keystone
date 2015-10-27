@@ -35,6 +35,7 @@ describe 'keystone' do
       'token_provider'                      => 'keystone.token.providers.uuid.Provider',
       'token_driver'                        => 'keystone.token.persistence.backends.sql.Token',
       'revoke_driver'                       => 'keystone.contrib.revoke.backends.sql.Revoke',
+      'revoke_by_id'                        => true,
       'cache_dir'                           => '/var/cache/keystone',
       'enable_ssl'                          => false,
       'ssl_certfile'                        => '/etc/keystone/ssl/certs/keystone.pem',
@@ -76,6 +77,7 @@ describe 'keystone' do
       'token_provider'                      => 'keystone.token.providers.uuid.Provider',
       'token_driver'                        => 'keystone.token.backends.kvs.Token',
       'revoke_driver'                       => 'keystone.contrib.revoke.backends.kvs.Revoke',
+      'revoke_by_id'                        => false,
       'public_endpoint'                     => 'https://localhost:5000/v2.0/',
       'admin_endpoint'                      => 'https://localhost:35357/v2.0/',
       'enable_ssl'                          => true,
@@ -184,6 +186,10 @@ describe 'keystone' do
 
     it 'should contain correct revoke driver' do
       is_expected.to contain_keystone_config('revoke/driver').with_value(param_hash['revoke_driver'])
+    end
+
+    it 'should contain default revoke_by_id value ' do
+      is_expected.to contain_keystone_config('token/revoke_by_id').with_value(param_hash['revoke_by_id'])
     end
 
     it 'should ensure proper setting of admin_endpoint and public_endpoint' do
@@ -765,6 +771,7 @@ describe 'keystone' do
         default_params.merge({
           'enable_fernet_setup'    => true,
           'fernet_max_active_keys' => 5,
+          'revoke_by_id'           => false,
         })
       end
 
@@ -772,6 +779,7 @@ describe 'keystone' do
         :creates => '/etc/keystone/fernet-keys/0'
       ) }
       it { is_expected.to contain_keystone_config('fernet_tokens/max_active_keys').with_value(5)}
+      it { is_expected.to contain_keystone_config('token/revoke_by_id').with_value(false)}
     end
 
     describe 'when overriding the fernet key directory' do
@@ -909,4 +917,5 @@ describe 'keystone' do
     it_configures 'when using default class parameters for httpd'
     it_configures 'when configuring default domain'
   end
+
 end

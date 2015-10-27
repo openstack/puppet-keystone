@@ -79,6 +79,14 @@
 #   (optional) Driver for token revocation.
 #   Defaults to 'keystone.contrib.revoke.backends.sql.Revoke'
 #
+# [*revoke_by_id*]
+#   (optional) Revoke token by token identifier.
+#   Setting revoke_by_id to true enables various forms of enumerating tokens.
+#   These enumerations are processed to determine the list of tokens to revoke.
+#   Only disable if you are switching to using the Revoke extension with a backend
+#   other than KVS, which stores events in memory.
+#   Defaults to true.
+#
 # [*cache_dir*]
 #   (optional) Directory created when token_provider is pki.
 #   Defaults to /var/cache/keystone.
@@ -485,6 +493,7 @@ class keystone(
   $token_driver                       = 'keystone.token.persistence.backends.sql.Token',
   $token_expiration                   = 3600,
   $revoke_driver                      = 'keystone.contrib.revoke.backends.sql.Revoke',
+  $revoke_by_id                       = true,
   $public_endpoint                    = false,
   $admin_endpoint                     = false,
   $enable_ssl                         = false,
@@ -967,6 +976,8 @@ class keystone(
       subscribe   => [Package['keystone'], Keystone_config['fernet_tokens/key_repository']],
     }
   }
+
+  keystone_config {'token/revoke_by_id':   value => $revoke_by_id}
 
   if $fernet_key_repository {
     keystone_config {
