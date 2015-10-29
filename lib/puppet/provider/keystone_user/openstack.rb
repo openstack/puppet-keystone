@@ -148,7 +148,7 @@ Puppet::Type.type(:keystone_user).provide(
   def self.instances
     users = request('user', 'list', ['--long'])
     users.collect do |user|
-      domain_name = domain_name_from_id(user[:domain])
+      domain_name = domain_name_from_id(user[:domain_id])
       user_name = set_domain_for_name(user[:name], domain_name)
       new(
         :name        => user_name,
@@ -158,7 +158,7 @@ Puppet::Type.type(:keystone_user).provide(
         :email       => user[:email],
         :description => user[:description],
         :domain      => domain_name,
-        :domain_id   => user[:domain],
+        :domain_id   => user[:domain_id],
         :id          => user[:id]
       )
     end
