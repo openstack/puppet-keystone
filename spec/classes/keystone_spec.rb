@@ -668,6 +668,14 @@ describe 'keystone' do
     it { is_expected.to contain_keystone_config('DEFAULT/control_exchange').with_value('keystone') }
   end
 
+  describe 'setting sql policy driver' do
+    let :params do
+      default_params.merge({:policy_driver => 'sql' })
+    end
+
+    it { is_expected.to contain_keystone_config('policy/driver').with_value('sql') }
+  end
+
   describe 'setting sql (default) catalog' do
     let :params do
       default_params

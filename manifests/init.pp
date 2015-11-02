@@ -437,6 +437,10 @@
 #   the pool before it is closed.
 #   Defaults to undef.
 #
+# [*policy_driver*]
+#   Policy backend driver. (string value)
+#   Defaults to $::os_service_default.
+#
 # == Dependencies
 #  None
 #
@@ -553,6 +557,7 @@ class keystone(
   $memcache_socket_timeout            = undef,
   $memcache_pool_maxsize              = undef,
   $memcache_pool_unused_timeout       = undef,
+  $policy_driver                      = $::os_service_default,
   # DEPRECATED PARAMETERS
   $admin_workers                      = max($::processorcount, 2),
   $public_workers                     = max($::processorcount, 2),
@@ -685,6 +690,14 @@ class keystone(
     keystone_config {
       'revoke/driver':    ensure => absent;
     }
+  }
+
+  if ($policy_driver =~ /^keystone\.policy\.backends\..*Policy$/) {
+    warning('policy driver form \'keystone.policy.backends.*Policy\' is deprecated')
+  }
+
+  keystone_config {
+    'policy/driver': value => $policy_driver;
   }
 
   # ssl config
