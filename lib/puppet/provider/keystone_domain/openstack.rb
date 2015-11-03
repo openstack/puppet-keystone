@@ -9,6 +9,7 @@ Puppet::Type.type(:keystone_domain).provide(
   desc 'Provider that manages keystone domains'
 
   @credentials = Puppet::Provider::Openstack::CredentialsV3.new
+  @current_default_domain_id = nil
 
   def initialize(value={})
     super(value)
@@ -46,6 +47,8 @@ Puppet::Type.type(:keystone_domain).provide(
     @property_hash.clear
   end
 
+  mk_resource_methods
+
   def enabled=(value)
     @property_flush[:enabled] = value
   end
@@ -58,14 +61,6 @@ Puppet::Type.type(:keystone_domain).provide(
     @property_flush[:description] = value
   end
 
-  def description
-    @property_hash[:description]
-  end
-
-  def id
-    @property_hash[:id]
-  end
-
   def is_default
     bool_to_sym(@property_hash[:is_default])
   end
@@ -75,32 +70,19 @@ Puppet::Type.type(:keystone_domain).provide(
   end
 
   def ensure_default_domain(create, destroy=false, value=nil)
-    if !self.class.keystone_file
-      return
-    end
-    changed = false
-    curid = self.class.default_domain_id
-    newid = id
+    curid = self.class.current_default_domain_id
     default = (is_default == :true)
+    entry = keystone_conf_default_domain_id_entry(id)
     if (default && create) || (!default && (value == :true))
       # new default domain, or making existing domain the default domain
-      if curid != newid
-        self.class.keystone_file['identity']['default_domain_id'] = newid
-        changed = true
+      if curid != id
+        entry.create
       end
     elsif (default && destroy) || (default && (value == :false))
       # removing default domain, or making this domain not the default
-      if curid == newid
-        # can't delete from inifile, so just reset to default 'default'
-        self.class.keystone_file['identity']['default_domain_id'] = 'default'
-        changed = true
-        newid = 'default'
+      if curid == id
+        entry.destroy
       end
-    end
-    if changed
-      self.class.keystone_file.store
-      self.class.default_domain_id = newid
-      debug("The default_domain_id was changed from #{curid} to #{newid}")
     end
   end
 
@@ -112,7 +94,7 @@ Puppet::Type.type(:keystone_domain).provide(
         :enabled     => domain[:enabled].downcase.chomp == 'true' ? true : false,
         :description => domain[:description],
         :id          => domain[:id],
-        :is_default  => domain[:id] == default_domain_id
+        :is_default  => domain[:id] == current_default_domain_id
       )
     end
   end
@@ -140,5 +122,23 @@ Puppet::Type.type(:keystone_domain).provide(
       end
       @property_flush.clear
     end
+  end
+
+  private
+
+  def self.current_default_domain_id
+    return @current_default_domain_id unless @current_default_domain_id.nil?
+    current = Puppet::Resource.indirection
+      .find('Keystone_config/identity/default_domain_id')[:value]
+    current = nil if current == :absent
+    @current_default_domain_id = current
+  end
+
+  def keystone_conf_default_domain_id_entry(newid)
+    conf = Puppet::Type::Keystone_config
+      .new(:title => 'identity/default_domain_id', :value => newid)
+    entry = Puppet::Type.type(:keystone_config).provider(:ini_setting)
+      .new(conf)
+    entry
   end
 end

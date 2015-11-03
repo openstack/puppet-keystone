@@ -10,7 +10,6 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
 
   INI_FILENAME = '/etc/keystone/keystone.conf'
 
-  @@default_domain_id = nil
   @@default_domain    = nil
 
   def self.admin_endpoint
@@ -31,20 +30,6 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
     else
       return host
     end
-  end
-
-  def self.default_domain_id
-    if @@default_domain_id
-      @@default_domain_id
-    elsif keystone_file and keystone_file['identity'] and keystone_file['identity']['default_domain_id']
-      keystone_file['identity']['default_domain_id'].strip
-    else
-      'default'
-    end
-  end
-
-  def self.default_domain_id=(id)
-    @@default_domain_id = id
   end
 
   def self.resource_to_name(domain, name, check_for_default=true)

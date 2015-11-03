@@ -76,7 +76,7 @@ username="user1"
     describe '#exists' do
       context 'when user does not exist' do
         subject(:response) do
-          response = provider.exists?
+          provider.exists?
         end
 
         it { is_expected.to be_falsey }
