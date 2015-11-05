@@ -43,6 +43,8 @@ class keystone::db (
   $database_max_overflow   = 20,
 ) {
 
+  include ::keystone::params
+
   # NOTE(spredzy): In order to keep backward compatibility we rely on the pick function
   # to use keystone::<myparam> if keystone::db::<myparam> isn't specified.
   $database_connection_real = pick($::keystone::database_connection, $database_connection)
@@ -54,14 +56,18 @@ class keystone::db (
   $database_max_overflow_real = pick($::keystone::database_max_overflow, $database_max_overflow)
 
   validate_re($database_connection_real,
-    '(sqlite|mysql|postgresql):\/\/(\S+:\S+@\S+\/\S+)?')
+    '^(sqlite|mysql(\+pymysql)?|postgresql):\/\/(\S+:\S+@\S+\/\S+)?')
 
   if $database_connection_real {
     case $database_connection_real {
-      /^mysql:\/\//: {
-        $backend_package = false
+      /^mysql(\+pymysql)?:\/\//: {
         require 'mysql::bindings'
         require 'mysql::bindings::python'
+        if $database_connection_real =~ /^mysql\+pymysql/ {
+          $backend_package = $::keystone::params::pymysql_package_name
+        } else {
+          $backend_package = false
+        }
       }
       /^postgresql:\/\//: {
         $backend_package = false

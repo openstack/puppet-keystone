@@ -6,7 +6,7 @@ describe 'basic keystone server with changed domain id' do
       class { '::keystone':
             verbose             => true,
             debug               => true,
-            database_connection => 'mysql://keystone:keystone@127.0.0.1/keystone',
+            database_connection => 'mysql+pymysql://keystone:keystone@127.0.0.1/keystone',
             admin_token         => 'admin_token',
             enabled             => true,
       }
@@ -77,7 +77,7 @@ describe 'basic keystone server with changed domain id' do
       class { '::keystone':
         verbose             => true,
         debug               => true,
-        database_connection => 'mysql://keystone:keystone@127.0.0.1/keystone',
+        database_connection => 'mysql+pymysql://keystone:keystone@127.0.0.1/keystone',
         admin_token         => 'admin_token',
         enabled             => true,
         default_domain      => 'my_default_domain'

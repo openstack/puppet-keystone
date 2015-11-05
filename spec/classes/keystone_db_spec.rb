@@ -18,7 +18,7 @@ describe 'keystone::db' do
 
     context 'with specific parameters' do
       let :params do
-        { :database_connection     => 'mysql://keystone:keystone@localhost/keystone',
+        { :database_connection     => 'mysql+pymysql://keystone:keystone@localhost/keystone',
           :database_idle_timeout   => '3601',
           :database_min_pool_size  => '2',
           :database_max_pool_size  => '21',
@@ -27,14 +27,23 @@ describe 'keystone::db' do
           :database_retry_interval => '11', }
       end
 
-      it { is_expected.to contain_keystone_config('database/connection').with_value('mysql://keystone:keystone@localhost/keystone').with_secret(true) }
+      it { is_expected.to contain_keystone_config('database/connection').with_value('mysql+pymysql://keystone:keystone@localhost/keystone').with_secret(true) }
       it { is_expected.to contain_keystone_config('database/idle_timeout').with_value('3601') }
       it { is_expected.to contain_keystone_config('database/min_pool_size').with_value('2') }
       it { is_expected.to contain_keystone_config('database/max_retries').with_value('11') }
       it { is_expected.to contain_keystone_config('database/max_pool_size').with_value('21') }
       it { is_expected.to contain_keystone_config('database/max_overflow').with_value('21') }
       it { is_expected.to contain_keystone_config('database/retry_interval').with_value('11') }
+      it { is_expected.to contain_package('keystone-backend-package').with({ :ensure => 'present', :name => platform_params[:pymysql_package_name] }) }
 
+    end
+
+    context 'with MySQL-python library as backend package' do
+      let :params do
+        { :database_connection => 'mysql://keystone:keystone@localhost/keystone' }
+      end
+
+      it { is_expected.to contain_package('python-mysqldb').with(:ensure => 'present') }
     end
 
     context 'with postgresql backend' do
@@ -56,6 +65,14 @@ describe 'keystone::db' do
       it_raises 'a Puppet::Error', /validate_re/
     end
 
+    context 'with incorrect pymysql database_connection string' do
+      let :params do
+        { :database_connection     => 'foo+pymysql://keystone:keystone@localhost/keystone', }
+      end
+
+      it_raises 'a Puppet::Error', /validate_re/
+    end
+
   end
 
   context 'on Debian platforms' do
@@ -66,6 +83,10 @@ describe 'keystone::db' do
       }
     end
 
+    let :platform_params do
+      { :pymysql_package_name => 'python-pymysql' }
+    end
+
     it_configures 'keystone::db'
   end
 
@@ -74,6 +95,10 @@ describe 'keystone::db' do
       { :osfamily => 'RedHat',
         :operatingsystemrelease => '7.1',
       }
+    end
+
+    let :platform_params do
+      { :pymysql_package_name => 'python2-PyMySQL' }
     end
 
     it_configures 'keystone::db'
