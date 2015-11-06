@@ -272,4 +272,16 @@ describe 'basic keystone server with resources' do
       end
     end
   end
+  describe 'composite namevar for keystone_service' do
+    let(:pp) do
+      <<-EOM
+      keystone_service { 'service_1::type_1': ensure => present }
+      keystone_service { 'service_1': type => 'type_2', ensure => present }
+      EOM
+    end
+    it 'should be possible to create two services different only by their type' do
+      apply_manifest(pp, :catch_failures => true)
+      apply_manifest(pp, :catch_changes => true)
+    end
+  end
 end

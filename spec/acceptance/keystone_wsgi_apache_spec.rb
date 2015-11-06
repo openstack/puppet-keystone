@@ -239,6 +239,45 @@ describe 'keystone server running with Apache/WSGI with resources' do
       include_examples 'keystone user/tenant/service/role/endpoint resources using v3 API',
                        '--os-username beaker-civ3 --os-password secret --os-project-name servicesv3 --os-user-domain-name service_domain --os-project-domain-name service_domain'
     end
-
+  end
+  describe 'composite namevar quick test' do
+    context 'similar resources different naming' do
+      let(:pp) do
+        <<-EOM
+        keystone_tenant { 'openstackv3':
+          ensure      => present,
+          enabled     => true,
+          description => 'admin tenant',
+          domain      => 'admin_domain'
+        }
+        keystone_user { 'adminv3::useless_when_the_domain_is_set':
+          ensure      => present,
+          enabled     => true,
+          email       => 'test@example.tld',
+          password    => 'a_big_secret',
+          domain      => 'admin_domain'
+        }
+        keystone_user_role { 'adminv3::admin_domain@openstackv3::admin_domain':
+          ensure         => present,
+          roles          => ['admin'],
+        }
+        EOM
+      end
+      it 'should not do any modification' do
+        apply_manifest(pp, :catch_changes => true)
+      end
+    end
+  end
+  describe 'composite namevar for keystone_service' do
+    let(:pp) do
+      <<-EOM
+      keystone_service { 'service_1::type_1': ensure => present }
+      keystone_service { 'service_1': type => 'type_2', ensure => present }
+      EOM
+    end
+    it 'should be possible to create two services different only by their type' do
+      apply_manifest(pp, :catch_failures => true)
+      apply_manifest(pp, :catch_changes => true)
+    end
   end
 end
