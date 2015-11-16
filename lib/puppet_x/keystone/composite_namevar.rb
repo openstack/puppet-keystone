@@ -1,5 +1,5 @@
 # Cherry pick PUP-1073 from puppetlabs: support of composite namevar for alias.
-if Gem::Version.new(Puppet.version) < Gem::Version.new('4.0.0')
+if Gem::Version.new(Puppet.version.sub(/\(Puppet Enterprise .*/i, '').strip) < Gem::Version.new('4.0.0')
   Puppet::Resource::Catalog.class_eval do
     def create_resource_aliases(resource)
       # Skip creating aliases and checking collisions for non-isomorphic resources.
