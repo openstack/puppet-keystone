@@ -13,6 +13,7 @@ class keystone::params {
       $python_memcache_package_name = 'python-memcache'
       $sqlite_package_name          = 'python-pysqlite2'
       $paste_config                 = undef
+      $pymysql_package_name         = 'python-pymysql'
       case $::operatingsystem {
         'Debian': {
           $service_provider            = undef
@@ -31,6 +32,7 @@ class keystone::params {
       $service_provider             = undef
       $keystone_wsgi_script_source  = '/usr/share/keystone/keystone.wsgi'
       $paste_config                 = '/usr/share/keystone/keystone-dist-paste.ini'
+      $pymysql_package_name         = 'python2-PyMySQL'
     }
   }
 }

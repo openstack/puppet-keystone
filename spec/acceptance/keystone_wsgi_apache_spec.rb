@@ -39,7 +39,7 @@ describe 'keystone server running with Apache/WSGI with resources' do
       class { '::keystone':
         verbose             => true,
         debug               => true,
-        database_connection => 'mysql://keystone:keystone@127.0.0.1/keystone',
+        database_connection => 'mysql+pymysql://keystone:keystone@127.0.0.1/keystone',
         admin_token         => 'admin_token',
         enabled             => true,
         service_name        => 'httpd',
