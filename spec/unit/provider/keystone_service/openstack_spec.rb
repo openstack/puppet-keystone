@@ -57,7 +57,6 @@ type="type_one"
             :description => 'Service One'
           }
         },
-        {},
         {
           'type in title' => {
             :title       => 'service_one::type_one',

@@ -66,6 +66,9 @@ Puppet::Type.type(:keystone_tenant).provide(
   end
 
   def self.instances
+    if default_domain_changed
+      warning(default_domain_deprecation_message)
+    end
     projects = request('project', 'list', '--long')
     projects.collect do |project|
       domain_name = domain_name_from_id(project[:domain_id])

@@ -4,9 +4,7 @@ require 'puppet/provider/keystone_domain/openstack'
 
 setup_provider_tests
 
-provider_class = Puppet::Type.type(:keystone_domain).provider(:openstack)
-
-describe provider_class do
+describe Puppet::Type.type(:keystone_domain).provider(:openstack) do
 
   let(:set_env) do
     ENV['OS_USERNAME']     = 'test'
@@ -19,8 +17,8 @@ describe provider_class do
 
     let(:domain_attrs) do
       {
-        :name         => 'foo',
-        :description  => 'foo',
+        :name         => 'domain_one',
+        :description  => 'Domain One',
         :ensure       => 'present',
         :enabled      => 'True'
       }
@@ -31,7 +29,7 @@ describe provider_class do
     end
 
     let(:provider) do
-      provider_class.new(resource)
+      described_class.new(resource)
     end
 
     let(:another_class) do
@@ -46,39 +44,36 @@ describe provider_class do
     end
 
     after :each do
-      provider_class.reset
+      described_class.reset
       another_class.reset
     end
 
     describe '#create' do
       it 'creates a domain' do
-        provider_class.expects(:current_default_domain_id).returns('default')
         entry = mock
         provider.expects(:keystone_conf_default_domain_id_entry).returns(entry)
 
-        provider.class.expects(:openstack)
-          .with('domain', 'create', '--format', 'shell', ['foo', '--enable', '--description', 'foo'])
+        described_class.expects(:openstack)
+          .with('domain', 'create', '--format', 'shell', ['domain_one', '--enable', '--description', 'Domain One'])
           .returns('id="1cb05cfed7c24279be884ba4f6520262"
-name="foo"
-description="foo"
+name="domain_one"
+description="Domain One"
 enabled=True
 ')
         provider.create
         expect(provider.exists?).to be_truthy
       end
-
     end
 
     describe '#destroy' do
       it 'destroys a domain' do
-        provider_class.expects(:current_default_domain_id).returns('default')
         entry = mock
         provider.expects(:keystone_conf_default_domain_id_entry).returns(entry)
+        described_class.expects(:openstack)
+          .with('domain', 'set', ['domain_one', '--disable'])
+        described_class.expects(:openstack)
+          .with('domain', 'delete', 'domain_one')
 
-        provider_class.expects(:openstack)
-          .with('domain', 'set', ['foo', '--disable'])
-        provider_class.expects(:openstack)
-          .with('domain', 'delete', 'foo')
         provider.destroy
         expect(provider.exists?).to be_falsey
       end
@@ -87,13 +82,12 @@ enabled=True
 
     describe '#instances' do
       it 'finds every domain' do
-        provider_class.expects(:openstack)
+        described_class.expects(:openstack)
           .with('domain', 'list', '--quiet', '--format', 'csv', [])
           .returns('"ID","Name","Description","Enabled"
-"1cb05cfed7c24279be884ba4f6520262","foo","foo",True
+"1cb05cfed7c24279be884ba4f6520262","domain_one","Domain One",True
 ')
-        provider_class.expects(:current_default_domain_id).returns('default')
-        instances = provider_class.instances
+        instances = described_class.instances
         expect(instances.count).to eq(1)
       end
     end
@@ -111,15 +105,14 @@ enabled=True
 
       context 'default_domain_id defined in keystone.conf' do
         it 'creates a default domain' do
-          provider_class.expects(:openstack)
+          described_class.expects(:openstack)
             .with('domain', 'create', '--format', 'shell',
             ['new_default', '--enable', '--description', 'New default domain.'])
             .returns('id="1cb05cfed7c24279be884ba4f6520262"
-name="foo"
-description="foo"
+name="domain_one"
+description="Domain One"
 enabled=True
 ')
-          provider_class.expects(:current_default_domain_id).returns('default')
           entry = mock
           provider.expects(:keystone_conf_default_domain_id_entry).returns(entry)
           entry.expects(:create).returns(nil)
@@ -131,18 +124,18 @@ enabled=True
 
     describe '#destroy default' do
       it 'destroys a default domain' do
-        provider_class.expects(:current_default_domain_id).returns('my-domainid')
         entry = mock
         provider.expects(:keystone_conf_default_domain_id_entry).returns(entry)
 
+        described_class.expects(:default_domain_id).returns('1cb05cfed7c24279be884ba4f6520262')
         provider.expects(:is_default).returns(:true)
-        provider.expects(:id).twice.returns('my-domainid')
-        provider.class.expects(:openstack)
-          .with('domain', 'set', ['foo', '--disable'])
-        provider.class.expects(:openstack)
-          .with('domain', 'delete', 'foo')
-        entry.expects(:destroy)
+        provider.expects(:id).times(3).returns('1cb05cfed7c24279be884ba4f6520262')
 
+        described_class.expects(:openstack)
+          .with('domain', 'set', ['domain_one', '--disable'])
+        described_class.expects(:openstack)
+          .with('domain', 'delete', 'domain_one')
+        entry.expects(:destroy)
         provider.destroy
         expect(provider.exists?).to be_falsey
       end
@@ -151,7 +144,7 @@ enabled=True
     describe '#flush' do
       let(:domain_attrs) do
         {
-          :name         => 'foo',
+          :name         => 'domain_one',
           :description  => 'new description',
           :ensure       => 'present',
           :enabled      => 'True',
@@ -160,17 +153,16 @@ enabled=True
       end
 
       it 'changes the description' do
-        provider.class.expects(:openstack)
-          .with('domain', 'set', ['foo', '--description', 'new description'])
-        provider.description=('new description')
+        described_class.expects(:openstack)
+          .with('domain', 'set', ['domain_one', '--description', 'new description'])
+        provider.description = 'new description'
         provider.flush
       end
 
       it 'changes is_default' do
-        provider_class.expects(:current_default_domain_id).returns('previous_default_domain-id')
         entry = mock
         provider.expects(:keystone_conf_default_domain_id_entry).returns(entry)
-        provider.expects(:id).twice.returns('current_default_domain')
+        provider.expects(:id).times(3).returns('current_default_domain')
         entry.expects(:create)
 
         provider.is_default=(:true)

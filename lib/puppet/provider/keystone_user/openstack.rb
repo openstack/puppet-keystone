@@ -141,6 +141,9 @@ Puppet::Type.type(:keystone_user).provide(
   end
 
   def self.instances
+    if default_domain_changed
+      warning(default_domain_deprecation_message)
+    end
     users = request('user', 'list', ['--long'])
     users.collect do |user|
       domain_name = domain_name_from_id(user[:domain])

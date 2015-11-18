@@ -417,7 +417,9 @@
 #   to have a domain assigned for certain operations.  For example,
 #   doing a user create operation must have a domain associated with it.
 #   This is the domain which will be used if a domain is needed and not
-#   explicitly set in the request.
+#   explicitly set in the request.  Using this means that you will have
+#   to add it to every user/tenant/user_role you create, as without a domain
+#   qualification those resources goes into "Default" domain.  See README.
 #   Defaults to undef (will use built-in Keystone default)
 #
 # [*memcache_dead_retry*]

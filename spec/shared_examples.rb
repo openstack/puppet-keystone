@@ -10,8 +10,6 @@ shared_examples_for 'parse title correctly' do |result|
   end
   let(:resource) { described_class.new(:title => title) }
   it 'should parse this title correctly' do
-    times = result.delete(:calling_default) || 0
-    Puppet::Provider::Keystone.expects(:default_domain).times(times).returns('Default')
     expect(resource.to_hash).to include(result)
   end
 end
@@ -102,48 +100,19 @@ end
 
 # attribute [Array[Hash]]
 # - the first hash are the expected result
-# - second are parameters to test default domain, required but can be empty
-# - the rest are the combination of attributes you want to test
+# - second are the combination of attributes you want to test
 # The provider must be build from ressource_attrs
 # see examples in keystone_{user/user_role/tenant/service}
 shared_examples_for 'create the correct resource' do |attributes|
   expected_results = attributes.shift['expected_results']
-  default_domain   = attributes.shift
-
-  context 'domain filled' do
-    attributes.each do |attribute|
-      context 'test' do
-        let(:resource_attrs) { attribute.values[0] }
-        it "should correctly create the resource when #{attribute.keys[0]}" do
-          times = resource_attrs.delete(:default_domain)
-          unless times.nil?
-            Puppet::Provider::Keystone.expects(:default_domain)
-              .times(times)
-              .returns(default_domain[:name])
-          end
-          provider.create
-          expect(provider.exists?).to be_truthy
-          expected_results.each do |key, value|
-            expect(provider.send(key)).to eq(value)
-          end
-        end
-      end
-    end
-  end
-  context 'domain not passed, using default' do
-    with_default_domain = default_domain[:attributes]
-    if with_default_domain
-      with_default_domain.each do |attribute|
-        let(:resource_attrs) { attribute[1] }
-        it 'should fall into the default domain' do
-          Puppet::Provider::Keystone.expects(:default_domain)
-            .times(default_domain[:times])
-            .returns(default_domain[:name])
-          provider.create
-          expect(provider.exists?).to be_truthy
-          expected_results.each do |key, value|
-            expect(provider.send(key)).to eq(value)
-          end
+  attributes.each do |attribute|
+    context 'test' do
+      let(:resource_attrs) { attribute.values[0] }
+      it "should correctly create the resource when #{attribute.keys[0]}" do
+        provider.create
+        expect(provider.exists?).to be_truthy
+        expected_results.each do |key, value|
+          expect(provider.send(key)).to eq(value)
         end
       end
     end

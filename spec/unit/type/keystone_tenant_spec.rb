@@ -13,7 +13,6 @@ describe Puppet::Type.type(:keystone_tenant) do
   end
 
   it 'should not accept id property' do
-    Puppet::Provider::Keystone.expects(:default_domain).returns('Default')
     expect { project }.to raise_error(Puppet::Error,
                                       /This is a read only property/)
   end
@@ -21,12 +20,11 @@ describe Puppet::Type.type(:keystone_tenant) do
   describe 'name::domain' do
     include_examples 'parse title correctly',
       :name => 'name',
-      :domain => 'domain',
-      :calling_default => 1
+      :domain => 'domain'
   end
   describe 'name' do
     include_examples 'parse title correctly',
-      :name => 'name', :domain => 'Default', :calling_default => 2
+      :name => 'name', :domain => 'Default'
   end
   describe 'name::domain::extra' do
     include_examples 'croak on the title'
@@ -43,7 +41,6 @@ describe Puppet::Type.type(:keystone_tenant) do
 
     context 'domain autorequire from title' do
       let(:project) do
-        Puppet::Provider::Keystone.expects(:default_domain).returns('Default')
         Puppet::Type.type(:keystone_tenant).new(:title  => 'tenant::domain_project')
       end
       describe 'should require the correct domain' do
@@ -53,7 +50,6 @@ describe Puppet::Type.type(:keystone_tenant) do
     end
     context 'domain autorequire from parameter' do
       let(:project) do
-        Puppet::Provider::Keystone.expects(:default_domain).returns('Default')
         Puppet::Type.type(:keystone_tenant).new(:title  => 'tenant',
                                                 :domain => 'domain_project')
       end

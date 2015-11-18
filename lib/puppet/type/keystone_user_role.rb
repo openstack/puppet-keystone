@@ -89,9 +89,16 @@ Puppet::Type.newtype(:keystone_user_role) do
   end
 
   autorequire(:keystone_domain) do
+    default_domain = catalog.resources.find do |r|
+      r.class.to_s == 'Puppet::Type::Keystone_domain' &&
+        r[:is_default] == :true &&
+        r[:ensure] == :present
+    end
     rv = [self[:user_domain]]
     rv << self[:project_domain] if parameter_set?(:project_domain)
     rv << self[:domain]         if parameter_set?(:domain)
+    # Only used to display the deprecation warning.
+    rv << default_domain.name   unless default_domain.nil?
     rv
   end
 

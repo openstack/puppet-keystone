@@ -6,11 +6,11 @@ describe Puppet::Type.type(:keystone_user) do
 
   describe 'name::domain' do
     include_examples 'parse title correctly',
-      :name => 'name', :domain => 'domain', :calling_default => 1
+      :name => 'name', :domain => 'domain'
   end
   describe 'name' do
     include_examples 'parse title correctly',
-      :name => 'name', :domain => 'Default', :calling_default => 2
+      :name => 'name', :domain => 'Default'
   end
   describe 'name::domain::foo' do
     include_examples 'croak on the title'
@@ -27,7 +27,6 @@ describe Puppet::Type.type(:keystone_user) do
 
     context 'domain autorequire from title' do
       let(:user) do
-        Puppet::Provider::Keystone.expects(:default_domain).returns('Default')
         Puppet::Type.type(:keystone_user).new(:title  => 'foo::domain_user')
       end
       describe 'should require the correct domain' do
@@ -37,7 +36,6 @@ describe Puppet::Type.type(:keystone_user) do
     end
     context 'domain autorequire from parameter' do
       let(:user) do
-        Puppet::Provider::Keystone.expects(:default_domain).returns('Default')
         Puppet::Type.type(:keystone_user).new(
           :title  => 'foo',
           :domain => 'domain_user'
