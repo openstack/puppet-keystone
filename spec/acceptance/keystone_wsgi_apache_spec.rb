@@ -6,58 +6,11 @@ describe 'keystone server running with Apache/WSGI with resources' do
 
     it 'should work with no errors' do
       pp= <<-EOS
-      Exec { logoutput => 'on_failure' }
+      include ::openstack_integration
+      include ::openstack_integration::repos
+      include ::openstack_integration::mysql
+      include ::openstack_integration::keystone
 
-      # Common resources
-      case $::osfamily {
-        'Debian': {
-          include ::apt
-          class { '::openstack_extras::repo::debian::ubuntu':
-            release         => 'liberty',
-            package_require => true,
-          }
-        }
-        'RedHat': {
-          class { '::openstack_extras::repo::redhat::redhat':
-            release => 'liberty',
-          }
-          package { 'openstack-selinux': ensure => 'latest' }
-        }
-        default: {
-          fail("Unsupported osfamily (${::osfamily})")
-        }
-      }
-
-      class { '::mysql::server': }
-
-      # Keystone resources
-      class { '::keystone::client': }
-      class { '::keystone::cron::token_flush': }
-      class { '::keystone::db::mysql':
-        password => 'keystone',
-      }
-      class { '::keystone':
-        verbose             => true,
-        debug               => true,
-        database_connection => 'mysql+pymysql://keystone:keystone@127.0.0.1/keystone',
-        admin_token         => 'admin_token',
-        enabled             => true,
-        service_name        => 'httpd',
-      }
-      include ::apache
-      class { '::keystone::wsgi::apache':
-        ssl => false,
-      }
-
-      # "v2" admin and service
-      class { '::keystone::roles::admin':
-        email                  => 'test@example.tld',
-        password               => 'a_big_secret',
-      }
-      # Default Keystone endpoints use localhost, default ports and v2.0
-      class { '::keystone::endpoint':
-        default_domain => 'admin',
-      }
       ::keystone::resource::service_identity { 'beaker-ci':
         service_type        => 'beaker',
         service_description => 'beaker service',

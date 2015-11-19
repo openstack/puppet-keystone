@@ -6,8 +6,6 @@ describe 'basic keystone server with resources' do
 
     it 'should work with no errors' do
       pp= <<-EOS
-      Exec { logoutput => 'on_failure' }
-
       # make sure apache is stopped before keystone eventlet
       # in case of wsgi was run before
       class { '::apache':
@@ -15,27 +13,9 @@ describe 'basic keystone server with resources' do
       }
       Service['httpd'] -> Service['keystone']
 
-      # Common resources
-      case $::osfamily {
-        'Debian': {
-          include ::apt
-          class { '::openstack_extras::repo::debian::ubuntu':
-            release         => 'liberty',
-            package_require => true,
-          }
-        }
-        'RedHat': {
-          class { '::openstack_extras::repo::redhat::redhat':
-            release => 'liberty',
-          }
-          package { 'openstack-selinux': ensure => 'latest' }
-        }
-        default: {
-          fail("Unsupported osfamily (${::osfamily})")
-        }
-      }
-
-      class { '::mysql::server': }
+      include ::openstack_integration
+      include ::openstack_integration::repos
+      include ::openstack_integration::mysql
 
       # Keystone resources
       class { '::keystone::client': }
