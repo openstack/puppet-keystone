@@ -17,10 +17,6 @@
 #   (optional) Port that keystone binds to.
 #   Defaults to '5000'
 #
-# [*compute_port*]
-#   (optional) DEPRECATED The port for compute servie.
-#   Defaults to '8774'
-#
 # [*admin_port*]
 #   (optional) Port that can be used for admin tasks.
 #   Defaults to '35357'
@@ -558,7 +554,6 @@ class keystone(
   # DEPRECATED PARAMETERS
   $admin_workers                      = max($::processorcount, 2),
   $public_workers                     = max($::processorcount, 2),
-  $compute_port                       = undef,
 ) inherits keystone::params {
 
   include ::keystone::logging
@@ -645,17 +640,6 @@ class keystone(
     'DEFAULT/admin_bind_host':  value => $admin_bind_host;
     'DEFAULT/public_port':      value => $public_port;
     'DEFAULT/admin_port':       value => $admin_port;
-  }
-
-  if $compute_port {
-    warning('The compute_port parameter is deprecated and will be removed in L')
-    keystone_config {
-      'DEFAULT/compute_port': value => $compute_port;
-    }
-  } else {
-    keystone_config {
-      'DEFAULT/compute_port': ensure => absent;
-    }
   }
 
   # Endpoint configuration
