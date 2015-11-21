@@ -3,7 +3,7 @@ require 'spec_helper'
 describe 'keystone::python' do
 
   let :facts do
-    { :osfamily => 'Debian' }
+    @default_facts.merge({ :osfamily => 'Debian' })
   end
 
   it { is_expected.to contain_package('python-keystone').with_ensure("present") }
