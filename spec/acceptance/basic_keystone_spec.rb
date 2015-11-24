@@ -234,16 +234,49 @@ describe 'basic keystone server with resources' do
       end
     end
   end
-  describe 'composite namevar for keystone_service' do
+
+  describe 'composite namevar for keystone_service and keystone_endpoint' do
     let(:pp) do
       <<-EOM
       keystone_service { 'service_1::type_1': ensure => present }
       keystone_service { 'service_1': type => 'type_2', ensure => present }
+      keystone_endpoint { 'RegionOne/service_1::type_2':
+        ensure => present,
+        public_url => 'http://public_service1_type2',
+        internal_url => 'http://internal_service1_type2',
+        admin_url => 'http://admin_service1_type2'
+      }
+      keystone_endpoint { 'service_1':
+        ensure => present,
+        region => 'RegionOne',
+        type => 'type_1',
+        public_url   => 'http://public_url/',
+        internal_url => 'http://public_url/',
+        admin_url    => 'http://public_url/'
+      }
       EOM
     end
     it 'should be possible to create two services different only by their type' do
       apply_manifest(pp, :catch_failures => true)
       apply_manifest(pp, :catch_changes => true)
+    end
+    describe 'puppet service are created' do
+      it 'for service' do
+        shell('puppet resource keystone_service') do |result|
+          expect(result.stdout)
+            .to include_regexp([/keystone_service { 'service_1::type_1':/,
+                                /keystone_service { 'service_1::type_2':/])
+        end
+      end
+    end
+    describe 'puppet endpoints are created' do
+      it 'for service' do
+        shell('puppet resource keystone_endpoint') do |result|
+          expect(result.stdout)
+            .to include_regexp([/keystone_endpoint { 'RegionOne\/service_1::type_1':/,
+                                /keystone_endpoint { 'RegionOne\/service_1::type_2':/])
+        end
+      end
     end
   end
 end

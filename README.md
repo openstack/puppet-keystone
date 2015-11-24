@@ -97,14 +97,42 @@ keystone_service { 'nova':
   description => 'Openstack Compute Service',
 }
 
+```
+
+Services can also be written with the type as a suffix:
+
+```puppet
+keystone_service { 'nova::type':
+  ensure      => present,
+  description => 'Openstack Compute Service',
+}
+
+
 # Setup nova keystone endpoint
 keystone_endpoint { 'example-1-west/nova':
+   ensure       => present,
+   type         => 'compute',
+   public_url   => "http://127.0.0.1:8774/v2/%(tenant_id)s",
+   admin_url    => "http://127.0.0.1:8774/v2/%(tenant_id)s",
+   internal_url => "http://127.0.0.1:8774/v2/%(tenant_id)s",
+}
+```
+
+Endpoints can also be written with the type as a suffix:
+
+```puppet
+keystone_endpoint { 'example-1-west/nova::compute':
    ensure       => present,
    public_url   => "http://127.0.0.1:8774/v2/%(tenant_id)s",
    admin_url    => "http://127.0.0.1:8774/v2/%(tenant_id)s",
    internal_url => "http://127.0.0.1:8774/v2/%(tenant_id)s",
 }
 ```
+
+Defining a endpoint without the type is supported in Liberty release
+for backward compatibility, but will be dropped in Mitaka, as this can
+lead to corruption of the endpoint database if omitted.  See (this
+bug)[https://bugs.launchpad.net/puppet-keystone/+bug/1506996]
 
 **Setting up a database for keystone**
 
