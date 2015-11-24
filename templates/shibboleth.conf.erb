@@ -1,0 +1,12 @@
+  WSGIScriptAliasMatch ^(/v3/OS-FEDERATION/identity_providers/.*?/protocols/.*?/auth)$ <%= scope['keystone::params::keystone_wsgi_script_path'] -%>/$1
+
+  <Location /Shibboleth.sso>
+      SetHandler shib
+  </Location>
+
+  <LocationMatch /v3/OS-FEDERATION/identity_providers/.*?/protocols/saml2/auth>
+      ShibRequestSetting requireSession 1
+      AuthType shibboleth
+      ShibExportAssertion Off
+      Require valid-user
+  </LocationMatch>
