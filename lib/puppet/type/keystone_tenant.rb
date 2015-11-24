@@ -44,8 +44,15 @@ Puppet::Type.newtype(:keystone_tenant) do
   end
 
   autorequire(:keystone_domain) do
-    # use the domain parameter if given, or the one from name if any
-    self[:domain]
+    default_domain = catalog.resources.find do |r|
+      r.class.to_s == 'Puppet::Type::Keystone_domain' &&
+        r[:is_default] == :true &&
+        r[:ensure] == :present
+    end
+    rv = [self[:domain]]
+    # Only used to display the deprecation warning.
+    rv << default_domain.name unless default_domain.nil?
+    rv
   end
 
   # This ensures the service is started and therefore the keystone

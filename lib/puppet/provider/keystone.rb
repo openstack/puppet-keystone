@@ -9,8 +9,9 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
   extend Puppet::Provider::Openstack::Auth
 
   INI_FILENAME = '/etc/keystone/keystone.conf'
+  DEFAULT_DOMAIN = 'Default'
 
-  @@default_domain    = nil
+  @@default_domain_id = nil
 
   def self.admin_endpoint
     @admin_endpoint ||= get_admin_endpoint
@@ -32,7 +33,46 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
     end
   end
 
-  def self.resource_to_name(domain, name, check_for_default=true)
+  def self.default_domain_from_ini_file
+    default_domain_from_conf = Puppet::Resource.indirection
+      .find('Keystone_config/identity/default_domain_id')
+    if default_domain_from_conf[:ensure] == :present
+      # get from ini file
+      default_domain_from_conf[:value]
+    else
+      nil
+    end
+  rescue
+    nil
+  end
+
+  def self.default_domain_id
+    if @@default_domain_id
+      # cached
+      @@default_domain_id
+    else
+      @@default_domain_id = default_domain_from_ini_file
+    end
+    @@default_domain_id = @@default_domain_id.nil? ? 'default' : @@default_domain_id
+  end
+
+  def self.default_domain_changed
+    default_domain_id != 'default'
+  end
+
+  def self.default_domain_deprecation_message
+    'Support for a resource without the domain ' \
+      'set is deprecated in Liberty cycle. ' \
+      'It will be dropped in the M-cycle. ' \
+      "Currently using '#{default_domain}' as default domain name " \
+      "while the default domain id is '#{default_domain_id}'."
+  end
+
+  def self.default_domain
+    DEFAULT_DOMAIN
+  end
+
+  def self.resource_to_name(domain, name, check_for_default = true)
     raise Puppet::Error, "Domain cannot be nil for project '#{name}'. " \
       'Please report a bug.' if domain.nil?
     join_str = '::'
@@ -56,16 +96,6 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
   # Prefix with default domain if missing from the name.
   def self.make_full_name(name)
     resource_to_name(*name_to_resource(name), false)
-  end
-
-  def self.default_domain
-    # Default domain class variable is filled in by
-    # user/tenant/user_role type or domain resource.
-    @@default_domain
-  end
-
-  def self.default_domain=(value)
-    @@default_domain = value
   end
 
   def self.domain_name_from_id(id)

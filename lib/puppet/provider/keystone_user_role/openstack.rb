@@ -79,6 +79,9 @@ Puppet::Type.type(:keystone_user_role).provide(
   end
 
   def self.instances
+    if default_domain_changed
+      warning(default_domain_deprecation_message)
+    end
     instances = build_user_role_hash
     instances.collect do |title, roles|
       new({

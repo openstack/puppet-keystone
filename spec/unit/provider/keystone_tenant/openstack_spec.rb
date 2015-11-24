@@ -13,7 +13,6 @@ describe provider_class do
   end
 
   let(:resource_attrs) do
-    Puppet::Provider::Keystone.expects(:default_domain).twice.returns('Default')
     {
       :name         => 'project_one',
       :description  => 'Project One',
@@ -98,7 +97,6 @@ domain_id="domain_one_id"
 
     describe '#instances', :domainlist => true do
       it 'finds every tenant' do
-        Puppet::Provider::Keystone.expects(:default_domain).twice.returns('Default')
         provider_class.expects(:openstack)
           .with('project', 'list', '--quiet', '--format', 'csv', '--long')
           .returns('"ID","Name","Domain ID","Description","Enabled"
@@ -118,7 +116,6 @@ domain_id="domain_one_id"
         provider_class.expects(:domain_name_from_id).with('default').returns('Default')
         provider_class.expects(:domain_name_from_id).with('domain_two_id').returns('domain_two')
         # There are one for self.instance and one for each Puppet::Type.type calls.
-        Puppet::Provider::Keystone.expects(:default_domain).times(3).returns('Default')
         provider.class.expects(:openstack)
           .with('project', 'list', '--quiet', '--format', 'csv', '--long')
           .returns('"ID","Name","Domain ID","Description","Enabled"
@@ -127,7 +124,6 @@ domain_id="domain_one_id"
 ')
       end
       let(:resources) do
-        Puppet::Provider::Keystone.expects(:default_domain).times(4).returns('Default')
         [Puppet::Type.type(:keystone_tenant).new(:title => 'project_one', :ensure => :absent),
           Puppet::Type.type(:keystone_tenant).new(:title => 'non_existant', :ensure => :absent)]
       end
@@ -207,25 +203,12 @@ domain_id="domain_one_id"
             }
           },
           {
-            :name  => 'domain_one',
-            :times => 2,
-            :attributes => {
-              'Default' => {
-                :title       => 'project_one',
-                :description => 'Project One',
-                :ensure      => 'present',
-                :enabled     => 'True'
-              }
-            }
-          },
-          {
             'domain in parameter' => {
               :name        => 'project_one',
               :description => 'Project One',
               :ensure      => 'present',
               :enabled     => 'True',
-              :domain      => 'domain_one',
-              :default_domain => 1
+              :domain      => 'domain_one'
             }
           },
           {
@@ -233,8 +216,7 @@ domain_id="domain_one_id"
               :title       => 'project_one::domain_one',
               :description => 'Project One',
               :ensure      => 'present',
-              :enabled     => 'True',
-              :default_domain => 1
+              :enabled     => 'True'
             }
           },
           {
@@ -243,10 +225,9 @@ domain_id="domain_one_id"
               :description => 'Project One',
               :ensure      => 'present',
               :enabled     => 'True',
-              :domain      => 'domain_one',
-              :default_domain => 1
+              :domain      => 'domain_one'
             }
-          },
+          }
         ]
       end
     end
@@ -265,8 +246,6 @@ domain_id="domain_one_id"
 ')
       end
       let(:resources) do
-        # 1 by resource + 3 in prefetch and instance list.
-        Puppet::Provider::Keystone.expects(:default_domain).times(5).returns('Default')
         [
           Puppet::Type.type(:keystone_tenant)
             .new(:title => 'name::domain_one', :ensure => :absent),
@@ -279,7 +258,6 @@ domain_id="domain_one_id"
 
     context 'different name, identical resource' do
       let(:resources) do
-        Puppet::Provider::Keystone.expects(:default_domain).times(2).returns('Default')
         [
           Puppet::Type.type(:keystone_tenant)
             .new(:title => 'name::domain_one', :ensure => :present),
