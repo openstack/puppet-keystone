@@ -3,7 +3,7 @@ require 'spec_helper'
 describe 'keystone::cron::token_flush' do
 
   let :facts do
-    { :osfamily => 'Debian' }
+    @default_facts.merge({ :osfamily => 'Debian' })
   end
 
   let :params do

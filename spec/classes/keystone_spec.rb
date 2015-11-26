@@ -11,12 +11,12 @@ describe 'keystone' do
   end
 
   let :facts do
-    global_facts.merge({
+    @default_facts.merge(global_facts.merge({
       :osfamily               => 'Debian',
       :operatingsystem        => 'Debian',
       :operatingsystemrelease => '7.0',
       :processorcount         => '1'
-    })
+    }))
   end
 
   default_params = {
@@ -735,10 +735,10 @@ describe 'keystone' do
 
   describe 'setting service_provider' do
     let :facts do
-      global_facts.merge({
+      @default_facts.merge(global_facts.merge({
         :osfamily               => 'RedHat',
         :operatingsystemrelease => '6.0'
-      })
+      }))
     end
 
     describe 'with default service_provider' do
@@ -807,10 +807,10 @@ describe 'keystone' do
 
     describe 'with default paste config on RedHat' do
       let :facts do
-        global_facts.merge({
+        @default_facts.merge(global_facts.merge({
           :osfamily               => 'RedHat',
           :operatingsystemrelease => '6.0'
-        })
+        }))
       end
       let :params do
         default_params
@@ -881,10 +881,10 @@ describe 'keystone' do
 
   context 'on RedHat platforms' do
     let :facts do
-      global_facts.merge({
+      @default_facts.merge(global_facts.merge({
         :osfamily               => 'RedHat',
         :operatingsystemrelease => '7.0'
-      })
+      }))
     end
 
     let :platform_parameters do
@@ -900,11 +900,11 @@ describe 'keystone' do
 
   context 'on Debian platforms' do
     let :facts do
-      global_facts.merge({
+      @default_facts.merge(global_facts.merge({
         :osfamily               => 'Debian',
         :operatingsystem        => 'Debian',
         :operatingsystemrelease => '7.0'
-      })
+      }))
     end
 
     let :platform_parameters do
