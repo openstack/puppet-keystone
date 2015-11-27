@@ -52,11 +52,11 @@ describe 'keystone' do
       'signing_keyfile'                     => '/etc/keystone/ssl/private/signing_key.pem',
       'signing_ca_certs'                    => '/etc/keystone/ssl/certs/ca.pem',
       'signing_ca_key'                      => '/etc/keystone/ssl/private/cakey.pem',
-      'rabbit_host'                         => 'localhost',
-      'rabbit_password'                     => 'guest',
-      'rabbit_userid'                       => 'guest',
-      'rabbit_heartbeat_timeout_threshold'  => 0,
-      'rabbit_heartbeat_rate'               => 2,
+      'rabbit_host'                         => '<SERVICE DEFAULT>',
+      'rabbit_password'                     => '<SERVICE DEFAULT>',
+      'rabbit_userid'                       => '<SERVICE DEFAULT>',
+      'rabbit_heartbeat_timeout_threshold'  => '<SERVICE DEFAULT>',
+      'rabbit_heartbeat_rate'               => '<SERVICE DEFAULT>',
       'admin_workers'                       => 20,
       'public_workers'                      => 20,
       'sync_db'                             => true,
@@ -196,12 +196,12 @@ describe 'keystone' do
       if param_hash['admin_endpoint']
         is_expected.to contain_keystone_config('DEFAULT/admin_endpoint').with_value(param_hash['admin_endpoint'])
       else
-        is_expected.to contain_keystone_config('DEFAULT/admin_endpoint').with_ensure('absent')
+        is_expected.to contain_keystone_config('DEFAULT/admin_endpoint').with_value('<SERVICE DEFAULT>')
       end
       if param_hash['public_endpoint']
         is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value(param_hash['public_endpoint'])
       else
-        is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_ensure('absent')
+        is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value('<SERVICE DEFAULT>')
       end
     end
 
@@ -215,7 +215,7 @@ describe 'keystone' do
     end
 
     it 'should remove max_token_size param by default' do
-      is_expected.to contain_keystone_config('DEFAULT/max_token_size').with_ensure('absent')
+      is_expected.to contain_keystone_config('DEFAULT/max_token_size').with_value('<SERVICE DEFAULT>')
     end
 
     it 'should ensure proper setting of admin_workers and public_workers' do
@@ -515,7 +515,7 @@ describe 'keystone' do
 
     it { is_expected.to contain_keystone_config("memcache/servers").with_value('SERVER1:11211,SERVER2:11211') }
     it { is_expected.to contain_keystone_config('cache/enabled').with_value(true) }
-    it { is_expected.to contain_keystone_config('token/caching').with_value(true) }
+    it { is_expected.to contain_keystone_config('token/caching').with_value('<SERVICE DEFAULT>') }
     it { is_expected.to contain_keystone_config('cache/backend').with_value('dogpile.cache.memcached') }
     it { is_expected.to contain_keystone_config('cache/backend_argument').with_value('url:SERVER1:12211') }
     it { is_expected.to contain_keystone_config('memcache/dead_retry').with_value('60') }
@@ -538,18 +538,18 @@ describe 'keystone' do
     end
 
     it { is_expected.to contain_keystone_config("cache/enabled").with_ensure('absent') }
-    it { is_expected.to contain_keystone_config("token/caching").with_ensure('absent') }
-    it { is_expected.to contain_keystone_config("cache/backend").with_ensure('absent') }
+    it { is_expected.to contain_keystone_config("token/caching").with_value('<SERVICE DEFAULT>') }
+    it { is_expected.to contain_keystone_config("cache/backend").with_value('<SERVICE DEFAULT>') }
     it { is_expected.to contain_keystone_config("cache/backend_argument").with_ensure('absent') }
-    it { is_expected.to contain_keystone_config("cache/debug_cache_backend").with_ensure('absent') }
+    it { is_expected.to contain_keystone_config("cache/debug_cache_backend").with_value('<SERVICE DEFAULT>') }
     it { is_expected.to contain_keystone_config("memcache/servers").with_ensure('absent') }
-    it { is_expected.to contain_keystone_config('memcache/dead_retry').with_ensure('absent') }
-    it { is_expected.to contain_keystone_config('memcache/pool_maxsize').with_ensure('absent') }
-    it { is_expected.to contain_keystone_config('memcache/pool_unused_timeout').with_ensure('absent') }
-    it { is_expected.to contain_keystone_config('cache/memcache_dead_retry').with_ensure('absent') }
-    it { is_expected.to contain_keystone_config('cache/memcache_socket_timeout').with_ensure('absent') }
-    it { is_expected.to contain_keystone_config('cache/memcache_pool_maxsize').with_ensure('absent') }
-    it { is_expected.to contain_keystone_config('cache/memcache_pool_unused_timeout').with_ensure('absent') }
+    it { is_expected.to contain_keystone_config('memcache/dead_retry').with_value('<SERVICE DEFAULT>') }
+    it { is_expected.to contain_keystone_config('memcache/pool_maxsize').with_value('<SERVICE DEFAULT>') }
+    it { is_expected.to contain_keystone_config('memcache/pool_unused_timeout').with_value('<SERVICE DEFAULT>') }
+    it { is_expected.to contain_keystone_config('cache/memcache_dead_retry').with_value('<SERVICE DEFAULT>') }
+    it { is_expected.to contain_keystone_config('cache/memcache_socket_timeout').with_value('<SERVICE DEFAULT>') }
+    it { is_expected.to contain_keystone_config('cache/memcache_pool_maxsize').with_value('<SERVICE DEFAULT>') }
+    it { is_expected.to contain_keystone_config('cache/memcache_pool_unused_timeout').with_value('<SERVICE DEFAULT>') }
   end
 
   describe 'raise error if memcache_servers is not an array' do
@@ -590,18 +590,18 @@ describe 'keystone' do
       }
     end
     it {is_expected.to contain_keystone_config('ssl/enable').with_value(false)}
-    it {is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_ensure('absent')}
-    it {is_expected.to contain_keystone_config('DEFAULT/admin_endpoint').with_ensure('absent')}
+    it {is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value('<SERVICE DEFAULT>')}
+    it {is_expected.to contain_keystone_config('DEFAULT/admin_endpoint').with_value('<SERVICE DEFAULT>')}
   end
   describe 'not setting notification settings by default' do
     let :params do
       default_params
     end
 
-    it { is_expected.to contain_keystone_config('DEFAULT/notification_driver').with_value(nil) }
-    it { is_expected.to contain_keystone_config('DEFAULT/notification_topics').with_value(nil) }
-    it { is_expected.to contain_keystone_config('DEFAULT/notification_format').with_value(nil) }
-    it { is_expected.to contain_keystone_config('DEFAULT/control_exchange').with_value(nil) }
+    it { is_expected.to contain_keystone_config('DEFAULT/notification_driver').with_value('<SERVICE DEFAULT>') }
+    it { is_expected.to contain_keystone_config('DEFAULT/notification_topics').with_value('<SERVICE DEFAULT>') }
+    it { is_expected.to contain_keystone_config('DEFAULT/notification_format').with_value('<SERVICE DEFAULT>') }
+    it { is_expected.to contain_keystone_config('DEFAULT/control_exchange').with_value('<SERVICE DEFAULT>') }
   end
 
   describe 'with RabbitMQ communication SSLed' do
@@ -627,20 +627,20 @@ describe 'keystone' do
   describe 'with RabbitMQ communication not SSLed' do
     let :params do
       default_params.merge!({
-        :rabbit_use_ssl     => false,
-        :kombu_ssl_ca_certs => 'undef',
-        :kombu_ssl_certfile => 'undef',
-        :kombu_ssl_keyfile  => 'undef',
-        :kombu_ssl_version  => 'TLSv1'
+        :rabbit_use_ssl     => '<SERVICE DEFAULT>',
+        :kombu_ssl_ca_certs => '<SERVICE DEFAULT>',
+        :kombu_ssl_certfile => '<SERVICE DEFAULT>',
+        :kombu_ssl_keyfile  => '<SERVICE DEFAULT>',
+        :kombu_ssl_version  => '<SERVICE DEFAULT>'
       })
     end
 
     it do
-      is_expected.to contain_keystone_config('oslo_messaging_rabbit/rabbit_use_ssl').with_value('false')
-      is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_ssl_ca_certs').with_ensure('absent')
-      is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_ssl_certfile').with_ensure('absent')
-      is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_ssl_keyfile').with_ensure('absent')
-      is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_ssl_version').with_ensure('absent')
+      is_expected.to contain_keystone_config('oslo_messaging_rabbit/rabbit_use_ssl').with_value('<SERVICE DEFAULT>')
+      is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_ssl_ca_certs').with_value('<SERVICE DEFAULT>')
+      is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_ssl_certfile').with_value('<SERVICE DEFAULT>')
+      is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_ssl_keyfile').with_value('<SERVICE DEFAULT>')
+      is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_ssl_version').with_value('<SERVICE DEFAULT>')
     end
   end
 
@@ -810,7 +810,7 @@ describe 'keystone' do
         default_params
       end
 
-      it { is_expected.to contain_keystone_config('paste_deploy/config_file').with_ensure('absent')}
+      it { is_expected.to contain_keystone_config('paste_deploy/config_file').with_ensure('absent') }
     end
 
     describe 'with default paste config on RedHat' do
