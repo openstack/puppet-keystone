@@ -34,8 +34,6 @@ describe 'keystone::db' do
       it { is_expected.to contain_keystone_config('database/max_pool_size').with_value('21') }
       it { is_expected.to contain_keystone_config('database/max_overflow').with_value('21') }
       it { is_expected.to contain_keystone_config('database/retry_interval').with_value('11') }
-      it { is_expected.to contain_package('keystone-backend-package').with({ :ensure => 'present', :name => platform_params[:pymysql_package_name] }) }
-
     end
 
     context 'with MySQL-python library as backend package' do
@@ -83,11 +81,21 @@ describe 'keystone::db' do
       }
     end
 
-    let :platform_params do
-      { :pymysql_package_name => 'python-pymysql' }
-    end
-
     it_configures 'keystone::db'
+
+    context 'using pymysql driver' do
+      let :params do
+        { :database_connection     => 'mysql+pymysql://keystone:keystone@localhost/keystone', }
+      end
+
+      it 'install the proper backend package' do
+        is_expected.to contain_package('keystone-backend-package').with(
+          :ensure => 'present',
+          :name   => 'python-pymysql',
+          :tag    => 'openstack'
+        )
+      end
+    end
   end
 
   context 'on Redhat platforms' do
@@ -97,11 +105,14 @@ describe 'keystone::db' do
       }
     end
 
-    let :platform_params do
-      { :pymysql_package_name => 'python2-PyMySQL' }
-    end
-
     it_configures 'keystone::db'
+
+    context 'using pymysql driver' do
+      let :params do
+        { :database_connection     => 'mysql+pymysql://keystone:keystone@localhost/keystone', }
+      end
+      it { is_expected.not_to contain_package('keystone-backend-package') }
+    end
   end
 
 end

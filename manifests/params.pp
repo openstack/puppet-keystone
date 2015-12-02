@@ -32,7 +32,7 @@ class keystone::params {
       $service_provider             = undef
       $keystone_wsgi_script_source  = '/usr/share/keystone/keystone.wsgi'
       $paste_config                 = '/usr/share/keystone/keystone-dist-paste.ini'
-      $pymysql_package_name         = 'python2-PyMySQL'
+      $pymysql_package_name         = undef
     }
   }
 }
