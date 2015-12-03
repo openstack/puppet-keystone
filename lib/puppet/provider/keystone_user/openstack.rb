@@ -109,6 +109,9 @@ Puppet::Type.type(:keystone_user).provide(
         # last chance - try a domain scoped token
         credentials.domain_name = domain
       end
+
+      credentials.identity_api_version = '2' if credentials.auth_url =~ /v2\.0\/?$/
+
       begin
         token = Puppet::Provider::Openstack.request('token', 'issue', ['--format', 'value'], credentials)
       rescue Puppet::Error::OpenstackUnauthorizedError
