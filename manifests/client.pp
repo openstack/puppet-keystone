@@ -17,11 +17,5 @@ class keystone::client (
     tag    => 'openstack',
   }
 
-  if $ensure == 'present' {
-    include '::openstacklib::openstackclient'
-  } else {
-    class { '::openstacklib::openstackclient':
-      package_ensure => $ensure,
-    }
-  }
+  include '::openstacklib::openstackclient'
 }
