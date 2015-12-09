@@ -36,12 +36,10 @@
 #   If keystone_project_domain is not specified, use $keystone_default_domain
 #   Defaults to undef
 #
-# === DEPRECATED
-#
 # [*version*]
 #   (optional) API version for endpoint.
-#   Defaults to 'v2.0'
-#   If the version is assigned to null value (forced to undef), then it won't be
+#   Defaults to 'v2.0'. Valid values are 'v2.0', 'v3', or the empty string ''.
+#   If the version is set to the empty string (''), then it won't be
 #   used. This is the expected behaviour since Keystone V3 handles API versions
 #   from the context.
 #
@@ -61,10 +59,16 @@ class keystone::endpoint (
   $user_domain       = undef,
   $project_domain    = undef,
   $default_domain    = undef,
-  $version           = 'v2.0', # DEPRECATED
+  $version           = 'unset', # defaults to 'v2.0' if unset by user
 ) {
 
-  if empty($version) {
+  if $version == 'unset' {
+    warning('In Mitaka, the default value of $keystone::endpoint::version will change to \'\'. To avoid this warning, please set the version parameter.')
+    $_version = 'v2.0'
+  } else {
+    $_version = $version
+  }
+  if empty($_version) {
     $admin_url_real =  $admin_url
     $public_url_real = $public_url
 
@@ -76,16 +80,14 @@ class keystone::endpoint (
     }
   }
   else {
-    warning('The version parameter is deprecated in Liberty.')
-
-    $public_url_real = "${public_url}/${version}"
-    $admin_url_real = "${admin_url}/${version}"
+    $public_url_real = "${public_url}/${_version}"
+    $admin_url_real = "${admin_url}/${_version}"
 
     if $internal_url {
-      $internal_url_real = "${internal_url}/${version}"
+      $internal_url_real = "${internal_url}/${_version}"
     }
     else {
-      $internal_url_real = "${public_url}/${version}"
+      $internal_url_real = "${public_url}/${_version}"
     }
   }
 
