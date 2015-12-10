@@ -43,7 +43,8 @@
 #   Defaults to 'v2.0'
 #   If the version is assigned to null value (forced to undef), then it won't be
 #   used. This is the expected behaviour since Keystone V3 handles API versions
-#   from the context.
+#   from the context. If using hiera, setting version to an empty string, '',
+#   will have the same affect.
 #
 # === Examples
 #
