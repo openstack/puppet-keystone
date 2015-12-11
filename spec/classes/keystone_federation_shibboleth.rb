@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'keystone::federation::service_provider' do
+describe 'keystone::federation::shibboleth' do
 
   describe 'with invalid params' do
     before do
