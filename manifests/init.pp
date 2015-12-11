@@ -977,6 +977,21 @@ class keystone(
     }
   }
 
+  # Update this code when https://bugs.launchpad.net/keystone/+bug/1472285 is addressed.
+  # 1/ Keystone needs to be started before creating the default domain
+  # 2/ Once the default domain is created, we can query Keystone to get the default domain ID
+  # 3/ The Keystone_domain provider has in charge of doing the query and configure keystone.conf
+  # 4/ After such a change, we need to restart Keystone service.
+  # restart_keystone exec is doing 4/, it restart Keystone if we have a new default domain setted
+  # and if we manage the service to be enabled.
+  if $manage_service and $enabled {
+    exec { 'restart_keystone':
+      path        => ['/usr/sbin', '/usr/bin', '/sbin', '/bin/'],
+      command     => "service ${service_name_real} restart",
+      refreshonly => true,
+    }
+  }
+
   if $default_domain {
     keystone_domain { $default_domain:
       ensure     => present,
@@ -987,20 +1002,6 @@ class keystone(
     }
     anchor { 'default_domain_created':
       require => Keystone_domain[$default_domain],
-    }
-    # Update this code when https://bugs.launchpad.net/keystone/+bug/1472285 is addressed.
-    # 1/ Keystone needs to be started before creating the default domain
-    # 2/ Once the default domain is created, we can query Keystone to get the default domain ID
-    # 3/ The Keystone_domain provider has in charge of doing the query and configure keystone.conf
-    # 4/ After such a change, we need to restart Keystone service.
-    # restart_keystone exec is doing 4/, it restart Keystone if we have a new default domain setted
-    # and if we manage the service to be enabled.
-    if $manage_service and $enabled {
-      exec { 'restart_keystone':
-        path        => ['/usr/sbin', '/usr/bin', '/sbin', '/bin/'],
-        command     => "service ${service_name_real} restart",
-        refreshonly => true,
-      }
     }
   }
   anchor { 'keystone_started':

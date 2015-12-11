@@ -63,6 +63,11 @@ class { 'keystone::endpoint':
   internal_url => 'http://10.16.2.101:5000/v2.0',
   region       => 'example-1',
 }
+
+# Remove the admin_token_auth paste pipeline.
+# After the first puppet run this requires setting keystone v3
+# admin credentials via /root/openrc or as environment variables.
+include keystone::disable_admin_token_auth
 ```
 
 **Leveraging the Native Types**
