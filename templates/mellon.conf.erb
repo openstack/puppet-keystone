@@ -1,0 +1,16 @@
+  WSGIScriptAliasMatch ^(/v3/OS-FEDERATION/identity_providers/.*?/protocols/.*?/auth)$ <%= scope['keystone::params::keystone_wsgi_script_path'] -%>/$1
+
+  <Location /v3>
+      MellonEnable "info"
+      MellonSPPrivateKeyFile <%= scope['apache::mod_dir']-%>/mellon/http_keystone.fqdn.key
+      MellonSPCertFile <%= scope['apache::mod_dir']-%>/mellon/http_keystone.fqdn.cert
+      MellonSPMetadataFile <%= scope['apache::mod_dir']-%>/mellon/http_keystone.fqdn.xml
+      MellonIdPMetadataFile <%= scope['apache::mod_dir']-%>/mellon/idp-metadata.xml
+      MellonEndpointPath /v3/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::mellon::idp_name']-%>/protocols/<%= scope['keystone::federation::mellon::protocol_name']-%>/auth/mellon
+      MellonIdP "IDP"
+  </Location>
+
+  <Location /v3/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::mellon::idp_name']-%>/protocols/<%= scope['keystone::federation::mellon::protocol_name']-%>/auth>
+      AuthType "Mellon"
+      MellonEnable "auth"
+  </Location>
