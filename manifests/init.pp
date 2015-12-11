@@ -73,7 +73,7 @@
 #
 # [*revoke_driver*]
 #   (optional) Driver for token revocation.
-#   Defaults to 'keystone.contrib.revoke.backends.sql.Revoke'
+#   Defaults to $::os_service_default
 #
 # [*revoke_by_id*]
 #   (optional) Revoke token by token identifier.
@@ -96,22 +96,22 @@
 #   (optional) Dogpile.cache backend module. It is recommended that Memcache with pooling
 #   (keystone.cache.memcache_pool) or Redis (dogpile.cache.redis) be used in production.
 #   This has no effects unless 'memcache_servers' is set.
-#   Defaults to 'keystone.common.cache.noop'
+#   Defaults to $::os_service_default
 #
 # [*cache_backend_argument*]
 #   (optional) List of arguments in format of argname:value supplied to the backend module.
 #   Specify this option once per argument to be passed to the dogpile.cache backend.
 #   This has no effects unless 'memcache_servers' is set.
-#   Default to undef.
+#   Default to $::os_service_default
 #
 # [*debug_cache_backend*]
 #   (optional) Extra debugging from the cache backend (cache keys, get/set/delete calls).
 #   This has no effects unless 'memcache_servers' is set.
-#   Default to false.
+#   Default to $::os_service_default
 #
 # [*token_caching*]
 #   (optional) Toggle for token system caching. This has no effects unless 'memcache_servers' is set.
-#   Default to true.
+#   Default to $::os_service_default
 #
 # [*manage_service*]
 #   (Optional) If Puppet should manage service startup / shutdown.
@@ -189,27 +189,27 @@
 #
 # [*rabbit_host*]
 #   (optional) Location of rabbitmq installation.
-#    Defaults to localhost.
+#    Defaults to $::os_service_default
 #
 # [*rabbit_port*]
 #   (optional) Port for rabbitmq instance.
-#   Defaults to 5672.
+#   Defaults to $::os_service_default
 #
 # [*rabbit_hosts*]
 #   (optional) Location of rabbitmq installation.
-#   Defaults to undef.
+#   Defaults to $::os_service_default
 #
 # [*rabbit_password*]
 #   (optional) Password used to connect to rabbitmq.
-#   Defaults to guest.
+#   Defaults to $::os_service_default
 #
 # [*rabbit_userid*]
 #   (optional) User used to connect to rabbitmq.
-#   Defaults to guest.
+#   Defaults to $::os_service_default
 #
 # [*rabbit_virtual_host*]
 #   (optional) The RabbitMQ virtual host.
-#   Defaults to /.
+#   Defaults to $::os_service_default
 #
 # [*rabbit_heartbeat_timeout_threshold*]
 #   (optional) Number of seconds after which the RabbitMQ broker is considered
@@ -217,43 +217,44 @@
 #   Heartbeating helps to ensure the TCP connection to RabbitMQ isn't silently
 #   closed, resulting in missed or lost messages from the queue.
 #   (Requires kombu >= 3.0.7 and amqp >= 1.4.0)
-#   Defaults to 0
+#   Defaults to $::os_service_default
 #
 # [*rabbit_heartbeat_rate*]
 #   (optional) How often during the rabbit_heartbeat_timeout_threshold period to
 #   check the heartbeat on RabbitMQ connection.  (i.e. rabbit_heartbeat_rate=2
 #   when rabbit_heartbeat_timeout_threshold=60, the heartbeat will be checked
 #   every 30 seconds.
-#   Defaults to 2
+#   Defaults to $::os_service_default
 #
 # [*rabbit_use_ssl*]
 #   (optional) Connect over SSL for RabbitMQ
-#   Defaults to false
+#   Defaults to $::os_serice_default
 #
 # [*kombu_ssl_ca_certs*]
 #   (optional) SSL certification authority file (valid only if SSL enabled).
-#   Defaults to undef
+#   Defaults to $::os_service_default
 #
 # [*kombu_ssl_certfile*]
 #   (optional) SSL cert file (valid only if SSL enabled).
-#   Defaults to undef
+#   Defaults to $::os_service_default
 #
 # [*kombu_ssl_keyfile*]
 #   (optional) SSL key file (valid only if SSL enabled).
-#   Defaults to undef
+#   Defaults to $::os_service_default
 #
 # [*kombu_ssl_version*]
 #   (optional) SSL version to use (valid only if SSL enabled).
 #   Valid values are TLSv1, SSLv23 and SSLv3. SSLv2 may be
 #   available on some distributions.
-#   Defaults to 'TLSv1'
+#   Defaults to $::os_service_default
 #
 # [*notification_driver*]
 #   RPC driver. Not enabled by default
+#   Defaults to $::os_service_default
 #
 # [*notification_topics*]
 #   (optional) AMQP topics to publish to when using the RPC notification driver.
-#   Default to false.
+#   Default to $::os_service_default
 #
 # [*notification_format*]
 #   Format for the notifications. Valid values are 'basic' and 'cadf'.
@@ -261,7 +262,7 @@
 #
 # [*control_exchange*]
 #   (optional) AMQP exchange to connect to if using RabbitMQ or Qpid
-#   Default to false.
+#   Default to $::os_service_default
 #
 # [*public_bind_host*]
 #   (optional) The IP address of the public network interface to listen on
@@ -286,7 +287,7 @@
 #   keystone listens for connections) (string value)
 #   If set to false, no public_endpoint will be defined in keystone.conf.
 #   Sample value: 'http://localhost:5000/'
-#   Defaults to false
+#   Defaults to $::os_service_default
 #
 # [*admin_endpoint*]
 #   (optional) The base admin endpoint URL for keystone that are
@@ -294,7 +295,7 @@
 #   for connections) (string value)
 #   If set to false, no admin_endpoint will be defined in keystone.conf.
 #   Sample value: 'http://localhost:35357/'
-#   Defaults to false
+#   Defaults to $::os_service_default
 #
 # [*enable_ssl*]
 #   (optional) Toggle for SSL support on the keystone eventlet servers.
@@ -374,7 +375,7 @@
 #
 # [*max_token_size*]
 #   (optional) maximum allowable Keystone token size
-#   Defaults to undef
+#   Defaults to $::os_service_default
 #
 # [*admin_workers*]
 #   (optional) The number of worker processes to serve the admin eventlet application.
@@ -406,7 +407,7 @@
 #
 # [*fernet_max_active_keys*]
 #   (Optional) Number of maximum active Fernet keys. Integer > 0.
-#   Defaults to undef
+#   Defaults to $::os_service_default
 #
 # [*default_domain*]
 #   (optional) When Keystone v3 support is enabled, v2 clients will need
@@ -422,20 +423,20 @@
 #   (optional) Number of seconds memcached server is considered dead before it
 #   is tried again. This is used for the cache memcache_dead_retry and the
 #   memcache dead_retry values.
-#   Defaults to undef
+#   Defaults to $::os_service_default
 #
 # [*memcache_socket_timeout*]
 #   (optional) Timeout in seconds for every call to a server.
-#   Defaults to undef
+#   Defaults to $::os_service_default
 #
 # [*memcache_pool_maxsize*]
 #   (optional) Max total number of open connections to every memcached server.
-#   Defaults to undef
+#   Defaults to $::os_service_default
 #
 # [*memcache_pool_unused_timeout*]
 #   (optional) Number of seconds a connection to memcached is held unused in
 #   the pool before it is closed.
-#   Defaults to undef.
+#   Defaults to $::os_service_default
 #
 # [*policy_driver*]
 #   Policy backend driver. (string value)
@@ -491,10 +492,10 @@ class keystone(
   $token_provider                     = 'keystone.token.providers.uuid.Provider',
   $token_driver                       = 'keystone.token.persistence.backends.sql.Token',
   $token_expiration                   = 3600,
-  $revoke_driver                      = 'keystone.contrib.revoke.backends.sql.Revoke',
+  $revoke_driver                      = $::os_service_default,
   $revoke_by_id                       = true,
-  $public_endpoint                    = false,
-  $admin_endpoint                     = false,
+  $public_endpoint                    = $::os_service_default,
+  $admin_endpoint                     = $::os_service_default,
   $enable_ssl                         = false,
   $ssl_certfile                       = '/etc/keystone/ssl/certs/keystone.pem',
   $ssl_keyfile                        = '/etc/keystone/ssl/private/keystonekey.pem',
@@ -502,12 +503,12 @@ class keystone(
   $ssl_ca_key                         = '/etc/keystone/ssl/private/cakey.pem',
   $ssl_cert_subject                   = '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
   $cache_dir                          = '/var/cache/keystone',
-  $memcache_servers                   = false,
+  $memcache_servers                   = $::os_service_default,
   $manage_service                     = true,
-  $cache_backend                      = 'keystone.common.cache.noop',
-  $cache_backend_argument             = undef,
-  $debug_cache_backend                = false,
-  $token_caching                      = true,
+  $cache_backend                      = $::os_service_default,
+  $cache_backend_argument             = $::os_service_default,
+  $debug_cache_backend                = $::os_service_default,
+  $token_caching                      = $::os_service_default,
   $enabled                            = true,
   $database_connection                = undef,
   $database_idle_timeout              = undef,
@@ -523,23 +524,23 @@ class keystone(
   $signing_ca_key                     = '/etc/keystone/ssl/private/cakey.pem',
   $signing_cert_subject               = '/C=US/ST=Unset/L=Unset/O=Unset/CN=www.example.com',
   $signing_key_size                   = 2048,
-  $rabbit_host                        = 'localhost',
-  $rabbit_hosts                       = false,
-  $rabbit_password                    = 'guest',
-  $rabbit_port                        = '5672',
-  $rabbit_userid                      = 'guest',
-  $rabbit_virtual_host                = '/',
-  $rabbit_heartbeat_timeout_threshold = 0,
-  $rabbit_heartbeat_rate              = 2,
-  $rabbit_use_ssl                     = false,
-  $kombu_ssl_ca_certs                 = undef,
-  $kombu_ssl_certfile                 = undef,
-  $kombu_ssl_keyfile                  = undef,
-  $kombu_ssl_version                  = 'TLSv1',
-  $notification_driver                = false,
-  $notification_topics                = false,
-  $notification_format                = undef,
-  $control_exchange                   = false,
+  $rabbit_host                        = $::os_service_default,
+  $rabbit_hosts                       = $::os_service_default,
+  $rabbit_password                    = $::os_service_default,
+  $rabbit_port                        = $::os_service_default,
+  $rabbit_userid                      = $::os_service_default,
+  $rabbit_virtual_host                = $::os_service_default,
+  $rabbit_heartbeat_timeout_threshold = $::os_service_default,
+  $rabbit_heartbeat_rate              = $::os_service_default,
+  $rabbit_use_ssl                     = $::os_service_default,
+  $kombu_ssl_ca_certs                 = $::os_service_default,
+  $kombu_ssl_certfile                 = $::os_service_default,
+  $kombu_ssl_keyfile                  = $::os_service_default,
+  $kombu_ssl_version                  = $::os_service_default,
+  $notification_driver                = $::os_service_default,
+  $notification_topics                = $::os_service_default,
+  $notification_format                = $::os_service_default,
+  $control_exchange                   = $::os_service_default,
   $validate_service                   = false,
   $validate_insecure                  = false,
   $validate_auth_url                  = false,
@@ -547,16 +548,16 @@ class keystone(
   $paste_config                       = $::keystone::params::paste_config,
   $service_provider                   = $::keystone::params::service_provider,
   $service_name                       = $::keystone::params::service_name,
-  $max_token_size                     = undef,
+  $max_token_size                     = $::os_service_default,
   $sync_db                            = true,
   $enable_fernet_setup                = false,
   $fernet_key_repository              = '/etc/keystone/fernet-keys',
-  $fernet_max_active_keys             = undef,
+  $fernet_max_active_keys             = $::os_service_default,
   $default_domain                     = undef,
-  $memcache_dead_retry                = undef,
-  $memcache_socket_timeout            = undef,
-  $memcache_pool_maxsize              = undef,
-  $memcache_pool_unused_timeout       = undef,
+  $memcache_dead_retry                = $::os_service_default,
+  $memcache_socket_timeout            = $::os_service_default,
+  $memcache_pool_maxsize              = $::os_service_default,
+  $memcache_pool_unused_timeout       = $::os_service_default,
   $policy_driver                      = $::os_service_default,
   # DEPRECATED PARAMETERS
   $admin_workers                      = max($::processorcount, 2),
@@ -577,14 +578,14 @@ class keystone(
     warning('Version string /v2.0/ should not be included in keystone::public_endpoint')
   }
 
-  if $rabbit_use_ssl {
-    if !$kombu_ssl_ca_certs {
+  if ! is_service_default($rabbit_use_ssl) and $rabbit_use_ssl {
+    if is_service_default($kombu_ssl_ca_certs) {
       fail('The kombu_ssl_ca_certs parameter is required when rabbit_use_ssl is set to true')
     }
-    if !$kombu_ssl_certfile {
+    if is_service_default($kombu_ssl_certfile) {
       fail('The kombu_ssl_certfile parameter is required when rabbit_use_ssl is set to true')
     }
-    if !$kombu_ssl_keyfile {
+    if is_service_default($kombu_ssl_keyfile) {
       fail('The kombu_ssl_keyfile parameter is required when rabbit_use_ssl is set to true')
     }
   }
@@ -650,23 +651,9 @@ class keystone(
   }
 
   # Endpoint configuration
-  if $public_endpoint {
-    keystone_config {
-      'DEFAULT/public_endpoint': value => $public_endpoint;
-    }
-  } else {
-    keystone_config {
-      'DEFAULT/public_endpoint': ensure => absent;
-    }
-  }
-  if $admin_endpoint {
-    keystone_config {
-      'DEFAULT/admin_endpoint': value => $admin_endpoint;
-    }
-  } else {
-    keystone_config {
-      'DEFAULT/admin_endpoint': ensure => absent;
-    }
+  keystone_config {
+    'DEFAULT/public_endpoint': value => $public_endpoint;
+    'DEFAULT/admin_endpoint': value => $admin_endpoint;
   }
   # requirements for memcache token driver
   if ($token_driver =~ /memcache/ ) {
@@ -676,20 +663,13 @@ class keystone(
     }
   }
 
-  # token driver config
   keystone_config {
     'token/driver':     value => $token_driver;
     'token/expiration': value => $token_expiration;
   }
 
-  if $revoke_driver {
-    keystone_config {
-      'revoke/driver':    value => $revoke_driver;
-    }
-  } else {
-    keystone_config {
-      'revoke/driver':    ensure => absent;
-    }
+  keystone_config {
+    'revoke/driver':    value => $revoke_driver;
   }
 
   if ($policy_driver =~ /^keystone\.policy\.backends\..*Policy$/) {
@@ -717,52 +697,43 @@ class keystone(
   }
 
   # memcache connection config
-  if $memcache_servers {
+  if ! is_service_default($memcache_servers) and $memcache_servers {
     validate_array($memcache_servers)
     Service<| title == 'memcached' |> -> Service['keystone']
     keystone_config {
       'cache/enabled':                      value => true;
-      'cache/backend':                      value => $cache_backend;
-      'cache/debug_cache_backend':          value => $debug_cache_backend;
-      'token/caching':                      value => $token_caching;
       'memcache/servers':                   value => join($memcache_servers, ',');
-      'memcache/dead_retry':                value => $memcache_dead_retry;
-      'memcache/socket_timeout':            value => $memcache_socket_timeout;
-      'memcache/pool_maxsize':              value => $memcache_pool_maxsize;
-      'memcache/pool_unused_timeout':       value => $memcache_pool_unused_timeout;
-      'cache/memcache_dead_retry':          value => $memcache_dead_retry;
-      'cache/memcache_socket_timeout':      value => $memcache_socket_timeout;
-      'cache/memcache_pool_maxsize':        value => $memcache_pool_maxsize;
-      'cache/memcache_pool_unused_timeout': value => $memcache_pool_unused_timeout;
     }
-    if $cache_backend_argument {
+    if ! is_service_default($cache_backend_argument) {
       validate_array($cache_backend_argument)
       keystone_config {
-        'cache/backend_argument':   value => join($cache_backend_argument, ',');
+        'cache/backend_argument': value => join($cache_backend_argument, ',');
       }
     } else {
       keystone_config {
-        'cache/backend_argument':  ensure => absent;
+        'cache/backend_argument': ensure => absent;
       }
     }
   } else {
     keystone_config {
-      'cache/enabled':                      ensure => absent;
-      'cache/backend':                      ensure => absent;
-      'cache/backend_argument':             ensure => absent;
-      'cache/debug_cache_backend':          ensure => absent;
-      'token/caching':                      ensure => absent;
-      'memcache/servers':                   ensure => absent;
-      'memcache/dead_retry':                ensure => absent;
-      'memcache/socket_timeout':            ensure => absent;
-      'memcache/pool_maxsize':              ensure => absent;
-      'memcache/pool_unused_timeout':       ensure => absent;
-      'cache/memcache_dead_retry':          ensure => absent;
-      'cache/memcache_socket_timeout':      ensure => absent;
-      'cache/memcache_pool_maxsize':        ensure => absent;
-      'cache/memcache_pool_unused_timeout': ensure => absent;
-
+      'cache/enabled':          ensure => absent;
+      'cache/backend_argument': ensure => absent;
+      'memcache/servers':       ensure => absent;
     }
+  }
+
+  keystone_config {
+    'memcache/dead_retry':                value => $memcache_dead_retry;
+    'memcache/socket_timeout':            value => $memcache_socket_timeout;
+    'memcache/pool_maxsize':              value => $memcache_pool_maxsize;
+    'memcache/pool_unused_timeout':       value => $memcache_pool_unused_timeout;
+    'cache/memcache_dead_retry':          value => $memcache_dead_retry;
+    'cache/memcache_socket_timeout':      value => $memcache_socket_timeout;
+    'cache/memcache_pool_maxsize':        value => $memcache_pool_maxsize;
+    'cache/memcache_pool_unused_timeout': value => $memcache_pool_unused_timeout;
+    'cache/backend':                      value => $cache_backend;
+    'cache/debug_cache_backend':          value => $debug_cache_backend;
+    'token/caching':                      value => $token_caching;
   }
 
   # configure based on the catalog backend
@@ -811,68 +782,40 @@ class keystone(
     }
   }
 
-  keystone_config { 'token/provider': value => $token_provider }
-
-  if $max_token_size {
-    keystone_config { 'DEFAULT/max_token_size': value => $max_token_size }
-  } else {
-    keystone_config { 'DEFAULT/max_token_size': ensure => absent }
+  keystone_config {
+    'token/provider':              value => $token_provider;
+    'DEFAULT/max_token_size':      value => $max_token_size;
+    'DEFAULT/notification_driver': value => $notification_driver;
+    'DEFAULT/notification_topics': value => $notification_topics;
+    'DEFAULT/notification_format': value => $notification_format;
+    'DEFAULT/control_exchange':    value => $control_exchange;
   }
 
-  if $notification_driver {
-    keystone_config { 'DEFAULT/notification_driver': value => $notification_driver }
+  if ! is_service_default($rabbit_hosts) and $rabbit_hosts {
+    keystone_config {
+      'oslo_messaging_rabbit/rabbit_hosts':     value => join($rabbit_hosts, ',');
+      'oslo_messaging_rabbit/rabbit_ha_queues': value => true;
+    }
   } else {
-    keystone_config { 'DEFAULT/notification_driver': ensure => absent }
-  }
-  if $notification_topics {
-    keystone_config { 'DEFAULT/notification_topics': value => $notification_topics }
-  } else {
-    keystone_config { 'DEFAULT/notification_topics': ensure => absent }
-  }
-  if $notification_format {
-    keystone_config { 'DEFAULT/notification_format': value => $notification_format }
-  } else {
-    keystone_config { 'DEFAULT/notification_format': ensure => absent }
-  }
-  if $control_exchange {
-    keystone_config { 'DEFAULT/control_exchange': value => $control_exchange }
-  } else {
-    keystone_config { 'DEFAULT/control_exchange': ensure => absent }
+    keystone_config {
+      'oslo_messaging_rabbit/rabbit_host':      value => $rabbit_host;
+      'oslo_messaging_rabbit/rabbit_port':      value => $rabbit_port;
+      'oslo_messaging_rabbit/rabbit_ha_queues': value => false;
+      'oslo_messaging_rabbit/rabbit_hosts':     ensure => absent;
+    }
   }
 
   keystone_config {
+    'oslo_messaging_rabbit/rabbit_use_ssl':               value => $rabbit_use_ssl;
     'oslo_messaging_rabbit/rabbit_password':              value => $rabbit_password, secret => true;
     'oslo_messaging_rabbit/rabbit_userid':                value => $rabbit_userid;
     'oslo_messaging_rabbit/rabbit_virtual_host':          value => $rabbit_virtual_host;
     'oslo_messaging_rabbit/heartbeat_timeout_threshold':  value => $rabbit_heartbeat_timeout_threshold;
     'oslo_messaging_rabbit/heartbeat_rate':               value => $rabbit_heartbeat_rate;
-  }
-
-  if $rabbit_hosts {
-    keystone_config { 'oslo_messaging_rabbit/rabbit_hosts':     value => join($rabbit_hosts, ',') }
-    keystone_config { 'oslo_messaging_rabbit/rabbit_ha_queues': value => true }
-  } else {
-    keystone_config { 'oslo_messaging_rabbit/rabbit_host':      value => $rabbit_host }
-    keystone_config { 'oslo_messaging_rabbit/rabbit_port':      value => $rabbit_port }
-    keystone_config { 'oslo_messaging_rabbit/rabbit_hosts':     value => "${rabbit_host}:${rabbit_port}" }
-    keystone_config { 'oslo_messaging_rabbit/rabbit_ha_queues': value => false }
-  }
-
-  keystone_config { 'oslo_messaging_rabbit/rabbit_use_ssl': value => $rabbit_use_ssl }
-  if $rabbit_use_ssl {
-    keystone_config {
-      'oslo_messaging_rabbit/kombu_ssl_ca_certs': value => $kombu_ssl_ca_certs;
-      'oslo_messaging_rabbit/kombu_ssl_certfile': value => $kombu_ssl_certfile;
-      'oslo_messaging_rabbit/kombu_ssl_keyfile':  value => $kombu_ssl_keyfile;
-      'oslo_messaging_rabbit/kombu_ssl_version':  value => $kombu_ssl_version;
-    }
-  } else {
-    keystone_config {
-      'oslo_messaging_rabbit/kombu_ssl_ca_certs': ensure => absent;
-      'oslo_messaging_rabbit/kombu_ssl_certfile': ensure => absent;
-      'oslo_messaging_rabbit/kombu_ssl_keyfile':  ensure => absent;
-      'oslo_messaging_rabbit/kombu_ssl_version':  ensure => absent;
-    }
+    'oslo_messaging_rabbit/kombu_ssl_ca_certs':           value => $kombu_ssl_ca_certs;
+    'oslo_messaging_rabbit/kombu_ssl_certfile':           value => $kombu_ssl_certfile;
+    'oslo_messaging_rabbit/kombu_ssl_keyfile':            value => $kombu_ssl_keyfile;
+    'oslo_messaging_rabbit/kombu_ssl_version':            value => $kombu_ssl_version;
   }
 
   keystone_config {
@@ -957,7 +900,6 @@ class keystone(
   # Fernet tokens support
   if $enable_fernet_setup {
     validate_string($fernet_key_repository)
-
     exec { 'keystone-manage fernet_setup':
       path        => '/usr/bin',
       user        => 'keystone',
@@ -968,26 +910,19 @@ class keystone(
     }
   }
 
-  keystone_config {'token/revoke_by_id':   value => $revoke_by_id}
-
   if $fernet_key_repository {
     keystone_config {
-        'fernet_tokens/key_repository':   value => $fernet_key_repository;
+        'fernet_tokens/key_repository': value => $fernet_key_repository;
     }
   } else {
     keystone_config {
-        'fernet_tokens/key_repository':   ensure => absent;
+        'fernet_tokens/key_repository': ensure => absent;
     }
   }
 
-  if $fernet_max_active_keys {
-    keystone_config {
-        'fernet_tokens/max_active_keys':   value => $fernet_max_active_keys;
-    }
-  } else {
-    keystone_config {
-        'fernet_tokens/max_active_keys':   ensure => absent;
-    }
+  keystone_config {
+    'token/revoke_by_id':            value => $revoke_by_id;
+    'fernet_tokens/max_active_keys': value => $fernet_max_active_keys;
   }
 
   if $default_domain {
