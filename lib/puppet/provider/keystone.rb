@@ -196,7 +196,7 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
 
   def self.request(service, action, properties=nil)
     super
-  rescue Puppet::Error::OpenstackAuthInputError => error
+  rescue Puppet::Error::OpenstackAuthInputError, Puppet::Error::OpenstackUnauthorizedError => error
     request_by_service_token(service, action, error, properties)
   end
 
