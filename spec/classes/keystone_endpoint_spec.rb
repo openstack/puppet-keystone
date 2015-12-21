@@ -2,14 +2,13 @@ require 'spec_helper'
 
 describe 'keystone::endpoint' do
 
-  it { is_expected.to contain_keystone_service('keystone').with(
+  it { is_expected.to contain_keystone_service('keystone::identity').with(
     :ensure      => 'present',
-    :type        => 'identity',
     :description => 'OpenStack Identity Service'
   )}
 
   describe 'with default parameters' do
-    it { is_expected.to contain_keystone_endpoint('RegionOne/keystone').with(
+    it { is_expected.to contain_keystone_endpoint('RegionOne/keystone::identity').with(
       :ensure       => 'present',
       :public_url   => 'http://127.0.0.1:5000/v2.0',
       :admin_url    => 'http://127.0.0.1:35357/v2.0',
@@ -26,7 +25,7 @@ describe 'keystone::endpoint' do
         :internal_url => 'https://identity-int.some.tld/some/internal/endpoint' }
     end
 
-    it { is_expected.to contain_keystone_endpoint('RegionOne/keystone').with(
+    it { is_expected.to contain_keystone_endpoint('RegionOne/keystone::identity').with(
       :ensure       => 'present',
       :public_url   => 'https://identity.some.tld/the/main/endpoint/v42.6',
       :admin_url    => 'https://identity-int.some.tld/some/admin/endpoint/v42.6',
@@ -41,7 +40,7 @@ describe 'keystone::endpoint' do
       { :version => '' }
     end
 
-    it { is_expected.to contain_keystone_endpoint('RegionOne/keystone').with(
+    it { is_expected.to contain_keystone_endpoint('RegionOne/keystone::identity').with(
       :ensure       => 'present',
       :public_url   => 'http://127.0.0.1:5000',
       :admin_url    => 'http://127.0.0.1:35357',
@@ -56,7 +55,7 @@ describe 'keystone::endpoint' do
     end
 
     it 'internal_url should default to public_url' do
-      is_expected.to contain_keystone_endpoint('RegionOne/keystone').with(
+      is_expected.to contain_keystone_endpoint('RegionOne/keystone::identity').with(
         :ensure       => 'present',
         :public_url   => 'https://identity.some.tld/the/main/endpoint/v2.0',
         :internal_url => 'https://identity.some.tld/the/main/endpoint/v2.0'
