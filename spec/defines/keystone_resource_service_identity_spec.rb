@@ -47,12 +47,26 @@ describe 'keystone::resource::service_identity' do
         :roles  => ['admin'],
       )}
 
-      it { is_expected.to contain_keystone_service(title).with(
+      it { is_expected.to contain_keystone_service("#{title}::network").with(
         :ensure      => 'present',
-        :type        => 'network',
         :description => 'neutron service',
       )}
 
+      it { is_expected.to contain_keystone_endpoint("RegionOne/#{title}::network").with(
+        :ensure       => 'present',
+        :public_url   => 'http://7.7.7.7:9696',
+        :internal_url => 'http://10.0.0.1:9696',
+        :admin_url    => 'http://192.168.0.1:9696',
+      )}
+    end
+
+    context 'when trying to create an endpoint without service_type (will be dropped in Mitaka)' do
+      let :params do
+        required_params.merge(
+          :configure_service => false,
+          :service_type      => false,
+        )
+      end
       it { is_expected.to contain_keystone_endpoint("RegionOne/#{title}").with(
         :ensure       => 'present',
         :public_url   => 'http://7.7.7.7:9696',
