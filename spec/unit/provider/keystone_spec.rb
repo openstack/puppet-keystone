@@ -35,8 +35,12 @@ describe Puppet::Provider::Keystone do
 
   describe '#fetch_domain' do
     it 'should be false if the domain does not exist' do
+      # retry only once.  Not doing this make the test unnecessary
+      # long (1 minute) and retry the command ~20times
+      klass.expects(:request_timeout).returns(0)
       klass.expects(:openstack)
         .with('domain', 'show', '--format', 'shell', 'no_domain')
+        .times(2)
         .raises(Puppet::ExecutionFailure, "Execution of '/usr/bin/openstack domain show --format shell no_domain' returned 1: No domain with a name or ID of 'no_domain' exists.")
       expect(klass.fetch_domain('no_domain')).to be_falsey
     end
@@ -96,8 +100,10 @@ id="the_domain_id"
     end
 
     it 'should be false if the project does not exist' do
+      klass.expects(:request_timeout).returns(0)
       klass.expects(:openstack)
         .with('project', 'show', '--format', 'shell', ['no_project', '--domain', 'Default'])
+        .times(2)
         .raises(Puppet::ExecutionFailure, "Execution of '/usr/bin/openstack project show --format shell no_project' returned 1: No project with a name or ID of 'no_project' exists.")
       expect(klass.fetch_project('no_project', 'Default')).to be_falsey
     end
@@ -126,8 +132,10 @@ id="the_project_id"
     end
 
     it 'should be false if the user does not exist' do
+      klass.expects(:request_timeout).returns(0)
       klass.expects(:openstack)
         .with('user', 'show', '--format', 'shell', ['no_user', '--domain', 'Default'])
+        .times(2)
         .raises(Puppet::ExecutionFailure, "Execution of '/usr/bin/openstack user show --format shell no_user' returned 1: No user with a name or ID of 'no_user' exists.")
       expect(klass.fetch_user('no_user', 'Default')).to be_falsey
     end
