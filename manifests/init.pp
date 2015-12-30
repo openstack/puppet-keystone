@@ -88,9 +88,13 @@
 #   Defaults to /var/cache/keystone.
 #
 # [*memcache_servers*]
-#   (optional) List of memcache servers in format of server:port.
+#   (optional) List of memcache servers as a comma separated string of
+#   'server:port,server:port' or an array of servers ['server:port',
+#   'server:port'].
 #   Used with token_driver 'keystone.token.backends.memcache.Token'.
-#   Defaults to false. Example: ['localhost:11211']
+#   This configures the memcache/servers for keystone and is used as a default
+#   for $cache_memcache_servers if it is not specified.
+#   Defaults to $::os_service_default
 #
 # [*cache_backend*]
 #   (optional) Dogpile.cache backend module. It is recommended that Memcache with pooling
@@ -102,6 +106,22 @@
 #   (optional) List of arguments in format of argname:value supplied to the backend module.
 #   Specify this option once per argument to be passed to the dogpile.cache backend.
 #   This has no effects unless 'memcache_servers' is set.
+#   Default to $::os_service_default
+#
+# [*cache_enabled*]
+#   (optional) Setting this will enable the caching backend for Keystone.
+#   For legacy purposes, this will be enabled automatically enabled if it is
+#   not provided and $memcache_servers (or $cache_memcache_servers) is set and
+#   cache_backend is provided as well.
+#   Defaults to $::os_service_default
+#
+# [*cache_memcache_servers*]
+#   (optional) List of memcache servers to be used with the caching backend to
+#   configure cache/memcache_servers.
+#   Specified as as a comma separated string of 'server:port,server:port' or an
+#   array of servers ['server:port', 'server:port'].
+#   By default this will be set to the memcache_servers if that is configured
+#   and this is left unconfigured.
 #   Default to $::os_service_default
 #
 # [*debug_cache_backend*]
@@ -507,6 +527,8 @@ class keystone(
   $manage_service                     = true,
   $cache_backend                      = $::os_service_default,
   $cache_backend_argument             = $::os_service_default,
+  $cache_enabled                      = $::os_service_default,
+  $cache_memcache_servers             = $::os_service_default,
   $debug_cache_backend                = $::os_service_default,
   $token_caching                      = $::os_service_default,
   $enabled                            = true,
@@ -696,43 +718,41 @@ class keystone(
     }
   }
 
-  # memcache connection config
-  if ! is_service_default($memcache_servers) and $memcache_servers {
-    validate_array($memcache_servers)
+  if !is_service_default($memcache_servers) or !is_service_default($cache_memcache_servers) {
     Service<| title == 'memcached' |> -> Service['keystone']
-    keystone_config {
-      'cache/enabled':                      value => true;
-      'memcache/servers':                   value => join($memcache_servers, ',');
-    }
-    if ! is_service_default($cache_backend_argument) {
-      validate_array($cache_backend_argument)
-      keystone_config {
-        'cache/backend_argument': value => join($cache_backend_argument, ',');
-      }
-    } else {
-      keystone_config {
-        'cache/backend_argument': ensure => absent;
-      }
-    }
+  }
+
+  # TODO(aschultz): remove in N cycle
+  if is_service_default($cache_memcache_servers) and !is_service_default($memcache_servers) {
+    warning('The keystone module now provides a $cache_memcache_servers to be used with caching. Please specify it separately to configure cache/memcache_servers for keystone. This backwards compatibility will be removed in the N cycle.')
+    $cache_memcache_servers_real = $memcache_servers
   } else {
-    keystone_config {
-      'cache/enabled':          ensure => absent;
-      'cache/backend_argument': ensure => absent;
-      'memcache/servers':       ensure => absent;
-    }
+    $cache_memcache_servers_real = $cache_memcache_servers
+  }
+
+  # TODO(aschultz): remove in N cycle
+  if is_service_default($cache_enabled) and (!is_service_default($memcache_servers) or !is_service_default($cache_memcache_servers_real)) and !is_service_default($cache_backend) {
+    warning('cache_enabled has been added to control weither or not to enable caching. Please specify it separately to configure caching. We have enabled caching as a backwards compatibility that will be removed in the N cycle')
+    $cache_enabled_real = true
+  } else {
+    $cache_enabled_real = $cache_enabled
   }
 
   keystone_config {
-    'memcache/dead_retry':                value => $memcache_dead_retry;
-    'memcache/socket_timeout':            value => $memcache_socket_timeout;
-    'memcache/pool_maxsize':              value => $memcache_pool_maxsize;
-    'memcache/pool_unused_timeout':       value => $memcache_pool_unused_timeout;
+    'cache/backend':                      value => $cache_backend;
+    'cache/backend_argument':             value => join(any2array($cache_backend_argument), ',');
+    'cache/debug_cache_backend':          value => $debug_cache_backend;
+    'cache/enabled':                      value => $cache_enabled_real;
     'cache/memcache_dead_retry':          value => $memcache_dead_retry;
-    'cache/memcache_socket_timeout':      value => $memcache_socket_timeout;
     'cache/memcache_pool_maxsize':        value => $memcache_pool_maxsize;
     'cache/memcache_pool_unused_timeout': value => $memcache_pool_unused_timeout;
-    'cache/backend':                      value => $cache_backend;
-    'cache/debug_cache_backend':          value => $debug_cache_backend;
+    'cache/memcache_servers':             value => join(any2array($cache_memcache_servers_real), ',');
+    'cache/memcache_socket_timeout':      value => $memcache_socket_timeout;
+    'memcache/dead_retry':                value => $memcache_dead_retry;
+    'memcache/pool_maxsize':              value => $memcache_pool_maxsize;
+    'memcache/pool_unused_timeout':       value => $memcache_pool_unused_timeout;
+    'memcache/servers':                   value => join(any2array($memcache_servers), ',');
+    'memcache/socket_timeout':            value => $memcache_socket_timeout;
     'token/caching':                      value => $token_caching;
   }
 
