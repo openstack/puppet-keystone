@@ -30,7 +30,7 @@
 # [*template_order*]
 #  This number indicates the order for the concat::fragment that will apply
 #  the shibboleth configuration to Keystone VirtualHost. The value should
-#  The value should be greater than 330 an less then 999, according to:
+#  The value should be greater than 330 and less than 999, according to:
 #  https://github.com/puppetlabs/puppetlabs-apache/blob/master/manifests/vhost.pp
 #  The value 330 corresponds to the order for concat::fragment  "${name}-filters"
 #  and "${name}-limits".
