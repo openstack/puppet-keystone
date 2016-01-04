@@ -4,7 +4,7 @@
 # The new interface does not rely on a unique title scheme and offers
 # the possibility to pass required arguments as parameters.  Old
 # interface with everything defined in the title is still supported,
-# but the parsing is more consistant and less error prone (on the
+# but the parsing is more consistent and less error prone (on the
 # coding side).  Puppet will find matching resource irrespective of
 # how you create it.
 
@@ -26,7 +26,7 @@ keystone_user { 'user_one::domain_two':
 
 # will create the user in the domain_one, not domain_two.
 
-# This lead to the meaningless title feature.  This can be helpful for
+# This led to the meaningless title feature.  This can be helpful for
 # manifest/hiera created by another program for instance, where the
 # title could be some random id:
 
