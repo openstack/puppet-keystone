@@ -672,7 +672,7 @@ class keystone::ldap(
   # check for some common driver name mistakes
   if ($assignment_driver != undef) {
       if ! ($assignment_driver =~ /^keystone.assignment.backends.*Assignment$/) {
-          fail('assigment driver should be of the form \'keystone.assignment.backends.*Assignment\'')
+          fail('assignment driver should be of the form \'keystone.assignment.backends.*Assignment\'')
       }
   }
 

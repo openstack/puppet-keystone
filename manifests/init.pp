@@ -118,7 +118,7 @@
 # [*cache_memcache_servers*]
 #   (optional) List of memcache servers to be used with the caching backend to
 #   configure cache/memcache_servers.
-#   Specified as as a comma separated string of 'server:port,server:port' or an
+#   Specified as a comma separated string of 'server:port,server:port' or an
 #   array of servers ['server:port', 'server:port'].
 #   By default this will be set to the memcache_servers if that is configured
 #   and this is left unconfigured.
