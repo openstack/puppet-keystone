@@ -12,6 +12,12 @@ RSpec.configure do |c|
   end
 end
 
+RSpec::Matchers.define :be_absent do
+  match do |actual|
+    actual == :absent
+  end
+end
+
 at_exit { RSpec::Puppet::Coverage.report! }
 
 def setup_provider_tests
