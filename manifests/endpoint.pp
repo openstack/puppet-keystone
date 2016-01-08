@@ -63,7 +63,11 @@ class keystone::endpoint (
 ) {
 
   if $version == 'unset' {
-    warning('In Mitaka, the default value of $keystone::endpoint::version will change to \'\'. To avoid this warning, please set the version parameter.')
+    # $version will be set to empty '' once tempest & all openstack clients
+    # actually support versionless endpoints.
+    # See ongoing work in Tempest:
+    # https://review.openstack.org/#/q/status:open+project:openstack/tempest-lib+branch:master+topic:bug/1530181
+    # Until that, we need to set a version by default.
     $_version = 'v2.0'
   } else {
     $_version = $version
