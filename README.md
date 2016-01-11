@@ -16,21 +16,21 @@ keystone
 Overview
 --------
 
-The keystone module is a part of [OpenStack](https://github.com/openstack), an effort by the Openstack infrastructure team to provide continuous integration testing and code review for Openstack and Openstack community projects as part of the core software.  The module its self is used to flexibly configure and manage the identify service for Openstack.
+The keystone module is a part of [OpenStack](https://github.com/openstack), an effort by the OpenStack infrastructure team to provide continuous integration testing and code review for OpenStack and OpenStack community projects as part of the core software.  The module itself is used to flexibly configure and manage the identity service for OpenStack.
 
 Module Description
 ------------------
 
 The keystone module is a thorough attempt to make Puppet capable of managing the entirety of keystone.  This includes manifests to provision region specific endpoint and database connections.  Types are shipped as part of the keystone module to assist in manipulation of configuration files.
 
-This module is tested in combination with other modules needed to build and leverage an entire Openstack software stack.
+This module is tested in combination with other modules needed to build and leverage an entire OpenStack software stack.
 
 Setup
 -----
 
 **What the keystone module affects**
 
-* [Keystone](http://docs.openstack.org/developer/keystone/), the identify service for Openstack.
+* [Keystone](http://docs.openstack.org/developer/keystone/), the identity service for OpenStack.
 
 ### Installing keystone
 
@@ -67,7 +67,7 @@ class { 'keystone::endpoint':
 
 **Leveraging the Native Types**
 
-Keystone ships with a collection of native types that can be used to interact with the data stored in keystone.  The following, related to user management could live throughout your Puppet code base.  They even support puppet's ability to introspect the current environment much the same as `puppet resource user`, `puppet resouce keystone_tenant` will print out all the currently stored tenants and their parameters.
+Keystone ships with a collection of native types that can be used to interact with the data stored in keystone.  The following, related to user management could live throughout your Puppet code base.  They even support puppet's ability to introspect the current environment much the same as `puppet resource user`, `puppet resource keystone_tenant` will print out all the currently stored tenants and their parameters.
 
 ```puppet
 keystone_tenant { 'openstack':
@@ -87,14 +87,14 @@ keystone_user_role { 'admin@openstack':
 }
 ```
 
-These two will seldom be used outside openstack related classes, like nova or cinder.  These are modified examples form Class['nova::keystone::auth'].
+These two will seldom be used outside openstack related classes, like nova or cinder.  These are modified examples from Class['nova::keystone::auth'].
 
 ```puppet
 # Setup the nova keystone service
 keystone_service { 'nova':
   ensure      => present,
   type        => 'compute',
-  description => 'Openstack Compute Service',
+  description => 'OpenStack Compute Service',
 }
 
 ```
@@ -104,7 +104,7 @@ Services can also be written with the type as a suffix:
 ```puppet
 keystone_service { 'nova::type':
   ensure      => present,
-  description => 'Openstack Compute Service',
+  description => 'OpenStack Compute Service',
 }
 
 
@@ -129,16 +129,16 @@ keystone_endpoint { 'example-1-west/nova::compute':
 }
 ```
 
-Defining a endpoint without the type is supported in Liberty release
+Defining an endpoint without the type is supported in Liberty release
 for backward compatibility, but will be dropped in Mitaka, as this can
-lead to corruption of the endpoint database if omitted.  See (this
-bug)[https://bugs.launchpad.net/puppet-keystone/+bug/1506996]
+lead to corruption of the endpoint database if omitted.  See [this
+bug](https://bugs.launchpad.net/puppet-keystone/+bug/1506996)
 
 **Setting up a database for keystone**
 
 A keystone database can be configured separately from the keystone services.
 
-If one needs to actually install a fresh database they have the choice of mysql or postgres.  Use the mysql::server or postgreql::server classes to do this setup then the Class['keystone::db::mysql'] or Class['keystone::db::postgresql'] for adding the needed databases and users that will be needed by keystone.
+If one needs to actually install a fresh database they have the choice of mysql or postgres.  Use the mysql::server or postgreql::server classes to do this setup, and then the Class['keystone::db::mysql'] or Class['keystone::db::postgresql'] for adding the databases and users that will be needed by keystone.
 
 * For mysql
 
@@ -222,19 +222,19 @@ keystone_user_role { 'user_one::my_new_default@project_one::my_new_default':
 as the module will *always* assign a resource without domain to
 the `Default` domain.
 
-A depreciation warning will be visible in the log when you have
+A deprecation warning will be visible in the log when you have
 changed the default domain id and used an non fully qualified name for
-you resource.
+your resource.
 
-In Mitaka, a depreciation warning will be displayed all the time if
-you used non fully qualified resource.
+In Mitaka, a deprecation warning will be displayed any time
+you use a non fully qualified resource.
 
 After Mitaka all the resources will have to be fully qualified.
 
 ***For developers***
 
-Other module can try to find user/tenant resource using Puppet's
-indirection.  The rule for the name of the resources are this:
+Other modules can try to find user/tenant resources using Puppet's
+indirection.  The rule for the name of the resources are:
 
  1. fully qualified if domain is not 'Default';
  2. short form if domain is 'Default'
@@ -245,7 +245,7 @@ Note that, as stated above, the 'Default' domain is hardcoded.  It is
 not related to the real default domain which can be set to something
 else.  But then again, you will have to set the fully qualified name.
 
-You can check `spec/acceptance/default_domain_spec.rb` to have a
+You can check `spec/acceptance/default_domain_spec.rb` to see an
 example of the behavior described here.
 
 Implementation
@@ -288,11 +288,11 @@ If value is equal to ensure_absent_val then the resource will behave as if `ensu
 Limitations
 ------------
 
-* All the keystone types use the CLI tools and so need to be ran on the keystone node.
+* All the keystone types use the CLI tools and so need to be run on the keystone node.
 
 ### Upgrade warning
 
-* If you've setup Openstack using previous versions of this module you need to be aware that it used UUID as the dedault to the token_format parameter but now defaults to PKI.  If you're using this module to manage a Grizzly Openstack deployment that was set up using a development release of the modules or are attempting an upgrade from Folsom then you'll need to make sure you set the token_format to UUID at classification time.
+* If you've setup OpenStack using previous versions of this module you need to be aware that it used UUID as the default for the token_format parameter but now defaults to PKI.  If you're using this module to manage a Grizzly OpenStack deployment that was set up using a development release of the modules or are attempting an upgrade from Folsom then you'll need to make sure you set the token_format to UUID at classification time.
 
 Beaker-Rspec
 ------------
