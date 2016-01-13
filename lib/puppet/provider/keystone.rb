@@ -105,10 +105,8 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
     end
     unless @domain_hash.include?(id)
       name = request('domain', 'show', id)[:name]
-      @domain_hash[id] = name if name
-    end
-    unless @domain_hash.include?(id)
-      err("Could not find domain with id [#{id}]")
+      err("Could not find domain with id [#{id}]") unless name
+      @domain_hash[id] = name
     end
     @domain_hash[id]
   end
