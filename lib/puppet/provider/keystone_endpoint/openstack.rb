@@ -98,7 +98,8 @@ Puppet::Type.type(:keystone_endpoint).provide(
         endpoints.each do |ep_osc|
           if (ep_osc[:id] != current[:id]) &&
             (ep_osc[:service_name] == current[:service_name]) &&
-            (ep_osc[:service_type] == current[:service_type])
+            (ep_osc[:service_type] == current[:service_type]) &&
+            (ep_osc[:region] == current[:region])
             endpoint.merge!(ep_osc[:interface].to_sym => ep_osc)
           end
         end
