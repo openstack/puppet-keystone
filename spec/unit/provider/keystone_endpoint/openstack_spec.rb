@@ -118,16 +118,98 @@ region="region"
     end
 
     describe '#instances' do
-      it 'finds every tenant' do
-        described_class.expects(:openstack)
-          .with('endpoint', 'list', '--quiet', '--format', 'csv', [])
-          .returns('"ID","Region","Service Name","Service Type","Enabled","Interface","URL"
+      context 'basic' do
+        it 'finds every tenant' do
+          described_class.expects(:openstack)
+            .with('endpoint', 'list', '--quiet', '--format', 'csv', [])
+            .returns('"ID","Region","Service Name","Service Type","Enabled","Interface","URL"
 "endpoint1_id","RegionOne","keystone","identity",True,"admin","http://127.0.0.1:5002"
 "endpoint2_id","RegionOne","keystone","identity",True,"internal","https://127.0.0.1:5001"
 "endpoint3_id","RegionOne","keystone","identity",True,"public","https://127.0.0.1:5000"
 ')
-        instances = described_class.instances
-        expect(instances.count).to eq(1)
+          instances = described_class.instances
+          expect(instances.count).to eq(1)
+        end
+      end
+      context 'many different region' do
+        it 'should not mix up the endpoints' do
+          described_class.expects(:openstack)
+            .with('endpoint', 'list', '--quiet', '--format', 'csv', [])
+            .returns('"ID","Region","Service Name","Service Type","Enabled","Interface","URL"
+"endpoint1_id","RegionOne","keystone","identity",True,"admin","http://One-127.0.0.1:5002"
+"endpoint2_id","RegionOne","keystone","identity",True,"internal","https://One-127.0.0.1:5001"
+"endpoint3_id","RegionOne","keystone","identity",True,"public","https://One-127.0.0.1:5000"
+"endpoint4_id","RegionTwo","keystone","identity",True,"admin","http://Two-127.0.0.1:5002"
+"endpoint5_id","RegionTwo","keystone","identity",True,"internal","https://Two-127.0.0.1:5001"
+"endpoint6_id","RegionTwo","keystone","identity",True,"public","https://Two-127.0.0.1:5000"
+"endpoint7_id","RegionThree","keystone","identity",True,"admin","http://Three-127.0.0.1:5002"
+"endpoint8_id","RegionThree","keystone","identity",True,"internal","https://Three-127.0.0.1:5001"
+"endpoint9_id","RegionThree","keystone","identity",True,"public","https://Three-127.0.0.1:5000"
+"endpoint10_id","RegionFour","keystone","identity",True,"admin","http://Four-127.0.0.1:5002"
+"endpoint11_id","RegionFour","keystone","identity",True,"internal","https://Four-127.0.0.1:5001"
+"endpoint12_id","RegionFour","keystone","identity",True,"public","https://Four-127.0.0.1:5000"
+"endpoint13_id","RegionFive","keystone","identity",True,"admin","http://Five-127.0.0.1:5002"
+"endpoint14_id","RegionFive","keystone","identity",True,"internal","https://Five-127.0.0.1:5001"
+"endpoint15_id","RegionFive","keystone","identity",True,"public","https://Five-127.0.0.1:5000"
+"endpoint16_id","RegionSix","keystone","identity",True,"admin","http://Six-127.0.0.1:5002"
+"endpoint17_id","RegionSix","keystone","identity",True,"internal","https://Six-127.0.0.1:5001"
+"endpoint18_id","RegionSix","keystone","identity",True,"public","https://Six-127.0.0.1:5000"
+"endpoint19_id","RegionSeven","keystone","identity",True,"admin","http://Seven-127.0.0.1:5002"
+"endpoint20_id","RegionSeven","keystone","identity",True,"internal","https://Seven-127.0.0.1:5001"
+"endpoint21_id","RegionSeven","keystone","identity",True,"public","https://Seven-127.0.0.1:5000"
+')
+          instances = described_class.instances
+          expect(instances).to have_array_of_instances_hash([
+            {:name=>"RegionOne/keystone::identity",
+              :ensure=>:present,
+              :id=>"endpoint1_id,endpoint2_id,endpoint3_id",
+              :region=>"RegionOne",
+              :admin_url=>"http://One-127.0.0.1:5002",
+              :internal_url=>"https://One-127.0.0.1:5001",
+              :public_url=>"https://One-127.0.0.1:5000"},
+            {:name=>"RegionTwo/keystone::identity",
+              :ensure=>:present,
+              :id=>"endpoint4_id,endpoint5_id,endpoint6_id",
+              :region=>"RegionTwo",
+              :admin_url=>"http://Two-127.0.0.1:5002",
+              :internal_url=>"https://Two-127.0.0.1:5001",
+              :public_url=>"https://Two-127.0.0.1:5000"},
+            {:name=>"RegionThree/keystone::identity",
+              :ensure=>:present,
+              :id=>"endpoint7_id,endpoint8_id,endpoint9_id",
+              :region=>"RegionThree",
+              :admin_url=>"http://Three-127.0.0.1:5002",
+              :internal_url=>"https://Three-127.0.0.1:5001",
+              :public_url=>"https://Three-127.0.0.1:5000"},
+            {:name=>"RegionFour/keystone::identity",
+              :ensure=>:present,
+              :id=>"endpoint10_id,endpoint11_id,endpoint12_id",
+              :region=>"RegionFour",
+              :admin_url=>"http://Four-127.0.0.1:5002",
+              :internal_url=>"https://Four-127.0.0.1:5001",
+              :public_url=>"https://Four-127.0.0.1:5000"},
+            {:name=>"RegionFive/keystone::identity",
+              :ensure=>:present,
+              :id=>"endpoint13_id,endpoint14_id,endpoint15_id",
+              :region=>"RegionFive",
+              :admin_url=>"http://Five-127.0.0.1:5002",
+              :internal_url=>"https://Five-127.0.0.1:5001",
+              :public_url=>"https://Five-127.0.0.1:5000"},
+            {:name=>"RegionSix/keystone::identity",
+              :ensure=>:present,
+              :id=>"endpoint16_id,endpoint17_id,endpoint18_id",
+              :region=>"RegionSix",
+              :admin_url=>"http://Six-127.0.0.1:5002",
+              :internal_url=>"https://Six-127.0.0.1:5001",
+              :public_url=>"https://Six-127.0.0.1:5000"},
+            {:name=>"RegionSeven/keystone::identity",
+              :ensure=>:present,
+              :id=>"endpoint19_id,endpoint20_id,endpoint21_id",
+              :region=>"RegionSeven",
+              :admin_url=>"http://Seven-127.0.0.1:5002",
+              :internal_url=>"https://Seven-127.0.0.1:5001",
+              :public_url=>"https://Seven-127.0.0.1:5000"}])
+        end
       end
     end
 

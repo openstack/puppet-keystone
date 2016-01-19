@@ -57,6 +57,22 @@ describe 'keystone::resource::service_identity' do
         :public_url   => 'http://7.7.7.7:9696',
         :internal_url => 'http://10.0.0.1:9696',
         :admin_url    => 'http://192.168.0.1:9696',
+        :region       => 'RegionOne',
+      )}
+    end
+
+    context 'when explicitly setting an region' do
+      let :params do
+        required_params.merge(
+          :region => 'East',
+        )
+      end
+      it { is_expected.to contain_keystone_endpoint("East/#{title}::network").with(
+        :ensure       => 'present',
+        :public_url   => 'http://7.7.7.7:9696',
+        :internal_url => 'http://10.0.0.1:9696',
+        :admin_url    => 'http://192.168.0.1:9696',
+        :region       => 'East',
       )}
     end
 
@@ -109,6 +125,7 @@ describe 'keystone::resource::service_identity' do
         :roles  => ['admin'],
       )}
     end
+
     context 'with user and project domain' do
       let :params do
         required_params.merge({
