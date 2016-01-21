@@ -3,13 +3,7 @@ require 'spec_helper_acceptance'
 describe 'basic keystone server with changed domain id' do
   after(:context) do
     clean_up_manifest = <<-EOM
-      class { '::keystone':
-            verbose             => true,
-            debug               => true,
-            database_connection => 'mysql+pymysql://keystone:keystone@127.0.0.1/keystone',
-            admin_token         => 'admin_token',
-            enabled             => true,
-      }
+      include ::openstack_integration::keystone
 
       keystone_config { 'identity/default_domain_id': ensure => absent}
     EOM
@@ -19,31 +13,14 @@ describe 'basic keystone server with changed domain id' do
   context 'new domain id' do
     let(:pp) do
       <<-EOM
-      # make sure apache is stopped before keystone eventlet
-      # in case of wsgi was run before
-      class { '::apache':
-        service_ensure => 'stopped',
-      }
-      Service['httpd'] -> Service['keystone']
-
       include ::openstack_integration
       include ::openstack_integration::repos
       include ::openstack_integration::mysql
 
-      # Keystone resources
-      class { '::keystone::client': }
-      class { '::keystone::cron::token_flush': }
-      class { '::keystone::db::mysql':
-        password => 'keystone',
+      class { '::openstack_integration::keystone':
+        default_domain => 'my_default_domain',
       }
-      class { '::keystone':
-        verbose             => true,
-        debug               => true,
-        database_connection => 'mysql+pymysql://keystone:keystone@127.0.0.1/keystone',
-        admin_token         => 'admin_token',
-        enabled             => true,
-        default_domain      => 'my_default_domain'
-      }
+
       keystone_tenant { 'project_in_my_default_domain':
         ensure      => present,
         enabled     => true,
