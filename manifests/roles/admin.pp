@@ -121,8 +121,10 @@ class keystone::roles::admin(
 
   if $configure_user_role {
     keystone_user_role { "${admin}@${admin_tenant}":
-      ensure => present,
-      roles  => $admin_roles,
+      ensure         => present,
+      user_domain    => $admin_user_domain,
+      project_domain => $admin_project_domain,
+      roles          => $admin_roles,
     }
   }
 

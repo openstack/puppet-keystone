@@ -29,8 +29,10 @@ describe 'keystone::roles::admin' do
     )}
     it { is_expected.to contain_keystone_role('admin').with_ensure('present') }
     it { is_expected.to contain_keystone_user_role('admin@openstack').with(
-      :roles  => ['admin'],
-      :ensure => 'present'
+      :roles          => ['admin'],
+      :ensure         => 'present',
+      :user_domain    => nil,
+      :project_domain => nil,
     )}
 
   end
@@ -67,8 +69,10 @@ describe 'keystone::roles::admin' do
       :password               => 'foo',
     )}
     it { is_expected.to contain_keystone_user_role('admin@admin').with(
-      :roles  => ['admin', 'heat_stack_owner'],
-      :ensure => 'present'
+      :roles          => ['admin', 'heat_stack_owner'],
+      :ensure         => 'present',
+      :user_domain    => nil,
+      :project_domain => nil,
     )}
 
   end
@@ -116,6 +120,12 @@ describe 'keystone::roles::admin' do
     it { is_expected.to contain_keystone_tenant('admin_tenant').with(:domain => 'admin_project_domain') }
     it { is_expected.to contain_keystone_domain('admin_user_domain') }
     it { is_expected.to contain_keystone_domain('admin_project_domain') }
+    it { is_expected.to contain_keystone_user_role('admin@admin_tenant').with(
+      :roles          => ['admin'],
+      :ensure         => 'present',
+      :user_domain    => 'admin_user_domain',
+      :project_domain => 'admin_project_domain',
+    )}
 
   end
 
@@ -135,6 +145,12 @@ describe 'keystone::roles::admin' do
     it { is_expected.to contain_keystone_tenant('admin_tenant::admin_project_domain').with(:domain => 'admin_project_domain') }
     it { is_expected.to contain_keystone_domain('admin_user_domain') }
     it { is_expected.to contain_keystone_domain('admin_project_domain') }
+    it { is_expected.to contain_keystone_user_role('admin@admin_tenant::admin_project_domain').with(
+      :roles          => ['admin'],
+      :ensure         => 'present',
+      :user_domain    => 'admin_user_domain',
+      :project_domain => 'admin_project_domain',
+    )}
 
   end
 
