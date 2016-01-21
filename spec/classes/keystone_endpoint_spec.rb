@@ -12,7 +12,8 @@ describe 'keystone::endpoint' do
       :ensure       => 'present',
       :public_url   => 'http://127.0.0.1:5000/v2.0',
       :admin_url    => 'http://127.0.0.1:35357/v2.0',
-      :internal_url => 'http://127.0.0.1:5000/v2.0'
+      :internal_url => 'http://127.0.0.1:5000/v2.0',
+      :region       => 'RegionOne'
     )}
   end
 
@@ -22,14 +23,17 @@ describe 'keystone::endpoint' do
       { :version      => 'v42.6',
         :public_url   => 'https://identity.some.tld/the/main/endpoint',
         :admin_url    => 'https://identity-int.some.tld/some/admin/endpoint',
-        :internal_url => 'https://identity-int.some.tld/some/internal/endpoint' }
+        :internal_url => 'https://identity-int.some.tld/some/internal/endpoint',
+        :region       => 'East'
+      }
     end
 
-    it { is_expected.to contain_keystone_endpoint('RegionOne/keystone::identity').with(
+    it { is_expected.to contain_keystone_endpoint('East/keystone::identity').with(
       :ensure       => 'present',
       :public_url   => 'https://identity.some.tld/the/main/endpoint/v42.6',
       :admin_url    => 'https://identity-int.some.tld/some/admin/endpoint/v42.6',
-      :internal_url => 'https://identity-int.some.tld/some/internal/endpoint/v42.6'
+      :internal_url => 'https://identity-int.some.tld/some/internal/endpoint/v42.6',
+      :region       => 'East'
     )}
   end
 
