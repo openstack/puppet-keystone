@@ -388,14 +388,9 @@ EOC
       context 'manifest' do
         let(:pp) do
       <<-EOM
-      class { '::keystone':
-        verbose             => true,
-        debug               => true,
-        database_connection => 'mysql://keystone:keystone@127.0.0.1/keystone',
-        admin_token         => 'admin_token',
-        enabled             => true,
+      class { '::openstack_integration::keystone':
         default_domain      => 'default_domain',
-        using_domain_config => true
+        using_domain_config => true,
       }
       keystone_domain { 'domain_1_ldap_backend': ensure => present }
       keystone_domain { 'domain_2_ldap_backend': ensure => present }
