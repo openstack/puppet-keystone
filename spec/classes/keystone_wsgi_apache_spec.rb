@@ -107,6 +107,7 @@ describe 'keystone::wsgi::apache' do
         {
           :servername            => 'dummy.host',
           :bind_host             => '10.42.51.1',
+          :admin_bind_host       => '10.42.51.2',
           :public_port           => 12345,
           :admin_port            => 4142,
           :ssl                   => false,
@@ -117,7 +118,7 @@ describe 'keystone::wsgi::apache' do
 
       it { is_expected.to contain_apache__vhost('keystone_wsgi_admin').with(
         'servername'                  => 'dummy.host',
-        'ip'                          => '10.42.51.1',
+        'ip'                          => '10.42.51.2',
         'port'                        => '4142',
         'docroot'                     => "#{platform_parameters[:wsgi_script_path]}",
         'docroot_owner'               => 'keystone',
@@ -165,6 +166,33 @@ describe 'keystone::wsgi::apache' do
 
       it { is_expected.to contain_file("#{platform_parameters[:httpd_ports_file]}") }
     end
+
+    describe 'when admin_bind_host is not set default to bind_host' do
+      let :params do
+        {
+          :servername            => 'dummy.host',
+          :bind_host             => '10.42.51.1',
+          :public_port           => 12345,
+          :admin_port            => 4142,
+          :ssl                   => false,
+          :workers               => 37,
+          :vhost_custom_fragment => 'LimitRequestFieldSize 81900'
+        }
+      end
+
+      it { is_expected.to contain_apache__vhost('keystone_wsgi_admin').with(
+        'ip'                          => '10.42.51.1'
+      )}
+
+      it { is_expected.to contain_apache__vhost('keystone_wsgi_main').with(
+        'ip'                          => '10.42.51.1'
+      )}
+
+      it { is_expected.to contain_file("#{platform_parameters[:httpd_ports_file]}") }
+    end
+
+
+
 
     describe 'when overriding parameters using same port' do
       let :params do
