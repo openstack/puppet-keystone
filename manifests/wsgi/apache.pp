@@ -29,6 +29,10 @@
 #     The host/ip address Apache will listen on.
 #     Optional. Defaults to undef (listen on all ip addresses).
 #
+#   [*admin_bind_host*]
+#     The host/ip address Apache will listen on for admin API connections.
+#     Optional. Defaults to undef or bind_host if only that setting is used.
+#
 #   [*public_path*]
 #     The prefix for the public endpoint.
 #     Optional. Defaults to '/'
@@ -135,6 +139,7 @@ class keystone::wsgi::apache (
   $public_port             = 5000,
   $admin_port              = 35357,
   $bind_host               = undef,
+  $admin_bind_host         = undef,
   $public_path             = '/',
   $admin_path              = '/',
   $ssl                     = true,
@@ -246,6 +251,13 @@ class keystone::wsgi::apache (
     $wsgi_script_aliases_main_real = $wsgi_script_aliases_main
   }
 
+  if $admin_bind_host {
+    $real_admin_bind_host = $admin_bind_host
+  } else {
+    # backwards compat before we had admin_bind_host
+    $real_admin_bind_host = $bind_host
+  }
+
   ::apache::vhost { 'keystone_wsgi_main':
     ensure                      => 'present',
     servername                  => $servername,
@@ -278,7 +290,7 @@ class keystone::wsgi::apache (
     ::apache::vhost { 'keystone_wsgi_admin':
       ensure                      => 'present',
       servername                  => $servername,
-      ip                          => $bind_host,
+      ip                          => $real_admin_bind_host,
       port                        => $admin_port,
       docroot                     => $::keystone::params::keystone_wsgi_script_path,
       docroot_owner               => 'keystone',
