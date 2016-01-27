@@ -680,7 +680,10 @@ define keystone::ldap_backend(
   }
 
   $ldap_packages = ['python-ldap', 'python-ldappool']
-  ensure_resource('package', $ldap_packages, { ensure => present })
+  ensure_resource('package', $ldap_packages, {
+    ensure  => present,
+    require => Package['keystone'],
+  })
 
   # check for some common driver name mistakes
   if ($assignment_driver != undef) {
