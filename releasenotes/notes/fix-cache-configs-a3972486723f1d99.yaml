@@ -1,0 +1,5 @@
+---
+fixes:
+  - Fixes `bug 1523393
+    <https://bugs.launchpad.net/puppet-keystone/+bug/1523393>`__ so we're
+    able to correctly configure cache memcache servers options for Keystone.
