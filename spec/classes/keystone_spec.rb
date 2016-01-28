@@ -105,6 +105,7 @@ describe 'keystone' do
       'rabbit_userid'                       => 'admin',
       'rabbit_heartbeat_timeout_threshold'  => '60',
       'rabbit_heartbeat_rate'               => '10',
+      'rabbit_ha_queues'                    => true,
       'default_domain'                      => 'other_domain',
       'using_domain_config'                 => false
     }
@@ -235,6 +236,15 @@ describe 'keystone' do
       else
         is_expected.to contain_keystone_config('eventlet_server/public_workers').with_value('2')
       end
+    end
+
+    it 'should ensure rabbit_ha_queues' do
+      if param_hash['rabbit_ha_queues']
+        is_expected.to contain_keystone_config('oslo_messaging_rabbit/rabbit_ha_queues').with_value(param_hash['rabbit_ha_queues'])
+      else
+        is_expected.to contain_keystone_config('oslo_messaging_rabbit/rabbit_ha_queues').with_value(false)
+      end
+
     end
 
     if param_hash['default_domain']

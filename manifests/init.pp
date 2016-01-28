@@ -219,6 +219,10 @@
 #   (optional) Location of rabbitmq installation.
 #   Defaults to $::os_service_default
 #
+# [*rabbit_ha_queues*]
+#   (Optional) Use HA queues in RabbitMQ.
+#   Defaults to undef.
+#
 # [*rabbit_password*]
 #   (optional) Password used to connect to rabbitmq.
 #   Defaults to $::os_service_default
@@ -567,6 +571,7 @@ class keystone(
   $rabbit_heartbeat_timeout_threshold = $::os_service_default,
   $rabbit_heartbeat_rate              = $::os_service_default,
   $rabbit_use_ssl                     = $::os_service_default,
+  $rabbit_ha_queues                   = undef,
   $kombu_ssl_ca_certs                 = $::os_service_default,
   $kombu_ssl_certfile                 = $::os_service_default,
   $kombu_ssl_keyfile                  = $::os_service_default,
@@ -828,14 +833,22 @@ class keystone(
   if ! is_service_default($rabbit_hosts) and $rabbit_hosts {
     keystone_config {
       'oslo_messaging_rabbit/rabbit_hosts':     value => join($rabbit_hosts, ',');
-      'oslo_messaging_rabbit/rabbit_ha_queues': value => true;
     }
   } else {
     keystone_config {
       'oslo_messaging_rabbit/rabbit_host':      value => $rabbit_host;
       'oslo_messaging_rabbit/rabbit_port':      value => $rabbit_port;
-      'oslo_messaging_rabbit/rabbit_ha_queues': value => false;
       'oslo_messaging_rabbit/rabbit_hosts':     ensure => absent;
+    }
+  }
+
+  if $rabbit_ha_queues != undef {
+    keystone_config { 'oslo_messaging_rabbit/rabbit_ha_queues': value => $rabbit_ha_queues }
+  } else {
+    if ! is_service_default($rabbit_hosts) and $rabbit_hosts {
+      keystone_config { 'oslo_messaging_rabbit/rabbit_ha_queues': value => true }
+    } else {
+      keystone_config { 'oslo_messaging_rabbit/rabbit_ha_queues': value => false }
     }
   }
 
