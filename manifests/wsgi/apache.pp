@@ -111,6 +111,10 @@
 #     directives to be placed at the end of the vhost configuration.
 #     Defaults to undef.
 #
+#   [*wsgi_chunked_request*]
+#     (optional) apache::vhost wsgi_chunked_request parameter.
+#     Defaults to undef
+#
 # == Dependencies
 #
 #   requires Class['apache'] & Class['keystone']
@@ -157,6 +161,7 @@ class keystone::wsgi::apache (
   $wsgi_script_source      = undef,
   $wsgi_application_group  = '%{GLOBAL}',
   $wsgi_pass_authorization = 'On',
+  $wsgi_chunked_request    = undef,
 
   $access_log_format     = false,
   $vhost_custom_fragment = undef,
@@ -282,6 +287,7 @@ class keystone::wsgi::apache (
     wsgi_application_group      => $wsgi_application_group,
     wsgi_pass_authorization     => $wsgi_pass_authorization,
     custom_fragment             => $vhost_custom_fragment,
+    wsgi_chunked_request        => $wsgi_chunked_request,
     require                     => File['keystone_wsgi_main'],
     access_log_format           => $access_log_format,
   }
@@ -311,6 +317,7 @@ class keystone::wsgi::apache (
       wsgi_application_group      => $wsgi_application_group,
       wsgi_pass_authorization     => $wsgi_pass_authorization,
       custom_fragment             => $vhost_custom_fragment,
+      wsgi_chunked_request        => $wsgi_chunked_request,
       require                     => File['keystone_wsgi_admin'],
       access_log_format           => $access_log_format,
     }
