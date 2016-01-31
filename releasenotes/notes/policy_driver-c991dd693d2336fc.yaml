@@ -1,0 +1,6 @@
+---
+features:
+  - Add policy driver option for Keystone.
+    This option allows to configure the policy backend driver
+    in the keystone.policy namespace.
+    New parameter is policy/driver, using Keystone default value.

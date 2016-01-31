@@ -1,0 +1,5 @@
+---
+upgrade:
+  - Usage of $::os_service_default function in init, db and logging classes.
+    It will make sure that some Keystone parameters are using OpenStack
+    default values.

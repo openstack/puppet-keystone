@@ -1,0 +1,5 @@
+---
+fixes:
+  - Fixes `bug 1535939
+    <https://bugs.launchpad.net/puppet-keystone/+bug/1535939>`__ so
+    endpoint provider take the regions in account.

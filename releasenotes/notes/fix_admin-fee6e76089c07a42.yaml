@@ -1,0 +1,5 @@
+---
+fixes:
+  - Fixes `bug 1533913
+    <https://bugs.launchpad.net/puppet-keystone/+bug/1533913>`__ so
+    admin user role is applied in admin_project_domain and admin_user_domain.

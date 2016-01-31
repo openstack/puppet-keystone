@@ -1,0 +1,6 @@
+---
+fixes:
+  - Fixes `bug 1522541
+    <https://bugs.launchpad.net/puppet-keystone/+bug/1522541>`__ so when
+    /root/openrc is present and has a v2 auth_url, the Keystone_user
+    resource will not fail to check credentials.

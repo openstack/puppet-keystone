@@ -1,0 +1,3 @@
+---
+deprecations:
+  - Remove unused and broken keystone::dev::install class.
