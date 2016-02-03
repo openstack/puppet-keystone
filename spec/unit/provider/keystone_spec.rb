@@ -93,6 +93,14 @@ describe Puppet::Provider::Keystone do
       expect(klass.get_admin_endpoint).to eq('http://[::1]:5001')
     end
 
+    it 'should use [2620:52:0:23a9::25] in the admin endpoint if bind_host is 2620:52:0:23a9::25' do
+      mock = {'DEFAULT' => { 'admin_bind_host' => '2620:52:0:23a9::25', 'admin_port' => '5001' }}
+      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
+      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
+      mock.expects(:read).with('/etc/keystone/keystone.conf')
+      expect(klass.get_admin_endpoint).to eq('http://[2620:52:0:23a9::25]:5001')
+    end
+
     it 'should use localhost in the admin endpoint if bind_host is unspecified' do
       mock = {'DEFAULT' => { 'admin_port' => '5001' }}
       File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)

@@ -28,7 +28,12 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
     when '::0'
       return '[::1]'
     else
-      return host
+      # if ipv6, make sure ip address has brackets - LP#1541512
+      if host.include?(':') and !host.include?(']')
+        return "[" + host + "]"
+      else
+        return host
+      end
     end
   end
 
