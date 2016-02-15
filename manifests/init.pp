@@ -175,7 +175,7 @@
 #   revocation lists if it doesn't already exist. This generates a cert and key stored in file
 #   locations based on the signing_certfile and signing_keyfile paramters below. If you are
 #   providing your own signing cert, make this false.
-#   Default to true.
+#   Default to false.
 #
 # [*signing_certfile*]
 #   (optional) Location of the cert file for signing pki tokens and revocation lists.
@@ -555,7 +555,7 @@ class keystone(
   $database_min_pool_size             = undef,
   $database_max_pool_size             = undef,
   $database_max_overflow              = undef,
-  $enable_pki_setup                   = true,
+  $enable_pki_setup                   = false,
   $signing_certfile                   = '/etc/keystone/ssl/certs/signing_cert.pem',
   $signing_keyfile                    = '/etc/keystone/ssl/private/signing_key.pem',
   $signing_ca_certs                   = '/etc/keystone/ssl/certs/ca.pem',

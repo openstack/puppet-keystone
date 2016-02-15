@@ -52,7 +52,7 @@ describe 'keystone' do
       'manage_service'                      => true,
       'database_connection'                 => 'sqlite:////var/lib/keystone/keystone.db',
       'database_idle_timeout'               => '200',
-      'enable_pki_setup'                    => true,
+      'enable_pki_setup'                    => false,
       'signing_certfile'                    => '/etc/keystone/ssl/certs/signing_cert.pem',
       'signing_keyfile'                     => '/etc/keystone/ssl/private/signing_key.pem',
       'signing_ca_certs'                    => '/etc/keystone/ssl/certs/ca.pem',
@@ -335,9 +335,6 @@ describe 'keystone' do
           'token_provider' => 'keystone.token.providers.uuid.Provider'
         }
       end
-      it { is_expected.to contain_exec('keystone-manage pki_setup').with(
-        :creates => '/etc/keystone/ssl/private/signing_key.pem'
-      ) }
       it { is_expected.to contain_file('/var/cache/keystone').with_ensure('directory') }
 
       describe 'when overriding the cache dir' do
@@ -347,10 +344,7 @@ describe 'keystone' do
         it { is_expected.to contain_file('/var/lib/cache/keystone') }
       end
 
-      describe 'when disable pki_setup' do
-        before do
-          params.merge!(:enable_pki_setup => false)
-        end
+      describe 'pki_setup is disabled by default' do
         it { is_expected.to_not contain_exec('keystone-manage pki_setup') }
       end
     end
@@ -358,8 +352,9 @@ describe 'keystone' do
     describe 'when configuring as PKI' do
       let :params do
         {
-          'admin_token'    => 'service_token',
-          'token_provider' => 'keystone.token.providers.pki.Provider'
+          'enable_pki_setup' => true,
+          'admin_token'      => 'service_token',
+          'token_provider'   => 'keystone.token.providers.pki.Provider'
         }
       end
       it { is_expected.to contain_exec('keystone-manage pki_setup').with(
@@ -372,13 +367,6 @@ describe 'keystone' do
           params.merge!(:cache_dir => '/var/lib/cache/keystone')
         end
         it { is_expected.to contain_file('/var/lib/cache/keystone') }
-      end
-
-      describe 'when disable pki_setup' do
-        before do
-          params.merge!(:enable_pki_setup => false)
-        end
-        it { is_expected.to_not contain_exec('keystone-manage pki_setup') }
       end
     end
 
