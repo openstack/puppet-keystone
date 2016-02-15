@@ -394,8 +394,7 @@
 # [*paste_config*]
 #   (optional) Name of the paste configuration file that defines the
 #   available pipelines. (string value)
-#   Defaults to '/usr/share/keystone/keystone-dist-paste.ini' on RedHat and
-#   undef on other platforms.
+#   Defaults to $::os_service_default
 #
 # [*max_token_size*]
 #   (optional) maximum allowable Keystone token size
@@ -584,7 +583,7 @@ class keystone(
   $validate_insecure                  = false,
   $validate_auth_url                  = false,
   $validate_cacert                    = undef,
-  $paste_config                       = $::keystone::params::paste_config,
+  $paste_config                       = $::os_service_default,
   $service_provider                   = $::keystone::params::service_provider,
   $service_name                       = $::keystone::params::service_name,
   $max_token_size                     = $::os_service_default,
@@ -689,6 +688,7 @@ class keystone(
     'DEFAULT/admin_bind_host':  value => $admin_bind_host;
     'DEFAULT/public_port':      value => $public_port;
     'DEFAULT/admin_port':       value => $admin_port;
+    'paste_deploy/config_file': value => $paste_config;
   }
 
   # Endpoint configuration
@@ -932,16 +932,6 @@ class keystone(
   if $sync_db {
     include ::keystone::db::sync
     Class['::keystone::db::sync'] ~> Service[$service_name]
-  }
-
-  if $paste_config {
-    keystone_config {
-        'paste_deploy/config_file':   value => $paste_config;
-    }
-  } else {
-    keystone_config {
-        'paste_deploy/config_file':   ensure => absent;
-    }
   }
 
   # Fernet tokens support

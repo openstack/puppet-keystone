@@ -64,6 +64,7 @@ describe 'keystone' do
       'rabbit_heartbeat_rate'               => '<SERVICE DEFAULT>',
       'admin_workers'                       => 20,
       'public_workers'                      => 20,
+      'paste_config'                        => '<SERVICE DEFAULT>',
       'sync_db'                             => true,
     }
 
@@ -107,6 +108,7 @@ describe 'keystone' do
       'rabbit_heartbeat_rate'               => '10',
       'rabbit_ha_queues'                    => true,
       'default_domain'                      => 'other_domain',
+      'paste_config'                        => '/usr/share/keystone/keystone-paste.ini',
       'using_domain_config'                 => false
     }
 
@@ -197,6 +199,10 @@ describe 'keystone' do
 
     it 'should contain default revoke_by_id value ' do
       is_expected.to contain_keystone_config('token/revoke_by_id').with_value(param_hash['revoke_by_id'])
+    end
+
+    it 'should contain default paste_config' do
+      is_expected.to contain_keystone_config('paste_deploy/config_file').with_value(param_hash['paste_config'])
     end
 
     it 'should ensure proper setting of admin_endpoint and public_endpoint' do
@@ -884,44 +890,6 @@ describe 'keystone' do
         :creates => '/var/lib/fernet-keys/0'
       ) }
 
-    end
-  end
-
-  describe 'when configuring paste_deploy' do
-    describe 'with default paste config on Debian' do
-      let :params do
-        default_params
-      end
-
-      it { is_expected.to contain_keystone_config('paste_deploy/config_file').with_ensure('absent') }
-    end
-
-    describe 'with default paste config on RedHat' do
-      let :facts do
-        @default_facts.merge(global_facts.merge({
-          :osfamily               => 'RedHat',
-          :operatingsystemrelease => '6.0'
-        }))
-      end
-      let :params do
-        default_params
-      end
-
-      it { is_expected.to contain_keystone_config('paste_deploy/config_file').with_value(
-          '/usr/share/keystone/keystone-dist-paste.ini'
-      )}
-    end
-
-    describe 'with overrided paste_deploy' do
-      let :params do
-        default_params.merge({
-          'paste_config'    => '/usr/share/keystone/keystone-paste.ini',
-        })
-      end
-
-      it { is_expected.to contain_keystone_config('paste_deploy/config_file').with_value(
-          '/usr/share/keystone/keystone-paste.ini'
-      )}
     end
   end
 

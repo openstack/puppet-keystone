@@ -12,7 +12,6 @@ class keystone::params {
       $keystone_wsgi_script_source  = '/usr/share/keystone/wsgi.py'
       $python_memcache_package_name = 'python-memcache'
       $sqlite_package_name          = 'python-pysqlite2'
-      $paste_config                 = undef
       $pymysql_package_name         = 'python-pymysql'
       $mellon_package_name          = 'libapache2-mod-auth-mellon'
       case $::operatingsystem {
@@ -32,7 +31,6 @@ class keystone::params {
       $sqlite_package_name          = undef
       $service_provider             = undef
       $keystone_wsgi_script_source  = '/usr/share/keystone/keystone.wsgi'
-      $paste_config                 = '/usr/share/keystone/keystone-dist-paste.ini'
       $pymysql_package_name         = undef
       $mellon_package_name          = 'mod_auth_mellon'
     }
