@@ -619,15 +619,15 @@ class keystone(
     warning('Version string /v2.0/ should not be included in keystone::public_endpoint')
   }
 
-  if ! is_service_default($rabbit_use_ssl) and $rabbit_use_ssl {
-    if is_service_default($kombu_ssl_ca_certs) {
-      fail('The kombu_ssl_ca_certs parameter is required when rabbit_use_ssl is set to true')
+  if ! is_service_default($rabbit_use_ssl) and !$rabbit_use_ssl {
+    if ! is_service_default($kombu_ssl_ca_certs) and ($kombu_ssl_ca_certs) {
+      fail('The kombu_ssl_ca_certs parameter requires rabbit_use_ssl to be set to true')
     }
-    if is_service_default($kombu_ssl_certfile) {
-      fail('The kombu_ssl_certfile parameter is required when rabbit_use_ssl is set to true')
+    if ! is_service_default($kombu_ssl_certfile) and ($kombu_ssl_certfile) {
+      fail('The kombu_ssl_certfile parameter requires rabbit_use_ssl to be set to true')
     }
-    if is_service_default($kombu_ssl_keyfile) {
-      fail('The kombu_ssl_keyfile parameter is required when rabbit_use_ssl is set to true')
+    if ! is_service_default($kombu_ssl_keyfile) and ($kombu_ssl_keyfile) {
+      fail('The kombu_ssl_keyfile parameter requires rabbit_use_ssl to be set to true')
     }
   }
 
