@@ -9,16 +9,28 @@ Puppet::Type.type(:keystone_endpoint).provide(
 
   include PuppetX::Keystone::CompositeNamevar::Helpers
 
-  @endpoints   = nil
-  @services    = nil
-  @credentials = Puppet::Provider::Openstack::CredentialsV3.new
+  @endpoints     = nil
+  @services      = nil
+  @credentials   = Puppet::Provider::Openstack::CredentialsV3.new
+  @do_not_manage = false
 
   def initialize(value={})
     super(value)
     @property_flush = {}
   end
 
+  def self.do_not_manage
+    @do_not_manage
+  end
+
+  def self.do_not_manage=(value)
+    @do_not_manage = value
+  end
+
   def create
+    if self.class.do_not_manage
+      fail("Not managing Keystone_endpoint[#{@resource[:name]}] due to earlier Keystone API failures.")
+    end
     # Reset the cache.
     self.class.services = nil
     name   = resource[:name]
@@ -58,6 +70,9 @@ Puppet::Type.type(:keystone_endpoint).provide(
   end
 
   def destroy
+    if self.class.do_not_manage
+      fail("Not managing Keystone_endpoint[#{@resource[:name]}] due to earlier Keystone API failures.")
+    end
     ids = @property_hash[:id].split(',')
     ids.each do |id|
       self.class.request('endpoint', 'delete', id)
@@ -72,14 +87,23 @@ Puppet::Type.type(:keystone_endpoint).provide(
   mk_resource_methods
 
   def public_url=(value)
+    if self.class.do_not_manage
+      fail("Not managing Keystone_endpoint[#{@resource[:name]}] due to earlier Keystone API failures.")
+    end
     @property_flush[:public_url] = value
   end
 
   def internal_url=(value)
+    if self.class.do_not_manage
+      fail("Not managing Keystone_endpoint[#{@resource[:name]}] due to earlier Keystone API failures.")
+    end
     @property_flush[:internal_url] = value
   end
 
   def admin_url=(value)
+    if self.class.do_not_manage
+      fail("Not managing Keystone_endpoint[#{@resource[:name]}] due to earlier Keystone API failures.")
+    end
     @property_flush[:admin_url] = value
   end
 
@@ -155,7 +179,11 @@ Puppet::Type.type(:keystone_endpoint).provide(
 
   def self.endpoints
     return @endpoints unless @endpoints.nil?
+    prev_do_not_manage = self.do_not_manage
+    self.do_not_manage = true
     @endpoints = request('endpoint', 'list')
+    self.do_not_manage = prev_do_not_manage
+    @endpoints
   end
 
   def self.endpoints=(value)
@@ -164,7 +192,11 @@ Puppet::Type.type(:keystone_endpoint).provide(
 
   def self.services
     return @services unless @services.nil?
+    prev_do_not_manage = self.do_not_manage
+    self.do_not_manage = true
     @services = request('service', 'list')
+    self.do_not_manage = prev_do_not_manage
+    @services
   end
 
   def self.services=(value)
