@@ -16,7 +16,18 @@ Puppet::Type.type(:keystone_service).provide(
     @property_flush = {}
   end
 
+  def self.do_not_manage
+    @do_not_manage
+  end
+
+  def self.do_not_manage=(value)
+    @do_not_manage = value
+  end
+
   def create
+    if self.class.do_not_manage
+      fail("Not managing Keystone_service[#{@resource[:name]}] due to earlier Keystone API failures.")
+    end
     properties = [resource[:type]]
     properties << '--name' << resource[:name]
     if resource[:description]
@@ -30,6 +41,9 @@ Puppet::Type.type(:keystone_service).provide(
   end
 
   def destroy
+    if self.class.do_not_manage
+      fail("Not managing Keystone_service[#{@resource[:name]}] due to earlier Keystone API failures.")
+    end
     self.class.request('service', 'delete', @property_hash[:id])
     @property_hash.clear
   end
@@ -41,16 +55,23 @@ Puppet::Type.type(:keystone_service).provide(
   mk_resource_methods
 
   def description=(value)
+    if self.class.do_not_manage
+      fail("Not managing Keystone_service[#{@resource[:name]}] due to earlier Keystone API failures.")
+    end
     @property_flush[:description] = value
   end
 
   def type=(value)
+    if self.class.do_not_manage
+      fail("Not managing Keystone_service[#{@resource[:name]}] due to earlier Keystone API failures.")
+    end
     @property_flush[:type] = value
   end
 
   def self.instances
+    self.do_not_manage = true
     list = request('service', 'list', '--long')
-    list.collect do |service|
+    reallist = list.collect do |service|
       new(
         :name        => resource_to_name(service[:type], service[:name], false),
         :ensure      => :present,
@@ -59,6 +80,8 @@ Puppet::Type.type(:keystone_service).provide(
         :id          => service[:id]
       )
     end
+    self.do_not_manage = false
+    reallist
   end
 
   def self.prefetch(resources)

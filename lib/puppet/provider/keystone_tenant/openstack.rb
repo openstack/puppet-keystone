@@ -16,7 +16,18 @@ Puppet::Type.type(:keystone_tenant).provide(
     @property_flush = {}
   end
 
+  def self.do_not_manage
+    @do_not_manage
+  end
+
+  def self.do_not_manage=(value)
+    @do_not_manage = value
+  end
+
   def create
+    if self.class.do_not_manage
+      fail("Not managing Keystone_tenant[#{@resource[:name]}] due to earlier Keystone API failures.")
+    end
     properties = [resource[:name]]
     if resource[:enabled] == :true
       properties << '--enable'
@@ -49,11 +60,17 @@ Puppet::Type.type(:keystone_tenant).provide(
   end
 
   def destroy
+    if self.class.do_not_manage
+      fail("Not managing Keystone_tenant[#{@resource[:name]}] due to earlier Keystone API failures.")
+    end
     self.class.request('project', 'delete', id)
     @property_hash.clear
   end
 
   def enabled=(value)
+    if self.class.do_not_manage
+      fail("Not managing Keystone_tenant[#{@resource[:name]}] due to earlier Keystone API failures.")
+    end
     @property_flush[:enabled] = value
   end
 
@@ -62,6 +79,9 @@ Puppet::Type.type(:keystone_tenant).provide(
   end
 
   def description=(value)
+    if self.class.do_not_manage
+      fail("Not managing Keystone_tenant[#{@resource[:name]}] due to earlier Keystone API failures.")
+    end
     @property_flush[:description] = value
   end
 
@@ -69,8 +89,9 @@ Puppet::Type.type(:keystone_tenant).provide(
     if default_domain_changed
       warning(default_domain_deprecation_message)
     end
+    self.do_not_manage = true
     projects = request('project', 'list', '--long')
-    projects.collect do |project|
+    list = projects.collect do |project|
       domain_name = domain_name_from_id(project[:domain_id])
       new(
         :name        => resource_to_name(domain_name, project[:name]),
@@ -82,6 +103,8 @@ Puppet::Type.type(:keystone_tenant).provide(
         :id          => project[:id]
       )
     end
+    self.do_not_manage = false
+    list
   end
 
   def self.prefetch(resources)

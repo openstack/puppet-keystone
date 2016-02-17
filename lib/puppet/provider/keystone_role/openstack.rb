@@ -14,12 +14,26 @@ Puppet::Type.type(:keystone_role).provide(
     @property_flush = {}
   end
 
+  def self.do_not_manage
+    @do_not_manage
+  end
+
+  def self.do_not_manage=(value)
+    @do_not_manage = value
+  end
+
   def create
+    if self.class.do_not_manage
+      fail("Not managing Keystone_role[#{@resource[:name]}] due to earlier Keystone API failures.")
+    end
     self.class.request('role', 'create', name)
     @property_hash[:ensure] = :present
   end
 
   def destroy
+    if self.class.do_not_manage
+      fail("Not managing Keystone_role[#{@resource[:name]}] due to earlier Keystone API failures.")
+    end
     self.class.request('role', 'delete', @property_hash[:id])
     @property_hash.clear
   end
@@ -33,14 +47,17 @@ Puppet::Type.type(:keystone_role).provide(
   end
 
   def self.instances
+    self.do_not_manage = true
     list = request('role', 'list')
-    list.collect do |role|
+    reallist = list.collect do |role|
       new(
         :name        => role[:name],
         :ensure      => :present,
         :id          => role[:id]
       )
     end
+    self.do_not_manage = false
+    reallist
   end
 
   def self.prefetch(resources)

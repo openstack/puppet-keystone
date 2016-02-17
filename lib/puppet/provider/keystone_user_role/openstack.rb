@@ -17,6 +17,14 @@ Puppet::Type.type(:keystone_user_role).provide(
     @property_flush = {}
   end
 
+  def self.do_not_manage
+    @do_not_manage
+  end
+
+  def self.do_not_manage=(value)
+    @do_not_manage = value
+  end
+
   def create
     if resource[:roles]
       options = properties
@@ -131,6 +139,7 @@ Puppet::Type.type(:keystone_user_role).provide(
   end
 
   def self.build_user_role_hash
+    self.do_not_manage = true
     # The new hash will have the property that if the
     # given key does not exist, create it with an empty
     # array as the value for the hash key
@@ -171,6 +180,7 @@ Puppet::Type.type(:keystone_user_role).provide(
       end
     end
     set_user_role_hash(hash)
+    self.do_not_manage = false
     hash
   end
 end
