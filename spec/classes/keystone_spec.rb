@@ -341,17 +341,10 @@ describe 'keystone' do
           'token_provider' => 'keystone.token.providers.uuid.Provider'
         }
       end
-      it { is_expected.to contain_file('/var/cache/keystone').with_ensure('directory') }
-
-      describe 'when overriding the cache dir' do
-        before do
-          params.merge!(:cache_dir => '/var/lib/cache/keystone')
-        end
-        it { is_expected.to contain_file('/var/lib/cache/keystone') }
-      end
 
       describe 'pki_setup is disabled by default' do
         it { is_expected.to_not contain_exec('keystone-manage pki_setup') }
+        it { is_expected.to_not contain_file('/var/cache/keystone').with_ensure('directory') }
       end
     end
 
@@ -363,6 +356,16 @@ describe 'keystone' do
           'token_provider'   => 'keystone.token.providers.pki.Provider'
         }
       end
+
+      it { is_expected.to contain_file('/var/cache/keystone').with_ensure('directory') }
+
+      describe 'when overriding the cache dir' do
+        before do
+          params.merge!(:cache_dir => '/var/lib/cache/keystone')
+        end
+        it { is_expected.to contain_file('/var/lib/cache/keystone') }
+      end
+
       it { is_expected.to contain_exec('keystone-manage pki_setup').with(
         :creates => '/etc/keystone/ssl/private/signing_key.pem'
       ) }

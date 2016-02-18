@@ -84,7 +84,8 @@
 #   Defaults to true.
 #
 # [*cache_dir*]
-#   (optional) Directory created when token_provider is pki.
+#   (optional) Directory created when token_provider is pki. This folder is not
+#   created unless enable_pki_setup is set to True.
 #   Defaults to /var/cache/keystone.
 #
 # [*memcache_servers*]
@@ -801,15 +802,15 @@ class keystone(
     'signing/key_size':     value => $signing_key_size;
   }
 
-  # Create cache directory used for signing.
-  file { $cache_dir:
-    ensure => directory,
-  }
-
   # Only do pki_setup if we were asked to do so.  This is needed
   # regardless of the token provider since token revocation lists
   # are always signed.
   if $enable_pki_setup {
+    # Create cache directory used for signing.
+    file { $cache_dir:
+      ensure => directory,
+    }
+
     exec { 'keystone-manage pki_setup':
       path        => '/usr/bin',
       user        => 'keystone',
