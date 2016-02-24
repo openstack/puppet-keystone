@@ -49,6 +49,10 @@
 #    (optional) Path to file to which rows should be archived
 #    Defaults to '/var/log/keystone/keystone-tokenflush.log'.
 #
+#  [*user*]
+#    (optional) Defaults to 'keystone'.
+#    Allow to run the crontab on behalf any user.
+#
 class keystone::cron::token_flush (
   $ensure      = present,
   $minute      = 1,
@@ -57,7 +61,8 @@ class keystone::cron::token_flush (
   $month       = '*',
   $weekday     = '*',
   $maxdelay    = 0,
-  $destination = '/var/log/keystone/keystone-tokenflush.log'
+  $destination = '/var/log/keystone/keystone-tokenflush.log',
+  $user        = 'keystone',
 ) {
 
   if $maxdelay == 0 {
@@ -70,11 +75,12 @@ class keystone::cron::token_flush (
     ensure      => $ensure,
     command     => "${sleep}keystone-manage token_flush >>${destination} 2>&1",
     environment => 'PATH=/bin:/usr/bin:/usr/sbin SHELL=/bin/sh',
-    user        => 'keystone',
+    user        => $user,
     minute      => $minute,
     hour        => $hour,
     monthday    => $monthday,
     month       => $month,
-    weekday     => $weekday
+    weekday     => $weekday,
+    require     => Package['keystone'],
   }
 }

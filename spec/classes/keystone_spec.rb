@@ -127,24 +127,10 @@ describe 'keystone' do
       'ensure' => param_hash['client_package_ensure'],
     ) }
 
-    it { is_expected.to contain_group('keystone').with(
-      'ensure' => 'present',
-      'system' => true
-    ) }
-
-    it { is_expected.to contain_user('keystone').with(
-      'ensure' => 'present',
-      'gid'    => 'keystone',
-      'system' => true
-    ) }
-
     it 'should contain the expected directories' do
       ['/etc/keystone', '/var/log/keystone', '/var/lib/keystone'].each do |d|
         is_expected.to contain_file(d).with(
           'ensure'     => 'directory',
-          'owner'      => 'keystone',
-          'group'      => 'keystone',
-          'mode'       => '0750',
           'require'    => 'Package[keystone]'
         )
       end
@@ -157,7 +143,6 @@ describe 'keystone' do
           :user        => 'keystone',
           :refreshonly => true,
           :subscribe   => ['Package[keystone]', 'Keystone_config[database/connection]'],
-          :require     => 'User[keystone]'
         )
       end
     end
