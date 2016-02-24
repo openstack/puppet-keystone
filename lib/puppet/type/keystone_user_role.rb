@@ -104,7 +104,7 @@ Puppet::Type.newtype(:keystone_user_role) do
 
   # we should not do anything until the keystone service is started
   autorequire(:anchor) do
-    ['keystone_started']
+    ['keystone::service::end']
   end
 
   def self.title_patterns

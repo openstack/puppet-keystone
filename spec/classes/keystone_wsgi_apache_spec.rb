@@ -29,7 +29,7 @@ describe 'keystone::wsgi::apache' do
         'ensure'  => 'directory',
         'owner'   => 'keystone',
         'group'   => 'keystone',
-        'require' => 'Package[httpd]'
+        'require' => 'Anchor[keystone::install::end]',
       )}
 
       it { is_expected.to contain_file('keystone_wsgi_admin').with(
@@ -39,7 +39,7 @@ describe 'keystone::wsgi::apache' do
         'owner'   => 'keystone',
         'group'   => 'keystone',
         'mode'    => '0644',
-        'require' => ["File[#{platform_parameters[:wsgi_script_path]}]", "Package[keystone]"]
+        'require' => "File[#{platform_parameters[:wsgi_script_path]}]",
       )}
 
       it { is_expected.to contain_file('keystone_wsgi_main').with(
@@ -49,7 +49,7 @@ describe 'keystone::wsgi::apache' do
         'owner'   => 'keystone',
         'group'   => 'keystone',
         'mode'    => '0644',
-        'require' => ["File[#{platform_parameters[:wsgi_script_path]}]", "Package[keystone]"]
+        'require' => "File[#{platform_parameters[:wsgi_script_path]}]",
       )}
 
       it { is_expected.to contain_apache__vhost('keystone_wsgi_admin').with(
@@ -282,7 +282,7 @@ describe 'keystone::wsgi::apache' do
         'owner'   => 'keystone',
         'group'   => 'keystone',
         'mode'    => '0644',
-        'require' => ["File[#{platform_parameters[:wsgi_script_path]}]", "Package[keystone]"]
+        'require' => "File[#{platform_parameters[:wsgi_script_path]}]",
       )}
 
       it { is_expected.to contain_file('keystone_wsgi_main').with(
@@ -292,7 +292,7 @@ describe 'keystone::wsgi::apache' do
         'owner'   => 'keystone',
         'group'   => 'keystone',
         'mode'    => '0644',
-        'require' => ["File[#{platform_parameters[:wsgi_script_path]}]", "Package[keystone]"]
+        'require' => "File[#{platform_parameters[:wsgi_script_path]}]",
       )}
     end
 

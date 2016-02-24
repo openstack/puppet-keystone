@@ -11,15 +11,22 @@
 #   Defaults to ''
 #
 class keystone::db::sync(
-  $extra_params  = undef,
+  $extra_params = undef,
 ) {
+
+  include ::keystone::deps
+
   exec { 'keystone-manage db_sync':
     command     => "keystone-manage ${extra_params} db_sync",
     path        => '/usr/bin',
     user        => 'keystone',
     refreshonly => true,
-    subscribe   => [Package['keystone'], Keystone_config['database/connection']],
+    subscribe   => [
+      Anchor['keystone::install::end'],
+      Anchor['keystone::config::end'],
+      Anchor['keystone::dbsync::begin']
+    ],
+    notify      => Anchor['keystone::dbsync::end'],
+    tag         => 'keystone-exec',
   }
-
-  Exec['keystone-manage db_sync'] ~> Service<| title == 'keystone' |>
 }

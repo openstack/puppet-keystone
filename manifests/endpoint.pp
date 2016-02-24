@@ -62,6 +62,8 @@ class keystone::endpoint (
   $version           = 'unset', # defaults to 'v2.0' if unset by user
 ) {
 
+  include ::keystone::deps
+
   if $version == 'unset' {
     # $version will be set to empty '' once tempest & all openstack clients
     # actually support versionless endpoints.

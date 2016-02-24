@@ -6,9 +6,11 @@ describe 'keystone::db::sync' do
     it {
         is_expected.to contain_exec('keystone-manage db_sync').with(
           :command     => 'keystone-manage  db_sync',
-          :user        => 'keystone',
           :refreshonly => true,
-          :subscribe   => ['Package[keystone]', 'Keystone_config[database/connection]'],
+          :subscribe   => ['Anchor[keystone::install::end]',
+                          'Anchor[keystone::config::end]',
+                          'Anchor[keystone::dbsync::begin]'],
+          :notify      => 'Anchor[keystone::dbsync::end]',
         )
     }
   end
@@ -23,9 +25,11 @@ describe 'keystone::db::sync' do
     it {
         is_expected.to contain_exec('keystone-manage db_sync').with(
           :command     => 'keystone-manage --config-file /etc/keystone/keystone.conf db_sync',
-          :user        => 'keystone',
           :refreshonly => true,
-          :subscribe   => ['Package[keystone]', 'Keystone_config[database/connection]'],
+          :subscribe   => ['Anchor[keystone::install::end]',
+                          'Anchor[keystone::config::end]',
+                          'Anchor[keystone::dbsync::begin]'],
+          :notify      => 'Anchor[keystone::dbsync::end]',
         )
     }
   end

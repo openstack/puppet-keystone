@@ -69,6 +69,7 @@ class keystone::federation::shibboleth(
 ) {
 
   include ::apache
+  include ::keystone::deps
 
   # Note: if puppet-apache modify these values, this needs to be updated
   if $template_order <= 330 or $template_order >= 999 {

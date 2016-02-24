@@ -41,7 +41,7 @@ Puppet::Type.newtype(:keystone_endpoint) do
 
   # we should not do anything until the keystone service is started
   autorequire(:anchor) do
-    ['keystone_started']
+    ['keystone::service::end']
   end
 
   autorequire(:keystone_service) do

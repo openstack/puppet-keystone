@@ -43,6 +43,7 @@ class keystone::db (
   $database_max_overflow   = $::os_service_default,
 ) {
 
+  include ::keystone::deps
   include ::keystone::params
 
   # NOTE(spredzy): In order to keep backward compatibility we rely on the pick function
@@ -84,7 +85,7 @@ class keystone::db (
     package {'keystone-backend-package':
       ensure => present,
       name   => $backend_package,
-      tag    => 'openstack',
+      tag    => ['openstack', 'keystone-package'],
     }
   }
 

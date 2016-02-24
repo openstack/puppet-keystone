@@ -78,6 +78,8 @@ class keystone::service(
   $insecure       = false,
   $cacert         = undef,
 ) {
+
+  include ::keystone::deps
   include ::keystone::params
 
   service { 'keystone':
@@ -112,13 +114,8 @@ class keystone::service(
       subscribe   => Service['keystone'],
       refreshonly => true,
       tries       => $retries,
-      try_sleep   => $delay
+      try_sleep   => $delay,
+      notify      => Anchor['keystone::service::end'],
     }
-
-    Exec['validate_keystone_connection'] -> Keystone_user<||>
-    Exec['validate_keystone_connection'] -> Keystone_role<||>
-    Exec['validate_keystone_connection'] -> Keystone_tenant<||>
-    Exec['validate_keystone_connection'] -> Keystone_service<||>
-    Exec['validate_keystone_connection'] -> Keystone_endpoint<||>
   }
 }

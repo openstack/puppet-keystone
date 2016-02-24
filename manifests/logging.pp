@@ -118,6 +118,8 @@ class keystone::logging(
   $log_date_format               = $::os_service_default,
 ) {
 
+  include ::keystone::deps
+
   # NOTE(spredzy): In order to keep backward compatibility we rely on the pick function
   # to use keystone::<myparam> first then keystone::logging::<myparam>.
   $use_syslog_real = pick($::keystone::use_syslog,$use_syslog)

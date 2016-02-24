@@ -28,6 +28,8 @@ class keystone::policy (
   $policy_path = '/etc/keystone/policy.json',
 ) {
 
+  include ::keystone::deps
+
   validate_hash($policies)
 
   Openstacklib::Policy::Base {

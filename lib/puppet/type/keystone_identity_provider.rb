@@ -93,6 +93,6 @@ Puppet::Type.newtype(:keystone_identity_provider) do
   end
 
   autorequire(:anchor) do
-    ['keystone_started']
+    ['keystone::service::end']
   end
 end

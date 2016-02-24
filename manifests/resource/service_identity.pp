@@ -125,6 +125,9 @@ define keystone::resource::service_identity(
   $project_domain        = undef,
   $default_domain        = undef,
 ) {
+
+  include ::keystone::deps
+
   if $service_name == undef {
     $service_name_real = $auth_name
   } else {

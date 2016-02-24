@@ -58,6 +58,8 @@ class keystone::db::mysql(
   $allowed_hosts = undef
 ) {
 
+  include ::keystone::deps
+
   validate_string($password)
 
   ::openstacklib::db::mysql { 'keystone':
@@ -70,5 +72,7 @@ class keystone::db::mysql(
     allowed_hosts => $allowed_hosts,
   }
 
-  ::Openstacklib::Db::Mysql['keystone'] ~> Exec<| title == 'keystone-manage db_sync' |>
+  Anchor['keystone::db::begin']
+  ~> Class['keystone::db::mysql']
+  ~> Anchor['keystone::db::end']
 }

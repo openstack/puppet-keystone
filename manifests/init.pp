@@ -625,6 +625,7 @@ class keystone(
   $public_workers                     = max($::processorcount, 2),
 ) inherits keystone::params {
 
+  include ::keystone::deps
   include ::keystone::logging
 
   if ! $catalog_driver {
@@ -650,12 +651,6 @@ class keystone(
       fail('The kombu_ssl_keyfile parameter requires rabbit_use_ssl to be set to true')
     }
   }
-
-  Keystone_config<||> ~> Service[$service_name]
-  Keystone_config<||> ~> Exec<| title == 'keystone-manage bootstrap'|>
-  Keystone_config<||> ~> Exec<| title == 'keystone-manage db_sync'|>
-  Keystone_config<||> ~> Exec<| title == 'keystone-manage pki_setup'|>
-  Keystone_config<||> ~> Exec<| title == 'keystone-manage fernet_setup'|>
 
   include ::keystone::db
   include ::keystone::params
@@ -692,6 +687,7 @@ class keystone(
     package { 'python-memcache':
       ensure => present,
       name   => $::keystone::params::python_memcache_package_name,
+      tag    => ['openstack', 'keystone-package'],
     }
   }
 
@@ -725,7 +721,7 @@ class keystone(
   }
 
   if !is_service_default($memcache_servers) or !is_service_default($cache_memcache_servers) {
-    Service<| title == 'memcached' |> -> Service['keystone']
+    Service<| title == 'memcached' |> -> Anchor['keystone::service::begin']
   }
 
   # TODO(aschultz): remove in N cycle
@@ -801,8 +797,9 @@ class keystone(
       path        => '/usr/bin',
       refreshonly => true,
       creates     => $signing_keyfile,
-      notify      => Service[$service_name],
-      subscribe   => Package['keystone'],
+      notify      => Anchor['keystone::service::begin'],
+      subscribe   => [Anchor['keystone::install::end'], Anchor['keystone::config::end']],
+      tag         => 'keystone-exec',
     }
   }
 
@@ -909,14 +906,15 @@ class keystone(
       validate     => false,
     }
     $service_name_real = $::apache::params::service_name
-    Service['keystone'] ->  Service[$service_name_real]
+    # leave this here because Ubuntu packages will start Keystone and we need it stopped
+    # before apache can run
+    Service['keystone'] -> Service[$service_name_real]
   } else {
     fail('Invalid service_name. Either keystone/openstack-keystone for running as a standalone service, or httpd for being run by a httpd server')
   }
 
   if $sync_db {
     include ::keystone::db::sync
-    Class['::keystone::db::sync'] ~> Service[$service_name]
   }
 
   # Fernet tokens support
@@ -927,8 +925,9 @@ class keystone(
       path        => '/usr/bin',
       refreshonly => true,
       creates     => "${fernet_key_repository}/0",
-      notify      => Service[$service_name],
-      subscribe   => [Package['keystone'], Keystone_config['fernet_tokens/key_repository']],
+      notify      => Anchor['keystone::service::begin'],
+      subscribe   => [Anchor['keystone::install::end'], Anchor['keystone::config::end']],
+      tag         => 'keystone-exec',
     }
   }
 
@@ -979,13 +978,16 @@ class keystone(
   }
 
   if $enable_bootstrap {
+    # this requires the database to be up and running and configured
+    # and is only run once, so we don't need to notify the service
     exec { 'keystone-manage bootstrap':
       command     => "keystone-manage bootstrap --bootstrap-password ${admin_token}",
       path        => '/usr/bin',
       refreshonly => true,
+      notify      => Anchor['keystone::service::begin'],
+      subscribe   => Anchor['keystone::dbsync::end'],
+      tag         => 'keystone-exec',
     }
-    Exec<| title == 'keystone-manage db_sync'|> ~> Exec<| title == 'keystone-manage bootstrap'|>
-    Exec['keystone-manage bootstrap'] ~> Service<| title == 'keystone' |>
   }
 
   if $using_domain_config {
@@ -1002,7 +1004,7 @@ class keystone(
         group   => 'keystone',
         mode    => '0750',
         notify  => Service[$service_name],
-        require => Package['keystone'],
+        require => Anchor['keystone::install::end'],
       }
     }
     # Here we want the creation to fail if the user has created those
@@ -1018,8 +1020,5 @@ class keystone(
       'identity/domain_config_dir',
       {'value' => $domain_config_directory}
     )
-  }
-  anchor { 'keystone_started':
-    require => Service[$service_name]
   }
 }

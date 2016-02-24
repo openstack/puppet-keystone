@@ -41,6 +41,11 @@
 #  The value 999 corresponds to the order for concat::fragment "${name}-file_footer".
 #  (Optional) Defaults to 331.
 #
+# [*package_ensure*]
+#   (optional) Desired ensure state of packages.
+#   accepts latest or specific versions.
+#   Defaults to present.
+#
 class keystone::federation::mellon (
   $methods,
   $idp_name,
@@ -49,9 +54,11 @@ class keystone::federation::mellon (
   $main_port      = true,
   $module_plugin  = 'keystone.auth.plugins.mapped.Mapped',
   $template_order = 331,
+  $package_ensure = present,
 ) {
 
   include ::apache
+  include ::keystone::deps
   include ::keystone::params
 
   # Note: if puppet-apache modify these values, this needs to be updated
@@ -84,7 +91,8 @@ class keystone::federation::mellon (
   }
 
   ensure_packages([$::keystone::params::mellon_package_name], {
-    ensure => present
+    ensure => $package_ensure,
+    tag    => 'keystone-support-package',
   })
 
   if $admin_port {
