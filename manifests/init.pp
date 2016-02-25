@@ -433,6 +433,15 @@
 #   (Optional) Number of maximum active Fernet keys. Integer > 0.
 #   Defaults to $::os_service_default
 #
+# [*enable_bootstrap*]
+#   (Optional) Enable keystone bootstrapping.
+#   Per upstream Keystone Mitaka commit 7b7fea7a3fe7677981fbf9bac5121bc15601163
+#   keystone no longer creates the default domain during the db_sync. This
+#   domain is used as the domain for any users created using the legacy v2.0
+#   API. This option to true will automatically bootstrap the default domain
+#   user by running 'keystone-manage bootstrap'.
+#   Defaults to true
+
 # [*default_domain*]
 #   (optional) When Keystone v3 support is enabled, v2 clients will need
 #   to have a domain assigned for certain operations.  For example,
@@ -593,6 +602,7 @@ class keystone(
   $fernet_key_repository              = '/etc/keystone/fernet-keys',
   $fernet_max_active_keys             = $::os_service_default,
   $default_domain                     = undef,
+  $enable_bootstrap                   = true,
   $memcache_dead_retry                = $::os_service_default,
   $memcache_socket_timeout            = $::os_service_default,
   $memcache_pool_maxsize              = $::os_service_default,
@@ -632,6 +642,7 @@ class keystone(
   }
 
   Keystone_config<||> ~> Service[$service_name]
+  Keystone_config<||> ~> Exec<| title == 'keystone-manage bootstrap'|>
   Keystone_config<||> ~> Exec<| title == 'keystone-manage db_sync'|>
   Keystone_config<||> ~> Exec<| title == 'keystone-manage pki_setup'|>
   Keystone_config<||> ~> Exec<| title == 'keystone-manage fernet_setup'|>
@@ -966,6 +977,16 @@ class keystone(
   }
   if $domain_config_directory != '/etc/keystone/domains' and !$using_domain_config {
     fail('You must activate domain configuration using "using_domain_config" parameter to keystone class.')
+  }
+
+  if $enable_bootstrap {
+    exec { 'keystone-manage bootstrap':
+      command     => "keystone-manage bootstrap --bootstrap-password ${admin_token}",
+      path        => '/usr/bin',
+      refreshonly => true,
+    }
+    Exec<| title == 'keystone-manage db_sync'|> ~> Exec<| title == 'keystone-manage bootstrap'|>
+    Exec['keystone-manage bootstrap'] ~> Service<| title == 'keystone' |>
   }
 
   if $using_domain_config {
