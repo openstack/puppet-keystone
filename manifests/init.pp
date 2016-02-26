@@ -60,12 +60,12 @@
 #
 # [*token_provider*]
 #   (optional) Format keystone uses for tokens.
-#   Defaults to 'keystone.token.providers.uuid.Provider'
+#   Defaults to 'uuid'
 #   Supports PKI, PKIZ, Fernet, and UUID.
 #
 # [*token_driver*]
 #   (optional) Driver to use for managing tokens.
-#   Defaults to 'keystone.token.persistence.backends.sql.Token'
+#   Defaults to 'sql'
 #
 # [*token_expiration*]
 #   (optional) Amount of time a token should remain valid (seconds).
@@ -92,7 +92,7 @@
 #   (optional) List of memcache servers as a comma separated string of
 #   'server:port,server:port' or an array of servers ['server:port',
 #   'server:port'].
-#   Used with token_driver 'keystone.token.backends.memcache.Token'.
+#   Used with token_driver 'memcache'.
 #   This configures the memcache/servers for keystone and is used as a default
 #   for $cache_memcache_servers if it is not specified.
 #   Defaults to $::os_service_default
@@ -525,8 +525,8 @@ class keystone(
   $catalog_type                       = 'sql',
   $catalog_driver                     = false,
   $catalog_template_file              = '/etc/keystone/default_catalog.templates',
-  $token_provider                     = 'keystone.token.providers.uuid.Provider',
-  $token_driver                       = 'keystone.token.persistence.backends.sql.Token',
+  $token_provider                     = 'uuid',
+  $token_driver                       = 'sql',
   $token_expiration                   = 3600,
   $revoke_driver                      = $::os_service_default,
   $revoke_by_id                       = true,
@@ -695,10 +695,6 @@ class keystone(
     'revoke/driver':    value => $revoke_driver;
   }
 
-  if ($policy_driver =~ /^keystone\.policy\.backends\..*Policy$/) {
-    warning('policy driver form \'keystone.policy.backends.*Policy\' is deprecated')
-  }
-
   keystone_config {
     'policy/driver': value => $policy_driver;
   }
@@ -762,10 +758,10 @@ class keystone(
     $catalog_driver_real = $catalog_driver
   }
   elsif ($catalog_type == 'template') {
-    $catalog_driver_real = 'keystone.catalog.backends.templated.Catalog'
+    $catalog_driver_real = 'templated'
   }
   elsif ($catalog_type == 'sql') {
-    $catalog_driver_real = 'keystone.catalog.backends.sql.Catalog'
+    $catalog_driver_real = 'sql'
   }
 
   keystone_config {

@@ -81,9 +81,7 @@ describe 'keystone::ldap_backend' do
           :tls_cacertdir => '/etc/ssl/certs/',
           :tls_cacertfile => '/etc/ssl/certs/ca-certificates.crt',
           :tls_req_cert => 'demand',
-          :identity_driver => 'keystone.identity.backends.ldap.Identity',
-          :credential_driver => 'keystone.credential.backends.ldap.Credential',
-          :assignment_driver => 'keystone.assignment.backends.ldap.Assignment',
+          :identity_driver => 'ldap',
           :use_pool => 'True',
           :pool_size => 20,
           :pool_retry_max => 2,
@@ -191,9 +189,7 @@ describe 'keystone::ldap_backend' do
         is_expected.to contain_keystone_domain_config('Default::ldap/auth_pool_connection_lifetime').with_value('200')
 
         # drivers
-        is_expected.to contain_keystone_config('identity/driver').with_value('keystone.identity.backends.ldap.Identity')
-        is_expected.to contain_keystone_config('credential/driver').with_value('keystone.credential.backends.ldap.Credential')
-        is_expected.to contain_keystone_config('assignment/driver').with_value('keystone.assignment.backends.ldap.Assignment')
+        is_expected.to contain_keystone_config('identity/driver').with_value('ldap')
       end
     end
 

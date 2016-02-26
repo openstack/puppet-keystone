@@ -12,7 +12,7 @@ class { '::keystone::roles::admin':
 # This was tested against a FreeIPA box, you will likely need to change the
 # attributes to match your configuration.
 class { '::keystone:ldap':
-  identity_driver     => 'keystone.identity.backends.ldap.Identity',
+  identity_driver     => 'ldap',
   url                 => 'ldap://ldap.example.com:389',
   user                => 'uid=bind,cn=users,cn=accounts,dc=example,dc=com',
   password            => 'SecretPass',
