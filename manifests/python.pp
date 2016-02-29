@@ -17,9 +17,5 @@ class keystone::python (
   $ensure = 'present'
 ) inherits keystone::params {
 
-  package { 'python-keystone' :
-    ensure => $ensure,
-    name   => $client_package_name,
-  }
-
+  warning('This class is deprecated, has no effect, and will be removed in Newton')
 }
