@@ -147,6 +147,16 @@ describe 'keystone' do
       end
     end
 
+    it 'should bootstrap $enable_bootstrap is true' do
+      if param_hash['enable_bootstrap']
+        is_expected.to contain_exec('keystone-manage bootstrap').with(
+          :command     => 'keystone-manage bootstrap --bootstrap-password service_token',
+          :user        => 'keystone',
+          :refreshonly => true
+        )
+      end
+    end
+
     it 'should contain correct config' do
       [
        'public_bind_host',
@@ -497,6 +507,17 @@ describe 'keystone' do
     end
 
     it { is_expected.not_to contain_exec('keystone-manage db_sync') }
+  end
+
+  describe 'when enable_bootstrap is set to false' do
+    let :params do
+      {
+        'admin_token' => 'service_token',
+        'enable_bootstrap'     => false,
+      }
+    end
+
+    it { is_expected.not_to contain_exec('keystone-manage bootstrap') }
   end
 
   describe 'configure memcache servers if set' do
