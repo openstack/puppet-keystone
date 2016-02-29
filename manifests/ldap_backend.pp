@@ -473,25 +473,6 @@ define keystone::ldap_backend(
     require => Package['keystone'],
   })
 
-  # check for some common driver name mistakes
-  if ($assignment_driver != undef) {
-      if ! ($assignment_driver =~ /^keystone.assignment.backends.*Assignment$/) {
-          fail('assigment driver should be of the form \'keystone.assignment.backends.*Assignment\'')
-      }
-  }
-
-  if ($identity_driver != undef) {
-      if ! ($identity_driver =~ /^keystone.identity.backends.*Identity$/) {
-          fail('identity driver should be of the form \'keystone.identity.backends.*Identity\'')
-      }
-  }
-
-  if ($credential_driver != undef) {
-      if ! ($credential_driver =~ /^keystone.credential.backends.*Credential$/) {
-          fail('credential driver should be of the form \'keystone.credential.backends.*Credential\'')
-      }
-  }
-
   if ($tls_cacertdir != undef) {
     ensure_resource('file', $tls_cacertdir, { ensure => directory })
   }

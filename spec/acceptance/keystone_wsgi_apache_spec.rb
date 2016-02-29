@@ -397,16 +397,12 @@ EOC
       keystone::ldap_backend { 'domain_1_ldap_backend':
         url  => 'ldap://foo',
         user => 'cn=foo,dc=example,dc=com',
-        identity_driver => 'keystone.identity.backends.ldap.Identity',
-        credential_driver => 'keystone.credential.backends.ldap.Credential',
-        assignment_driver => 'keystone.assignment.backends.ldap.Assignment'
+        identity_driver => 'ldap',
       }
       keystone::ldap_backend { 'domain_2_ldap_backend':
         url  => 'ldap://bar',
         user => 'cn=bar,dc=test,dc=com',
-        identity_driver => 'keystone.identity.backends.ldap.Identity',
-        credential_driver => 'keystone.credential.backends.ldap.Credential',
-        assignment_driver => 'keystone.assignment.backends.ldap.Assignment'
+        identity_driver => 'ldap',
       }
       EOM
         end
