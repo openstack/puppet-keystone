@@ -119,7 +119,7 @@ describe 'keystone::ldap' do
       is_expected.to contain_keystone_config('ldap/user_enabled_emulation_dn').with_value('cn=openstack-enabled,cn=groups,cn=accounts,dc=example,dc=com')
       is_expected.to contain_keystone_config('ldap/user_additional_attribute_mapping').with_value('description:name, gecos:name')
 
-      # projects/tenants
+      # projects
       is_expected.to contain_keystone_config('ldap/project_tree_dn').with_value('ou=projects,ou=openstack,dc=example,dc=com')
       is_expected.to contain_keystone_config('ldap/project_filter').with_value('')
       is_expected.to contain_keystone_config('ldap/project_objectclass').with_value('organizationalUnit')
@@ -188,55 +188,4 @@ describe 'keystone::ldap' do
     end
   end
 
-  describe 'with deprecated params' do
-    let :params do
-      {
-        :tenant_tree_dn => 'ou=projects,ou=openstack,dc=example,dc=com',
-        :tenant_filter => '',
-        :tenant_objectclass => 'organizationalUnit',
-        :tenant_id_attribute => 'ou',
-        :tenant_member_attribute => 'member',
-        :tenant_desc_attribute => 'description',
-        :tenant_name_attribute => 'ou',
-        :tenant_enabled_attribute => 'enabled',
-        :tenant_domain_id_attribute => 'businessCategory',
-        :tenant_attribute_ignore => '',
-        :tenant_allow_create => 'True',
-        :tenant_allow_update => 'True',
-        :tenant_allow_delete => 'True',
-        :tenant_enabled_emulation => 'False',
-        :tenant_enabled_emulation_dn => 'True',
-        :tenant_additional_attribute_mapping => 'cn=enabled,ou=openstack,dc=example,dc=com',
-      }
-    end
-    it 'should work with deprecated params' do
-      is_expected.to contain_keystone_config('ldap/project_tree_dn').with_value('ou=projects,ou=openstack,dc=example,dc=com')
-      is_expected.to contain_keystone_config('ldap/project_filter')
-      is_expected.to contain_keystone_config('ldap/project_objectclass').with_value('organizationalUnit')
-      is_expected.to contain_keystone_config('ldap/project_id_attribute').with_value('ou')
-      is_expected.to contain_keystone_config('ldap/project_member_attribute').with_value('member')
-      is_expected.to contain_keystone_config('ldap/project_desc_attribute').with_value('description')
-      is_expected.to contain_keystone_config('ldap/project_name_attribute').with_value('ou')
-      is_expected.to contain_keystone_config('ldap/project_enabled_attribute').with_value('enabled')
-      is_expected.to contain_keystone_config('ldap/project_domain_id_attribute').with_value('businessCategory')
-      is_expected.to contain_keystone_config('ldap/project_attribute_ignore')
-      is_expected.to contain_keystone_config('ldap/project_allow_create').with_value('True')
-      is_expected.to contain_keystone_config('ldap/project_allow_update').with_value('True')
-      is_expected.to contain_keystone_config('ldap/project_allow_delete').with_value('True')
-      is_expected.to contain_keystone_config('ldap/project_enabled_emulation').with_value('False')
-      is_expected.to contain_keystone_config('ldap/project_enabled_emulation_dn').with_value('True')
-      is_expected.to contain_keystone_config('ldap/project_additional_attribute_mapping').with_value('cn=enabled,ou=openstack,dc=example,dc=com')
-    end
-  end
-
-  describe 'with deprecated and new params both set' do
-    let :params do
-      {
-        :tenant_tree_dn  => 'ou=projects,ou=old-openstack,dc=example,dc=com',
-        :project_tree_dn => 'ou=projects,ou=new-openstack,dc=example,dc=com',
-      }
-    end
-
-    it_raises 'a Puppet::Error', /tenant_tree_dn and project_tree_dn are both set. results may be unexpected/
-  end
 end
