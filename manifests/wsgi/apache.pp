@@ -106,6 +106,10 @@
 #     The log format for the virtualhost.
 #     Optional. Defaults to false.
 #
+#   [*headers*]
+#     (optional) Headers for the vhost.
+#     Defaults to undef.
+#
 #   [*vhost_custom_fragment*]
 #     (optional) Passes a string of custom configuration
 #     directives to be placed at the end of the vhost configuration.
@@ -164,6 +168,7 @@ class keystone::wsgi::apache (
   $wsgi_chunked_request    = undef,
 
   $access_log_format     = false,
+  $headers               = undef,
   $vhost_custom_fragment = undef,
 ) {
 
@@ -286,6 +291,7 @@ class keystone::wsgi::apache (
     wsgi_script_aliases         => $wsgi_script_aliases_main_real,
     wsgi_application_group      => $wsgi_application_group,
     wsgi_pass_authorization     => $wsgi_pass_authorization,
+    headers                     => $headers,
     custom_fragment             => $vhost_custom_fragment,
     wsgi_chunked_request        => $wsgi_chunked_request,
     require                     => File['keystone_wsgi_main'],
@@ -316,6 +322,7 @@ class keystone::wsgi::apache (
       wsgi_script_aliases         => $wsgi_script_aliases_admin,
       wsgi_application_group      => $wsgi_application_group,
       wsgi_pass_authorization     => $wsgi_pass_authorization,
+      headers                     => $headers,
       custom_fragment             => $vhost_custom_fragment,
       wsgi_chunked_request        => $wsgi_chunked_request,
       require                     => File['keystone_wsgi_admin'],
