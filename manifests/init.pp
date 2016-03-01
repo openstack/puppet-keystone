@@ -663,18 +663,6 @@ class keystone(
     }
   }
 
-  file { ['/etc/keystone', '/var/log/keystone', '/var/lib/keystone']:
-    ensure  => directory,
-    require => Package['keystone'],
-    notify  => Service[$service_name],
-  }
-
-  file { '/etc/keystone/keystone.conf':
-    ensure  => present,
-    require => Package['keystone'],
-    notify  => Service[$service_name],
-  }
-
   keystone_config {
     'DEFAULT/admin_token':      value => $admin_token, secret => true;
     'DEFAULT/public_bind_host': value => $public_bind_host;
@@ -935,11 +923,11 @@ class keystone(
 
   if $fernet_key_repository {
     keystone_config {
-        'fernet_tokens/key_repository': value => $fernet_key_repository;
+      'fernet_tokens/key_repository': value => $fernet_key_repository;
     }
   } else {
     keystone_config {
-        'fernet_tokens/key_repository': ensure => absent;
+      'fernet_tokens/key_repository': ensure => absent;
     }
   }
 
@@ -968,7 +956,7 @@ class keystone(
       ensure     => present,
       enabled    => true,
       is_default => true,
-      require    => File['/etc/keystone/keystone.conf'],
+      require    => Service[$service_name],
       notify     => Exec['restart_keystone'],
     }
     anchor { 'default_domain_created':
@@ -1002,7 +990,8 @@ class keystone(
         owner  => 'keystone',
         group  => 'keystone',
         mode   => '0750',
-        } -> File['/etc/keystone/keystone.conf']
+        notify => Service[$service_name]
+      }
     }
     # Here we want the creation to fail if the user has created those
     # resources with different values. That means that the user

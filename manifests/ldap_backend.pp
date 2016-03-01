@@ -461,7 +461,6 @@ define keystone::ldap_backend(
       owner   => 'keystone',
       group   => 'keystone',
       mode    => '0750',
-      require => File['/etc/keystone/keystone.conf']
     })
   }
 

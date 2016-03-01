@@ -127,15 +127,6 @@ describe 'keystone' do
       'ensure' => param_hash['client_package_ensure'],
     ) }
 
-    it 'should contain the expected directories' do
-      ['/etc/keystone', '/var/log/keystone', '/var/lib/keystone'].each do |d|
-        is_expected.to contain_file(d).with(
-          'ensure'     => 'directory',
-          'require'    => 'Package[keystone]'
-        )
-      end
-    end
-
     it 'should synchronize the db if $sync_db is true' do
       if param_hash['sync_db']
         is_expected.to contain_exec('keystone-manage db_sync').with(
