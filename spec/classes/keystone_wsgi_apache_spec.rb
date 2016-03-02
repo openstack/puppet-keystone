@@ -72,6 +72,7 @@ describe 'keystone::wsgi::apache' do
         'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/admin" },
         'wsgi_application_group'      => '%{GLOBAL}',
         'wsgi_pass_authorization'     => 'On',
+        'headers'                     => nil,
         'require'                     => 'File[keystone_wsgi_admin]',
         'access_log_format'           => false,
       )}
@@ -96,6 +97,7 @@ describe 'keystone::wsgi::apache' do
         'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/main" },
         'wsgi_application_group'      => '%{GLOBAL}',
         'wsgi_pass_authorization'     => 'On',
+        'headers'                     => nil,
         'require'                     => 'File[keystone_wsgi_main]',
         'access_log_format'           => false,
       )}
@@ -306,6 +308,21 @@ describe 'keystone::wsgi::apache' do
       )}
       it { is_expected.to contain_apache__vhost('keystone_wsgi_main').with(
         'wsgi_chunked_request' => 'On'
+      )}
+    end
+
+    describe 'when overriding parameters using additional headers' do
+      let :params do
+        {
+          :headers => 'set X-Frame-Options "DENY"'
+        }
+      end
+
+      it { is_expected.to contain_apache__vhost('keystone_wsgi_admin').with(
+        'headers' => 'set X-Frame-Options "DENY"'
+      )}
+      it { is_expected.to contain_apache__vhost('keystone_wsgi_main').with(
+        'headers' => 'set X-Frame-Options "DENY"'
       )}
     end
   end
