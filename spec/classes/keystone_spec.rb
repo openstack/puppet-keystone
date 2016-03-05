@@ -869,10 +869,13 @@ describe 'keystone' do
           'enable_fernet_setup'    => true,
           'fernet_max_active_keys' => 5,
           'revoke_by_id'           => false,
+          'keystone_user'          => 'keystone',
+          'keystone_group'         => 'keystone'
         })
       end
 
       it { is_expected.to contain_exec('keystone-manage fernet_setup').with(
+        :command => 'keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone',
         :creates => '/etc/keystone/fernet-keys/0'
       ) }
       it { is_expected.to contain_keystone_config('fernet_tokens/max_active_keys').with_value(5)}

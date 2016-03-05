@@ -3,7 +3,8 @@
 #
 class keystone::params {
   $client_package_name = 'python-keystone'
-
+  $keystone_user       = 'keystone'
+  $keystone_group      = 'keystone'
   case $::osfamily {
     'Debian': {
       $package_name                 = 'keystone'
