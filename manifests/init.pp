@@ -487,6 +487,14 @@
 #   error if it's not the case.
 #   Defaults to '/etc/keystone/domains'
 #
+# [*keystone_user*]
+#   (optional) Specify the keystone system user to be used with keystone-manage.
+#   Defaults to 'keystone'
+#
+# [*keystone_group*]
+#   (optional) Specify the keystone system group to be used with keystone-manage.
+#   Defaults to 'keystone'
+#
 # == Dependencies
 #  None
 #
@@ -610,6 +618,8 @@ class keystone(
   $policy_driver                      = $::os_service_default,
   $using_domain_config                = false,
   $domain_config_directory            = '/etc/keystone/domains',
+  $keystone_user                      = $::keystone::params::keystone_user,
+  $keystone_group                     = $::keystone::params::keystone_group,
   # DEPRECATED PARAMETERS
   $admin_workers                      = max($::processorcount, 2),
   $public_workers                     = max($::processorcount, 2),
@@ -913,6 +923,7 @@ class keystone(
   if $enable_fernet_setup {
     validate_string($fernet_key_repository)
     exec { 'keystone-manage fernet_setup':
+      command     => "keystone-manage fernet_setup --keystone-user ${keystone_user} --keystone-group ${keystone_group}",
       path        => '/usr/bin',
       refreshonly => true,
       creates     => "${fernet_key_repository}/0",
