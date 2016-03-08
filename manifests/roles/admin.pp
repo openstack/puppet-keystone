@@ -126,6 +126,7 @@ class keystone::roles::admin(
       project_domain => $admin_project_domain,
       roles          => $admin_roles,
     }
+    Keystone_user_role["${admin}@${admin_tenant}"] -> File<| tag == 'openrc' |>
   }
 
 }
