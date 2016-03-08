@@ -609,7 +609,7 @@ describe 'keystone' do
 
   describe 'with RabbitMQ communication SSLed' do
     let :params do
-      default_params.merge!({
+      default_params.merge({
         :rabbit_use_ssl     => true,
         :kombu_ssl_ca_certs => '/path/to/ssl/ca/certs',
         :kombu_ssl_certfile => '/path/to/ssl/cert/file',
@@ -629,11 +629,11 @@ describe 'keystone' do
 
   describe 'with RabbitMQ communication not SSLed' do
     let :params do
-      default_params.merge!({
+      default_params.merge({
         :rabbit_use_ssl     => false,
-        :kombu_ssl_ca_certs => 'undef',
-        :kombu_ssl_certfile => 'undef',
-        :kombu_ssl_keyfile  => 'undef',
+        :kombu_ssl_ca_certs => false,
+        :kombu_ssl_certfile => false,
+        :kombu_ssl_keyfile  => false,
         :kombu_ssl_version  => 'TLSv1'
       })
     end
