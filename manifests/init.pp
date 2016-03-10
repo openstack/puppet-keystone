@@ -997,11 +997,12 @@ class keystone(
     # directory.  For the permission it's their choice.
     if (!defined(File[$domain_config_directory])) {
       file { $domain_config_directory:
-        ensure => directory,
-        owner  => 'keystone',
-        group  => 'keystone',
-        mode   => '0750',
-        notify => Service[$service_name]
+        ensure  => directory,
+        owner   => 'keystone',
+        group   => 'keystone',
+        mode    => '0750',
+        notify  => Service[$service_name],
+        require => Package['keystone'],
       }
     }
     # Here we want the creation to fail if the user has created those
