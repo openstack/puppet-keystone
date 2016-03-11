@@ -1,0 +1,3 @@
+---
+fixes:
+  - Sanitize providers for IPv6 by making sure the IP has brackets when needed.

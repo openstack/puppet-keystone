@@ -1,0 +1,6 @@
+---
+features:
+  - Resource keystone_identity_provider for Keystone, used for Identity
+    Federation. The remote-id parameter is missing from openstack client
+    Kilo release on most distributions so this provider will work starting
+    with Liberty.

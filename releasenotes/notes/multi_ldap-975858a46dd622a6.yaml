@@ -1,0 +1,5 @@
+---
+features:
+  - Support for multiple ldap backend.
+    It enables users to inject multiple ldap backend configurations into
+    keystone.

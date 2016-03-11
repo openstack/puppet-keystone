@@ -1,0 +1,6 @@
+---
+features:
+  - Run keystone-manage bootstrap
+    Per upstream Keystone Mitaka commit 7b7fea7a3fe7677981fbf9bac5121bc15601163
+    keystone no longer creates the default domain during the db_sync.
+    This feature enables by default the usage of keystone-manage bootstrap.

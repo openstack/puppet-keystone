@@ -1,0 +1,5 @@
+---
+features:
+  - Add keystone domain specific configuration.
+    Adds a provider able to configure multiple domains and two parameters in
+    keystone class to setup a working multi-domains configuration.

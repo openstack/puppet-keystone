@@ -1,0 +1,6 @@
+---
+prelude: >
+features:
+  - Add keystone::disable_admin_token_auth class
+    Allow to disable admin_token (highly recommended by Keystone team) after an
+    initial bootstrap.
