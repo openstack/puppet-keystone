@@ -92,7 +92,7 @@ describe 'keystone::db' do
         is_expected.to contain_package('keystone-backend-package').with(
           :ensure => 'present',
           :name   => 'python-pymysql',
-          :tag    => 'openstack'
+          :tag    => ['openstack', 'keystone-package']
         )
       end
     end

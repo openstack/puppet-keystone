@@ -28,6 +28,8 @@ class keystone::config (
   $keystone_paste_ini = {},
 ) {
 
+  include ::keystone::deps
+
   validate_hash($keystone_config)
   validate_hash($keystone_paste_ini)
 

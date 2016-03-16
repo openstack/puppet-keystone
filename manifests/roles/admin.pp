@@ -87,6 +87,8 @@ class keystone::roles::admin(
   $service_project_domain = undef,
 ) {
 
+  include ::keystone::deps
+
   $domains = unique(delete_undef_values([ $admin_user_domain, $admin_project_domain, $service_project_domain]))
   keystone_domain { $domains:
     ensure  => present,
@@ -99,12 +101,14 @@ class keystone::roles::admin(
     description => $service_tenant_desc,
     domain      => $service_project_domain,
   }
+
   keystone_tenant { $admin_tenant:
     ensure      => present,
     enabled     => true,
     description => $admin_tenant_desc,
     domain      => $admin_project_domain,
   }
+
   keystone_role { 'admin':
     ensure => present,
   }

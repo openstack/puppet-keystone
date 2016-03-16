@@ -133,7 +133,10 @@ describe 'keystone' do
           :command     => 'keystone-manage  db_sync',
           :user        => 'keystone',
           :refreshonly => true,
-          :subscribe   => ['Package[keystone]', 'Keystone_config[database/connection]'],
+          :subscribe   => ['Anchor[keystone::install::end]',
+                           'Anchor[keystone::config::end]',
+                           'Anchor[keystone::dbsync::begin]'],
+          :notify      => 'Anchor[keystone::dbsync::end]',
         )
       end
     end
@@ -262,7 +265,7 @@ describe 'keystone' do
         'tag'        => 'keystone-service',
       ) }
 
-      it { is_expected.to contain_anchor('keystone_started') }
+      it { is_expected.to contain_anchor('keystone::service::end') }
 
     end
   end
@@ -273,7 +276,7 @@ describe 'keystone' do
     end
 
     let :pre_condition do
-      'include ::apache'
+      'include ::keystone::wsgi::apache'
     end
 
     it_configures 'core keystone examples', httpd_params
@@ -290,7 +293,7 @@ describe 'keystone' do
       'enable'          => false,
       'validate'        => false
     )}
-    it { is_expected.to contain_service('keystone').with_before(/Service\[#{platform_parameters[:httpd_service_name]}\]/) }
+    it { is_expected.to contain_service('httpd').with_before(/Anchor\[keystone::service::end\]/) }
     it { is_expected.to contain_exec('restart_keystone').with(
       'command' => "service #{platform_parameters[:httpd_service_name]} restart",
     ) }
@@ -315,7 +318,7 @@ describe 'keystone' do
       'hasstatus'  => true,
       'hasrestart' => true
     ) }
-    it { is_expected.to contain_anchor('keystone_started') }
+    it { is_expected.to contain_anchor('keystone::service::end') }
   end
 
   describe 'when configuring signing token provider' do

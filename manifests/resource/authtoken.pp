@@ -160,6 +160,8 @@ define keystone::resource::authtoken(
   $insecure            = false,
 ) {
 
+  include ::keystone::deps
+
   if !$project_name and !$project_id and !$domain_name and !$domain_id {
     fail('Must specify either a project (project_name or project_id, for a project scoped token) or a domain (domain_name or domain_id, for a domain scoped token)')
   }

@@ -17,6 +17,8 @@ class keystone::client (
   $ensure = 'present'
 ) inherits keystone::params {
 
+  include ::keystone::deps
+
   package { 'python-keystoneclient':
     ensure => $ensure,
     name   => $client_package_name,

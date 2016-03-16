@@ -42,7 +42,7 @@ class keystone::db::postgresql(
   $privileges = 'ALL',
 ) {
 
-  Class['keystone::db::postgresql'] -> Service<| title == 'keystone' |>
+  include ::keystone::deps
 
   ::openstacklib::db::postgresql { 'keystone':
     password_hash => postgresql_password($user, $password),
@@ -52,6 +52,7 @@ class keystone::db::postgresql(
     privileges    => $privileges,
   }
 
-  ::Openstacklib::Db::Postgresql['keystone'] ~> Exec<| title == 'keystone-manage db_sync' |>
-
+  Anchor['keystone::db::begin']
+  ~> Class['keystone::db::postgresql']
+  ~> Anchor['keystone::db::end']
 }

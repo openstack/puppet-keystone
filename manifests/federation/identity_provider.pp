@@ -63,6 +63,11 @@
 #  (Optional) User with access to keystone files. (string value)
 #  Defaults to 'keystone'.
 #
+# [*package_ensure*]
+#   (optional) Desired ensure state of packages.
+#   accepts latest or specific versions.
+#   Defaults to present.
+#
 # == Dependencies
 # == Examples
 # == Authors
@@ -89,7 +94,10 @@ class keystone::federation::identity_provider(
   $idp_contact_email             = undef,
   $idp_contact_telephone         = undef,
   $idp_contact_type              = undef,
+  $package_ensure                = present,
 ) {
+
+  include ::keystone::deps
   include ::keystone::params
 
   if $::keystone::service_name != 'httpd' {
@@ -97,7 +105,8 @@ class keystone::federation::identity_provider(
   }
 
   ensure_packages(['xmlsec1','python-pysaml2'], {
-    ensure => present
+    ensure => $package_ensure,
+    tag    => 'keystone-support-package',
   })
 
   keystone_config {
@@ -125,12 +134,13 @@ class keystone::federation::identity_provider(
   }
 
   exec {'saml_idp_metadata':
-      path      => '/usr/bin',
-      user      => "${user}",
-      command   => "keystone-manage saml_idp_metadata > ${idp_metadata_path}",
-      creates   => $idp_metadata_path,
-      notify    => Service[$::keystone::params::service_name],
-      subscribe => Package['keystone'],
+    path      => '/usr/bin',
+    user      => "${user}",
+    command   => "keystone-manage saml_idp_metadata > ${idp_metadata_path}",
+    creates   => $idp_metadata_path,
+    subscribe => Anchor['keystone::config::end'],
+    notify    => Anchor['keystone::service::end'],
+    tag       => 'keystone-exec',
   }
 
   file { $idp_metadata_path:
@@ -138,7 +148,5 @@ class keystone::federation::identity_provider(
     mode   => '0600',
     owner  => "${user}",
   }
-
-  Keystone_config<||> -> Exec<| title == 'saml_idp_metadata'|>
 
 }

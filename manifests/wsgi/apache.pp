@@ -172,6 +172,7 @@ class keystone::wsgi::apache (
   $vhost_custom_fragment = undef,
 ) {
 
+  include ::keystone::deps
   include ::keystone::params
   include ::apache
   include ::apache::mod::wsgi
@@ -179,15 +180,25 @@ class keystone::wsgi::apache (
     include ::apache::mod::ssl
   }
 
-  Package['keystone'] -> Package['httpd']
-  Package['keystone'] ~> Service['httpd']
-  Keystone_config <| |> ~> Service['httpd']
-  Service['httpd'] -> Keystone_endpoint <| |>
-  Service['httpd'] -> Keystone_role <| |>
-  Service['httpd'] -> Keystone_service <| |>
-  Service['httpd'] -> Keystone_tenant <| |>
-  Service['httpd'] -> Keystone_user <| |>
-  Service['httpd'] -> Keystone_user_role <| |>
+  # The httpd package is untagged, but needs to have ordering enforced,
+  # so handle it here rather than in the deps class.
+  Anchor['keystone::install::begin']
+  -> Package['httpd']
+  -> Anchor['keystone::install::end']
+
+  # Configure apache during the config phase
+  Anchor['keystone::config::begin']
+  -> Apache::Vhost<||>
+  ~> Anchor['keystone::config::end']
+
+  # Start the service during the service phase
+  Anchor['keystone::service::begin']
+  -> Service['httpd']
+  -> Anchor['keystone::service::end']
+
+  # Notify the service when config changes
+  Anchor['keystone::config::end']
+  ~> Service['httpd']
 
   ## Sanitize parameters
 
@@ -204,7 +215,7 @@ class keystone::wsgi::apache (
     ensure  => directory,
     owner   => 'keystone',
     group   => 'keystone',
-    require => Package['httpd'],
+    require => Anchor['keystone::install::end'],
   }
 
   $wsgi_files = {
@@ -221,7 +232,7 @@ class keystone::wsgi::apache (
     'owner'   => 'keystone',
     'group'   => 'keystone',
     'mode'    => '0644',
-    'require' => [File[$::keystone::params::keystone_wsgi_script_path], Package['keystone']],
+    'require' => File[$::keystone::params::keystone_wsgi_script_path],
   }
 
   $wsgi_script_source_real = $wsgi_script_source ? {

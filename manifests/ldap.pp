@@ -356,6 +356,11 @@
 #   End user auth connection lifetime in seconds. (integer value)
 #   Defaults to '60'
 #
+# [*package_ensure*]
+#   (optional) Desired ensure state of packages.
+#   accepts latest or specific versions.
+#   Defaults to present.
+#
 # === DEPRECATED group/name
 #
 # == Dependencies
@@ -450,12 +455,14 @@ class keystone::ldap(
   $use_auth_pool                       = false,
   $auth_pool_size                      = 100,
   $auth_pool_connection_lifetime       = 60,
+  $package_ensure                      = present,
 ) {
 
+  include ::keystone::deps
+
   $ldap_packages = ['python-ldap', 'python-ldappool']
-  package { $ldap_packages:
-      ensure => present,
-  }
+  ensure_resource('package', $ldap_packages, { ensure => $package_ensure,
+    tag => 'keystone-package' })
 
   if ($tls_cacertdir != undef) {
     file { $tls_cacertdir:
