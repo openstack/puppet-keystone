@@ -1,0 +1,5 @@
+---
+features:
+  - moves all dependencies to an external class.
+    This allows keystone to be installed and managed
+    via external mechanisms like venvs or docker.
