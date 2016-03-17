@@ -34,8 +34,8 @@ describe 'keystone::wsgi::apache' do
 
       it { is_expected.to contain_file('keystone_wsgi_admin').with(
         'ensure'  => 'file',
-        'path'    => "#{platform_parameters[:wsgi_script_path]}/admin",
-        'source'  => platform_parameters[:wsgi_script_source],
+        'path'    => "#{platform_parameters[:wsgi_script_path]}/keystone-admin",
+        'source'  => platform_parameters[:wsgi_admin_script_source],
         'owner'   => 'keystone',
         'group'   => 'keystone',
         'mode'    => '0644',
@@ -44,8 +44,8 @@ describe 'keystone::wsgi::apache' do
 
       it { is_expected.to contain_file('keystone_wsgi_main').with(
         'ensure'  => 'file',
-        'path'    => "#{platform_parameters[:wsgi_script_path]}/main",
-        'source'  => platform_parameters[:wsgi_script_source],
+        'path'    => "#{platform_parameters[:wsgi_script_path]}/keystone-public",
+        'source'  => platform_parameters[:wsgi_public_script_source],
         'owner'   => 'keystone',
         'group'   => 'keystone',
         'mode'    => '0644',
@@ -69,7 +69,7 @@ describe 'keystone::wsgi::apache' do
           'display-name' => 'keystone-admin',
         },
         'wsgi_process_group'          => 'keystone_admin',
-        'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/admin" },
+        'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/keystone-admin" },
         'wsgi_application_group'      => '%{GLOBAL}',
         'wsgi_pass_authorization'     => 'On',
         'headers'                     => nil,
@@ -135,7 +135,7 @@ describe 'keystone::wsgi::apache' do
           'display-name' => 'keystone-admin',
         },
         'wsgi_process_group'          => 'keystone_admin',
-        'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/admin" },
+        'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/keystone-admin" },
         'wsgi_application_group'      => '%{GLOBAL}',
         'wsgi_pass_authorization'     => 'On',
         'require'                     => 'File[keystone_wsgi_admin]',
@@ -229,8 +229,8 @@ describe 'keystone::wsgi::apache' do
         },
         'wsgi_process_group'          => 'keystone_main',
         'wsgi_script_aliases'         => {
-        '/main/endpoint'  => "#{platform_parameters[:wsgi_script_path]}/main",
-        '/admin/endpoint' => "#{platform_parameters[:wsgi_script_path]}/admin"
+        '/main/endpoint'  => "#{platform_parameters[:wsgi_script_path]}/keystone-public",
+        '/admin/endpoint' => "#{platform_parameters[:wsgi_script_path]}/keystone-admin"
         },
         'wsgi_application_group'      => '%{GLOBAL}',
         'wsgi_pass_authorization'     => 'On',
@@ -277,7 +277,7 @@ describe 'keystone::wsgi::apache' do
 
       it { is_expected.to contain_file('keystone_wsgi_admin').with(
         'ensure'  => 'link',
-        'path'    => "#{platform_parameters[:wsgi_script_path]}/admin",
+        'path'    => "#{platform_parameters[:wsgi_script_path]}/keystone-admin",
         'target'  => '/opt/keystone/httpd/keystone.py',
         'owner'   => 'keystone',
         'group'   => 'keystone',
@@ -287,7 +287,7 @@ describe 'keystone::wsgi::apache' do
 
       it { is_expected.to contain_file('keystone_wsgi_main').with(
         'ensure'  => 'link',
-        'path'    => "#{platform_parameters[:wsgi_script_path]}/main",
+        'path'    => "#{platform_parameters[:wsgi_script_path]}/keystone-public",
         'target'  => '/opt/keystone/httpd/keystone.py',
         'owner'   => 'keystone',
         'group'   => 'keystone',
@@ -327,44 +327,31 @@ describe 'keystone::wsgi::apache' do
     end
   end
 
-  context 'on RedHat platforms' do
-    let :facts do
-      @default_facts.merge(global_facts.merge({
-        :osfamily               => 'RedHat',
-        :operatingsystemrelease => '6.0'
-      }))
+  on_supported_os({
+  }).each do |os,facts|
+    let (:facts) do
+      facts.merge!(OSDefaults.get_facts({}))
     end
 
-    let :platform_parameters do
-      {
-        :httpd_service_name => 'httpd',
-        :httpd_ports_file   => '/etc/httpd/conf/ports.conf',
-        :wsgi_script_path   => '/var/www/cgi-bin/keystone',
-        :wsgi_script_source => '/usr/share/keystone/keystone.wsgi'
-      }
+    let(:platform_params) do
+      case facts[:osfamily]
+      when 'Debian'
+        {
+          :httpd_service_name => 'apache2',
+          :httpd_ports_file   => '/etc/apache2/ports.conf',
+          :wsgi_script_path   => '/usr/lib/cgi-bin/keystone',
+          :wsgi_admin_script_source => '/usr/bin/keystone-wsgi-admin',
+          :wsgi_public_script_source => '/usr/bin/keystone-wsgi-public'
+        }
+      when 'RedHat'
+        {
+          :httpd_service_name => 'httpd',
+          :httpd_ports_file   => '/etc/httpd/conf/ports.conf',
+          :wsgi_script_path   => '/var/www/cgi-bin/keystone',
+          :wsgi_admin_script_source => '/usr/bin/keystone-wsgi-admin',
+          :wsgi_public_script_source => '/usr/bin/keystone-wsgi-public'
+        }
+      end
     end
-
-    it_configures 'apache serving keystone with mod_wsgi'
-  end
-
-  context 'on Debian platforms' do
-    let :facts do
-      @default_facts.merge(global_facts.merge({
-        :osfamily               => 'Debian',
-        :operatingsystem        => 'Debian',
-        :operatingsystemrelease => '7.0'
-      }))
-    end
-
-    let :platform_parameters do
-      {
-        :httpd_service_name => 'apache2',
-        :httpd_ports_file   => '/etc/apache2/ports.conf',
-        :wsgi_script_path   => '/usr/lib/cgi-bin/keystone',
-        :wsgi_script_source => '/usr/share/keystone/wsgi.py'
-      }
-    end
-
-    it_configures 'apache serving keystone with mod_wsgi'
   end
 end
