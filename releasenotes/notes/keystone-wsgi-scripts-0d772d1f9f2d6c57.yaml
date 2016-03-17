@@ -1,0 +1,11 @@
+---
+deprecations:
+  - The single wsgi script for both the keystone admin and
+    public endpoints have been deprecated upstream. As such,
+    our support of a single wsgi script for keystone is also
+    deprecated.
+other:
+  - Add support for the newer admin and public wsgi scripts
+    for keystone. Also added is the ability to provide a custom
+    script for each of these. By default, the module will leverage
+    scripts provided by the keystone package.
