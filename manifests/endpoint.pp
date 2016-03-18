@@ -110,4 +110,5 @@ class keystone::endpoint (
     project_domain      => $project_domain,
     default_domain      => $default_domain,
   }
+  Keystone::Resource::Service_identity['keystone'] ->  File<| tag == 'openrc' |>
 }
