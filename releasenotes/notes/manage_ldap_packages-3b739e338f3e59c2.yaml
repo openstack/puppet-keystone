@@ -1,0 +1,7 @@
+---
+features:
+  - Add the ability to manage LDAP support packages
+    or not. In some instances you may not want this
+    module installing the LDAP support packages even
+    if you are using LDAP with keystone. The default
+    behavior will be no change from before.

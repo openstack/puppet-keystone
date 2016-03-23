@@ -184,4 +184,12 @@ describe 'keystone::ldap' do
     end
   end
 
+  describe 'with packages unmanaged' do
+    let :params do
+      { :manage_packages => false }
+    end
+      it { is_expected.to_not contain_package('python-ldap') }
+      it { is_expected.to_not contain_package('python-ldappool') }
+  end
+
 end
