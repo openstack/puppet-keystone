@@ -361,6 +361,11 @@
 #   accepts latest or specific versions.
 #   Defaults to present.
 #
+# [*manage_packages*]
+#   (optional) Whether or not this module should manage
+#   LDAP support packages.
+#   Defaults to true.
+#
 # === DEPRECATED group/name
 #
 # == Dependencies
@@ -456,13 +461,16 @@ class keystone::ldap(
   $auth_pool_size                      = 100,
   $auth_pool_connection_lifetime       = 60,
   $package_ensure                      = present,
+  $manage_packages                     = true,
 ) {
 
   include ::keystone::deps
-
-  $ldap_packages = ['python-ldap', 'python-ldappool']
-  ensure_resource('package', $ldap_packages, { ensure => $package_ensure,
-    tag => 'keystone-package' })
+  
+  if $manage_packages {
+    $ldap_packages = ['python-ldap', 'python-ldappool']
+    ensure_resource('package', $ldap_packages, { ensure => $package_ensure,
+      tag => 'keystone-package' })
+  }
 
   if ($tls_cacertdir != undef) {
     file { $tls_cacertdir:
