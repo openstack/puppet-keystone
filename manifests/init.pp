@@ -794,6 +794,7 @@ class keystone(
     }
 
     exec { 'keystone-manage pki_setup':
+      command     => "keystone-manage pki_setup --keystone-user ${keystone_user} --keystone-group ${keystone_group}",
       path        => '/usr/bin',
       refreshonly => true,
       creates     => $signing_keyfile,

@@ -356,6 +356,7 @@ describe 'keystone' do
       end
 
       it { is_expected.to contain_exec('keystone-manage pki_setup').with(
+        :command => 'keystone-manage pki_setup --keystone-user keystone --keystone-group keystone',
         :creates => '/etc/keystone/ssl/private/signing_key.pem'
       ) }
       it { is_expected.to contain_file('/var/cache/keystone').with_ensure('directory') }
