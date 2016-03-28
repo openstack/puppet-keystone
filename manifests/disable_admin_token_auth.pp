@@ -11,6 +11,9 @@
 # valid keystone v3 credentials set as environment variables.
 #
 class keystone::disable_admin_token_auth {
+
+  Keystone::Resource::Service_identity<||> -> Class['::keystone::disable_admin_token_auth']
+
   Ini_subsetting {
     require => Class['keystone::roles::admin'],
   }
