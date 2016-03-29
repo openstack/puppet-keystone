@@ -312,7 +312,7 @@
 #
 # [*identity_driver*]
 #   Identity backend driver. (string value)
-#   Defaults to 'undef'
+#   Defaults to 'ldap'
 #
 # [*credential_driver*]
 #   Credential backend driver. (string value)
@@ -442,7 +442,7 @@ define keystone::ldap_backend(
   $tls_cacertdir                       = undef,
   $tls_cacertfile                      = undef,
   $tls_req_cert                        = undef,
-  $identity_driver                     = undef,
+  $identity_driver                     = 'ldap',
   $assignment_driver                   = undef,
   $credential_driver                   = undef,
   $use_pool                            = false,
@@ -570,9 +570,8 @@ define keystone::ldap_backend(
     "${domain}::ldap/use_auth_pool":                        value => $use_auth_pool;
     "${domain}::ldap/auth_pool_size":                       value => $auth_pool_size;
     "${domain}::ldap/auth_pool_connection_lifetime":        value => $auth_pool_connection_lifetime;
+    "${domain}::identity/driver":                           value => $identity_driver;
+    "${domain}::credential/driver":                         value => $credential_driver;
+    "${domain}::assignment/driver":                         value => $assignment_driver;
   }
-
-  ensure_resource('keystone_config', 'identity/driver',   {value => $identity_driver})
-  ensure_resource('keystone_config', 'credential/driver', {value => $credential_driver})
-  ensure_resource('keystone_config', 'assignment/driver', {value => $assignment_driver})
 }

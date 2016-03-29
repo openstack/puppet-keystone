@@ -189,7 +189,7 @@ describe 'keystone::ldap_backend' do
         is_expected.to contain_keystone_domain_config('Default::ldap/auth_pool_connection_lifetime').with_value('200')
 
         # drivers
-        is_expected.to contain_keystone_config('identity/driver').with_value('ldap')
+        is_expected.to contain_keystone_domain_config('Default::identity/driver').with_value('ldap')
       end
     end
   end
