@@ -1,0 +1,6 @@
+---
+fixes:
+  - Fixes `bug 1563261
+    <https://bugs.launchpad.net/puppet-keystone/+bug/1563261>`__ so
+    when using LDAP backend, identity_driver, credential_driver and assignment_driver
+    parameters will be configured in the Domain section, with other LDAP parameters.
