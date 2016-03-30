@@ -38,6 +38,8 @@ def setup_provider_tests
       @keystone_file  = nil
       Puppet::Provider::Keystone.class_variable_set('@@default_domain_id', nil)
       @domain_hash = nil
+      @users_name  = nil
+      @projects_name = nil
     end
   end
 end

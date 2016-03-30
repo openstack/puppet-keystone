@@ -52,9 +52,6 @@ Puppet::Type.type(:keystone_user).provide(
   end
 
   def destroy
-    if self.class.do_not_manage
-      fail("Not managing Keystone_user[#{@resource[:name]}] due to earlier Keystone API failures.")
-    end
     self.class.request('user', 'delete', id)
     @property_hash.clear
   end
@@ -79,25 +76,31 @@ Puppet::Type.type(:keystone_user).provide(
   mk_resource_methods
 
   def exists?
-    @property_hash[:ensure] == :present
+    return true if @property_hash[:ensure] == :present
+    domain_name = self.class.domain_id_from_name(resource[:domain])
+    self.class.request_without_retry do
+      @property_hash =
+        self.class.fetch_user(resource[:name], domain_name)
+      @property_hash ||= {}
+    end
+    # This can happen in bad LDAP mapping
+    @property_hash[:enabled] = 'true' if @property_hash[:enable].nil?
+
+    return false if @property_hash.nil? || @property_hash[:id].nil?
+    true
   end
 
   # Types properties
   def enabled
-    bool_to_sym(@property_hash[:enabled])
+    is_enabled = @property_hash[:enabled].downcase.chomp == 'true' ? true : false
+    bool_to_sym(is_enabled)
   end
 
   def enabled=(value)
-    if self.class.do_not_manage
-      fail("Not managing Keystone_user[#{@resource[:name]}] due to earlier Keystone API failures.")
-    end
     @property_flush[:enabled] = value
   end
 
   def email=(value)
-    if self.class.do_not_manage
-      fail("Not managing Keystone_user[#{@resource[:name]}] due to earlier Keystone API failures.")
-    end
     @property_flush[:email] = value
   end
 
@@ -167,38 +170,6 @@ Puppet::Type.type(:keystone_user).provide(
 
   def domain_id
     @property_hash[:domain_id]
-  end
-
-  def self.instances
-    if default_domain_changed
-      warning(default_domain_deprecation_message)
-    end
-    self.do_not_manage = true
-    users = request('user', 'list', ['--long'])
-    list = users.collect do |user|
-      domain_name = domain_name_from_id(user[:domain])
-      new(
-        :name        => resource_to_name(domain_name, user[:name]),
-        :ensure      => :present,
-        :enabled     => user[:enabled].downcase.chomp == 'true' ? true : false,
-        :password    => user[:password],
-        :email       => user[:email],
-        :description => user[:description],
-        :domain      => domain_name,
-        :domain_id   => user[:domain],
-        :id          => user[:id]
-      )
-    end
-    self.do_not_manage = false
-    list
-  end
-
-  def self.prefetch(resources)
-    prefetch_composite(resources) do |sorted_namevars|
-      domain = sorted_namevars[0]
-      name   = sorted_namevars[1]
-      resource_to_name(domain, name)
-    end
   end
 
 end
