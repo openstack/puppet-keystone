@@ -103,6 +103,39 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
     resource_to_name(*name_to_resource(name), false)
   end
 
+#  def self.roles_assignement_for_userid(user_id)
+#    unless @role_assignement_table
+#      @role_assignement_table = request('role assignment', 'list')
+#    end
+#    roles_id = []
+#    @role_assignement_table.each do |row|
+#      roles_id << row[:role] if row[:user] == user_id
+#    end
+#    roles_id
+#  end
+
+  def self.user_id_from_name_and_domain_name(name, domain_name)
+    @users_name ||= {}
+    id_str = "#{name}_#{domain_name}"
+    unless @users_name.keys.include?(id_str)
+      user = fetch_user(name, domain_name)
+      err("Could not find user with name [#{name}] and domain [#{domain_name}]") unless user
+      @users_name[id_str] = user[:id]
+    end
+    @users_name[id_str]
+  end
+
+  def self.project_id_from_name_and_domain_name(name, domain_name)
+    @projects_name ||= {}
+    id_str = "#{name}_#{domain_name}"
+    unless @projects_name.keys.include?(id_str)
+      project = fetch_project(name, domain_name)
+      err("Could not find project with name [#{name}] and domain [#{domain_name}]") unless project
+      @projects_name[id_str] = project[:id]
+    end
+    @projects_name[id_str]
+  end
+
   def self.domain_name_from_id(id)
     unless @domain_hash
       list = request('domain', 'list')

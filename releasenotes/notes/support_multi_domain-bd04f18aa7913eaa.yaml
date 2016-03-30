@@ -1,0 +1,21 @@
+---
+prelude: >
+    Support for multi-domain has been added.  You can configure LDAP
+    identity drivers along with the sql, and have multi-domain
+    working.
+features:
+  - Support for multi-domain;
+  - Remove prefetch in keystone_user/keystone_user_role
+upgrade:
+  - The prefetch and associated instances class function removal
+    could impact users that somehow use the command `puppet resource
+    keystone_user` or `puppet resource keystone_user_role` in
+    production.  Those commands won't work anymore.  Directly use
+    the associated `openstack` commands to get the same effect.
+fixes:
+  - Fixes `bug 1554555
+    <https://bugs.launchpad.net/puppet-keystone/+bug/1554555>`__ so
+    openstack cli provider needs to pass domain in v3 calls
+  - Fixes `bug 1485508
+    <https://bugs.launchpad.net/puppet-keystone/+bug/1485508>`__ so
+    when domain_specific_drivers_enabled=True keystone_user provider fails.

@@ -45,20 +45,14 @@ Puppet::Type.type(:keystone_user_role).provide(
   end
 
   def exists?
-    if self.class.user_role_hash.nil? || self.class.user_role_hash.empty?
-      roles_db = self.class.request('role', 'list', properties)
-      # Since requesting every combination of users, roles, and
-      # projects is so expensive, construct the property hash here
-      # instead of in self.instances so it can be used in the role
-      # and destroy methods
-      @property_hash[:name] = resource[:name]
-      if roles_db.empty?
-        @property_hash[:ensure] = :absent
-      else
-        @property_hash[:ensure] = :present
-        @property_hash[:roles]  = roles_db.collect do |role|
-          role[:name]
-        end
+    roles_db = self.class.request('role', 'list', properties)
+    @property_hash[:name] = resource[:name]
+    if roles_db.empty?
+      @property_hash[:ensure] = :absent
+    else
+      @property_hash[:ensure] = :present
+      @property_hash[:roles]  = roles_db.collect do |role|
+        role[:name]
       end
     end
     return @property_hash[:ensure] == :present
@@ -86,20 +80,6 @@ Puppet::Type.type(:keystone_user_role).provide(
     end
   end
 
-  def self.instances
-    if default_domain_changed
-      warning(default_domain_deprecation_message)
-    end
-    instances = build_user_role_hash
-    instances.collect do |title, roles|
-      new({
-        :name   => title,
-        :ensure => :present,
-        :roles  => roles
-      }.merge(@user_role_parameters[title]))
-    end
-  end
-
   private
 
   def properties
@@ -117,70 +97,16 @@ Puppet::Type.type(:keystone_user_role).provide(
   end
 
   def get_user_id
-    user_db = self.class.fetch_user(user, user_domain)
-    raise(Puppet::Error, "No user #{user} with domain #{user_domain} found") if user_db.nil?
-    user_db[:id]
+    id = self.class.user_id_from_name_and_domain_name(user, user_domain)
+    raise(Puppet::Error, "No user #{user} with domain #{user_domain} found") if id.nil?
+    id
   end
 
   def get_project_id
-    project_db = self.class.fetch_project(project, project_domain)
-    if project_db.nil?
+    id = self.class.project_id_from_name_and_domain_name(project, project_domain)
+    if id.nil?
       raise(Puppet::Error, "No project #{project} with domain #{project_domain} found")
     end
-    project_db[:id]
-  end
-
-  def self.user_role_hash
-    @user_role_hash
-  end
-
-  def self.set_user_role_hash(user_role_hash)
-    @user_role_hash = user_role_hash
-  end
-
-  def self.build_user_role_hash
-    self.do_not_manage = true
-    # The new hash will have the property that if the
-    # given key does not exist, create it with an empty
-    # array as the value for the hash key
-    hash = @user_role_hash || Hash.new{|h,k| h[k] = []}
-    @user_role_parameters = {}
-    return hash unless hash.empty?
-    # Need a mapping of project id to names.
-    project_hash = {}
-    Puppet::Type.type(:keystone_tenant).provider(:openstack).instances.each do |project|
-      project_hash[project.id] = project.name
-    end
-    # Need a mapping of user id to names.
-    user_hash = {}
-    Puppet::Type.type(:keystone_user).provider(:openstack).instances.each do |user|
-      user_hash[user.id] = user.name
-    end
-    # need a mapping of role id to name
-    role_hash = {}
-    request('role', 'list').each {|role| role_hash[role[:id]] = role[:name]}
-    # now, get all role assignments
-    request('role assignment', 'list').each do |assignment|
-      if assignment[:user]
-        user_str = user_hash[assignment[:user]]
-        if assignment[:project] && !assignment[:project].empty?
-          project_str = project_hash[assignment[:project]]
-          name = "#{user_str}@#{project_str}"
-          @user_role_parameters[name] = Hash[
-            [:user_domain, :user, :project_domain, :project]
-              .zip(name_to_resource(user_str) + name_to_resource(project_str))]
-        else
-          domainname = domain_name_from_id(assignment[:domain])
-          name = "#{user_hash[assignment[:user]]}@::#{domainname}"
-          @user_role_parameters[name] = Hash[
-            [:user_domain, :user, :domain]
-              .zip(name_to_resource(user_str) + [domainname])]
-        end
-        hash[name] << role_hash[assignment[:role]]
-      end
-    end
-    set_user_role_hash(hash)
-    self.do_not_manage = false
-    hash
+    id
   end
 end
