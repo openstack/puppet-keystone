@@ -160,42 +160,6 @@ id="user1_id"
       it { is_expected.to be_truthy }
     end
 
-    describe '#instances' do
-      it 'finds every user role' do
-        project_class = Puppet::Type.type(:keystone_tenant).provider(:openstack)
-        user_class = Puppet::Type.type(:keystone_user).provider(:openstack)
-
-        usermock = user_class.new(:id => 'user1_id', :name => 'user1')
-        user_class.expects(:instances).with(any_parameters).returns([usermock])
-
-        projectmock = project_class.new(:id => 'project1_id', :name => 'project1')
-        # 2 for tenant and user and 2 for user_role
-        project_class.expects(:instances).with(any_parameters).returns([projectmock])
-
-        described_class.expects(:openstack)
-          .with('role', 'list', '--quiet', '--format', 'csv', [])
-          .returns('"ID","Name"
-"role1-id","role1"
-"role2-id","role2"
-')
-        described_class.expects(:openstack)
-          .with('role assignment', 'list', '--quiet', '--format', 'csv', [])
-          .returns('
-"Role","User","Group","Project","Domain"
-"role1-id","user1_id","","project1_id","Default"
-"role2-id","user1_id","","project1_id","Default"
-')
-        instances = described_class.instances
-        expect(instances.count).to eq(1)
-        expect(instances[0].name).to eq('user1@project1')
-        expect(instances[0].roles).to eq(['role1', 'role2'])
-        expect(instances[0].user).to eq('user1')
-        expect(instances[0].user_domain).to eq('Default')
-        expect(instances[0].project).to eq('project1')
-        expect(instances[0].project_domain).to eq('Default')
-      end
-    end
-
     describe '#roles=' do
       let(:resource_attrs) do
         {
