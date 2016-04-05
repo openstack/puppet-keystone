@@ -178,6 +178,11 @@ class keystone::wsgi::apache (
   include ::apache::mod::wsgi
   if $ssl {
     include ::apache::mod::ssl
+    # This is probably a bug in Class[apache::mod::ssl] or in the mod_ssl EL
+    # package but for now I want this to pass p-o-i CI.  The issue is that the
+    # mod_ssl package is placing a ssl.conf file after the confd_dir is purged
+    # on Puppet 4.
+    Class['::apache::mod::ssl'] -> File[$::apache::confd_dir]
   }
 
   # The httpd package is untagged, but needs to have ordering enforced,
