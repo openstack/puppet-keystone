@@ -237,7 +237,7 @@ describe 'keystone' do
       if param_hash['rabbit_ha_queues']
         is_expected.to contain_keystone_config('oslo_messaging_rabbit/rabbit_ha_queues').with_value(param_hash['rabbit_ha_queues'])
       else
-        is_expected.to contain_keystone_config('oslo_messaging_rabbit/rabbit_ha_queues').with_value(false)
+        is_expected.to contain_keystone_config('oslo_messaging_rabbit/rabbit_ha_queues').with_value('<SERVICE DEFAULT>')
       end
 
     end
@@ -635,7 +635,6 @@ describe 'keystone' do
     it { is_expected.to contain_keystone_config('cache/memcache_servers').with_value('SERVER3:11211,SERVER4:11211') }
   end
 
-
   describe 'do not configure memcache servers when not set' do
     let :params do
       default_params
@@ -691,8 +690,8 @@ describe 'keystone' do
       default_params
     end
 
-    it { is_expected.to contain_keystone_config('DEFAULT/notification_driver').with_value('<SERVICE DEFAULT>') }
-    it { is_expected.to contain_keystone_config('DEFAULT/notification_topics').with_value('<SERVICE DEFAULT>') }
+    it { is_expected.to contain_keystone_config('oslo_messaging_notifications/driver').with_value('<SERVICE DEFAULT>') }
+    it { is_expected.to contain_keystone_config('oslo_messaging_notifications/topics').with_value('<SERVICE DEFAULT>') }
     it { is_expected.to contain_keystone_config('DEFAULT/notification_format').with_value('<SERVICE DEFAULT>') }
     it { is_expected.to contain_keystone_config('DEFAULT/control_exchange').with_value('<SERVICE DEFAULT>') }
   end
@@ -748,15 +747,15 @@ describe 'keystone' do
   describe 'setting notification settings' do
     let :params do
       default_params.merge({
-        :notification_driver   => 'keystone.openstack.common.notifier.rpc_notifier',
-        :notification_topics   => 'notifications',
+        :notification_driver   => ['keystone.openstack.common.notifier.rpc_notifier'],
+        :notification_topics   => ['notifications'],
         :notification_format   => 'cadf',
         :control_exchange      => 'keystone'
       })
     end
 
-    it { is_expected.to contain_keystone_config('DEFAULT/notification_driver').with_value('keystone.openstack.common.notifier.rpc_notifier') }
-    it { is_expected.to contain_keystone_config('DEFAULT/notification_topics').with_value('notifications') }
+    it { is_expected.to contain_keystone_config('oslo_messaging_notifications/driver').with_value('keystone.openstack.common.notifier.rpc_notifier') }
+    it { is_expected.to contain_keystone_config('oslo_messaging_notifications/topics').with_value('notifications') }
     it { is_expected.to contain_keystone_config('DEFAULT/notification_format').with_value('cadf') }
     it { is_expected.to contain_keystone_config('DEFAULT/control_exchange').with_value('keystone') }
   end

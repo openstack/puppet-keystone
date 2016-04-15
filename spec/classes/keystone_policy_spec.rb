@@ -20,6 +20,7 @@ describe 'keystone::policy' do
         :key   => 'context_is_admin',
         :value => 'foo:bar'
       })
+      is_expected.to contain_keystone_config('oslo_policy/policy_file').with_value('/etc/keystone/policy.json')
     end
   end
 
