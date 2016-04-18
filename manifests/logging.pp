@@ -70,7 +70,7 @@
 #    Defaults to $::os_service_default
 #    Example:
 #      { 'amqp'  => 'WARN', 'amqplib' => 'WARN', 'boto' => 'WARN',
-#           'qpid' => 'WARN', 'sqlalchemy' => 'WARN', 'suds' => 'INFO',
+#           'sqlalchemy' => 'WARN', 'suds' => 'INFO',
 #           'oslo.messaging' => 'INFO', 'iso8601' => 'WARN',
 #           'requests.packages.urllib3.connectionpool' => 'WARN',
 #           'urllib3.connectionpool' => 'WARN',

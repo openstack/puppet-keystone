@@ -307,7 +307,7 @@
 #   Default to undef
 #
 # [*control_exchange*]
-#   (optional) AMQP exchange to connect to if using RabbitMQ or Qpid
+#   (optional) AMQP exchange to connect to if using RabbitMQ
 #   (string value)
 #   Default to $::os_service_default
 #
