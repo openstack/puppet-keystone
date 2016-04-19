@@ -1,0 +1,7 @@
+---
+features:
+  - Provides bool to determine if policy-rc.d should be managed
+    for keystone eventlet service.
+issues:
+  - Keystone eventlet service is auto-started on debian based
+    systems on package install.
