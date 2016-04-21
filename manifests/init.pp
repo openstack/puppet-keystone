@@ -390,13 +390,6 @@
 #   (optional) The url to validate keystone against
 #   Defaults to undef
 #
-# [*service_provider*]
-#   (optional) Provider, that can be used for keystone service.
-#   Default value defined in keystone::params for given operation system.
-#   If you use Pacemaker or another Cluster Resource Manager, you can make
-#   custom service provider for changing start/stop/status behavior of service,
-#   and set it here.
-#
 # [*service_name*]
 #   (optional) Name of the service that will be providing the
 #   server functionality of keystone.  For example, the default
@@ -522,6 +515,11 @@
 #   (optional) Specify the keystone system group to be used with keystone-manage.
 #   Defaults to 'keystone'
 #
+# DEPRECATED PARAMETERS
+#
+# [*service_provider*]
+#   (optional) DEPRECATED. Provider, that can be used for keystone service.
+#
 # == Dependencies
 #  None
 #
@@ -632,7 +630,6 @@ class keystone(
   $validate_auth_url                    = false,
   $validate_cacert                      = undef,
   $paste_config                         = $::os_service_default,
-  $service_provider                     = $::keystone::params::service_provider,
   $service_name                         = $::keystone::params::service_name,
   $max_token_size                       = $::os_service_default,
   $sync_db                              = true,
@@ -654,10 +651,15 @@ class keystone(
   # DEPRECATED PARAMETERS
   $admin_workers                        = max($::processorcount, 2),
   $public_workers                       = max($::processorcount, 2),
+  $service_provider                     = undef,
 ) inherits keystone::params {
 
   include ::keystone::deps
   include ::keystone::logging
+
+  if $service_provider {
+    warning('service_provider is deprecated, does nothing and will be removed in a future release, use a Puppet resource collector if you want to modify the service provider.')
+  }
 
   if ! $catalog_driver {
     validate_re($catalog_type, 'template|sql')
@@ -892,7 +894,6 @@ class keystone(
         enable         => $enabled,
         hasstatus      => true,
         hasrestart     => true,
-        provider       => $service_provider,
         validate       => true,
         admin_endpoint => $v_auth_url,
         admin_token    => $admin_token,
@@ -906,7 +907,6 @@ class keystone(
         enable       => $enabled,
         hasstatus    => true,
         hasrestart   => true,
-        provider     => $service_provider,
         validate     => false,
       }
     }
@@ -917,7 +917,6 @@ class keystone(
       ensure       => 'stopped',
       service_name => $::keystone::params::service_name,
       enable       => false,
-      provider     => $service_provider,
       validate     => false,
     }
     $service_name_real = $::apache::params::service_name

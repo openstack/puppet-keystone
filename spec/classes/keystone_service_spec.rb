@@ -2,6 +2,10 @@ require 'spec_helper'
 
 describe 'keystone::service' do
 
+  let :facts do
+    @default_facts.merge({ :osfamily => 'Debian' })
+  end
+
   describe "with default parameters" do
     it { is_expected.to contain_service('keystone').with(
       :ensure     => nil,
