@@ -103,17 +103,6 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
     resource_to_name(*name_to_resource(name), false)
   end
 
-#  def self.roles_assignement_for_userid(user_id)
-#    unless @role_assignement_table
-#      @role_assignement_table = request('role assignment', 'list')
-#    end
-#    roles_id = []
-#    @role_assignement_table.each do |row|
-#      roles_id << row[:role] if row[:user] == user_id
-#    end
-#    roles_id
-#  end
-
   def self.user_id_from_name_and_domain_name(name, domain_name)
     @users_name ||= {}
     id_str = "#{name}_#{domain_name}"

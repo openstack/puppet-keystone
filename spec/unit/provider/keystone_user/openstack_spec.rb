@@ -79,7 +79,9 @@ username="user1"
           described_class.expects(:openstack)
             .with('user', 'show', '--format', 'shell',
                   ['user1', '--domain', 'domain1_id'])
-            .returns('')
+            .twice
+            .raises(Puppet::ExecutionFailure,
+                    "No user with a name or ID of 'user1' exists.")
           expect(provider.exists?).to be_falsey
         end
       end
