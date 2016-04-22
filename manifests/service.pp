@@ -28,10 +28,6 @@
 #   (optional) Whether the keystone service has restart
 #   Defaults to true
 #
-# [*provider*]
-#   (optional) Provider for keystone service
-#   Defaults to $::keystone::params::service_provider
-#
 # [*validate*]
 #   (optional) Whether to validate the service is working after any service refreshes
 #   Defaults to false
@@ -69,7 +65,6 @@ class keystone::service(
   $enable         = true,
   $hasstatus      = true,
   $hasrestart     = true,
-  $provider       = $::keystone::params::service_provider,
   $validate       = false,
   $admin_token    = undef,
   $admin_endpoint = 'http://localhost:35357/v2.0',
@@ -88,7 +83,6 @@ class keystone::service(
     enable     => $enable,
     hasstatus  => $hasstatus,
     hasrestart => $hasrestart,
-    provider   => $provider,
     tag        => 'keystone-service',
   }
 

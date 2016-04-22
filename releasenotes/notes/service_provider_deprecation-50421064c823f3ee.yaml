@@ -1,0 +1,6 @@
+---
+deprecations:
+  - service_provider parameter is deprecated, does nothing and will be removed in a future release.
+    The parameter has no effect. The Service provider will be found by Puppet itself.
+    If you really need to override this value, please use a Puppet resource collector,
+    using keystone-service resource tag.
