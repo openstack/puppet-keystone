@@ -60,15 +60,13 @@ describe 'basic keystone server with changed domain id' do
       it 'should work with no errors and catch deprecation warning' do
         apply_manifest(pp, :catch_failures => true) do |result|
           expect(result.stderr)
-            .to include_regexp([/Puppet::Type::Keystone_user::ProviderOpenstack: Support for a resource without the domain.*using 'Default'.*default domain id is '/,
-                                /Puppet::Type::Keystone_tenant::ProviderOpenstack: Support for a resource without/])
+            .to include_regexp([/Puppet::Type::Keystone_tenant::ProviderOpenstack: Support for a resource without the domain.*using 'Default'.*default domain id is '/])
         end
       end
       it 'should be idempotent' do
         apply_manifest(pp, :catch_changes => true) do |result|
           expect(result.stderr)
-            .to include_regexp([/Puppet::Type::Keystone_user::ProviderOpenstack: Support for a resource without the domain.*using 'Default'.*default domain id is '/,
-                                /Puppet::Type::Keystone_tenant::ProviderOpenstack: Support for a resource without/])
+            .to include_regexp([/Puppet::Type::Keystone_tenant::ProviderOpenstack: Support for a resource without the domain.*using 'Default'.*default domain id is '/])
         end
       end
     end
@@ -78,20 +76,6 @@ describe 'basic keystone server with changed domain id' do
           expect(result.stdout)
             .to include_regexp([/keystone_tenant { 'project_in_my_default_domain':/,
                                 /keystone_tenant { 'project_in_my_default_domain::other_domain':/])
-        end
-      end
-      it 'for user' do
-        shell('puppet resource keystone_user') do |result|
-          expect(result.stdout)
-            .to include_regexp([/keystone_user { 'user_in_my_default_domain':/,
-                                /keystone_user { 'user_in_my_default_domain::other_domain':/])
-        end
-      end
-      it 'for role' do
-        shell('puppet resource keystone_user_role') do |result|
-          expect(result.stdout)
-            .to include_regexp([/keystone_user_role { 'user_in_my_default_domain@project_in_my_default_domain':/,
-                                /keystone_user_role { 'user_in_my_default_domain::other_domain@::other_domain':/])
         end
       end
     end

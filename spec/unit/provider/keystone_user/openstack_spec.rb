@@ -62,68 +62,27 @@ username="user1"
         described_class.expects(:openstack)
           .with('user', 'delete', 'my-user-id')
         provider.destroy
-        expect(provider.exists?).to be_falsey
       end
     end
 
     describe '#exists' do
       context 'when user does not exist' do
-        subject(:response) do
-          provider.exists?
-        end
-
-        it { is_expected.to be_falsey }
-      end
-    end
-
-    describe '#instances' do
-      it 'finds every user' do
-        described_class.expects(:openstack)
-          .with('user', 'list', '--quiet', '--format', 'csv', ['--long'])
-          .returns('"ID","Name","Project Id","Domain","Description","Email","Enabled"
-"user1_id","user1","project1_id","domain1_id","user1 description","user1@example.com",True
-"user2_id","user2","project2_id","domain2_id","user2 description","user2@example.com",True
-"user3_id","user3","project3_id","domain3_id","user3 description","user3@example.com",True
-')
-        described_class.expects(:openstack)
-          .with('domain', 'list', '--quiet', '--format', 'csv', [])
-          .returns('"ID","Name","Enabled","Description"
+        it 'should detect it' do
+          described_class.expects(:openstack)
+            .with('domain', 'list', '--quiet', '--format', 'csv', [])
+            .returns('"ID","Name","Enabled","Description"
 "default","Default",True,"default"
 "domain1_id","domain1",True,"domain1"
 "domain2_id","domain2",True,"domain2"
 "domain3_id","domain3",True,"domain3"
 ')
-        # for self.instances to create the name string in
-        # resource_to_name
-        instances = described_class.instances
-        expect(instances.count).to eq(3)
-        expect(instances[0].name).to eq('user1::domain1')
-        expect(instances[0].domain).to eq('domain1')
-        expect(instances[1].name).to eq('user2::domain2')
-        expect(instances[1].domain).to eq('domain2')
-        expect(instances[2].name).to eq('user3::domain3')
-        expect(instances[2].domain).to eq('domain3')
+          described_class.expects(:openstack)
+            .with('user', 'show', '--format', 'shell',
+                  ['user1', '--domain', 'domain1_id'])
+            .returns('')
+          expect(provider.exists?).to be_falsey
+        end
       end
-    end
-
-    describe '#prefetch' do
-      let(:resources) do
-        [Puppet::Type.type(:keystone_user).new(:title => 'exists', :ensure => :present),
-          Puppet::Type.type(:keystone_user).new(:title => 'non_exists', :ensure => :present)]
-      end
-      before(:each) do
-        described_class.expects(:domain_name_from_id).with('default')
-          .returns('Default')
-        described_class.expects(:domain_name_from_id).with('domain2_id')
-          .returns('bar')
-        described_class.expects(:openstack)
-          .with('user', 'list', '--quiet', '--format', 'csv', ['--long'])
-          .returns('"ID","Name","Project Id","Domain","Description","Email","Enabled"
-"user1_id","exists","project1_id","default","user1 description","user1@example.com",True
-"user2_id","user2","project2_id","domain2_id","user2 description","user2@example.com",True
-')
-      end
-      include_examples 'prefetch the resources'
     end
 
     describe '#flush' do
@@ -365,31 +324,6 @@ username="user1"
           }
         ]
       end
-    end
-
-    describe '#prefetch' do
-      let(:resources) do
-        [
-          Puppet::Type.type(:keystone_user)
-            .new(:title => 'exists::domain1', :ensure => :present),
-          Puppet::Type.type(:keystone_user)
-            .new(:title => 'non_exists::domain1', :ensure => :present)
-        ]
-      end
-      before(:each) do
-        # Used to make the final display name
-        described_class.expects(:domain_name_from_id)
-          .with('domain1_id').returns('domain1')
-        described_class.expects(:domain_name_from_id)
-          .with('domain2_id').returns('bar')
-        described_class.expects(:openstack)
-          .with('user', 'list', '--quiet', '--format', 'csv', ['--long'])
-          .returns('"ID","Name","Project Id","Domain","Description","Email","Enabled"
-"user1_id","exists","project1_id","domain1_id","user1 description","user1@example.com",True
-"user2_id","user2","project2_id","domain2_id","user2 description","user2@example.com",True
-')
-      end
-      include_examples 'prefetch the resources'
     end
 
     context 'different name, identical resource' do
