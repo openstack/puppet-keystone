@@ -6,6 +6,7 @@ describe 'keystone::db' do
 
     context 'with default parameters' do
 
+      it { is_expected.to contain_keystone_config('database/db_max_retries').with_value('<SERVICE DEFAULT>') }
       it { is_expected.to contain_keystone_config('database/connection').with_value('sqlite:////var/lib/keystone/keystone.sqlite').with_secret(true) }
       it { is_expected.to contain_keystone_config('database/idle_timeout').with_value('<SERVICE DEFAULT>') }
       it { is_expected.to contain_keystone_config('database/min_pool_size').with_value('<SERVICE DEFAULT>') }
@@ -18,7 +19,8 @@ describe 'keystone::db' do
 
     context 'with specific parameters' do
       let :params do
-        { :database_connection     => 'mysql+pymysql://keystone:keystone@localhost/keystone',
+        { :database_db_max_retries => '-1',
+          :database_connection     => 'mysql+pymysql://keystone:keystone@localhost/keystone',
           :database_idle_timeout   => '3601',
           :database_min_pool_size  => '2',
           :database_max_pool_size  => '21',
@@ -27,6 +29,7 @@ describe 'keystone::db' do
           :database_retry_interval => '11', }
       end
 
+      it { is_expected.to contain_keystone_config('database/db_max_retries').with_value('-1') }
       it { is_expected.to contain_keystone_config('database/connection').with_value('mysql+pymysql://keystone:keystone@localhost/keystone').with_secret(true) }
       it { is_expected.to contain_keystone_config('database/idle_timeout').with_value('3601') }
       it { is_expected.to contain_keystone_config('database/min_pool_size').with_value('2') }
