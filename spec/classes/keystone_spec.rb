@@ -760,6 +760,19 @@ describe 'keystone' do
     it { is_expected.to contain_keystone_config('DEFAULT/control_exchange').with_value('keystone') }
   end
 
+  describe 'setting kombu settings' do
+    let :params do
+      default_params.merge({
+        :kombu_reconnect_delay => '1.0',
+        :kombu_compression     => 'gzip',
+      })
+    end
+
+    it { is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_reconnect_delay').with_value('1.0') }
+    it { is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_compression').with_value('gzip') }
+    it { is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_failover_strategy').with_value('<SERVICE DEFAULT>') }
+  end
+
   describe 'setting sql policy driver' do
     let :params do
       default_params.merge({:policy_driver => 'sql' })
