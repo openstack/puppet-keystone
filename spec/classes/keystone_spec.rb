@@ -65,7 +65,8 @@ describe 'keystone' do
       'public_workers'                      => 20,
       'paste_config'                        => '<SERVICE DEFAULT>',
       'sync_db'                             => true,
-    }
+      'purge_config'                        => false,
+  }
 
   override_params = {
       'package_ensure'                      => 'latest',
@@ -147,6 +148,12 @@ describe 'keystone' do
           :refreshonly => true
         )
       end
+    end
+
+    it 'passes purge to resource' do
+      is_expected.to contain_resources('keystone_config').with({
+        :purge => false
+      })
     end
 
     it 'should contain correct config' do
