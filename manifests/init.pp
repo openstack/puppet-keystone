@@ -948,16 +948,18 @@ class keystone(
     warning('Keystone under Eventlet has been deprecated during the Kilo cycle. Support for deploying under eventlet will be dropped as of the M-release of OpenStack.')
   } elsif $service_name == 'httpd' {
     include ::apache::params
-    class { '::keystone::service':
-      ensure       => 'stopped',
-      service_name => $::keystone::params::service_name,
-      enable       => false,
-      validate     => false,
-    }
     $service_name_real = $::apache::params::service_name
-    # leave this here because Ubuntu packages will start Keystone and we need it stopped
-    # before apache can run
-    Service['keystone'] -> Service[$service_name_real]
+    if $::osfamily == 'Debian' {
+      class { '::keystone::service':
+        ensure       => 'stopped',
+        service_name => $::keystone::params::service_name,
+        enable       => false,
+        validate     => false,
+      }
+      # leave this here because Ubuntu packages will start Keystone and we need it stopped
+      # before apache can run
+      Service['keystone'] -> Service[$service_name_real]
+    }
   } else {
     fail('Invalid service_name. Either keystone/openstack-keystone for running as a standalone service, or httpd for being run by a httpd server')
   }

@@ -270,7 +270,7 @@ describe 'keystone' do
     end
   end
 
-  shared_examples_for "when using default class parameters for httpd" do
+  shared_examples_for "when using default class parameters for httpd on Debian" do
     let :params do
       httpd_params
     end
@@ -293,6 +293,29 @@ describe 'keystone' do
       'enable'          => false,
       'validate'        => false
     )}
+    it { is_expected.to contain_service('httpd').with_before(/Anchor\[keystone::service::end\]/) }
+    it { is_expected.to contain_exec('restart_keystone').with(
+      'command' => "service #{platform_parameters[:httpd_service_name]} restart",
+    ) }
+  end
+
+  shared_examples_for "when using default class parameters for httpd on RedHat" do
+    let :params do
+      httpd_params
+    end
+
+    let :pre_condition do
+      'include ::keystone::wsgi::apache'
+    end
+
+    it_configures 'core keystone examples', httpd_params
+
+    it do
+      expect {
+        is_expected.to contain_service(platform_parameters[:service_name]).with('ensure' => 'running')
+      }.to raise_error(RSpec::Expectations::ExpectationNotMetError, /expected that the catalogue would contain Service\[#{platform_parameters[:service_name]}\]/)
+    end
+
     it { is_expected.to contain_service('httpd').with_before(/Anchor\[keystone::service::end\]/) }
     it { is_expected.to contain_exec('restart_keystone').with(
       'command' => "service #{platform_parameters[:httpd_service_name]} restart",
@@ -931,7 +954,7 @@ describe 'keystone' do
       }
     end
 
-    it_configures 'when using default class parameters for httpd'
+    it_configures 'when using default class parameters for httpd on RedHat'
     it_configures 'when configuring default domain'
   end
 
@@ -951,7 +974,7 @@ describe 'keystone' do
       }
     end
 
-    it_configures 'when using default class parameters for httpd'
+    it_configures 'when using default class parameters for httpd on Debian'
     it_configures 'when configuring default domain'
   end
 
