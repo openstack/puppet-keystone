@@ -25,10 +25,6 @@
 #   Admin token that can be used to authenticate as a keystone
 #   admin. Required.
 #
-# [*verbose*]
-#   (optional) Rather keystone should log at verbose level.
-#   Defaults to undef.
-#
 # [*debug*]
 #   (optional) Rather keystone should log at debug level.
 #   Defaults to undef.
@@ -542,13 +538,16 @@
 # [*service_provider*]
 #   (optional) DEPRECATED. Provider, that can be used for keystone service.
 #
+# [*verbose*]
+#   (optional) DEPRECATED. Rather keystone should log at verbose level.
+#   Defaults to undef.
+#
 # == Dependencies
 #  None
 #
 # == Examples
 #
 #   class { 'keystone':
-#     log_verbose => 'True',
 #     admin_token => 'my_special_token',
 #   }
 #
@@ -579,7 +578,6 @@ class keystone(
   $admin_bind_host                      = '0.0.0.0',
   $public_port                          = '5000',
   $admin_port                           = '35357',
-  $verbose                              = undef,
   $debug                                = undef,
   $log_dir                              = undef,
   $log_file                             = undef,
@@ -678,6 +676,7 @@ class keystone(
   $admin_workers                        = max($::processorcount, 2),
   $public_workers                       = max($::processorcount, 2),
   $service_provider                     = undef,
+  $verbose                              = undef,
 ) inherits keystone::params {
 
   include ::keystone::deps
@@ -685,6 +684,10 @@ class keystone(
 
   if $service_provider {
     warning('service_provider is deprecated, does nothing and will be removed in a future release, use a Puppet resource collector if you want to modify the service provider.')
+  }
+
+  if $verbose {
+    warning('verbose is deprecated, has no effect and will be removed after Newton cycle.')
   }
 
   if ! $catalog_driver {

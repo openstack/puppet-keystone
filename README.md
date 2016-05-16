@@ -44,7 +44,6 @@ To utilize the keystone module's functionality you will need to declare multiple
 
 ```puppet
 class { 'keystone':
-  verbose             => True,
   catalog_type        => 'sql',
   admin_token         => 'random_uuid',
   database_connection => 'mysql://keystone_admin:super_secret_db_password@openstack-controller.example.com/keystone',
@@ -267,12 +266,12 @@ keystone is a combination of Puppet manifest and ruby code to delivery configura
 The `keystone_config` provider is a children of the ini_setting provider. It allows one to write an entry in the `/etc/keystone/keystone.conf` file.
 
 ```puppet
-keystone_config { 'DEFAULT/verbose' :
-  value => true,
+keystone_config { 'token/expiration' :
+  value => 3600,
 }
 ```
 
-This will write `verbose=true` in the `[DEFAULT]` section.
+This will write `expiration=3600` in the `[token]` section.
 
 ##### name
 

@@ -4,10 +4,6 @@
 #
 # == parameters
 #
-#  [*verbose*]
-#    (Optional) Should the daemons log verbose messages
-#    Defaults to $::os_service_default
-#
 #  [*debug*]
 #    (Optional) Should the daemons log debug messages
 #    Defaults to $::os_service_default
@@ -106,7 +102,12 @@
 #   (Optional) Uses logging handler designed to watch file system (boolean value).
 #   Defaults to $::os_service_default
 #
-
+# DEPRECATED
+#
+# [*verbose*]
+#   (Optional) Deprecated. Should the daemons log verbose messages
+#   Defaults to undef.
+#
 
 class keystone::logging(
   $use_syslog                    = $::os_service_default,
@@ -114,7 +115,6 @@ class keystone::logging(
   $log_facility                  = $::os_service_default,
   $log_dir                       = '/var/log/keystone',
   $log_file                      = $::os_service_default,
-  $verbose                       = $::os_service_default,
   $debug                         = $::os_service_default,
   $logging_context_format_string = $::os_service_default,
   $logging_default_format_string = $::os_service_default,
@@ -129,9 +129,15 @@ class keystone::logging(
   $instance_uuid_format          = $::os_service_default,
   $log_date_format               = $::os_service_default,
   $watch_log_file                = $::os_service_default,
+  # DEPRECATED
+  $verbose                       = undef,
 ) {
 
   include ::keystone::deps
+
+  if $verbose {
+    warning('verbose is deprecated, has no effect and will be removed after Newton cycle.')
+  }
 
   # NOTE(spredzy): In order to keep backward compatibility we rely on the pick function
   # to use keystone::<myparam> first then keystone::logging::<myparam>.
@@ -140,12 +146,10 @@ class keystone::logging(
   $log_facility_real = pick($::keystone::log_facility,$log_facility)
   $log_dir_real = pick($::keystone::log_dir,$log_dir)
   $log_file_real = pick($::keystone::log_file,$log_file)
-  $verbose_real  = pick($::keystone::verbose,$verbose)
   $debug_real = pick($::keystone::debug,$debug)
 
   oslo::log { 'keystone_config':
     debug                         => $debug_real,
-    verbose                       => $verbose_real,
     log_config_append             => $log_config_append,
     log_date_format               => $log_date_format,
     log_file                      => $log_file_real,

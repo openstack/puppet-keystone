@@ -27,7 +27,6 @@ describe 'keystone' do
       'admin_bind_host'                     => '0.0.0.0',
       'public_port'                         => '5000',
       'admin_port'                          => '35357',
-      'verbose'                             => false,
       'debug'                               => false,
       'use_stderr'                          => true,
       'catalog_type'                        => 'sql',
@@ -76,7 +75,6 @@ describe 'keystone' do
       'public_port'                         => '5001',
       'admin_port'                          => '35358',
       'admin_token'                         => 'service_token_override',
-      'verbose'                             => true,
       'debug'                               => true,
       'use_stderr'                          => false,
       'catalog_type'                        => 'template',
@@ -157,7 +155,6 @@ describe 'keystone' do
        'admin_bind_host',
        'public_port',
        'admin_port',
-       'verbose',
        'debug',
        'use_stderr'
       ].each do |config|

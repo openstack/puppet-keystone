@@ -10,7 +10,6 @@ class { '::keystone::db::mysql':
   password => 'keystone',
 }
 class { '::keystone':
-  verbose             => true,
   debug               => true,
   database_connection => 'mysql://keystone:keystone@192.168.1.1/keystone',
   admin_token         => 'admin_token',

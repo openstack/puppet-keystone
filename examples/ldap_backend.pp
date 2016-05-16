@@ -1,5 +1,4 @@
 class { '::keystone':
-  verbose             => true,
   debug               => true,
   database_connection => 'mysql://keystone:keystone@127.0.0.1/keystone',
   admin_token         => 'admin_token',

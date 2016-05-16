@@ -25,7 +25,6 @@ class { '::keystone::db::mysql':
   password => 'keystone',
 }
 class { '::keystone':
-  verbose             => true,
   debug               => true,
   database_connection => 'mysql://keystone_admin:keystone@127.0.0.1/keystone',
   catalog_type        => 'sql',
