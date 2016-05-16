@@ -1,5 +1,5 @@
 require 'json'
-require 'puppet/provider/keystone'
+require File.join(File.dirname(__FILE__), '..','..','..', 'puppet/provider/keystone')
 
 class Puppet::Error::OpenstackDuplicateRemoteId < Puppet::Error; end
 
