@@ -51,11 +51,12 @@ describe 'keystone' do
       'manage_service'                      => true,
       'database_connection'                 => 'sqlite:////var/lib/keystone/keystone.db',
       'database_idle_timeout'               => '200',
-      'enable_pki_setup'                    => false,
-      'signing_certfile'                    => '/etc/keystone/ssl/certs/signing_cert.pem',
-      'signing_keyfile'                     => '/etc/keystone/ssl/private/signing_key.pem',
-      'signing_ca_certs'                    => '/etc/keystone/ssl/certs/ca.pem',
-      'signing_ca_key'                      => '/etc/keystone/ssl/private/cakey.pem',
+      'signing_certfile'                    => '<SERVICE DEFAULT>',
+      'signing_keyfile'                     => '<SERVICE DEFAULT>',
+      'signing_ca_certs'                    => '<SERVICE DEFAULT>',
+      'signing_ca_key'                      => '<SERVICE DEFAULT>',
+      'signing_cert_subject'                => '<SERVICE DEFAULT>',
+      'signing_key_size'                    => '<SERVICE DEFAULT>',
       'rabbit_host'                         => '<SERVICE DEFAULT>',
       'rabbit_password'                     => '<SERVICE DEFAULT>',
       'rabbit_userid'                       => '<SERVICE DEFAULT>',
@@ -100,6 +101,8 @@ describe 'keystone' do
       'signing_keyfile'                     => '/etc/keystone/ssl/private/signing_key.pem',
       'signing_ca_certs'                    => '/etc/keystone/ssl/certs/ca.pem',
       'signing_ca_key'                      => '/etc/keystone/ssl/private/cakey.pem',
+      'signing_cert_subject'                => '/C=US/ST=Unset/L=Unset/O=Unset/CN=www.example.com',
+      'signing_key_size'                    => 2048,
       'rabbit_host'                         => '127.0.0.1',
       'rabbit_password'                     => 'openstack',
       'rabbit_userid'                       => 'admin',
@@ -367,9 +370,15 @@ describe 'keystone' do
     describe 'when configuring as PKI' do
       let :params do
         {
-          'enable_pki_setup' => true,
-          'admin_token'      => 'service_token',
-          'token_provider'   => 'pki'
+          'enable_pki_setup'                    => true,
+          'admin_token'                         => 'service_token',
+          'token_provider'                      => 'pki',
+          'signing_certfile'                    => '/etc/keystone/ssl/certs/signing_cert.pem',
+          'signing_keyfile'                     => '/etc/keystone/ssl/private/signing_key.pem',
+          'signing_ca_certs'                    => '/etc/keystone/ssl/certs/ca.pem',
+          'signing_ca_key'                      => '/etc/keystone/ssl/private/cakey.pem',
+          'signing_cert_subject'                => '/C=US/ST=Unset/L=Unset/O=Unset/CN=www.example.com',
+          'signing_key_size'                    => 2048
         }
       end
 
