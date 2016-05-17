@@ -1,4 +1,4 @@
-require 'puppet/provider/keystone'
+require File.join(File.dirname(__FILE__), '..','..','..', 'puppet/provider/keystone')
 
 Puppet::Type.type(:keystone_role).provide(
   :openstack,

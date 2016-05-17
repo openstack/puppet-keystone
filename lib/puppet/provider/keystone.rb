@@ -2,7 +2,7 @@ require 'puppet/util/inifile'
 require 'puppet/provider/openstack'
 require 'puppet/provider/openstack/auth'
 require 'puppet/provider/openstack/credentials'
-require 'puppet/provider/keystone/util'
+require File.join(File.dirname(__FILE__), '..','..', 'puppet/provider/keystone/util')
 
 class Puppet::Provider::Keystone < Puppet::Provider::Openstack
 

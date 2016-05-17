@@ -1,4 +1,4 @@
-require 'puppet/provider/keystone'
+require File.join(File.dirname(__FILE__), '..','..','..', 'puppet/provider/keystone')
 require 'puppet/util/inifile'
 
 Puppet::Type.type(:keystone_domain).provide(
