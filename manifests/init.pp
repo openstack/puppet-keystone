@@ -533,6 +533,11 @@
 #   prevent keystone eventlet from auto-starting on package install.
 #   Defaults to false
 #
+# [*purge_config*]
+#   (optional) Whether to set only the specified config options
+#   in the keystone config.
+#   Defaults to false.
+#
 # DEPRECATED PARAMETERS
 #
 # [*service_provider*]
@@ -672,6 +677,7 @@ class keystone(
   $keystone_user                        = $::keystone::params::keystone_user,
   $keystone_group                       = $::keystone::params::keystone_group,
   $manage_policyrcd                     = false,
+  $purge_config                         = false,
   # DEPRECATED PARAMETERS
   $admin_workers                        = max($::processorcount, 2),
   $public_workers                       = max($::processorcount, 2),
@@ -716,6 +722,10 @@ class keystone(
     class { '::keystone::client':
       ensure => $client_package_ensure,
     }
+  }
+
+  resources { 'keystone_config':
+    purge  => $purge_config,
   }
 
   keystone_config {
