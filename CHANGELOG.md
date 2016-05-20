@@ -1,3 +1,22 @@
+##2016-05-20 - 7.1.0
+
+###Summary
+
+This is a feature and bugfix release in the Liberty series.
+
+####Features
+
+- Remove user/role prefetch to support multi-domain
+- Add keystone::disable_admin_token_auth class
+
+####Bugfixes
+
+- Fix rabbitmq ssl logic
+- sanitize IPv6 in keystone provider
+- Fix region association for endpoints
+- Undeprecate the $keystone::endpoint::version param
+
+
 ##2015-11-24 - 7.0.0
 ###Summary
 

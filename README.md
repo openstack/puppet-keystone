@@ -1,7 +1,7 @@
 keystone
 =======
 
-7.0.0 - 2015.2 - Liberty
+7.1.0 - 2015.2 - Liberty
 
 #### Table of Contents
 
