@@ -101,7 +101,7 @@ describe 'keystone::wsgi::apache' do
         'require'                     => 'File[keystone_wsgi_main]',
         'access_log_format'           => false,
       )}
-      it { is_expected.to contain_file("#{platform_parameters[:httpd_ports_file]}") }
+      it { is_expected.to contain_concat("#{platform_parameters[:httpd_ports_file]}") }
     end
 
     describe 'when overriding parameters using different ports' do
@@ -166,7 +166,7 @@ describe 'keystone::wsgi::apache' do
         'custom_fragment'             => 'LimitRequestFieldSize 81900'
       )}
 
-      it { is_expected.to contain_file("#{platform_parameters[:httpd_ports_file]}") }
+      it { is_expected.to contain_concat("#{platform_parameters[:httpd_ports_file]}") }
     end
 
     describe 'when admin_bind_host is not set default to bind_host' do
@@ -190,7 +190,7 @@ describe 'keystone::wsgi::apache' do
         'ip'                          => '10.42.51.1'
       )}
 
-      it { is_expected.to contain_file("#{platform_parameters[:httpd_ports_file]}") }
+      it { is_expected.to contain_concat("#{platform_parameters[:httpd_ports_file]}") }
     end
 
 
