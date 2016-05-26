@@ -1,0 +1,4 @@
+---
+deprecations:
+  - use_syslog in DEFAULT section was deprecated in Mitaka, this parameter
+    has no effect and will be removed in a future release.
