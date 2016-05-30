@@ -24,6 +24,10 @@ class keystone::deps {
   ~> Service<| tag == 'keystone-service' |>
   ~> anchor { 'keystone::service::end': }
 
+  # all cache settings should be applied and all packages should be installed
+  # before service startup
+  Oslo::Cache<||> -> Anchor['keystone::service::begin']
+
   # paste-api.ini config should occur in the config block also.
   Anchor['keystone::config::begin']
   -> Keystone_paste_ini<||>
