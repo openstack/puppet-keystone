@@ -28,6 +28,10 @@ class keystone::deps {
   # before service startup
   Oslo::Cache<||> -> Anchor['keystone::service::begin']
 
+  # all db settings should be applied and all packages should be installed
+  # before dbsync starts
+  Oslo::Db<||> -> Anchor['keystone::dbsync::begin']
+
   # paste-api.ini config should occur in the config block also.
   Anchor['keystone::config::begin']
   -> Keystone_paste_ini<||>
