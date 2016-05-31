@@ -29,6 +29,10 @@
 #   (optional) Rather keystone should log at debug level.
 #   Defaults to undef.
 #
+# [*use_syslog*]
+#   (optional) Use syslog for logging.
+#   Defaults to undef.
+#
 # [*use_stderr*]
 #   (optional) Use stderr for logging
 #   Defaults to undef.
@@ -543,10 +547,6 @@
 #   (optional) Deprecated. Key size (in bits) for token signing cert (auto generated certificate)
 #   Defaults to $::os_service_default
 #
-# [*use_syslog*]
-#   (optional) DEPRECATED. Use syslog for logging.
-#   Defaults to undef.
-#
 # == Dependencies
 #  None
 #
@@ -586,6 +586,7 @@ class keystone(
   $debug                                = undef,
   $log_dir                              = undef,
   $log_file                             = undef,
+  $use_syslog                           = undef,
   $use_stderr                           = undef,
   $log_facility                         = undef,
   $catalog_type                         = 'sql',
@@ -682,7 +683,6 @@ class keystone(
   $signing_ca_key                       = $::os_service_default,
   $signing_cert_subject                 = $::os_service_default,
   $signing_key_size                     = $::os_service_default,
-  $use_syslog                           = undef,
 ) inherits keystone::params {
 
   include ::keystone::deps
@@ -694,10 +694,6 @@ class keystone(
 
   if $verbose {
     warning('verbose is deprecated, has no effect and will be removed after Newton cycle.')
-  }
-
-  if $use_syslog {
-    warning('use_syslog is deprecated, has no effect and will be removed in a future release.')
   }
 
   if ! $catalog_driver {
