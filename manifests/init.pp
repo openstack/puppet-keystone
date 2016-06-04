@@ -437,6 +437,11 @@
 #   the pool before it is closed.
 #   Defaults to undef.
 #
+# [*manage_policyrcd*]
+#   (optional) Whether to manage the policy-rc.d on debian based systems to
+#   prevent keystone eventlet from auto-starting on package install.
+#   Defaults to false
+#
 # == Dependencies
 #  None
 #
@@ -553,6 +558,7 @@ class keystone(
   $memcache_socket_timeout            = undef,
   $memcache_pool_maxsize              = undef,
   $memcache_pool_unused_timeout       = undef,
+  $manage_policyrcd                   = false,
   # DEPRECATED PARAMETERS
   $admin_workers                      = max($::processorcount, 2),
   $public_workers                     = max($::processorcount, 2),
@@ -865,6 +871,12 @@ class keystone(
   keystone_config {
     'eventlet_server/admin_workers':  value => $admin_workers;
     'eventlet_server/public_workers': value => $public_workers;
+  }
+
+  if $manage_policyrcd {
+    # openstacklib::policyrcd only affects debian based systems.
+    class { '::openstacklib::policyrcd': services => ['keystone'] }
+    Class['::openstacklib::policyrcd'] -> Package['keystone']
   }
 
   if $manage_service {
