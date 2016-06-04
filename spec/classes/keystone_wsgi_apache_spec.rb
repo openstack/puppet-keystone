@@ -333,7 +333,7 @@ describe 'keystone::wsgi::apache' do
       facts.merge!(OSDefaults.get_facts({}))
     end
 
-    let(:platform_params) do
+    let(:platform_parameters) do
       case facts[:osfamily]
       when 'Debian'
         {
