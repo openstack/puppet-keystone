@@ -29,7 +29,7 @@ describe 'keystone::policy' do
   }).each do |os,facts|
     context "on #{os}" do
       let (:facts) do
-        facts.merge(OSDefaults.get_facts({:processorcount => 8}))
+        facts.merge!(OSDefaults.get_facts())
       end
 
       it_configures 'keystone policies'
