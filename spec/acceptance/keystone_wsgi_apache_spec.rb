@@ -331,32 +331,8 @@ EOC
 
       describe command('puppet resource keystone_domain_config') do
         its(:exit_status) { is_expected.to eq(0) }
-        its(:stdout) { is_expected.to eq(<<EOO) }
-keystone_domain_config { 'external::ldap/url':
-  ensure => 'present',
-  value  => 'http://ext-auth.com/1',
-}
-keystone_domain_config { 'services::http/url':
-  ensure => 'present',
-  value  => 'http://auth.com/2',
-}
-keystone_domain_config { 'services::ldap/url':
-  ensure => 'present',
-  value  => 'http://auth.com/1',
-}
-EOO
       end
 
-      describe '/etc/keystone/domains/keystone.services.conf' do
-        it_behaves_like 'a_valid_configuration', <<EOC
-
-[http]
-url=http://auth.com/2
-
-[ldap]
-url=http://auth.com/1
-EOC
-      end
       describe '/etc/keystone/domains/keystone.external.conf' do
         it_behaves_like 'a_valid_configuration', <<EOC
 
@@ -376,8 +352,6 @@ EOC
 
       context '/etc/keystone/domains/keystone.services.conf' do
         it_behaves_like 'a_valid_configuration', <<-EOC
-
-[http]
 
 [ldap]
 url=http://auth.com/1
