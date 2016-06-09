@@ -493,7 +493,7 @@
 #
 # [*manage_policyrcd*]
 #   (optional) Whether to manage the policy-rc.d on debian based systems to
-#   prevent keystone eventlet from auto-starting on package install.
+#   prevent keystone eventlet and apache from auto-starting on package install.
 #   Defaults to false
 #
 # [*purge_config*]
@@ -706,6 +706,13 @@ class keystone(
 
   if ($public_endpoint and 'v2.0' in $public_endpoint) {
     warning('Version string /v2.0/ should not be included in keystone::public_endpoint')
+  }
+
+  if $manage_policyrcd {
+    # openstacklib::policyrcd only affects debian based systems.
+    class { '::openstacklib::policyrcd': services => ['keystone', 'apache2'] }
+    Class['::openstacklib::policyrcd'] -> Package['keystone']
+    Class['::openstacklib::policyrcd'] -> Package['httpd']
   }
 
   include ::keystone::db
@@ -939,12 +946,6 @@ class keystone(
   keystone_config {
     'eventlet_server/admin_workers':  value => $admin_workers;
     'eventlet_server/public_workers': value => $public_workers;
-  }
-
-  if $manage_policyrcd {
-    # openstacklib::policyrcd only affects debian based systems.
-    class { '::openstacklib::policyrcd': services => ['keystone'] }
-    Class['::openstacklib::policyrcd'] -> Package['keystone']
   }
 
   if $manage_service {
