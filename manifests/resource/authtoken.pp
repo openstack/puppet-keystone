@@ -6,13 +6,6 @@
 # at http://www.jamielennox.net/blog/2015/02/17/loading-authentication-plugins/
 # with the addition of the default domain for user and project.
 #
-# The username and project_name parameters may be given in the form
-# "name::domainname".  The authtoken resource will use the domains in
-# the following order:
-# 1) The given domain parameter (user_domain_name or project_domain_name)
-# 2) The domain given as the "::domainname" part of username or project_name
-# 3) The default_domain_name
-#
 # For example, instead of doing this::
 #
 #     glance_api_config {
@@ -32,7 +25,6 @@
 #       project_name        => $keystone_tenant,
 #       user_domain_name    => $keystone_user_domain,
 #       project_domain_name => $keystone_project_domain,
-#       default_domain_name => $keystone_default_domain,
 #       cacert              => $ca_file,
 #       ...
 #     }
@@ -44,176 +36,286 @@
 # == Parameters:
 #
 # [*name*]
-#   (Required) The name of the resource corresponding to the config file.  For example,
-#   keystone::resource::authtoken { 'glance_api_config': ... }
+#   (Required) The name of the resource corresponding to the config file.
+#   For example, keystone::resource::authtoken { 'glance_api_config': ... }
 #   Where 'glance_api_config' is the name of the resource used to manage
-#   the glance api configuration. string;
+#   the glance api configuration.
 #
 # [*username*]
-#   (Required) The name of the service user; string;
+#   (Required) The name of the service user
 #
 # [*password*]
-#   (Required) Password to create for the service user; string;
+#   (Required) Password to create for the service user
 #
 # [*auth_url*]
-#   (Required) The URL to use for authentication. string;
+#   (Required) The URL to use for authentication.
 #
-# [*auth_plugin*]
-#   (Optional) The plugin to use for authentication. string;
-#   Defaults to 'password'
-#
-# [*user_id*]
-#   (Optional) The ID of the service user;
-#   string; Defaults to $::os_service_default
+# [*project_name*]
+#   (Required) Service project name
 #
 # [*user_domain_name*]
 #   (Optional) Name of domain for $username
 #   Defaults to $::os_service_default
 #
-# [*user_domain_id*]
-#   (Optional) ID of domain for $username
-#   Defaults to $::os_service_default
-#
-# [*project_name*]
-#   (Optional) Service project name; string;
-#   Defaults to $::os_service_default
-#
-# [*project_id*]
-#   (Optional) Service project ID;
-#   string; Defaults to $::os_service_default
-#
 # [*project_domain_name*]
 #   (Optional) Name of domain for $project_name
 #   Defaults to $::os_service_default
 #
-# [*project_domain_id*]
-#   (Optional) ID of domain for $project_name
-#   Defaults to $::os_service_default
-#
-# [*domain_name*]
-#   (Optional) Use this for auth to obtain a domain-scoped token.
-#   If using this option, do not specify $project_name or $project_id.
-#   Defaults to $::os_service_default
-#
-# [*domain_id*]
-#   (Optional) Use this for auth to obtain a domain-scoped token.
-#   If using this option, do not specify $project_name or $project_id.
-#   Defaults to $::os_service_default
-#
-# [*default_domain_name*]
-#   (Optional) Name of domain for $username and $project_name
-#   If user_domain_name is not specified, use $default_domain_name
-#   If project_domain_name is not specified, use $default_domain_name
-#   Defaults to $::os_service_default
-#
-# [*default_domain_id*]
-#   (Optional) ID of domain for $user_id and $project_id
-#   If user_domain_id is not specified, use $default_domain_id
-#   If project_domain_id is not specified, use $default_domain_id
-#   Defaults to $::os_service_default
-#
-# [*trust_id*]
-#   (Optional) Trust ID
-#   Defaults to $::os_service_default
-#
-# [*cacert*]
-#   (Optional) CA certificate file for TLS (https)
-#   Defaults to $::os_service_default
-#
-# [*cert*]
-#   (Optional) Certificate file for TLS (https)
-#   Defaults to $::os_service_default
-#
-# [*key*]
-#   (Optional) Key file for TLS (https)
-#   Defaults to $::os_service_default
-#
 # [*insecure*]
-#   If true, explicitly allow TLS without checking server cert against any
-#   certificate authorities.  WARNING: not recommended.  Use with caution.
-#   boolean; Defaults to false (which means be secure)
+#  (Optional) If true, explicitly allow TLS without checking server cert
+#  against any certificate authorities.  WARNING: not recommended.  Use with
+#  caution.
+#  Defaults to $:os_service_default
+#
+# [*auth_section*]
+#  (Optional) Config Section from which to load plugin specific options
+#  Defaults to $::os_service_default.
+#
+# [*auth_type*]
+#  (Optional) Authentication type to load
+#  Defaults to $::os_service_default
+#
+# [*auth_uri*]
+#  (Optional) Complete public Identity API endpoint.
+#  Defaults to $::os_service_default.
+#
+# [*auth_version*]
+#  (Optional) API version of the admin Identity API endpoint.
+#  Defaults to $::os_service_default.
+#
+# [*cache*]
+#  (Optional) Env key for the swift cache.
+#  Defaults to $::os_service_default.
+#
+# [*cafile*]
+#  (Optional) A PEM encoded Certificate Authority to use when verifying HTTPs
+#  connections.
+#  Defaults to $::os_service_default.
+#
+# [*certfile*]
+#  (Optional) Required if identity server requires client certificate
+#  Defaults to $::os_service_default.
+#
+# [*check_revocations_for_cached*]
+#  (Optional) If true, the revocation list will be checked for cached tokens.
+#  This requires that PKI tokens are configured on the identity server.
+#  boolean value.
+#  Defaults to $::os_service_default.
+#
+# [*delay_auth_decision*]
+#  (Optional) Do not handle authorization requests within the middleware, but
+#  delegate the authorization decision to downstream WSGI components. Boolean value
+#  Defaults to $::os_service_default.
+#
+# [*enforce_token_bind*]
+#  (Optional) Used to control the use and type of token binding. Can be set
+#  to: "disabled" to not check token binding. "permissive" (default) to
+#  validate binding information if the bind type is of a form known to the
+#  server and ignore it if not. "strict" like "permissive" but if the bind
+#  type is unknown the token will be rejected. "required" any form of token
+#  binding is needed to be allowed. Finally the name of a binding method that
+#  must be present in tokens. String value.
+#  Defaults to $::os_service_default.
+#
+# [*hash_algorithms*]
+#  (Optional) Hash algorithms to use for hashing PKI tokens. This may be a
+#  single algorithm or multiple. The algorithms are those supported by Python
+#  standard hashlib.new(). The hashes will be tried in the order given, so put
+#  the preferred one first for performance. The result of the first hash will
+#  be stored in the cache. This will typically be set to multiple values only
+#  while migrating from a less secure algorithm to a more secure one. Once all
+#  the old tokens are expired this option should be set to a single value for
+#  better performance. List value.
+#  Defaults to $::os_service_default.
+#
+# [*http_connect_timeout*]
+#  (Optional) Request timeout value for communicating with Identity API server.
+#  Defaults to $::os_service_default.
+#
+# [*http_request_max_retries*]
+#  (Optional) How many times are we trying to reconnect when communicating
+#  with Identity API Server. Integer value
+#  Defaults to $::os_service_default.
+#
+# [*include_service_catalog*]
+#  (Optional) Indicate whether to set the X-Service-Catalog header. If False,
+#  middleware will not ask for service catalog on token validation and will not
+#  set the X-Service-Catalog header. Boolean value.
+#  Defaults to $::os_service_default.
+#
+# [*keyfile*]
+#  (Optional) Required if identity server requires client certificate
+#  Defaults to $::os_service_default.
+#
+# [*memcache_pool_conn_get_timeout*]
+#  (Optional) Number of seconds that an operation will wait to get a memcached
+#  client connection from the pool. Integer value
+#  Defaults to $::os_service_default.
+#
+# [*memcache_pool_dead_retry*]
+#  (Optional) Number of seconds memcached server is considered dead before it
+#  is tried again. Integer value
+#  Defaults to $::os_service_default.
+#
+# [*memcache_pool_maxsize*]
+#  (Optional) Maximum total number of open connections to every memcached
+#  server. Integer value
+#  Defaults to $::os_service_default.
+#
+# [*memcache_pool_socket_timeout*]
+#  (Optional) Number of seconds a connection to memcached is held unused in the
+#  pool before it is closed. Integer value
+#  Defaults to $::os_service_default.
+#
+# [*memcache_pool_unused_timeout*]
+#  (Optional) Number of seconds a connection to memcached is held unused in the
+#  pool before it is closed. Integer value
+#  Defaults to $::os_service_default.
+#
+# [*memcache_secret_key*]
+#  (Optional, mandatory if memcache_security_strategy is defined) This string
+#  is used for key derivation.
+#  Defaults to $::os_service_default.
+#
+# [*memcache_security_strategy*]
+#  (Optional) If defined, indicate whether token data should be authenticated or
+#  authenticated and encrypted. If MAC, token data is authenticated (with HMAC)
+#  in the cache. If ENCRYPT, token data is encrypted and authenticated in the
+#  cache. If the value is not one of these options or empty, auth_token will
+#  raise an exception on initialization.
+#  Defaults to $::os_service_default.
+#
+# [*memcache_use_advanced_pool*]
+#  (Optional)  Use the advanced (eventlet safe) memcached client pool. The
+#  advanced pool will only work under python 2.x Boolean value
+#  Defaults to $::os_service_default.
+#
+# [*memcached_servers*]
+#  (Optional) Optionally specify a list of memcached server(s) to use for
+#  caching. If left undefined, tokens will instead be cached in-process.
+#  Defaults to $::os_service_default.
+#
+# [*region_name*]
+#  (Optional) The region in which the identity server can be found.
+#  Defaults to $::os_service_default.
+#
+# [*revocation_cache_time*]
+#  (Optional) Determines the frequency at which the list of revoked tokens is
+#  retrieved from the Identity service (in seconds). A high number of
+#  revocation events combined with a low cache duration may significantly
+#  reduce performance. Only valid for PKI tokens. Integer value
+#  Defaults to $::os_service_default.
+#
+# [*signing_dir*]
+#  (Optional) Directory used to cache files related to PKI tokens.
+#  Defaults to $::os_service_default.
+#
+# [*token_cache_time*]
+#  (Optional) In order to prevent excessive effort spent validating tokens,
+#  the middleware caches previously-seen tokens for a configurable duration
+#  (in seconds). Set to -1 to disable caching completely. Integer value
+#  Defaults to $::os_service_default.
 #
 define keystone::resource::authtoken(
   $username,
   $password,
   $auth_url,
-  $auth_plugin         = 'password',
-  $user_id             = $::os_service_default,
-  $user_domain_name    = $::os_service_default,
-  $user_domain_id      = $::os_service_default,
-  $project_name        = $::os_service_default,
-  $project_id          = $::os_service_default,
-  $project_domain_name = $::os_service_default,
-  $project_domain_id   = $::os_service_default,
-  $domain_name         = $::os_service_default,
-  $domain_id           = $::os_service_default,
-  $default_domain_name = $::os_service_default,
-  $default_domain_id   = $::os_service_default,
-  $trust_id            = $::os_service_default,
-  $cacert              = $::os_service_default,
-  $cert                = $::os_service_default,
-  $key                 = $::os_service_default,
-  $insecure            = false,
+  $project_name,
+  $user_domain_name               = $::os_service_default,
+  $project_domain_name            = $::os_service_default,
+  $insecure                       = $::os_service_default,
+  $auth_section                   = $::os_service_default,
+  $auth_type                      = $::os_service_default,
+  $auth_uri                       = $::os_service_default,
+  $auth_version                   = $::os_service_default,
+  $cache                          = $::os_service_default,
+  $cafile                         = $::os_service_default,
+  $certfile                       = $::os_service_default,
+  $check_revocations_for_cached   = $::os_service_default,
+  $delay_auth_decision            = $::os_service_default,
+  $enforce_token_bind             = $::os_service_default,
+  $hash_algorithms                = $::os_service_default,
+  $http_connect_timeout           = $::os_service_default,
+  $http_request_max_retries       = $::os_service_default,
+  $include_service_catalog        = $::os_service_default,
+  $keyfile                        = $::os_service_default,
+  $memcache_pool_conn_get_timeout = $::os_service_default,
+  $memcache_pool_dead_retry       = $::os_service_default,
+  $memcache_pool_maxsize          = $::os_service_default,
+  $memcache_pool_socket_timeout   = $::os_service_default,
+  $memcache_pool_unused_timeout   = $::os_service_default,
+  $memcache_secret_key            = $::os_service_default,
+  $memcache_security_strategy     = $::os_service_default,
+  $memcache_use_advanced_pool     = $::os_service_default,
+  $memcached_servers              = $::os_service_default,
+  $region_name                    = $::os_service_default,
+  $revocation_cache_time          = $::os_service_default,
+  $signing_dir                    = $::os_service_default,
+  $token_cache_time               = $::os_service_default,
 ) {
 
   include ::keystone::deps
 
-  if is_service_default($project_name) and is_service_default($project_id) and
-  is_service_default($domain_name) and is_service_default($domain_id) {
-    fail('Must specify either a project (project_name or project_id, for a project scoped token) or a domain (domain_name or domain_id, for a domain scoped token)')
+  if !is_service_default($check_revocations_for_cached) {
+    validate_bool($check_revocations_for_cached)
   }
 
-  if ( !is_service_default($project_name) or !is_service_default($project_id) ) and
-  ( !is_service_default($domain_name) or !is_service_default($domain_id) ) {
-    fail('Cannot specify both a project (project_name or project_id) and a domain (domain_name or domain_id)')
+  if !is_service_default($include_service_catalog) {
+    validate_bool($include_service_catalog)
   }
 
-  $user_and_domain_array = split($username, '::')
-  $real_username = $user_and_domain_array[0]
-
-  if !is_service_default($user_domain_name) {
-    $real_user_domain_name = pick($user_domain_name,$user_and_domain_array[1])
-  } elsif !is_service_default($default_domain_name) {
-    $real_user_domain_name = pick($user_and_domain_array[1], $default_domain_name)
-  } else {
-    $real_user_domain_name = pick($user_domain_name, $user_and_domain_array[1], $default_domain_name)
+  if !is_service_default($memcache_use_advanced_pool) {
+    validate_bool($memcache_use_advanced_pool)
   }
 
-  $project_and_domain_array = split($project_name, '::')
-  $real_project_name = $project_and_domain_array[0]
-
-  if !is_service_default($project_domain_name) {
-    $real_project_domain_name = pick($project_domain_name, $project_and_domain_array[1])
-  } elsif !is_service_default($default_domain_name) {
-    $real_project_domain_name = pick($project_and_domain_array[1], $default_domain_name)
-  } else {
-    $real_project_domain_name = pick($project_domain_name, $project_and_domain_array[1], $default_domain_name)
+  if! ($memcache_security_strategy in [$::os_service_default,'MAC','ENCRYPT']) {
+    fail('memcache_security_strategy can be set only to MAC or ENCRYPT')
   }
 
-  $real_user_domain_id = pick($user_domain_id,$default_domain_id)
-  $real_project_domain_id = pick($project_domain_id, $default_domain_id)
-
-  $authtoken_options = {
-    'keystone_authtoken/auth_plugin'         => {'value' => $auth_plugin },
-    'keystone_authtoken/auth_url'            => {'value' => $auth_url },
-    'keystone_authtoken/username'            => {'value' => $real_username },
-    'keystone_authtoken/password'            => {'value' => $password, 'secret' => true },
-    'keystone_authtoken/user_id'             => {'value' => $user_id },
-    'keystone_authtoken/user_domain_name'    => {'value' => $real_user_domain_name },
-    'keystone_authtoken/project_name'        => {'value' => $real_project_name },
-    'keystone_authtoken/project_id'          => {'value' => $project_id },
-    'keystone_authtoken/domain_name'         => {'value' => $domain_name },
-    'keystone_authtoken/project_domain_name' => {'value' => $real_project_domain_name },
-    'keystone_authtoken/domain_id'           => {'value' => $domain_id },
-    'keystone_authtoken/trust_id'            => {'value' => $trust_id },
-    'keystone_authtoken/cacert'              => {'value' => $cacert },
-    'keystone_authtoken/cert'                => {'value' => $cert },
-    'keystone_authtoken/key'                 => {'value' => $key },
-    'keystone_authtoken/insecure'            => {'value' => $insecure },
-    'keystone_authtoken/user_domain_id'      => {'value' => $real_user_domain_id },
-    'keystone_authtoken/project_domain_id'   => {'value' => $real_project_domain_id },
+  if !is_service_default($memcache_security_strategy) and is_service_default($memcache_secret_key) {
+    fail('memcache_secret_key is required when memcache_security_strategy is defined')
   }
 
-  create_resources($name, $authtoken_options)
+  if !is_service_default($delay_auth_decision) {
+    validate_bool($delay_auth_decision)
+  }
 
+  $keystonemiddleware_options = {
+    'keystone_authtoken/auth_section'                   => {'value' => $auth_section},
+    'keystone_authtoken/auth_uri'                       => {'value' => $auth_uri},
+    'keystone_authtoken/auth_type'                      => {'value' => $auth_type},
+    'keystone_authtoken/auth_version'                   => {'value' => $auth_version},
+    'keystone_authtoken/cache'                          => {'value' => $cache},
+    'keystone_authtoken/cafile'                         => {'value' => $cafile},
+    'keystone_authtoken/certfile'                       => {'value' => $certfile},
+    'keystone_authtoken/check_revocations_for_cached'   => {'value' => $check_revocations_for_cached},
+    'keystone_authtoken/delay_auth_decision'            => {'value' => $delay_auth_decision},
+    'keystone_authtoken/enforce_token_bind'             => {'value' => $enforce_token_bind},
+    'keystone_authtoken/hash_algorithms'                => {'value' => $hash_algorithms},
+    'keystone_authtoken/http_connect_timeout'           => {'value' => $http_connect_timeout},
+    'keystone_authtoken/http_request_max_retries'       => {'value' => $http_request_max_retries},
+    'keystone_authtoken/include_service_catalog'        => {'value' => $include_service_catalog},
+    'keystone_authtoken/keyfile'                        => {'value' => $keyfile},
+    'keystone_authtoken/memcache_pool_conn_get_timeout' => {'value' => $memcache_pool_conn_get_timeout},
+    'keystone_authtoken/memcache_pool_dead_retry'       => {'value' => $memcache_pool_dead_retry},
+    'keystone_authtoken/memcache_pool_maxsize'          => {'value' => $memcache_pool_maxsize},
+    'keystone_authtoken/memcache_pool_socket_timeout'   => {'value' => $memcache_pool_socket_timeout},
+    'keystone_authtoken/memcache_pool_unused_timeout'   => {'value' => $memcache_pool_unused_timeout},
+    'keystone_authtoken/memcache_secret_key'            => {'value' => $memcache_secret_key},
+    'keystone_authtoken/memcache_security_strategy'     => {'value' => $memcache_security_strategy},
+    'keystone_authtoken/memcache_use_advanced_pool'     => {'value' => $memcache_use_advanced_pool},
+    'keystone_authtoken/memcached_servers'              => {'value' => $memcached_servers},
+    'keystone_authtoken/region_name'                    => {'value' => $region_name},
+    'keystone_authtoken/revocation_cache_time'          => {'value' => $revocation_cache_time},
+    'keystone_authtoken/signing_dir'                    => {'value' => $signing_dir},
+    'keystone_authtoken/token_cache_time'               => {'value' => $token_cache_time},
+    'keystone_authtoken/auth_url'                       => {'value' => $auth_url},
+    'keystone_authtoken/username'                       => {'value' => $username},
+    'keystone_authtoken/password'                       => {'value' => $password, 'secret' => true},
+    'keystone_authtoken/user_domain_name'               => {'value' => $user_domain_name},
+    'keystone_authtoken/project_name'                   => {'value' => $project_name},
+    'keystone_authtoken/project_domain_name'            => {'value' => $project_domain_name},
+    'keystone_authtoken/insecure'                       => {'value' => $insecure},
+  }
+  create_resources($name, $keystonemiddleware_options)
 }

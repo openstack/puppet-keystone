@@ -4,178 +4,176 @@ describe 'keystone::resource::authtoken' do
 
   let (:title) { 'keystone_config' }
 
-  let :required_params do
+  let :params do
     { :username     => 'keystone',
       :password     => 'secret',
-      :auth_url     => 'http://127.0.0.1:35357/',
+      :auth_url     => 'http://127.0.0.1:35357',
       :project_name => 'services' }
   end
 
   shared_examples 'shared examples' do
-
     context 'with only required parameters' do
-      let :params do
-        required_params
+      it 'configures keystone authtoken' do
+        is_expected.to contain_keystone_config('keystone_authtoken/username').with_value('keystone')
+        is_expected.to contain_keystone_config('keystone_authtoken/password').with_value('secret').with_secret(true)
+        is_expected.to contain_keystone_config('keystone_authtoken/auth_url').with_value( params[:auth_url] )
+        is_expected.to contain_keystone_config('keystone_authtoken/project_name').with_value( params[:project_name] )
+        is_expected.to contain_keystone_config('keystone_authtoken/project_domain_name').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/user_domain_name').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/insecure').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/auth_section').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/auth_type').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/auth_uri').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/auth_version').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/cache').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/cafile').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/certfile').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/check_revocations_for_cached').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/delay_auth_decision').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/enforce_token_bind').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/hash_algorithms').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/http_connect_timeout').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/http_request_max_retries').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/include_service_catalog').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/keyfile').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/memcache_pool_conn_get_timeout').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/memcache_pool_dead_retry').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/memcache_pool_maxsize').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/memcache_pool_socket_timeout').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/memcache_pool_unused_timeout').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/memcache_secret_key').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/memcache_security_strategy').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/memcache_use_advanced_pool').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/memcached_servers').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/region_name').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/revocation_cache_time').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/signing_dir').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/token_cache_time').with_value('<SERVICE DEFAULT>')
       end
-
-      it { is_expected.to contain_keystone_config('keystone_authtoken/username').with(
-        :value  => 'keystone',
-      )}
-
-      it { is_expected.to contain_keystone_config('keystone_authtoken/user_id').with(
-        :value => '<SERVICE DEFAULT>',
-      )}
-
-      it { is_expected.to contain_keystone_config('keystone_authtoken/password').with(
-        :value  => 'secret',
-        :secret => true,
-      )}
-
-      it { is_expected.to contain_keystone_config('keystone_authtoken/auth_plugin').with(
-        :value  => 'password',
-      )}
-
-      it { is_expected.to contain_keystone_config('keystone_authtoken/auth_url').with(
-        :value  => 'http://127.0.0.1:35357/',
-      )}
-
-      it { is_expected.to contain_keystone_config('keystone_authtoken/project_name').with(
-        :value  => 'services',
-      )}
-
-      it { is_expected.to contain_keystone_config('keystone_authtoken/project_id').with(
-        :value => '<SERVICE DEFAULT>',
-      )}
-
-      it { is_expected.to contain_keystone_config('keystone_authtoken/user_domain_name').with(
-        :value => '<SERVICE DEFAULT>',
-      )}
-
-      it { is_expected.to contain_keystone_config('keystone_authtoken/project_domain_name').with(
-        :value => '<SERVICE DEFAULT>',
-      )}
-
-      it { is_expected.to contain_keystone_config('keystone_authtoken/user_domain_id').with(
-        :value => '<SERVICE DEFAULT>',
-      )}
-
-      it { is_expected.to contain_keystone_config('keystone_authtoken/project_domain_id').with(
-        :value => '<SERVICE DEFAULT>',
-      )}
-
-      it { is_expected.to contain_keystone_config('keystone_authtoken/domain_name').with(
-        :value => '<SERVICE DEFAULT>',
-      )}
-
-      it { is_expected.to contain_keystone_config('keystone_authtoken/domain_id').with(
-        :value => '<SERVICE DEFAULT>',
-      )}
-
-      it { is_expected.to contain_keystone_config('keystone_authtoken/trust_id').with(
-        :value => '<SERVICE DEFAULT>',
-      )}
-
-      it { is_expected.to contain_keystone_config('keystone_authtoken/cacert').with(
-        :value => '<SERVICE DEFAULT>',
-      )}
-
-      it { is_expected.to contain_keystone_config('keystone_authtoken/cert').with(
-        :value => '<SERVICE DEFAULT>',
-      )}
-
-      it { is_expected.to contain_keystone_config('keystone_authtoken/key').with(
-        :value => '<SERVICE DEFAULT>',
-      )}
-
-      it { is_expected.to contain_keystone_config('keystone_authtoken/insecure').with(
-        :value => 'false',
-      )}
-
     end
 
-    context 'when omitting a required parameter password' do
+    context 'set all keystone authoken parameters' do
+      before do
+        params.merge! ({
+          :username                     => 'username',
+          :password                     => 'hardpassword',
+          :auth_url                     => 'http://127.1.1.127:35357/',
+          :project_name                 => 'NoProject',
+          :user_domain_name             => 'MyDomain',
+          :project_domain_name          => 'OurDomain',
+          :insecure                     =>  true,
+          :auth_section                 => 'some_section',
+          :auth_type                    => 'password',
+          :auth_uri                     => 'http://127.1.1.127:5000/',
+          :auth_version                 => '3',
+          :cache                        => 'somevalue',
+          :cafile                       => 'cafile.pem',
+          :certfile                     => 'certfile.crt',
+          :check_revocations_for_cached =>  true,
+          :delay_auth_decision          =>  true,
+          :enforce_token_bind           => 'strict',
+          :hash_algorithms              => 'sha1',
+          :http_connect_timeout         => '120',
+          :http_request_max_retries     => '5',
+          :include_service_catalog      => false,
+          :keyfile                      => 'somekey.key',
+          :region_name                  => 'MyRegion',
+          :revocation_cache_time        => '50',
+          :signing_dir                  => '/tmp/',
+          :token_cache_time             => '20',
+        })
+      end
+      it 'override keystone authtoken parameters' do
+        is_expected.to contain_keystone_config('keystone_authtoken/username').with_value(params[:username])
+        is_expected.to contain_keystone_config('keystone_authtoken/password').with_value(params[:password]).with_secret(true)
+        is_expected.to contain_keystone_config('keystone_authtoken/auth_url').with_value( params[:auth_url] )
+        is_expected.to contain_keystone_config('keystone_authtoken/project_name').with_value( params[:project_name] )
+        is_expected.to contain_keystone_config('keystone_authtoken/user_domain_name').with_value(params[:user_domain_name])
+        is_expected.to contain_keystone_config('keystone_authtoken/project_domain_name').with_value(params[:project_domain_name])
+        is_expected.to contain_keystone_config('keystone_authtoken/insecure').with_value(params[:insecure])
+        is_expected.to contain_keystone_config('keystone_authtoken/auth_section').with_value(params[:auth_section])
+        is_expected.to contain_keystone_config('keystone_authtoken/auth_uri').with_value(params[:auth_uri])
+        is_expected.to contain_keystone_config('keystone_authtoken/auth_version').with_value(params[:auth_version])
+        is_expected.to contain_keystone_config('keystone_authtoken/cache').with_value(params[:cache])
+        is_expected.to contain_keystone_config('keystone_authtoken/check_revocations_for_cached').with_value(params[:check_revocations_for_cached])
+        is_expected.to contain_keystone_config('keystone_authtoken/delay_auth_decision').with_value(params[:delay_auth_decision])
+        is_expected.to contain_keystone_config('keystone_authtoken/enforce_token_bind').with_value(params[:enforce_token_bind])
+        is_expected.to contain_keystone_config('keystone_authtoken/hash_algorithms').with_value(params[:hash_algorithms])
+        is_expected.to contain_keystone_config('keystone_authtoken/http_connect_timeout').with_value(params[:http_connect_timeout])
+        is_expected.to contain_keystone_config('keystone_authtoken/http_request_max_retries').with_value(params[:http_request_max_retries])
+        is_expected.to contain_keystone_config('keystone_authtoken/include_service_catalog').with_value(params[:include_service_catalog])
+        is_expected.to contain_keystone_config('keystone_authtoken/memcache_pool_conn_get_timeout').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/memcache_pool_dead_retry').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/memcache_pool_maxsize').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/memcache_pool_socket_timeout').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/memcache_pool_unused_timeout').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/memcache_secret_key').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/memcache_security_strategy').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/memcache_use_advanced_pool').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/memcached_servers').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/region_name').with_value(params[:region_name])
+        is_expected.to contain_keystone_config('keystone_authtoken/revocation_cache_time').with_value(params[:revocation_cache_time])
+        is_expected.to contain_keystone_config('keystone_authtoken/signing_dir').with_value(params[:signing_dir])
+        is_expected.to contain_keystone_config('keystone_authtoken/token_cache_time').with_value(params[:token_cache_time])
+      end
+    end
+
+    context 'without password required parameter' do
       let :params do
-        required_params.delete(:password)
+        params.delete(:password)
       end
       it { expect { is_expected.to raise_error(Puppet::Error) } }
     end
 
-    context 'when specifying auth_url' do
+    context 'without specify project' do
       let :params do
-        required_params.merge({:auth_url => 'https://host:11111/v3/'})
+        params.delete(:project_name)
       end
-      it { is_expected.to contain_keystone_config('keystone_authtoken/auth_url').with(
-        :value  => 'https://host:11111/v3/',
-      )}
-
+      it { expect { is_expected.to raise_error(Puppet::Error) } }
     end
 
-    context 'when specifying project and scope_domain' do
-      let :params do
-        required_params.merge({:domain_name => 'domain'})
+    context 'when specifying all memcache params' do
+      before do
+        params.merge! ({
+          :memcached_servers              => 'localhost',
+          :memcache_use_advanced_pool     =>  true,
+          :memcache_security_strategy     => 'ENCRYPT',
+          :memcache_secret_key            => 'secret_key',
+          :memcache_pool_unused_timeout   => '60',
+          :memcache_pool_socket_timeout   => '3',
+          :memcache_pool_maxsize          => '10',
+          :memcache_pool_dead_retry       => '300',
+          :memcache_pool_conn_get_timeout => '10',
+      })
       end
-      it { expect { is_expected.to raise_error(Puppet::Error, 'Cannot specify both a project (project_name or project_id) and a domain (domain_name or domain_id)') } }
+      it 'configures memcahce severs in keystone authtoken' do
+        is_expected.to contain_keystone_config('keystone_authtoken/memcached_servers').with_value( params[:memcached_servers] )
+        is_expected.to contain_keystone_config('keystone_authtoken/memcache_use_advanced_pool').with_value( params[:memcache_use_advanced_pool] )
+        is_expected.to contain_keystone_config('keystone_authtoken/memcache_security_strategy').with_value( params[:memcache_security_strategy] )
+        is_expected.to contain_keystone_config('keystone_authtoken/memcache_secret_key').with_value( params[:memcache_secret_key] )
+        is_expected.to contain_keystone_config('keystone_authtoken/memcache_pool_unused_timeout').with_value( params[:memcache_pool_unused_timeout] )
+        is_expected.to contain_keystone_config('keystone_authtoken/memcache_pool_socket_timeout').with_value( params[:memcache_pool_socket_timeout] )
+        is_expected.to contain_keystone_config('keystone_authtoken/memcache_pool_maxsize').with_value( params[:memcache_pool_maxsize] )
+        is_expected.to contain_keystone_config('keystone_authtoken/memcache_pool_dead_retry').with_value( params[:memcache_pool_dead_retry] )
+        is_expected.to contain_keystone_config('keystone_authtoken/memcache_pool_conn_get_timeout').with_value( params[:memcache_pool_conn_get_timeout] )
+      end
     end
 
-    context 'when specifying neither project nor domain' do
-      let :params do
-        required_params.delete(:project_name)
+    context 'memcache_security_strategy with invalid value' do
+      before do
+        params.merge!({ :memcache_security_strategy => 'mystrategy', })
       end
-      it { expect { is_expected.to raise_error(Puppet::Error, 'Must specify either a project (project_name or project_id, for a project scoped token) or a domain (domain_name or domain_id, for a domain scoped token)') } }
+      it { expect { is_expected.to raise_error(Puppet::Error, 'memcache_security_strategy can be set only to MAC or ENCRYPT') } }
     end
 
-    context 'when specifying domain in name' do
-      let :params do
-        required_params.merge({
-          :username            => 'keystone::userdomain',
-          :project_name        => 'services::projdomain',
-          :default_domain_name => 'shouldnotuse'
+    context 'require memcache_secret_key when memcache_security_strategy is defined' do
+      before do
+        params.merge!({
+          :memcache_security_strategy => 'MAC',
+          :memcache_secret_key => '<SERVICE DEFAULT>',
         })
       end
-      it { is_expected.to contain_keystone_config('keystone_authtoken/user_domain_name').with(
-        :value => 'userdomain',
-      )}
-
-      it { is_expected.to contain_keystone_config('keystone_authtoken/project_domain_name').with(
-        :value => 'projdomain',
-      )}
-
-    end
-
-    context 'when specifying domain in parameters' do
-      let :params do
-        required_params.merge({
-          :username            => 'keystone::userdomain',
-          :user_domain_name    => 'realuserdomain',
-          :project_name        => 'services::projdomain',
-          :project_domain_name => 'realprojectdomain',
-          :default_domain_name => 'shouldnotuse'
-        })
-      end
-      it { is_expected.to contain_keystone_config('keystone_authtoken/user_domain_name').with(
-        :value => 'realuserdomain',
-      )}
-
-      it { is_expected.to contain_keystone_config('keystone_authtoken/project_domain_name').with(
-        :value => 'realprojectdomain',
-      )}
-
-    end
-
-    context 'when specifying only default domain' do
-      let :params do
-        required_params.merge({
-          :default_domain_name => 'defaultdomain'
-        })
-      end
-      it { is_expected.to contain_keystone_config('keystone_authtoken/user_domain_name').with(
-        :value => 'defaultdomain',
-      )}
-
-      it { is_expected.to contain_keystone_config('keystone_authtoken/project_domain_name').with(
-        :value => 'defaultdomain',
-      )}
-
+      it { expect { is_expected.to raise_error(Puppet::Error, 'memcache_secret_key is required when memcache_security_strategy is defined') } }
     end
 
   end
@@ -191,4 +189,5 @@ describe 'keystone::resource::authtoken' do
       include_examples 'shared examples'
     end
   end
+
 end
