@@ -192,5 +192,27 @@ describe 'keystone::roles::admin' do
       }
     end
    it { is_expected.to contain_keystone_domain('admin_domain') }
-   end
+  end
+
+  describe 'when specifying a target admin domain' do
+    let :params do
+      {
+        :email                  => 'foo@bar',
+        :password               => 'ChangeMe',
+        :admin_user_domain      => 'admin_domain',
+        :admin_project_domain   => 'admin_domain',
+        :target_admin_domain    => 'admin_domain_target'
+      }
+    end
+    let(:pre_condition) { 'file { "/root/openrc": tag => ["openrc"]}' }
+    it { is_expected.to contain_keystone_domain('admin_domain_target') }
+    it { is_expected.to contain_keystone_user_role('admin@::admin_domain_target')
+             .with(
+               :roles          => ['admin'],
+               :ensure         => 'present',
+               :user_domain    => 'admin_domain',
+             )
+             .that_comes_before('File[/root/openrc]')
+    }
+  end
 end
