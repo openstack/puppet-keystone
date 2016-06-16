@@ -294,13 +294,6 @@ describe 'keystone' do
       }.to raise_error(RSpec::Expectations::ExpectationNotMetError, /expected that the catalogue would contain Service\[#{platform_parameters[:service_name]}\]/)
     end
 
-    it { is_expected.to contain_class('keystone::service').with(
-      'ensure'          => 'stopped',
-      'service_name'    => platform_parameters[:service_name],
-      'enable'          => false,
-      'validate'        => false
-    )}
-    it { is_expected.to contain_service('httpd').with_before(/Anchor\[keystone::service::end\]/) }
     it { is_expected.to contain_exec('restart_keystone').with(
       'command' => "service #{platform_parameters[:httpd_service_name]} restart",
     ) }

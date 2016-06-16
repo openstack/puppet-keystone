@@ -710,9 +710,14 @@ class keystone(
 
   if $manage_policyrcd {
     # openstacklib::policyrcd only affects debian based systems.
-    class { '::openstacklib::policyrcd': services => ['keystone', 'apache2'] }
     Class['::openstacklib::policyrcd'] -> Package['keystone']
     Class['::openstacklib::policyrcd'] -> Package['httpd']
+    # we don't have keystone service anymore starting from Newton
+    if ($::operatingsystem == 'Ubuntu') and (versioncmp($::operatingsystemmajrelease, '16') >= 0) {
+      class { '::openstacklib::policyrcd': services => ['apache2'] }
+    } else {
+      class { '::openstacklib::policyrcd': services => ['keystone', 'apache2'] }
+    }
   }
 
   include ::keystone::db
@@ -993,17 +998,6 @@ class keystone(
   } elsif $service_name == 'httpd' {
     include ::apache::params
     $service_name_real = $::apache::params::service_name
-    if $::osfamily == 'Debian' {
-      class { '::keystone::service':
-        ensure       => 'stopped',
-        service_name => $::keystone::params::service_name,
-        enable       => false,
-        validate     => false,
-      }
-      # leave this here because Ubuntu packages will start Keystone and we need it stopped
-      # before apache can run
-      Service['keystone'] -> Service[$service_name_real]
-    }
   } else {
     fail('Invalid service_name. Either keystone/openstack-keystone for running as a standalone service, or httpd for being run by a httpd server')
   }

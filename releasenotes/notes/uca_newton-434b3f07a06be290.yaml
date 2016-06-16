@@ -1,0 +1,4 @@
+---
+other:
+  - If you use Ubuntu Cloud Archives (Canonical) packages and you set manage_policyrcd
+    to true, you won't be able to deloy OpenStack Mitaka.
