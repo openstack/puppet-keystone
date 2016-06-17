@@ -1,0 +1,4 @@
+---
+upgrade:
+  - update undef parameters in authtoken.pp to use
+    $::os_service_default

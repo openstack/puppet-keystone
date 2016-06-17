@@ -23,7 +23,7 @@ describe 'keystone::resource::authtoken' do
       )}
 
       it { is_expected.to contain_keystone_config('keystone_authtoken/user_id').with(
-        :ensure => 'absent',
+        :value => '<SERVICE DEFAULT>',
       )}
 
       it { is_expected.to contain_keystone_config('keystone_authtoken/password').with(
@@ -44,47 +44,47 @@ describe 'keystone::resource::authtoken' do
       )}
 
       it { is_expected.to contain_keystone_config('keystone_authtoken/project_id').with(
-        :ensure => 'absent',
+        :value => '<SERVICE DEFAULT>',
       )}
 
       it { is_expected.to contain_keystone_config('keystone_authtoken/user_domain_name').with(
-        :ensure => 'absent',
+        :value => '<SERVICE DEFAULT>',
       )}
 
       it { is_expected.to contain_keystone_config('keystone_authtoken/project_domain_name').with(
-        :ensure => 'absent',
+        :value => '<SERVICE DEFAULT>',
       )}
 
       it { is_expected.to contain_keystone_config('keystone_authtoken/user_domain_id').with(
-        :ensure => 'absent',
+        :value => '<SERVICE DEFAULT>',
       )}
 
       it { is_expected.to contain_keystone_config('keystone_authtoken/project_domain_id').with(
-        :ensure => 'absent',
+        :value => '<SERVICE DEFAULT>',
       )}
 
       it { is_expected.to contain_keystone_config('keystone_authtoken/domain_name').with(
-        :ensure => 'absent',
+        :value => '<SERVICE DEFAULT>',
       )}
 
       it { is_expected.to contain_keystone_config('keystone_authtoken/domain_id').with(
-        :ensure => 'absent',
+        :value => '<SERVICE DEFAULT>',
       )}
 
       it { is_expected.to contain_keystone_config('keystone_authtoken/trust_id').with(
-        :ensure => 'absent',
+        :value => '<SERVICE DEFAULT>',
       )}
 
       it { is_expected.to contain_keystone_config('keystone_authtoken/cacert').with(
-        :ensure => 'absent',
+        :value => '<SERVICE DEFAULT>',
       )}
 
       it { is_expected.to contain_keystone_config('keystone_authtoken/cert').with(
-        :ensure => 'absent',
+        :value => '<SERVICE DEFAULT>',
       )}
 
       it { is_expected.to contain_keystone_config('keystone_authtoken/key').with(
-        :ensure => 'absent',
+        :value => '<SERVICE DEFAULT>',
       )}
 
       it { is_expected.to contain_keystone_config('keystone_authtoken/insecure').with(
@@ -180,19 +180,15 @@ describe 'keystone::resource::authtoken' do
 
   end
 
-  context 'on a Debian osfamily' do
-    let :facts do
-      @default_facts.merge({ :osfamily => "Debian" })
+  on_supported_os({
+    :supported_oos => OSDefaults.get_supported_os
+  }).each do |os,facts|
+    context "on #{os}" do
+      let (:facts) do
+        facts.merge!(OSDefaults.get_facts())
+      end
+
+      include_examples 'shared examples'
     end
-
-    include_examples 'shared examples'
-  end
-
-  context 'on a RedHat osfamily' do
-    let :facts do
-      @default_facts.merge({ :osfamily => 'RedHat' })
-    end
-
-    include_examples 'shared examples'
   end
 end

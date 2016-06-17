@@ -44,93 +44,89 @@
 # == Parameters:
 #
 # [*name*]
-#   The name of the resource corresponding to the config file.  For example,
+#   (Required) The name of the resource corresponding to the config file.  For example,
 #   keystone::resource::authtoken { 'glance_api_config': ... }
 #   Where 'glance_api_config' is the name of the resource used to manage
-#   the glance api configuration.
-#   string; required
+#   the glance api configuration. string;
 #
 # [*username*]
-#   The name of the service user;
-#   string; required
+#   (Required) The name of the service user; string;
 #
 # [*password*]
-#   Password to create for the service user;
-#   string; required
+#   (Required) Password to create for the service user; string;
 #
 # [*auth_url*]
-#   The URL to use for authentication.
-#   string; required
+#   (Required) The URL to use for authentication. string;
 #
 # [*auth_plugin*]
-#   The plugin to use for authentication.
-#   string; optional: default to 'password'
+#   (Optional) The plugin to use for authentication. string;
+#   Defaults to 'password'
 #
 # [*user_id*]
-#   The ID of the service user;
-#   string; optional: default to undef
+#   (Optional) The ID of the service user;
+#   string; Defaults to $::os_service_default
 #
 # [*user_domain_name*]
 #   (Optional) Name of domain for $username
-#   Defaults to undef
+#   Defaults to $::os_service_default
 #
 # [*user_domain_id*]
 #   (Optional) ID of domain for $username
-#   Defaults to undef
+#   Defaults to $::os_service_default
 #
 # [*project_name*]
-#   Service project name;
-#   string; optional: default to undef
+#   (Optional) Service project name; string;
+#   Defaults to $::os_service_default
 #
 # [*project_id*]
-#   Service project ID;
-#   string; optional: default to undef
+#   (Optional) Service project ID;
+#   string; Defaults to $::os_service_default
 #
 # [*project_domain_name*]
 #   (Optional) Name of domain for $project_name
-#   Defaults to undef
+#   Defaults to $::os_service_default
 #
 # [*project_domain_id*]
 #   (Optional) ID of domain for $project_name
-#   Defaults to undef
+#   Defaults to $::os_service_default
 #
 # [*domain_name*]
 #   (Optional) Use this for auth to obtain a domain-scoped token.
 #   If using this option, do not specify $project_name or $project_id.
-#   Defaults to undef
+#   Defaults to $::os_service_default
 #
 # [*domain_id*]
 #   (Optional) Use this for auth to obtain a domain-scoped token.
 #   If using this option, do not specify $project_name or $project_id.
-#   Defaults to undef
+#   Defaults to $::os_service_default
 #
 # [*default_domain_name*]
 #   (Optional) Name of domain for $username and $project_name
 #   If user_domain_name is not specified, use $default_domain_name
 #   If project_domain_name is not specified, use $default_domain_name
-#   Defaults to undef
+#   Defaults to $::os_service_default
 #
 # [*default_domain_id*]
 #   (Optional) ID of domain for $user_id and $project_id
 #   If user_domain_id is not specified, use $default_domain_id
 #   If project_domain_id is not specified, use $default_domain_id
-#   Defaults to undef
+#   Defaults to $::os_service_default
 #
 # [*trust_id*]
 #   (Optional) Trust ID
-#   Defaults to undef
+#   Defaults to $::os_service_default
 #
 # [*cacert*]
 #   (Optional) CA certificate file for TLS (https)
-#   Defaults to undef
+#   Defaults to $::os_service_default
 #
 # [*cert*]
 #   (Optional) Certificate file for TLS (https)
-#   Defaults to undef
+#   Defaults to $::os_service_default
 #
 # [*key*]
 #   (Optional) Key file for TLS (https)
-#   Defaults to undef
+#   Defaults to $::os_service_default
 #
 # [*insecure*]
 #   If true, explicitly allow TLS without checking server cert against any
@@ -142,114 +138,82 @@ define keystone::resource::authtoken(
   $password,
   $auth_url,
   $auth_plugin         = 'password',
-  $user_id             = undef,
-  $user_domain_name    = undef,
-  $user_domain_id      = undef,
-  $project_name        = undef,
-  $project_id          = undef,
-  $project_domain_name = undef,
-  $project_domain_id   = undef,
-  $domain_name         = undef,
-  $domain_id           = undef,
-  $default_domain_name = undef,
-  $default_domain_id   = undef,
-  $trust_id            = undef,
-  $cacert              = undef,
-  $cert                = undef,
-  $key                 = undef,
+  $user_id             = $::os_service_default,
+  $user_domain_name    = $::os_service_default,
+  $user_domain_id      = $::os_service_default,
+  $project_name        = $::os_service_default,
+  $project_id          = $::os_service_default,
+  $project_domain_name = $::os_service_default,
+  $project_domain_id   = $::os_service_default,
+  $domain_name         = $::os_service_default,
+  $domain_id           = $::os_service_default,
+  $default_domain_name = $::os_service_default,
+  $default_domain_id   = $::os_service_default,
+  $trust_id            = $::os_service_default,
+  $cacert              = $::os_service_default,
+  $cert                = $::os_service_default,
+  $key                 = $::os_service_default,
   $insecure            = false,
 ) {
 
   include ::keystone::deps
 
-  if !$project_name and !$project_id and !$domain_name and !$domain_id {
+  if is_service_default($project_name) and is_service_default($project_id) and
+  is_service_default($domain_name) and is_service_default($domain_id) {
     fail('Must specify either a project (project_name or project_id, for a project scoped token) or a domain (domain_name or domain_id, for a domain scoped token)')
   }
 
-  if ($project_name or $project_id) and ($domain_name or $domain_id) {
+  if ( !is_service_default($project_name) or !is_service_default($project_id) ) and
+  ( !is_service_default($domain_name) or !is_service_default($domain_id) ) {
     fail('Cannot specify both a project (project_name or project_id) and a domain (domain_name or domain_id)')
   }
 
   $user_and_domain_array = split($username, '::')
   $real_username = $user_and_domain_array[0]
-  $real_user_domain_name = pick($user_domain_name, $user_and_domain_array[1], $default_domain_name, '__nodomain__')
+
+  if !is_service_default($user_domain_name) {
+    $real_user_domain_name = pick($user_domain_name,$user_and_domain_array[1])
+  } elsif !is_service_default($default_domain_name) {
+    $real_user_domain_name = pick($user_and_domain_array[1], $default_domain_name)
+  } else {
+    $real_user_domain_name = pick($user_domain_name, $user_and_domain_array[1], $default_domain_name)
+  }
 
   $project_and_domain_array = split($project_name, '::')
   $real_project_name = $project_and_domain_array[0]
-  $real_project_domain_name = pick($project_domain_name, $project_and_domain_array[1], $default_domain_name, '__nodomain__')
 
-  create_resources($name, {'keystone_authtoken/auth_plugin' => {'value' => $auth_plugin}})
-  create_resources($name, {'keystone_authtoken/auth_url' => {'value' => $auth_url}})
-  create_resources($name, {'keystone_authtoken/username' => {'value' => $real_username}})
-  create_resources($name, {'keystone_authtoken/password' => {'value' => $password, 'secret' => true}})
-  if $user_id {
-    create_resources($name, {'keystone_authtoken/user_id' => {'value' => $user_id}})
+  if !is_service_default($project_domain_name) {
+    $real_project_domain_name = pick($project_domain_name, $project_and_domain_array[1])
+  } elsif !is_service_default($default_domain_name) {
+    $real_project_domain_name = pick($project_and_domain_array[1], $default_domain_name)
   } else {
-    create_resources($name, {'keystone_authtoken/user_id' => {'ensure' => 'absent'}})
+    $real_project_domain_name = pick($project_domain_name, $project_and_domain_array[1], $default_domain_name)
   }
-  if $real_user_domain_name == '__nodomain__' {
-    create_resources($name, {'keystone_authtoken/user_domain_name' => {'ensure' => 'absent'}})
-  } else {
-    create_resources($name, {'keystone_authtoken/user_domain_name' => {'value' => $real_user_domain_name}})
+
+  $real_user_domain_id = pick($user_domain_id,$default_domain_id)
+  $real_project_domain_id = pick($project_domain_id, $default_domain_id)
+
+  $authtoken_options = {
+    'keystone_authtoken/auth_plugin'         => {'value' => $auth_plugin },
+    'keystone_authtoken/auth_url'            => {'value' => $auth_url },
+    'keystone_authtoken/username'            => {'value' => $real_username },
+    'keystone_authtoken/password'            => {'value' => $password, 'secret' => true },
+    'keystone_authtoken/user_id'             => {'value' => $user_id },
+    'keystone_authtoken/user_domain_name'    => {'value' => $real_user_domain_name },
+    'keystone_authtoken/project_name'        => {'value' => $real_project_name },
+    'keystone_authtoken/project_id'          => {'value' => $project_id },
+    'keystone_authtoken/domain_name'         => {'value' => $domain_name },
+    'keystone_authtoken/project_domain_name' => {'value' => $real_project_domain_name },
+    'keystone_authtoken/domain_id'           => {'value' => $domain_id },
+    'keystone_authtoken/trust_id'            => {'value' => $trust_id },
+    'keystone_authtoken/cacert'              => {'value' => $cacert },
+    'keystone_authtoken/cert'                => {'value' => $cert },
+    'keystone_authtoken/key'                 => {'value' => $key },
+    'keystone_authtoken/insecure'            => {'value' => $insecure },
+    'keystone_authtoken/user_domain_id'      => {'value' => $real_user_domain_id },
+    'keystone_authtoken/project_domain_id'   => {'value' => $real_project_domain_id },
   }
-  if $user_domain_id {
-    create_resources($name, {'keystone_authtoken/user_domain_id' => {'value' => $user_domain_id}})
-  } elsif $default_domain_id {
-    create_resources($name, {'keystone_authtoken/user_domain_id' => {'value' => $default_domain_id}})
-  } else {
-    create_resources($name, {'keystone_authtoken/user_domain_id' => {'ensure' => 'absent'}})
-  }
-  if $project_name {
-    create_resources($name, {'keystone_authtoken/project_name' => {'value' => $real_project_name}})
-  } else {
-    create_resources($name, {'keystone_authtoken/project_name' => {'ensure' => 'absent'}})
-  }
-  if $project_id {
-    create_resources($name, {'keystone_authtoken/project_id' => {'value' => $project_id}})
-  } else {
-    create_resources($name, {'keystone_authtoken/project_id' => {'ensure' => 'absent'}})
-  }
-  if $real_project_domain_name == '__nodomain__' {
-    create_resources($name, {'keystone_authtoken/project_domain_name' => {'ensure' => 'absent'}})
-  } else {
-    create_resources($name, {'keystone_authtoken/project_domain_name' => {'value' => $real_project_domain_name}})
-  }
-  if $project_domain_id {
-    create_resources($name, {'keystone_authtoken/project_domain_id' => {'value' => $project_domain_id}})
-  } elsif $default_domain_id {
-    create_resources($name, {'keystone_authtoken/project_domain_id' => {'value' => $default_domain_id}})
-  } else {
-    create_resources($name, {'keystone_authtoken/project_domain_id' => {'ensure' => 'absent'}})
-  }
-  if $domain_name {
-    create_resources($name, {'keystone_authtoken/domain_name' => {'value' => $domain_name}})
-  } else {
-    create_resources($name, {'keystone_authtoken/domain_name' => {'ensure' => 'absent'}})
-  }
-  if $domain_id {
-    create_resources($name, {'keystone_authtoken/domain_id' => {'value' => $domain_id}})
-  } else {
-    create_resources($name, {'keystone_authtoken/domain_id' => {'ensure' => 'absent'}})
-  }
-  if $trust_id {
-    create_resources($name, {'keystone_authtoken/trust_id' => {'value' => $trust_id}})
-  } else {
-    create_resources($name, {'keystone_authtoken/trust_id' => {'ensure' => 'absent'}})
-  }
-  if $cacert {
-    create_resources($name, {'keystone_authtoken/cacert' => {'value' => $cacert}})
-  } else {
-    create_resources($name, {'keystone_authtoken/cacert' => {'ensure' => 'absent'}})
-  }
-  if $cert {
-    create_resources($name, {'keystone_authtoken/cert' => {'value' => $cert}})
-  } else {
-    create_resources($name, {'keystone_authtoken/cert' => {'ensure' => 'absent'}})
-  }
-  if $key {
-    create_resources($name, {'keystone_authtoken/key' => {'value' => $key}})
-  } else {
-    create_resources($name, {'keystone_authtoken/key' => {'ensure' => 'absent'}})
-  }
-  create_resources($name, {'keystone_authtoken/insecure' => {'value' => $insecure}})
+
+  create_resources($name, $authtoken_options)
+
 }
