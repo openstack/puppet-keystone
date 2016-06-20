@@ -709,15 +709,16 @@ class keystone(
   }
 
   if $manage_policyrcd {
-    # openstacklib::policyrcd only affects debian based systems.
-    Class['::openstacklib::policyrcd'] -> Package['keystone']
-    Class['::openstacklib::policyrcd'] -> Package['httpd']
+    # openstacklib policy_rcd only affects debian based systems.
+    Policy_rcd <| title == 'keystone' |> -> Package['keystone']
+    Policy_rcd['apache2'] -> Package['httpd']
     # we don't have keystone service anymore starting from Newton
     if ($::operatingsystem == 'Ubuntu') and (versioncmp($::operatingsystemmajrelease, '16') >= 0) {
-      class { '::openstacklib::policyrcd': services => ['apache2'] }
+      $policy_services = 'apache2'
     } else {
-      class { '::openstacklib::policyrcd': services => ['keystone', 'apache2'] }
+      $policy_services = ['keystone', 'apache2']
     }
+    ensure_resource('policy_rcd', $policy_services, { ensure => present, 'set_code' => '101' })
   }
 
   include ::keystone::db
