@@ -326,5 +326,67 @@ region="region"
         end
       end
     end
+
+    describe '#flush' do
+      let(:endpoint_attrs) do
+        {
+          :title        => 'region/service_1',
+          :ensure       => 'present',
+          :public_url   => 'http://127.0.0.1:5000',
+          :internal_url => 'http://127.0.0.1:5001',
+          :admin_url    => 'http://127.0.0.1:4999',
+          :type         => 'service_type1'
+        }
+      end
+      context '#update a missing endpoint' do
+        it 'creates an endpoint' do
+          described_class.expects(:openstack)
+            .with('endpoint', 'create', '--format', 'shell',
+                  ['service_id_1', 'admin', 'http://127.0.0.1:4999',
+                   '--region', 'region'])
+            .returns(<<-eoo
+enabled="True"
+id="endpoint1_id"
+interface="internal"
+region="None"
+region_id="None"
+service_id="service_id_1"
+service_name="service_1"
+service_type="service_type1"
+url="http://127.0.0.1:5001"
+          eoo
+                    )
+
+          provider.expects(:property_flush)
+            .times(5)
+            .returns({:admin_url => 'http://127.0.0.1:4999'})
+          provider.expects(:property_hash)
+            .twice
+            .returns({:id => ',endpoint2_id,endpoint3_id'})
+          provider.expects(:service_id)
+            .returns('service_id_1')
+          provider.flush
+          expect(provider.exists?).to be_truthy
+          expect(provider.id).to eq('endpoint1_id,endpoint2_id,endpoint3_id')
+        end
+      end
+
+      context 'adjust a url' do
+        it 'update the url' do
+          described_class.expects(:openstack)
+            .with('endpoint', 'set',
+                  ['endpoint1_id', '--url=http://127.0.0.1:4999'])
+          provider.expects(:property_flush)
+            .times(4)
+            .returns({:admin_url => 'http://127.0.0.1:4999'})
+          provider.expects(:property_hash)
+            .twice
+            .returns({:id => 'endpoint1_id,endpoint2_id,endpoint3_id'})
+          provider.flush
+          expect(provider.exists?).to be_truthy
+          expect(provider.id).to eq('endpoint1_id,endpoint2_id,endpoint3_id')
+        end
+      end
+    end
   end
 end

@@ -233,9 +233,9 @@ describe 'keystone server running with Apache/WSGI with resources' do
         ensure => present,
         region => 'RegionOne',
         type => 'type_1',
-        public_url   => 'http://public_url/',
-        internal_url => 'http://public_url/',
-        admin_url    => 'http://public_url/'
+        public_url   => 'http://public_service1_type1/',
+        internal_url => 'http://internal_service1_type1/',
+        admin_url    => 'http://admin_service1_type1/'
       }
       EOM
     end
