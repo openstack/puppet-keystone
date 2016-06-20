@@ -658,6 +658,14 @@ class keystone(
     }
   }
 
+  if $manage_policyrcd {
+    # openstacklib policy_rcd only affects debian based systems.
+    Policy_rcd <| title == 'keystone' |> -> Package['keystone']
+    Policy_rcd['apache2'] -> Package['httpd']
+    $policy_services = ['keystone', 'apache2']
+    ensure_resource('policy_rcd', $policy_services, { ensure => present, 'set_code' => '101' })
+  }
+
   include ::keystone::db
   include ::keystone::params
 
@@ -857,12 +865,6 @@ class keystone(
   keystone_config {
     'eventlet_server/admin_workers':  value => $admin_workers;
     'eventlet_server/public_workers': value => $public_workers;
-  }
-
-  if $manage_policyrcd {
-    # openstacklib::policyrcd only affects debian based systems.
-    class { '::openstacklib::policyrcd': services => ['keystone'] }
-    Class['::openstacklib::policyrcd'] -> Package['keystone']
   }
 
   if $manage_service {
