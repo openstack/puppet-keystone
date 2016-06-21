@@ -2,7 +2,7 @@
 # This class contains the platform differences for keystone
 #
 class keystone::params {
-  $client_package_name = 'python-keystone'
+  $client_package_name = 'python-keystoneclient'
   $keystone_user       = 'keystone'
   $keystone_group      = 'keystone'
   $keystone_wsgi_admin_script_path  = '/usr/bin/keystone-wsgi-admin'
