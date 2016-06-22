@@ -27,7 +27,6 @@ Puppet::Type.newtype(:keystone_tenant) do
 
   newproperty(:description) do
     desc 'A description of the tenant.'
-    defaultto('')
   end
 
   newproperty(:id) do
