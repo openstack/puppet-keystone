@@ -1,0 +1,6 @@
+---
+features:
+  - Implement `bug 1589933
+    <https://bugs.launchpad.net/puppet-keystone/+bug/1589933>`__ so now
+    one associate the admin to admin_role for an entire domain if it
+    uses the target_admin_domain parameter in the auth.pp class.
