@@ -9,6 +9,8 @@ Puppet::Type.type(:keystone_endpoint).provide(
 
   include PuppetX::Keystone::CompositeNamevar::Helpers
 
+  attr_accessor :property_hash, :property_flush
+
   @endpoints     = nil
   @services      = nil
   @credentials   = Puppet::Provider::Openstack::CredentialsV3.new
@@ -31,30 +33,18 @@ Puppet::Type.type(:keystone_endpoint).provide(
     if self.class.do_not_manage
       fail("Not managing Keystone_endpoint[#{@resource[:name]}] due to earlier Keystone API failures.")
     end
-    # Reset the cache.
-    self.class.services = nil
     name   = resource[:name]
     region = resource[:region]
     type   = resource[:type]
     type   = self.class.type_from_service(name) unless set?(:type)
     @property_hash[:type] = type
-    services = self.class.services.find_all { |s| s[:name] == name }
-    service = services.find { |s| s[:type] == type }
-
-    if service.nil? && services.count == 1
-      # For backward comptatibility, match the service by name only.
-      name = services[0][:id]
-    else
-      # Math the service by id.
-      name = service[:id] if service
-    end
     ids = []
-
+    s_id = service_id
     created = false
     [:admin_url, :internal_url, :public_url].each do |scope|
       if resource[scope]
         created = true
-        ids << endpoint_create(name, region,  scope.to_s.sub(/_url$/, ''),
+        ids << endpoint_create(s_id, region, scope.to_s.sub(/_url$/, ''),
                                resource[scope])[:id]
       end
     end
@@ -134,11 +124,11 @@ Puppet::Type.type(:keystone_endpoint).provide(
       new(
         :name         => endpoint[:name],
         :ensure       => :present,
-        :id           => "#{endpoint[:admin][:id]},#{endpoint[:internal][:id]},#{endpoint[:public][:id]}",
-        :region       => endpoint[:admin][:region],
-        :admin_url    => endpoint[:admin][:url],
-        :internal_url => endpoint[:internal][:url],
-        :public_url   => endpoint[:public][:url]
+        :id           => make_id(endpoint),
+        :region       => get_region(endpoint),
+        :admin_url    => get_url(endpoint, :admin),
+        :internal_url => get_url(endpoint, :internal),
+        :public_url   => get_url(endpoint, :public)
       )
     end
   end
@@ -153,19 +143,27 @@ Puppet::Type.type(:keystone_endpoint).provide(
   end
 
   def flush
-    if @property_flush && @property_hash[:id]
-      ids = @property_hash[:id].split(',')
-      if @property_flush[:admin_url]
-        self.class.request('endpoint', 'set', [ids[0], "--url=#{resource[:admin_url]}"])
+    if property_flush && property_hash[:id]
+      scopes = [:admin_url, :internal_url, :public_url]
+      ids = Hash[scopes.zip(property_hash[:id].split(','))]
+      scopes.each do |scope|
+        if property_flush[scope]
+          if ids[scope].nil? || ids[scope].empty?
+            ids[scope] = endpoint_create(service_id, resource[:region],
+                                         scope.to_s.sub(/_url$/, ''),
+                                         property_flush[scope])[:id]
+          else
+            self.class.request('endpoint',
+                               'set',
+                               [ids[scope],
+                                "--url=#{resource[scope]}"])
+          end
+        end
       end
-      if @property_flush[:internal_url]
-        self.class.request('endpoint', 'set', [ids[1], "--url=#{resource[:internal_url]}"])
-      end
-      if @property_flush[:public_url]
-        self.class.request('endpoint', 'set', [ids[2], "--url=#{resource[:public_url]}"])
-      end
+      @property_hash = resource.to_hash
+      @property_hash[:id] = scopes.map { |s| ids[s] }.join(',')
+      @property_hash[:ensure] = :present
     end
-    @property_hash = resource.to_hash
   end
 
   private
@@ -251,5 +249,48 @@ Puppet::Type.type(:keystone_endpoint).provide(
     else
       "#{region}/#{name}::#{type}"
     end
+  end
+
+  def self.make_id(endpoint)
+    id_str = ''
+    id_sep = ''
+    [:admin, :internal, :public].each do |type|
+      id_str += "#{id_sep}#{endpoint[type][:id]}" if endpoint[type]
+      id_sep = ','
+    end
+    id_str
+  end
+
+  def self.get_region(endpoint)
+    type = [:admin, :internal, :public].detect { |t| endpoint.key? t }
+    type ? endpoint[type][:region] : ''
+  end
+
+  def self.get_url(endpoint, type, default='')
+    endpoint[type][:url] rescue default
+  end
+
+  def service_id
+    # Reset the cache.
+    self.class.services = nil
+    name = resource[:name]
+    type = resource[:type]
+
+    services = self.class.services.find_all { |s| s[:name] == name }
+    service = services.find { |s| s[:type] == type }
+    service_id = ''
+    if service.nil? && services.count == 1
+      # For backward comptatibility, match the service by name only.
+      service_id = services[0][:id]
+    else
+      # Math the service by id.
+      service_id = service[:id] if service
+    end
+    if service_id.nil? || service_id.empty?
+      title = self.class.transform_name(resource[:region], resource[:name], resource[:type])
+      fail(Puppet::Error, "Cannot find service associated with #{title}")
+    end
+
+    service_id
   end
 end
