@@ -10,16 +10,21 @@
 #   'db_sync' in the command line.
 #   Defaults to ''
 #
+# [*keystone_user*]
+#   (optional) Specify the keystone system user to be used with keystone-manage.
+#   Defaults to $::keystone::params::keystone_user
+#
 class keystone::db::sync(
-  $extra_params = undef,
-) {
+  $extra_params  = undef,
+  $keystone_user = $::keystone::params::keystone_user,
+) inherits keystone::params {
 
   include ::keystone::deps
 
   exec { 'keystone-manage db_sync':
     command     => "keystone-manage ${extra_params} db_sync",
     path        => '/usr/bin',
-    user        => 'keystone',
+    user        => $keystone_user,
     refreshonly => true,
     subscribe   => [
       Anchor['keystone::install::end'],

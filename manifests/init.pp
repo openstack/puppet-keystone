@@ -497,11 +497,11 @@
 #
 # [*keystone_user*]
 #   (optional) Specify the keystone system user to be used with keystone-manage.
-#   Defaults to 'keystone'
+#   Defaults to $::keystone::params::keystone_user
 #
 # [*keystone_group*]
 #   (optional) Specify the keystone system group to be used with keystone-manage.
-#   Defaults to 'keystone'
+#   Defaults to $::keystone::params::keystone_group
 #
 # [*manage_policyrcd*]
 #   (optional) Whether to manage the policy-rc.d on debian based systems to
@@ -935,6 +935,7 @@ class keystone(
       exec { 'keystone-manage pki_setup':
         command     => "keystone-manage pki_setup --keystone-user ${keystone_user} --keystone-group ${keystone_group}",
         path        => '/usr/bin',
+        user        => $keystone_user,
         refreshonly => true,
         creates     => $signing_keyfile,
         notify      => Anchor['keystone::service::begin'],
@@ -1040,13 +1041,22 @@ class keystone(
   # Fernet tokens support
   if $enable_fernet_setup {
     validate_string($fernet_key_repository)
+    ensure_resource('file', $fernet_key_repository, {
+      ensure    => 'directory',
+      owner     => $keystone_user,
+      group     => $keystone_group,
+      subscribe => Anchor['keystone::install::end'],
+    })
+
     exec { 'keystone-manage fernet_setup':
       command     => "keystone-manage fernet_setup --keystone-user ${keystone_user} --keystone-group ${keystone_group}",
       path        => '/usr/bin',
+      user        => $keystone_user,
       refreshonly => true,
       creates     => "${fernet_key_repository}/0",
       notify      => Anchor['keystone::service::begin'],
       subscribe   => [Anchor['keystone::install::end'], Anchor['keystone::config::end']],
+      require     => File[$fernet_key_repository],
       tag         => 'keystone-exec',
     }
   }
@@ -1102,6 +1112,7 @@ class keystone(
     # and is only run once, so we don't need to notify the service
     exec { 'keystone-manage bootstrap':
       command     => "keystone-manage bootstrap --bootstrap-password ${admin_token}",
+      user        => $keystone_user,
       path        => '/usr/bin',
       refreshonly => true,
       notify      => Anchor['keystone::service::begin'],
@@ -1120,8 +1131,8 @@ class keystone(
     if (!defined(File[$domain_config_directory])) {
       file { $domain_config_directory:
         ensure  => directory,
-        owner   => 'keystone',
-        group   => 'keystone',
+        owner   => $keystone_user,
+        group   => $keystone_group,
         mode    => '0750',
         notify  => Service[$service_name],
         require => Anchor['keystone::install::end'],

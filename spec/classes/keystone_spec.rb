@@ -69,6 +69,8 @@ describe 'keystone' do
       'paste_config'                        => '<SERVICE DEFAULT>',
       'sync_db'                             => true,
       'purge_config'                        => false,
+      'keystone_user'                       => 'keystone',
+      'keystone_group'                      => 'keystone',
   }
 
   override_params = {
@@ -115,7 +117,9 @@ describe 'keystone' do
       'member_role_id'                      => '123456789',
       'member_role_name'                    => 'othermember',
       'paste_config'                        => '/usr/share/keystone/keystone-paste.ini',
-      'using_domain_config'                 => false
+      'using_domain_config'                 => false,
+      'keystone_user'                       => 'test_user',
+      'keystone_group'                      => 'test_group',
     }
 
   httpd_params = {'service_name' => 'httpd'}.merge(default_params)
@@ -151,7 +155,7 @@ describe 'keystone' do
       if param_hash['enable_bootstrap']
         is_expected.to contain_exec('keystone-manage bootstrap').with(
           :command     => 'keystone-manage bootstrap --bootstrap-password service_token',
-          :user        => 'keystone',
+          :user        => param_hash['keystone_user'],
           :refreshonly => true
         )
       end
@@ -377,7 +381,9 @@ describe 'keystone' do
           'signing_ca_certs'                    => '/etc/keystone/ssl/certs/ca.pem',
           'signing_ca_key'                      => '/etc/keystone/ssl/private/cakey.pem',
           'signing_cert_subject'                => '/C=US/ST=Unset/L=Unset/O=Unset/CN=www.example.com',
-          'signing_key_size'                    => 2048
+          'signing_key_size'                    => 2048,
+          'keystone_user'                       => 'keystone',
+          'keystone_group'                      => 'keystone',
         }
       end
 
@@ -391,7 +397,7 @@ describe 'keystone' do
       end
 
       it { is_expected.to contain_exec('keystone-manage pki_setup').with(
-        :command => 'keystone-manage pki_setup --keystone-user keystone --keystone-group keystone',
+        :command => "keystone-manage pki_setup --keystone-user #{params['keystone_user']} --keystone-group #{params['keystone_group']}",
         :creates => '/etc/keystone/ssl/private/signing_key.pem'
       ) }
       it { is_expected.to contain_file('/var/cache/keystone').with_ensure('directory') }
@@ -896,14 +902,21 @@ describe 'keystone' do
           'enable_fernet_setup'    => true,
           'fernet_max_active_keys' => 5,
           'revoke_by_id'           => false,
-          'keystone_user'          => 'keystone',
-          'keystone_group'         => 'keystone'
+          'fernet_key_repository'  => '/etc/keystone/fernet-keys',
         })
       end
 
+      it { is_expected.to contain_file(params['fernet_key_repository']).with(
+        :ensure => 'directory',
+        :owner  => params['keystone_user'],
+        :group  => params['keystone_group'],
+      ) }
+
       it { is_expected.to contain_exec('keystone-manage fernet_setup').with(
-        :command => 'keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone',
-        :creates => '/etc/keystone/fernet-keys/0'
+        :command => "keystone-manage fernet_setup --keystone-user #{params['keystone_user']} --keystone-group #{params['keystone_group']}",
+        :user    => params['keystone_user'],
+        :creates => '/etc/keystone/fernet-keys/0',
+        :require => 'File[/etc/keystone/fernet-keys]',
       ) }
       it { is_expected.to contain_keystone_config('fernet_tokens/max_active_keys').with_value(5)}
       it { is_expected.to contain_keystone_config('token/revoke_by_id').with_value(false)}
@@ -918,6 +931,25 @@ describe 'keystone' do
       end
       it { is_expected.to contain_exec('keystone-manage fernet_setup').with(
         :creates => '/var/lib/fernet-keys/0'
+      ) }
+
+    end
+
+    describe 'when overriding the keystone group and user' do
+      let :params do
+        default_params.merge({
+          'enable_fernet_setup'   => true,
+          'fernet_key_repository' => '/etc/keystone/fernet-keys',
+          'keystone_user'         => 'test_user',
+          'keystone_group'        => 'test_group',
+        })
+      end
+
+      it { is_expected.to contain_exec('keystone-manage fernet_setup').with(
+        :command => "keystone-manage fernet_setup --keystone-user #{params['keystone_user']} --keystone-group #{params['keystone_group']}",
+        :user    => params['keystone_user'],
+        :creates => '/etc/keystone/fernet-keys/0',
+        :require => 'File[/etc/keystone/fernet-keys]',
       ) }
 
     end

@@ -1,0 +1,3 @@
+---
+upgrade:
+  - All keystone-manage execs are performed now only by keystone user.
