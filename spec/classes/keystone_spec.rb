@@ -64,6 +64,8 @@ describe 'keystone' do
       'rabbit_heartbeat_rate'               => '<SERVICE DEFAULT>',
       'admin_workers'                       => 20,
       'public_workers'                      => 20,
+      'member_role_id'                      => '<SERVICE DEFAULT>',
+      'member_role_name'                    => '<SERVICE DEFAULT>',
       'paste_config'                        => '<SERVICE DEFAULT>',
       'sync_db'                             => true,
       'purge_config'                        => false,
@@ -110,6 +112,8 @@ describe 'keystone' do
       'rabbit_heartbeat_rate'               => '10',
       'rabbit_ha_queues'                    => true,
       'default_domain'                      => 'other_domain',
+      'member_role_id'                      => '123456789',
+      'member_role_name'                    => 'othermember',
       'paste_config'                        => '/usr/share/keystone/keystone-paste.ini',
       'using_domain_config'                 => false
     }
@@ -165,6 +169,8 @@ describe 'keystone' do
        'admin_bind_host',
        'public_port',
        'admin_port',
+       'member_role_id',
+       'member_role_name',
        'debug',
        'use_stderr'
       ].each do |config|

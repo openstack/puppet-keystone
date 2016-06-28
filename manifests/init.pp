@@ -443,6 +443,18 @@
 #   qualification those resources goes into "Default" domain.  See README.
 #   Defaults to undef (will use built-in Keystone default)
 #
+# [*member_role_id*]
+#   (optional) # Similar to the member_role_name option, this represents the
+#   default role ID used to associate users with their default projects in the
+#   v2 API. This will be used as the explicit role where one is not specified
+#   by the v2 API.
+#   Defaults to $::os_service_default
+#
+# [*member_role_name*]
+#   (optional) # This is the role name used in combination with the
+#   member_role_id option; see that option for more detail.
+#   Defaults to $::os_service_default
+#
 # [*memcache_dead_retry*]
 #   (optional) Number of seconds memcached server is considered dead before it
 #   is tried again. This is used for the cache memcache_dead_retry and the
@@ -658,6 +670,8 @@ class keystone(
   $fernet_key_repository                = '/etc/keystone/fernet-keys',
   $fernet_max_active_keys               = $::os_service_default,
   $default_domain                       = undef,
+  $member_role_id                       = $::os_service_default,
+  $member_role_name                     = $::os_service_default,
   $enable_bootstrap                     = true,
   $memcache_dead_retry                  = $::os_service_default,
   $memcache_socket_timeout              = $::os_service_default,
@@ -747,6 +761,8 @@ class keystone(
     'DEFAULT/admin_bind_host':  value => $admin_bind_host;
     'DEFAULT/public_port':      value => $public_port;
     'DEFAULT/admin_port':       value => $admin_port;
+    'DEFAULT/member_role_id':   value => $member_role_id;
+    'DEFAULT/member_role_name': value => $member_role_name;
     'paste_deploy/config_file': value => $paste_config;
   }
 
