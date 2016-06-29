@@ -1,0 +1,7 @@
+---
+fixes:
+  - Fixes `bug 1597357
+    <https://bugs.launchpad.net/puppet-keystone/+bug/1597357>`__
+    exits? was not using any retry as it expects an error to determine
+    if the user exist.  This fix it and enable classic retry mechanism
+    for other errors.

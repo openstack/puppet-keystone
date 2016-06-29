@@ -153,14 +153,18 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
 
   def self.fetch_project(name, domain)
     domain ||= default_domain
-    request('project', 'show', [name, '--domain', domain])
+    request('project', 'show',
+            [name, '--domain', domain],
+            {:no_retry_exception_msgs => /No project with a name or ID/})
   rescue Puppet::ExecutionFailure => e
     raise e unless e.message =~ /No project with a name or ID/
   end
 
   def self.fetch_user(name, domain)
     domain ||= default_domain
-    request('user', 'show', [name, '--domain', domain])
+    request('user', 'show',
+            [name, '--domain', domain],
+            {:no_retry_exception_msgs => /No user with a name or ID/})
   rescue Puppet::ExecutionFailure => e
     raise e unless e.message =~ /No user with a name or ID/
   end
@@ -226,18 +230,18 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
     end
   end
 
-  def self.request(service, action, properties=nil)
+  def self.request(service, action, properties=nil, options={})
     super
   rescue Puppet::Error::OpenstackAuthInputError, Puppet::Error::OpenstackUnauthorizedError => error
-    request_by_service_token(service, action, error, properties)
+    request_by_service_token(service, action, error, properties, options=options)
   end
 
-  def self.request_by_service_token(service, action, error, properties=nil)
+  def self.request_by_service_token(service, action, error, properties=nil, options={})
     properties ||= []
     @credentials.token = admin_token
     @credentials.url   = service_url
     raise error unless @credentials.service_token_set?
-    Puppet::Provider::Openstack.request(service, action, properties, @credentials)
+    Puppet::Provider::Openstack.request(service, action, properties, @credentials, options)
   end
 
   def self.service_url

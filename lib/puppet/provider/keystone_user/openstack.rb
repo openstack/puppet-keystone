@@ -78,11 +78,9 @@ Puppet::Type.type(:keystone_user).provide(
   def exists?
     return true if @property_hash[:ensure] == :present
     domain_name = self.class.domain_id_from_name(resource[:domain])
-    self.class.request_without_retry do
-      @property_hash =
-        self.class.fetch_user(resource[:name], domain_name)
-      @property_hash ||= {}
-    end
+    @property_hash =
+      self.class.fetch_user(resource[:name], domain_name)
+    @property_hash ||= {}
     # This can happen in bad LDAP mapping
     @property_hash[:enabled] = 'true' if @property_hash[:enabled].nil?
 
