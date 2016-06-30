@@ -105,8 +105,9 @@ class keystone::federation::identity_provider(
   }
 
   ensure_packages(['xmlsec1','python-pysaml2'], {
-    ensure => $package_ensure,
-    tag    => 'keystone-support-package',
+    ensure        => $package_ensure,
+    allow_virtual => true,
+    tag           => 'keystone-support-package',
   })
 
   keystone_config {
