@@ -1,0 +1,4 @@
+---
+upgrade:
+  - Add all missing parameters and remove deprecated ones
+    to configure keystone_authtoken section.
