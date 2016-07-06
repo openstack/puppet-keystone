@@ -1,0 +1,3 @@
+---
+deprecations:
+  - Fernet token is recommended in Mitaka release. The default for token_provider will be changed to Fernet in O release.

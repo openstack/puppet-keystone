@@ -702,6 +702,10 @@ class keystone(
   include ::keystone::deps
   include ::keystone::logging
 
+  if $token_provider == 'uuid' {
+    warning('Fernet token is recommended in Mitaka release. The default for token_provider will be changed to Fernet in O release.')
+  }
+
   if $service_provider {
     warning('service_provider is deprecated, does nothing and will be removed in a future release, use a Puppet resource collector if you want to modify the service provider.')
   }
