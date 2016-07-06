@@ -1,0 +1,4 @@
+---
+fixes:
+  - Fixed the keystone::wsgi::apache parameters for supplying
+    custom admin and public wsgi scripts.
