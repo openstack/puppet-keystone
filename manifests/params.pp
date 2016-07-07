@@ -2,6 +2,7 @@
 # This class contains the platform differences for keystone
 #
 class keystone::params {
+  include ::openstacklib::defaults
   $client_package_name = 'python-keystoneclient'
   $keystone_user       = 'keystone'
   $keystone_group      = 'keystone'
