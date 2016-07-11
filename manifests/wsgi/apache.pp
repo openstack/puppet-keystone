@@ -178,18 +178,17 @@ class keystone::wsgi::apache (
   $wsgi_application_group    = '%{GLOBAL}',
   $wsgi_pass_authorization   = 'On',
   $wsgi_chunked_request      = undef,
-  $wsgi_admin_script_source  = undef,
-  $wsgi_public_script_source = undef,
+  $wsgi_admin_script_source  = $::keystone::params::keystone_wsgi_admin_script_path,
+  $wsgi_public_script_source = $::keystone::params::keystone_wsgi_public_script_path,
   $wsgi_script_ensure        = undef,
   $access_log_format         = false,
   $headers                   = undef,
   $vhost_custom_fragment     = undef,
   #DEPRECATED
   $wsgi_script_source        = undef,
-) {
+) inherits ::keystone::params {
 
   include ::keystone::deps
-  include ::keystone::params
   include ::apache
   include ::apache::mod::wsgi
   if $ssl {
@@ -258,8 +257,8 @@ class keystone::wsgi::apache (
     $wsgi_admin_source = $wsgi_script_source
     $wsgi_public_source = $wsgi_script_source
   } else {
-    $wsgi_admin_source = $::keystone::params::keystone_wsgi_admin_script_path
-    $wsgi_public_source = $::keystone::params::keystone_wsgi_public_script_path
+    $wsgi_admin_source = $wsgi_admin_script_source
+    $wsgi_public_source = $wsgi_public_script_source
   }
 
   $wsgi_files = {

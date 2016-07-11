@@ -325,6 +325,47 @@ describe 'keystone::wsgi::apache' do
         'headers' => 'set X-Frame-Options "DENY"'
       )}
     end
+
+    describe 'when overriding script paths with link' do
+      let :params do
+        {
+          :wsgi_file_target          => 'link',
+          :wsgi_admin_script_source  => '/home/foo/admin-script',
+          :wsgi_public_script_source => '/home/foo/public-script',
+        }
+      end
+
+      it 'should contain correct files' do
+        is_expected.to contain_file('keystone_wsgi_admin').with(
+          'path'   => "#{facts[:wsgi_script_path]}/keystone-admin",
+          'target' => params[:wsgi_admin_script_source]
+        )
+        is_expected.to contain_file('keystone_wsgi_main').with(
+          'path'   => "#{facts[:wsgi_script_path]}/keystone-public",
+          'target' => params[:wsgi_public_script_source]
+        )
+      end
+    end
+
+    describe 'when overriding script paths with source' do
+      let :params do
+        {
+          :wsgi_admin_script_source  => '/home/foo/admin-script',
+          :wsgi_public_script_source => '/home/foo/public-script',
+        }
+      end
+
+      it 'should contain correct files' do
+        is_expected.to contain_file('keystone_wsgi_admin').with(
+          'path'   => "#{facts[:wsgi_script_path]}/keystone-admin",
+          'source' => params[:wsgi_admin_script_source]
+        )
+        is_expected.to contain_file('keystone_wsgi_main').with(
+          'path'   => "#{facts[:wsgi_script_path]}/keystone-public",
+          'source' => params[:wsgi_public_script_source]
+        )
+      end
+    end
   end
 
   on_supported_os({
