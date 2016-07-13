@@ -808,6 +808,14 @@ describe 'keystone' do
     it { is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_failover_strategy').with_value('<SERVICE DEFAULT>') }
   end
 
+  describe 'setting enable_proxy_headers_parsing' do
+    let :params do
+      default_params.merge({:enable_proxy_headers_parsing => true })
+    end
+
+    it { is_expected.to contain_keystone_config('oslo_middleware/enable_proxy_headers_parsing').with_value(true) }
+  end
+
   describe 'setting sql policy driver' do
     let :params do
       default_params.merge({:policy_driver => 'sql' })

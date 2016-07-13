@@ -508,6 +508,11 @@
 #   prevent keystone eventlet and apache from auto-starting on package install.
 #   Defaults to false
 #
+# [*enable_proxy_headers_parsing*]
+#   (Optional) Enable paste middleware to handle SSL requests through
+#   HTTPProxyToWSGI middleware.
+#   Defaults to $::os_service_default.
+#
 # [*purge_config*]
 #   (optional) Whether to set only the specified config options
 #   in the keystone config.
@@ -684,6 +689,7 @@ class keystone(
   $keystone_user                        = $::keystone::params::keystone_user,
   $keystone_group                       = $::keystone::params::keystone_group,
   $manage_policyrcd                     = false,
+  $enable_proxy_headers_parsing         = $::os_service_default,
   $purge_config                         = false,
   # DEPRECATED PARAMETERS
   $admin_workers                        = max($::processorcount, 2),
@@ -857,6 +863,10 @@ class keystone(
     memcache_pool_maxsize                => $memcache_pool_maxsize,
     memcache_pool_unused_timeout         => $memcache_pool_unused_timeout,
     memcache_pool_connection_get_timeout => $memcache_pool_connection_get_timeout,
+  }
+
+  oslo::middleware { 'keystone_config':
+    enable_proxy_headers_parsing => $enable_proxy_headers_parsing,
   }
 
   # configure based on the catalog backend
