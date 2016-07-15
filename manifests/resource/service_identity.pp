@@ -21,6 +21,10 @@
 #
 # == Parameters:
 #
+# [*ensure*]
+#   Ensure parameter for the types used in resource.
+#   string; optional: default to 'present'
+#
 # [*password*]
 #   Password to create for the service user;
 #   string; required
@@ -104,6 +108,7 @@
 #   Defaults to undef
 #
 define keystone::resource::service_identity(
+  $ensure                = 'present',
   $admin_url             = false,
   $internal_url          = false,
   $password              = false,
@@ -128,6 +133,8 @@ define keystone::resource::service_identity(
 
   include ::keystone::deps
 
+  validate_re($ensure, ['^present$', '^absent$'], 'Valid values for ensure parameter are present or absent')
+
   if $service_name == undef {
     $service_name_real = $auth_name
   } else {
@@ -146,12 +153,12 @@ define keystone::resource::service_identity(
       # no way to know if the $user_domain is the same domain passed as the
       # $default_domain parameter to class keystone.
       ensure_resource('keystone_domain', $user_domain_real, {
-        'ensure'  => 'present',
+        'ensure'  => $ensure,
         'enabled' => true,
       })
     }
     ensure_resource('keystone_user', $auth_name, {
-      'ensure'                => 'present',
+      'ensure'                => $ensure,
       'enabled'               => true,
       'password'              => $password,
       'email'                 => $email,
@@ -164,7 +171,7 @@ define keystone::resource::service_identity(
 
   if $configure_user_role {
     ensure_resource('keystone_user_role', "${auth_name}@${tenant}", {
-      'ensure' => 'present',
+      'ensure' => $ensure,
       'roles'  => $roles,
     })
   }
@@ -172,7 +179,7 @@ define keystone::resource::service_identity(
   if $configure_service {
     if $service_type {
       ensure_resource('keystone_service', "${service_name_real}::${service_type}", {
-        'ensure'      => 'present',
+        'ensure'      => $ensure,
         'description' => $service_description,
       })
     } else {
@@ -184,7 +191,7 @@ define keystone::resource::service_identity(
     if $service_type {
       if $public_url and $admin_url and $internal_url {
         ensure_resource('keystone_endpoint', "${region}/${service_name_real}::${service_type}", {
-          'ensure'       => 'present',
+          'ensure'       => $ensure,
           'public_url'   => $public_url,
           'admin_url'    => $admin_url,
           'internal_url' => $internal_url,
@@ -195,7 +202,7 @@ define keystone::resource::service_identity(
     } else {
       if $public_url and $admin_url and $internal_url {
         ensure_resource('keystone_endpoint', "${region}/${service_name_real}", {
-          'ensure'       => 'present',
+          'ensure'       => $ensure,
           'public_url'   => $public_url,
           'admin_url'    => $admin_url,
           'internal_url' => $internal_url,
