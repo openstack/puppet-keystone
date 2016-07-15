@@ -1,0 +1,3 @@
+---
+features:
+  - Ensure parameter was added to service identity resource to allow control of keystone types within resource.

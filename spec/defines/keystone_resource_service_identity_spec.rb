@@ -61,6 +61,45 @@ describe 'keystone::resource::service_identity' do
       )}
     end
 
+    context 'with ensure set to absent' do
+      let :params do
+        required_params.merge(:ensure => 'absent')
+      end
+
+      it { is_expected.to contain_keystone_user(title).with(
+        :ensure   => 'absent',
+        :password => 'secrete',
+        :email    => 'neutron@localhost',
+      )}
+
+      it { is_expected.to contain_keystone_user_role("#{title}@services").with(
+        :ensure => 'absent',
+        :roles  => ['admin'],
+      )}
+
+      it { is_expected.to contain_keystone_service("#{title}::network").with(
+        :ensure      => 'absent',
+        :description => 'neutron service',
+      )}
+
+      it { is_expected.to contain_keystone_endpoint("RegionOne/#{title}::network").with(
+        :ensure       => 'absent',
+        :public_url   => 'http://7.7.7.7:9696',
+        :internal_url => 'http://10.0.0.1:9696',
+        :admin_url    => 'http://192.168.0.1:9696',
+        :region       => 'RegionOne',
+      )}
+
+    end
+
+    context 'with bad ensure parameter value' do
+      let :params do
+        required_params.merge(:ensure => 'badvalue')
+      end
+
+      it { is_expected.to raise_error Puppet::Error, /Valid values for ensure parameter are present or absent/ }
+    end
+
     context 'when explicitly setting an region' do
       let :params do
         required_params.merge(
