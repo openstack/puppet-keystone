@@ -146,7 +146,7 @@ describe 'keystone::resource::authtoken' do
           :memcache_pool_conn_get_timeout => '10',
       })
       end
-      it 'configures memcahce severs in keystone authtoken' do
+      it 'configures memcache severs in keystone authtoken' do
         is_expected.to contain_keystone_config('keystone_authtoken/memcached_servers').with_value( params[:memcached_servers] )
         is_expected.to contain_keystone_config('keystone_authtoken/memcache_use_advanced_pool').with_value( params[:memcache_use_advanced_pool] )
         is_expected.to contain_keystone_config('keystone_authtoken/memcache_security_strategy').with_value( params[:memcache_security_strategy] )

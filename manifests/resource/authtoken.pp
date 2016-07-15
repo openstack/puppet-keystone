@@ -280,6 +280,12 @@ define keystone::resource::authtoken(
     validate_bool($delay_auth_decision)
   }
 
+  if !is_service_default($memcached_servers) and !empty($memcached_servers){
+    $memcached_servers_real = join(any2array($memcached_servers), ',')
+  } else {
+    $memcached_servers_real = $::os_service_default
+  }
+
   $keystonemiddleware_options = {
     'keystone_authtoken/auth_section'                   => {'value' => $auth_section},
     'keystone_authtoken/auth_uri'                       => {'value' => $auth_uri},
@@ -304,7 +310,7 @@ define keystone::resource::authtoken(
     'keystone_authtoken/memcache_secret_key'            => {'value' => $memcache_secret_key},
     'keystone_authtoken/memcache_security_strategy'     => {'value' => $memcache_security_strategy},
     'keystone_authtoken/memcache_use_advanced_pool'     => {'value' => $memcache_use_advanced_pool},
-    'keystone_authtoken/memcached_servers'              => {'value' => $memcached_servers},
+    'keystone_authtoken/memcached_servers'              => {'value' => $memcached_servers_real},
     'keystone_authtoken/region_name'                    => {'value' => $region_name},
     'keystone_authtoken/revocation_cache_time'          => {'value' => $revocation_cache_time},
     'keystone_authtoken/signing_dir'                    => {'value' => $signing_dir},
