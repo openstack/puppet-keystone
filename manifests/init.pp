@@ -57,7 +57,7 @@
 # [*token_provider*]
 #   (optional) Format keystone uses for tokens.
 #   Defaults to 'uuid'
-#   Supports PKI, PKIZ, Fernet, and UUID.
+#   Supports pki, pkiz, fernet, and uuid.
 #
 # [*token_driver*]
 #   (optional) Driver to use for managing tokens.
@@ -709,7 +709,7 @@ class keystone(
   include ::keystone::logging
 
   if $token_provider == 'uuid' {
-    warning('Fernet token is recommended in Mitaka release. The default for token_provider will be changed to Fernet in O release.')
+    warning("Fernet token is recommended in Mitaka release. The default for token_provider will be changed to 'fernet' in O release.")
   }
 
   if $service_provider {
