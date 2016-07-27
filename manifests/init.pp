@@ -702,7 +702,7 @@ class keystone(
     ensure_packages('python-memcache', {
       ensure => present,
       name   => $::keystone::params::python_memcache_package_name,
-      tag    => ['openstack', 'keystone-package'],
+      tag    => ['openstack'],
     })
   }
 
