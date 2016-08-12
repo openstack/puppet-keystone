@@ -459,6 +459,7 @@ define keystone::ldap_backend(
 ) {
 
   include ::keystone::deps
+  include ::keystone
 
   $domain_enabled = getparam(Keystone_config['identity/domain_specific_drivers_enabled'], 'value')
   $domain_dir_enabled = getparam(Keystone_config['identity/domain_config_dir'], 'value')
