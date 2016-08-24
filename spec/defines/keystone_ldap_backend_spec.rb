@@ -1,15 +1,10 @@
 require 'spec_helper'
 
 describe 'keystone::ldap_backend' do
-  let :facts do
-    @default_facts.merge({ :osfamily => 'Debian' })
-  end
   describe 'Using Default domain' do
     let(:title) { 'Default' }
-
     let(:pre_condition) do
       <<-EOM
-      class { '::keystone': admin_token => 'token'}
       keystone_config {'identity/domain_specific_drivers_enabled': value => true}
       keystone_config {'identity/domain_config_dir': value => '/etc/keystone/domains'}
       file {'/etc/keystone/keystone.conf': ensure => present }
@@ -209,7 +204,6 @@ describe 'keystone::ldap_backend' do
     end
     let(:pre_condition) do
       <<-EOM
-      class { '::keystone': admin_token => 'token'}
       keystone_config {'identity/domain_specific_drivers_enabled': value => true}
       keystone_config {'identity/domain_config_dir': value => '/etc/keystone/domains'}
       file {'/etc/keystone/keystone.conf': ensure => present }
@@ -226,7 +220,6 @@ describe 'keystone::ldap_backend' do
     context 'Missing identity/domain_specific_drivers_enabled' do
       let(:pre_condition) do
       <<-EOM
-      class { '::keystone': admin_token => 'token'}
       keystone_config {'identity/domain_config_dir': value => '/etc/keystone/domains'}
       file {'/etc/keystone/keystone.conf': ensure => present }
       EOM
@@ -237,7 +230,6 @@ describe 'keystone::ldap_backend' do
     context 'Missing identity/domain_config_dir' do
       let(:pre_condition) do
       <<-EOM
-      class { '::keystone': admin_token => 'token'}
       keystone_config {'identity/domain_specific_drivers_enabled': value => true}
       file {'/etc/keystone/keystone.conf': ensure => present }
       EOM
