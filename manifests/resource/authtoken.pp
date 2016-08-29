@@ -216,6 +216,10 @@
 #  (in seconds). Set to -1 to disable caching completely. Integer value
 #  Defaults to $::os_service_default.
 #
+# [*manage_memcache_package*]
+#  (Optional) Whether to install the python-memcache package.
+#  Defaults to false.
+#
 define keystone::resource::authtoken(
   $username,
   $password,
@@ -252,6 +256,7 @@ define keystone::resource::authtoken(
   $revocation_cache_time          = $::os_service_default,
   $signing_dir                    = $::os_service_default,
   $token_cache_time               = $::os_service_default,
+  $manage_memcache_package        = false,
 ) {
 
   include ::keystone::deps
@@ -282,6 +287,13 @@ define keystone::resource::authtoken(
 
   if !is_service_default($memcached_servers) and !empty($memcached_servers){
     $memcached_servers_real = join(any2array($memcached_servers), ',')
+    if $manage_memcache_package {
+      ensure_packages('python-memcache', {
+        ensure => present,
+        name   => $::keystone::params::python_memcache_package_name,
+        tag    => ['openstack'],
+      })
+    }
   } else {
     $memcached_servers_real = $::os_service_default
   }
