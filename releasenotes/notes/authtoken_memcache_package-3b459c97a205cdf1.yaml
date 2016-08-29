@@ -1,0 +1,3 @@
+---
+issues:
+  - Python memcache package install when memcache servers are specified. This solves the issue where a dependency on the package was missed for components using memcache.

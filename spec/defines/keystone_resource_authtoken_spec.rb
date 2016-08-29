@@ -144,6 +144,7 @@ describe 'keystone::resource::authtoken' do
           :memcache_pool_maxsize          => '10',
           :memcache_pool_dead_retry       => '300',
           :memcache_pool_conn_get_timeout => '10',
+          :manage_memcache_package        => true,
       })
       end
       it 'configures memcache severs in keystone authtoken' do
@@ -156,6 +157,10 @@ describe 'keystone::resource::authtoken' do
         is_expected.to contain_keystone_config('keystone_authtoken/memcache_pool_maxsize').with_value( params[:memcache_pool_maxsize] )
         is_expected.to contain_keystone_config('keystone_authtoken/memcache_pool_dead_retry').with_value( params[:memcache_pool_dead_retry] )
         is_expected.to contain_keystone_config('keystone_authtoken/memcache_pool_conn_get_timeout').with_value( params[:memcache_pool_conn_get_timeout] )
+        is_expected.to contain_package('python-memcache').with(
+          :name   => 'python-memcache',
+          :ensure => 'present'
+        )
       end
     end
 
