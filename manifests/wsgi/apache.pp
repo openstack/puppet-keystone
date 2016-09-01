@@ -57,6 +57,14 @@
 #     (optional) Path to SSL key
 #     Default to apache::vhost 'ssl_*' defaults.
 #
+#   [*ssl_cert_admin*]
+#     (optional) Path to SSL certificate for the admin endpoint.
+#     Default to apache::vhost 'ssl_*' defaults.
+#
+#   [*ssl_key_admin*]
+#     (optional) Path to SSL key for the admin endpoint.
+#     Default to apache::vhost 'ssl_*' defaults.
+#
 #   [*ssl_chain*]
 #     (optional) SSL chain
 #     Default to apache::vhost 'ssl_*' defaults.
@@ -168,6 +176,8 @@ class keystone::wsgi::apache (
   $workers                   = 1,
   $ssl_cert                  = undef,
   $ssl_key                   = undef,
+  $ssl_cert_admin            = undef,
+  $ssl_key_admin             = undef,
   $ssl_chain                 = undef,
   $ssl_ca                    = undef,
   $ssl_crl_path              = undef,
@@ -198,6 +208,14 @@ class keystone::wsgi::apache (
     # mod_ssl package is placing a ssl.conf file after the confd_dir is purged
     # on Puppet 4.
     Class['::apache::mod::ssl'] -> File[$::apache::confd_dir]
+    # Attempt to use the admin cert/key, else default to the public one.
+    # Since it's possible that no cert/key were given, we allow this to be
+    # empty with pick_default
+    $ssl_cert_admin_real = pick_default($ssl_cert_admin, $ssl_cert)
+    $ssl_key_admin_real = pick_default($ssl_key_admin, $ssl_key)
+  } else {
+    $ssl_cert_admin_real = undef
+    $ssl_key_admin_real = undef
   }
 
   # The httpd package is untagged, but needs to have ordering enforced,
@@ -347,8 +365,8 @@ class keystone::wsgi::apache (
       docroot_group               => 'keystone',
       priority                    => $priority,
       ssl                         => $ssl,
-      ssl_cert                    => $ssl_cert,
-      ssl_key                     => $ssl_key,
+      ssl_cert                    => $ssl_cert_admin_real,
+      ssl_key                     => $ssl_key_admin_real,
       ssl_chain                   => $ssl_chain,
       ssl_ca                      => $ssl_ca,
       ssl_crl_path                => $ssl_crl_path,

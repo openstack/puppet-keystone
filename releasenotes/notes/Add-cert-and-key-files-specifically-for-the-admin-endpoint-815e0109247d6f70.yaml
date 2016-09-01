@@ -1,0 +1,5 @@
+---
+features:
+  - It is now possible to set a specific certificate and key files for the
+    admin endpoint when it's deployed over apache. It used to be the case that
+    the public and admin endpoints had to match.

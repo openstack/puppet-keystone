@@ -296,6 +296,42 @@ describe 'keystone::wsgi::apache' do
       )}
     end
 
+    describe 'when setting ssl cert and key' do
+      let :params do
+        {
+          :ssl_cert => 'some cert',
+          :ssl_key  => 'some key',
+        }
+      end
+      it { is_expected.to contain_apache__vhost('keystone_wsgi_main').with(
+          'ssl_cert' => 'some cert',
+          'ssl_key'  => 'some key',
+          )}
+      it { is_expected.to contain_apache__vhost('keystone_wsgi_admin').with(
+          'ssl_cert' => 'some cert',
+          'ssl_key'  => 'some key',
+          )}
+    end
+
+    describe 'when setting different ssl cert and key for admin' do
+      let :params do
+        {
+          :ssl_cert       => 'some cert',
+          :ssl_key        => 'some key',
+          :ssl_cert_admin => 'some cert admin',
+          :ssl_key_admin  => 'some key admin',
+        }
+      end
+      it { is_expected.to contain_apache__vhost('keystone_wsgi_main').with(
+          'ssl_cert' => 'some cert',
+          'ssl_key'  => 'some key',
+          )}
+      it { is_expected.to contain_apache__vhost('keystone_wsgi_admin').with(
+          'ssl_cert' => 'some cert admin',
+          'ssl_key'  => 'some key admin',
+          )}
+    end
+
     describe 'when overriding parameters using wsgi chunked request' do
       let :params do
         {
