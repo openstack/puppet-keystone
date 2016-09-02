@@ -895,6 +895,70 @@ describe 'keystone' do
     it { is_expected.to contain_keystone_config('catalog/template_file').with_value('/some/template_file') }
   end
 
+  describe 'when using credentials' do
+    describe 'when enabling credential_setup' do
+      let :params do
+        default_params.merge({
+          'enable_credential_setup'   => true,
+          'credential_key_repository' => '/etc/keystone/credential-keys',
+        })
+      end
+      it { is_expected.to contain_file(params['credential_key_repository']).with(
+        :ensure => 'directory',
+        :owner  => params['keystone_user'],
+        :group  => params['keystone_group'],
+      ) }
+
+      it { is_expected.to contain_exec('keystone-manage credential_setup').with(
+        :command => "keystone-manage credential_setup --keystone-user #{params['keystone_user']} --keystone-group #{params['keystone_group']}",
+        :user    => params['keystone_user'],
+        :creates => '/etc/keystone/credential-keys/0',
+        :require => 'File[/etc/keystone/credential-keys]',
+      ) }
+      it { is_expected.to contain_keystone_config('credential/key_repository').with_value('/etc/keystone/credential-keys')}
+    end
+
+    describe 'when overriding the credential key directory' do
+      let :params do
+        default_params.merge({
+          'enable_credential_setup'   => true,
+          'credential_key_repository' => '/var/lib/credential-keys',
+        })
+      end
+      it { is_expected.to contain_exec('keystone-manage credential_setup').with(
+        :creates => '/var/lib/credential-keys/0'
+      ) }
+    end
+
+    describe 'when overriding the keystone group and user' do
+      let :params do
+        default_params.merge({
+          'enable_credential_setup' => true,
+          'keystone_user'           => 'test_user',
+          'keystone_group'          => 'test_group',
+        })
+      end
+
+      it { is_expected.to contain_exec('keystone-manage credential_setup').with(
+        :command => "keystone-manage credential_setup --keystone-user #{params['keystone_user']} --keystone-group #{params['keystone_group']}",
+        :user    => params['keystone_user'],
+        :creates => '/etc/keystone/credential-keys/0',
+        :require => 'File[/etc/keystone/credential-keys]',
+      ) }
+    end
+
+    describe 'when disabling credential_setup' do
+      let :params do
+        default_params.merge({
+          'enable_credential_setup'   => false,
+          'credential_key_repository' => '/etc/keystone/credential-keys',
+        })
+      end
+      it { is_expected.to_not contain_file(params['credential_key_repository']) }
+      it { is_expected.to_not contain_exec('keystone-manage credential_setup') }
+    end
+  end
+
   describe 'when using fernet tokens' do
     describe 'when enabling fernet_setup' do
       let :params do

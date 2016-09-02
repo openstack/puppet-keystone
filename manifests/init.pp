@@ -424,6 +424,19 @@
 #   (Optional) Number of maximum active Fernet keys. Integer > 0.
 #   Defaults to $::os_service_default
 #
+# [*enable_credential_setup*]
+#   (Optional) Setup keystone for credentials. This is typically only
+#   run on a single node, then the credentials are replicated to the other nodes
+#   in a cluster.
+#   This feature was added at the end of Newton. The default value is now False
+#   by default but will switch to True once UCA will have latest Keystone version.
+#   Defaults to False
+#
+# [*credential_key_repository*]
+#   (Optional) Location for the Credential key repository. This value must
+#   be set if enable_credential_setup is set to true.
+#   Defaults to '/etc/keystone/credential-keys'
+#
 # [*enable_bootstrap*]
 #   (Optional) Enable keystone bootstrapping.
 #   Per upstream Keystone Mitaka commit 7b7fea7a3fe7677981fbf9bac5121bc15601163
@@ -674,6 +687,8 @@ class keystone(
   $enable_fernet_setup                  = false,
   $fernet_key_repository                = '/etc/keystone/fernet-keys',
   $fernet_max_active_keys               = $::os_service_default,
+  $enable_credential_setup              = false,
+  $credential_key_repository            = '/etc/keystone/credential-keys',
   $default_domain                       = undef,
   $member_role_id                       = $::os_service_default,
   $member_role_name                     = $::os_service_default,
@@ -1061,6 +1076,29 @@ class keystone(
     }
   }
 
+  # Credential support
+  if $enable_credential_setup {
+    validate_string($credential_key_repository)
+    ensure_resource('file', $credential_key_repository, {
+      ensure    => 'directory',
+      owner     => $keystone_user,
+      group     => $keystone_group,
+      subscribe => Anchor['keystone::install::end'],
+    })
+
+    exec { 'keystone-manage credential_setup':
+      command     => "keystone-manage credential_setup --keystone-user ${keystone_user} --keystone-group ${keystone_group}",
+      path        => '/usr/bin',
+      user        => $keystone_user,
+      refreshonly => true,
+      creates     => "${credential_key_repository}/0",
+      notify      => Anchor['keystone::service::begin'],
+      subscribe   => [Anchor['keystone::install::end'], Anchor['keystone::config::end']],
+      require     => File[$credential_key_repository],
+      tag         => 'keystone-exec',
+    }
+  }
+
   if $fernet_key_repository {
     keystone_config {
       'fernet_tokens/key_repository': value => $fernet_key_repository;
@@ -1074,6 +1112,7 @@ class keystone(
   keystone_config {
     'token/revoke_by_id':            value => $revoke_by_id;
     'fernet_tokens/max_active_keys': value => $fernet_max_active_keys;
+    'credential/key_repository':     value => $credential_key_repository;
   }
 
   # Update this code when https://bugs.launchpad.net/keystone/+bug/1472285 is addressed.
