@@ -193,8 +193,23 @@ describe 'keystone::wsgi::apache' do
       it { is_expected.to contain_concat("#{platform_parameters[:httpd_ports_file]}") }
     end
 
+    describe 'when servername_admin is overriden' do
+      let :params do
+        {
+          :servername            => 'dummy1.host',
+          :servername_admin      => 'dummy2.host',
+        }
+      end
 
+      it { is_expected.to contain_apache__vhost('keystone_wsgi_admin').with(
+        'servername'                  => 'dummy2.host',
+      )}
 
+      it { is_expected.to contain_apache__vhost('keystone_wsgi_main').with(
+        'servername'                  => 'dummy1.host',
+      )}
+
+    end
 
     describe 'when overriding parameters using same port' do
       let :params do

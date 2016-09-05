@@ -17,6 +17,10 @@
 #     The servername for the virtualhost.
 #     Optional. Defaults to $::fqdn
 #
+#   [*servername_admin*]
+#     The servername for the admin virtualhost.
+#     Optional. Defaults to $servername
+#
 #   [*public_port*]
 #     The public port.
 #     Optional. Defaults to 5000
@@ -166,6 +170,7 @@
 #
 class keystone::wsgi::apache (
   $servername                = $::fqdn,
+  $servername_admin          = undef,
   $public_port               = 5000,
   $admin_port                = 35357,
   $bind_host                 = undef,
@@ -201,6 +206,9 @@ class keystone::wsgi::apache (
   include ::keystone::deps
   include ::apache
   include ::apache::mod::wsgi
+
+  $servername_admin_real = pick($servername_admin, $servername)
+
   if $ssl {
     include ::apache::mod::ssl
     # This is probably a bug in Class[apache::mod::ssl] or in the mod_ssl EL
@@ -357,7 +365,7 @@ class keystone::wsgi::apache (
   if $public_port != $admin_port {
     ::apache::vhost { 'keystone_wsgi_admin':
       ensure                      => 'present',
-      servername                  => $servername,
+      servername                  => $servername_admin_real,
       ip                          => $real_admin_bind_host,
       port                        => $admin_port,
       docroot                     => $::keystone::params::keystone_wsgi_script_path,

@@ -1,0 +1,5 @@
+---
+features:
+  - This adds a specific servername parameter for the admin endpoint's vhost.
+    This is useful in cases where the admin endpoint will serve a different
+    certificate (on a different hostname) than the public endpoint.
