@@ -425,9 +425,12 @@
 #   Defaults to $::os_service_default
 #
 # [*enable_credential_setup*]
-#   (Optional) Setup keystone for credentials. This is typically only
-#   run on a single node, then the credentials are replicated to the other nodes
-#   in a cluster.
+#   (Optional) Setup keystone for credentials.
+#   In a cluster environment where multiple Keystone nodes are running, you might
+#   need the same keys everywhere; so you'll have to set credential_keys parameter in
+#   order to let Puppet manage Keystone keys in a consistent way, otherwise
+#   keystone-manage will generate different set of keys on keystone nodes and the
+#   service won't work.
 #   This feature was added at the end of Newton. The default value is now False
 #   by default but will switch to True once UCA will have latest Keystone version.
 #   Defaults to False
@@ -436,6 +439,20 @@
 #   (Optional) Location for the Credential key repository. This value must
 #   be set if enable_credential_setup is set to true.
 #   Defaults to '/etc/keystone/credential-keys'
+#
+# [*credential_keys*]
+#   (Optional) Hash of Keystone credential keys
+#   If you enable this parameter, make sure enable_credential_setup is set to True.
+#   Example of valid value:
+#   credential_keys:
+#     /etc/keystone/credential-keys/0:
+#       content: t-WdduhORSqoyAykuqWAQSYjg2rSRuJYySgI2xh48CI=
+#     /etc/keystone/credential-keys/1:
+#       content: GLlnyygEVJP4-H2OMwClXn3sdSQUZsM5F194139Unv8=
+#   Puppet will create a file per key in $credential_key_repository.
+#   Note: defaults to false so keystone-manage credential_setup will be executed.
+#   Otherwise Puppet will manage keys with File resource.
+#   Defaults to false
 #
 # [*enable_bootstrap*]
 #   (Optional) Enable keystone bootstrapping.
@@ -689,6 +706,7 @@ class keystone(
   $fernet_max_active_keys               = $::os_service_default,
   $enable_credential_setup              = false,
   $credential_key_repository            = '/etc/keystone/credential-keys',
+  $credential_keys                      = false,
   $default_domain                       = undef,
   $member_role_id                       = $::os_service_default,
   $member_role_name                     = $::os_service_default,
@@ -1086,16 +1104,26 @@ class keystone(
       subscribe => Anchor['keystone::install::end'],
     })
 
-    exec { 'keystone-manage credential_setup':
-      command     => "keystone-manage credential_setup --keystone-user ${keystone_user} --keystone-group ${keystone_group}",
-      path        => '/usr/bin',
-      user        => $keystone_user,
-      refreshonly => true,
-      creates     => "${credential_key_repository}/0",
-      notify      => Anchor['keystone::service::begin'],
-      subscribe   => [Anchor['keystone::install::end'], Anchor['keystone::config::end']],
-      require     => File[$credential_key_repository],
-      tag         => 'keystone-exec',
+    if $credential_keys {
+      validate_hash($credential_keys)
+      create_resources('file', $credential_keys, {
+          'owner'     => $keystone_user,
+          'group'     => $keystone_group,
+          'subscribe' => 'Anchor[keystone::install::end]',
+        }
+      )
+    } else {
+      exec { 'keystone-manage credential_setup':
+        command     => "keystone-manage credential_setup --keystone-user ${keystone_user} --keystone-group ${keystone_group}",
+        path        => '/usr/bin',
+        user        => $keystone_user,
+        refreshonly => true,
+        creates     => "${credential_key_repository}/0",
+        notify      => Anchor['keystone::service::begin'],
+        subscribe   => [Anchor['keystone::install::end'], Anchor['keystone::config::end']],
+        require     => File[$credential_key_repository],
+        tag         => 'keystone-exec',
+      }
     }
   }
 

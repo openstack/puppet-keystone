@@ -947,6 +947,36 @@ describe 'keystone' do
       ) }
     end
 
+    describe 'when setting credential_keys parameter' do
+      let :params do
+        default_params.merge({
+          'enable_credential_setup' => true,
+          'credential_keys' => {
+            '/etc/keystone/credential-keys/0' => {
+              'content' => 't-WdduhORSqoyAykuqWAQSYjg2rSRuJYySgI2xh48CI=',
+            },
+            '/etc/keystone/credential-keys/1' => {
+              'content' => 'GLlnyygEVJP4-H2OMwClXn3sdSQUZsM5F194139Unv8=',
+            },
+          }
+        })
+      end
+
+      it { is_expected.to_not contain_exec('keystone-manage credential_setup') }
+      it { is_expected.to contain_file('/etc/keystone/credential-keys/0').with(
+        'content'   => 't-WdduhORSqoyAykuqWAQSYjg2rSRuJYySgI2xh48CI=',
+        'owner'     => 'keystone',
+        'owner'     => 'keystone',
+        'subscribe' => 'Anchor[keystone::install::end]',
+      )}
+      it { is_expected.to contain_file('/etc/keystone/credential-keys/1').with(
+        'content'   => 'GLlnyygEVJP4-H2OMwClXn3sdSQUZsM5F194139Unv8=',
+        'owner'     => 'keystone',
+        'owner'     => 'keystone',
+        'subscribe' => 'Anchor[keystone::install::end]',
+      )}
+    end
+
     describe 'when disabling credential_setup' do
       let :params do
         default_params.merge({
