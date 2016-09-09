@@ -15,7 +15,8 @@
 #   The email address for the admin. Required.
 #
 # [*password*]
-#   The admin password. Required.
+#   The admin password. Required. In a later release
+#   this will default to $keystone::admin_password.
 #
 # [*admin_roles*]
 #   The list of the roles with admin privileges. Optional.
@@ -94,6 +95,14 @@ class keystone::roles::admin(
 ) {
 
   include ::keystone::deps
+
+  if $password != $keystone::admin_password_real {
+    warning('the main class is setting the admin password differently from this\
+      class when calling bootstrap. This will lead to the password\
+      flip-flopping and cause authentication issues for the admin user.\
+      Please ensure that keystone::roles::admin::password and\
+      keystone::admin_password are set the same.')
+  }
 
   $domains = unique(delete_undef_values([ $admin_user_domain, $admin_project_domain, $service_project_domain, $target_admin_domain]))
   keystone_domain { $domains:

@@ -21,6 +21,7 @@ describe 'keystone' do
 
   default_params = {
       'admin_token'                         => 'service_token',
+      'admin_password'                      => 'special_password',
       'package_ensure'                      => 'present',
       'client_package_ensure'               => 'present',
       'public_bind_host'                    => '0.0.0.0',
@@ -81,6 +82,7 @@ describe 'keystone' do
       'public_port'                         => '5001',
       'admin_port'                          => '35358',
       'admin_token'                         => 'service_token_override',
+      'admin_password'                      => 'admin_openstack_password',
       'debug'                               => true,
       'use_stderr'                          => false,
       'catalog_type'                        => 'template',
@@ -154,7 +156,7 @@ describe 'keystone' do
     it 'should bootstrap $enable_bootstrap is true' do
       if param_hash['enable_bootstrap']
         is_expected.to contain_exec('keystone-manage bootstrap').with(
-          :command     => 'keystone-manage bootstrap --bootstrap-password service_token',
+          :command     => 'keystone-manage bootstrap --bootstrap-password service_password',
           :user        => param_hash['keystone_user'],
           :refreshonly => true
         )

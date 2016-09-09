@@ -23,7 +23,15 @@
 #
 # [*admin_token*]
 #   Admin token that can be used to authenticate as a keystone
-#   admin. Required.
+#   admin. This is not the password for the admin user
+#   in the Keystone database. This is a token that bypasses authentication.
+#   The admin_token has been deprecated by the Keystone service and this
+#   will be deprecated in a future changeset. Required.
+#
+# [*admin_password*]
+#   Keystone password for the admin user. This is not the admin_token.
+#   This is the password that the admin user signs into keystone with.
+#   Required.
 #
 # [*debug*]
 #   (optional) Rather keystone should log at debug level.
@@ -624,6 +632,7 @@
 #
 class keystone(
   $admin_token,
+  $admin_password                       = undef,
   $package_ensure                       = 'present',
   $client_package_ensure                = 'present',
   $public_bind_host                     = '0.0.0.0',
@@ -764,6 +773,13 @@ class keystone(
 
   if ($public_endpoint and 'v2.0' in $public_endpoint) {
     warning('Version string /v2.0/ should not be included in keystone::public_endpoint')
+  }
+
+  if $admin_password == undef {
+    warning('admin_password is required, please set admin_password to a value != admin_token. admin_token will be removed in a later release')
+    $admin_password_real = $admin_token
+  } else {
+    $admin_password_real = $admin_password
   }
 
   if $manage_policyrcd {
@@ -1193,7 +1209,7 @@ class keystone(
     # this requires the database to be up and running and configured
     # and is only run once, so we don't need to notify the service
     exec { 'keystone-manage bootstrap':
-      command     => "keystone-manage bootstrap --bootstrap-password ${admin_token}",
+      command     => "keystone-manage bootstrap --bootstrap-password ${admin_password_real}",
       user        => $keystone_user,
       path        => '/usr/bin',
       refreshonly => true,

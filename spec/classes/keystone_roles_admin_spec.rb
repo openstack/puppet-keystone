@@ -1,8 +1,21 @@
 require 'spec_helper'
 describe 'keystone::roles::admin' do
+  let :pre_condition do
+    "class { 'keystone':
+      admin_token => 'dummy',
+      admin_password => 'ChangeMe' }"
+  end
+
+  let :facts do
+    @default_facts.merge({
+      :osfamily               => 'Debian',
+      :operatingsystem        => 'Debian',
+      :operatingsystemrelease => '7.0',
+      :processorcount         => '1'
+    })
+  end
 
   describe 'with only the required params set' do
-
     let :params do
       {
         :email          => 'foo@bar',
@@ -38,6 +51,11 @@ describe 'keystone::roles::admin' do
   end
 
   describe 'when overriding optional params' do
+    let :pre_condition do
+      "class { 'keystone':
+        admin_token => 'dummy',
+        admin_password => 'foo' }"
+    end
 
     let :params do
       {
@@ -204,7 +222,12 @@ describe 'keystone::roles::admin' do
         :target_admin_domain    => 'admin_domain_target'
       }
     end
-    let(:pre_condition) { 'file { "/root/openrc": tag => ["openrc"]}' }
+    let :pre_condition do
+      ["class { 'keystone':
+        admin_token => 'dummy',
+        admin_password => 'ChangeMe' }",
+       "file { '/root/openrc': tag => ['openrc']}"]
+    end
     it { is_expected.to contain_keystone_domain('admin_domain_target') }
     it { is_expected.to contain_keystone_user_role('admin@::admin_domain_target')
              .with(
@@ -214,5 +237,27 @@ describe 'keystone::roles::admin' do
              )
              .that_comes_before('File[/root/openrc]')
     }
+  end
+
+  describe 'when admin_password and password do not match' do
+    let :pre_condition do
+      "class { 'keystone':
+        admin_token => 'dummy',
+        admin_password => 'foo' }"
+    end
+    let :params do
+      {
+        :email          => 'foo@bar',
+        :password       => 'bar',
+        :service_tenant => 'services'
+      }
+    end
+    it { is_expected.to contain_keystone_role('admin').with_ensure('present') }
+    it { is_expected.to contain_keystone_user_role('admin@openstack').with(
+      :roles          => ['admin'],
+      :ensure         => 'present',
+      :user_domain    => nil,
+      :project_domain => nil,
+    )}
   end
 end
