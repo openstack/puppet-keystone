@@ -746,7 +746,8 @@ class keystone(
   }
 
   if $service_provider {
-    warning('service_provider is deprecated, does nothing and will be removed in a future release, use a Puppet resource collector if you want to modify the service provider.')
+    warning('service_provider is deprecated, does nothing and will be removed in a future release, \
+              use a Puppet resource collector if you want to modify the service provider.')
   }
 
   if $verbose {
@@ -859,15 +860,21 @@ class keystone(
 
   # TODO(aschultz): remove in N cycle
   if is_service_default($cache_memcache_servers) and !is_service_default($memcache_servers) {
-    warning('The keystone module now provides a $cache_memcache_servers to be used with caching. Please specify it separately to configure cache/memcache_servers for keystone. This backwards compatibility will be removed in the N cycle.')
+    warning('The keystone module now provides a $cache_memcache_servers to be used with caching. \
+              Please specify it separately to configure cache/memcache_servers for keystone. \
+              This backwards compatibility will be removed in the N cycle.')
     $cache_memcache_servers_real = $memcache_servers
   } else {
     $cache_memcache_servers_real = $cache_memcache_servers
   }
 
   # TODO(aschultz): remove in N cycle
-  if is_service_default($cache_enabled) and (!is_service_default($memcache_servers) or !is_service_default($cache_memcache_servers_real)) and !is_service_default($cache_backend) {
-    warning('cache_enabled has been added to control weither or not to enable caching. Please specify it separately to configure caching. We have enabled caching as a backwards compatibility that will be removed in the N cycle')
+  if is_service_default($cache_enabled)
+      and (!is_service_default($memcache_servers) or !is_service_default($cache_memcache_servers_real))
+      and !is_service_default($cache_backend) {
+    warning('cache_enabled has been added to control weither or not to enable caching. \
+              Please specify it separately to configure caching.
+              We have enabled caching as a backwards compatibility that will be removed in the N cycle')
     $cache_enabled_real = true
   } else {
     $cache_enabled_real = $cache_enabled
@@ -920,27 +927,33 @@ class keystone(
 
   # Set the signing key/cert configuration values.
   if (!is_service_default($signing_certfile)) {
-    warning('PKI token support has been deprecated in the M release and will be removed in the O release. Fernet or UUID tokens are recommended.')
+    warning('PKI token support has been deprecated in the M release and will be removed in the O release. \
+              Fernet or UUID tokens are recommended.')
   }
 
   if (!is_service_default($signing_keyfile)) {
-    warning('PKI token support has been deprecated in the M release and will be removed in the O release. Fernet or UUID tokens are recommended.')
+    warning('PKI token support has been deprecated in the M release and will be removed in the O release. \
+              Fernet or UUID tokens are recommended.')
   }
 
   if (!is_service_default($signing_ca_certs)) {
-    warning('PKI token support has been deprecated in the M release and will be removed in the O release. Fernet or UUID tokens are recommended.')
+    warning('PKI token support has been deprecated in the M release and will be removed in the O release. \
+              Fernet or UUID tokens are recommended.')
   }
 
   if (!is_service_default($signing_ca_key)) {
-    warning('PKI token support has been deprecated in the M release and will be removed in the O release. Fernet or UUID tokens are recommended.')
+    warning('PKI token support has been deprecated in the M release and will be removed in the O release. \
+              Fernet or UUID tokens are recommended.')
   }
 
   if (!is_service_default($signing_cert_subject)) {
-    warning('PKI token support has been deprecated in the M release and will be removed in the O release. Fernet or UUID tokens are recommended.')
+    warning('PKI token support has been deprecated in the M release and will be removed in the O release. \
+              Fernet or UUID tokens are recommended.')
   }
 
   if (!is_service_default($signing_key_size)) {
-    warning('PKI token support has been deprecated in the M release and will be removed in the O release. Fernet or UUID tokens are recommended.')
+    warning('PKI token support has been deprecated in the M release and will be removed in the O release. \
+              Fernet or UUID tokens are recommended.')
   }
 
   keystone_config {
@@ -1059,12 +1072,14 @@ class keystone(
         validate     => false,
       }
     }
-    warning('Keystone under Eventlet has been deprecated during the Kilo cycle. Support for deploying under eventlet will be dropped as of the M-release of OpenStack.')
+    warning('Keystone under Eventlet has been deprecated during the Kilo cycle. \
+              Support for deploying under eventlet will be dropped as of the M-release of OpenStack.')
   } elsif $service_name == 'httpd' {
     include ::apache::params
     $service_name_real = $::apache::params::service_name
   } else {
-    fail('Invalid service_name. Either keystone/openstack-keystone for running as a standalone service, or httpd for being run by a httpd server')
+    fail('Invalid service_name. Either keystone/openstack-keystone for \
+          running as a standalone service, or httpd for being run by a httpd server')
   }
 
   if $sync_db {

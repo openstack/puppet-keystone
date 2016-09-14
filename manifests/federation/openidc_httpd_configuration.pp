@@ -1,5 +1,4 @@
-
-# == define: keystone::federation::openidc_httpd_configuration                                                                                                                                                                [70/1473]
+# == define: keystone::federation::openidc_httpd_configuration  [70/1473]
 #
 # == Parameters
 #

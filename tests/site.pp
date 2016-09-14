@@ -21,7 +21,7 @@ node 'keystone_sqlite' {
   }
 }
 
-node keystone_mysql {
+node 'keystone_mysql' {
   class { '::mysql::server': }
   class { '::keystone::db::mysql':
     password => 'keystone',
@@ -40,7 +40,7 @@ node keystone_mysql {
 
 
 # keystone with mysql on another node
-node keystone {
+node 'keystone' {
   class { '::keystone':
     debug               => true,
     database_connection => 'mysql://keystone:password@127.0.0.1/keystone',

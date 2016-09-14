@@ -67,7 +67,8 @@ class keystone::federation::mellon (
   }
 
   if ('external' in $methods ) {
-    fail('The external method should be dropped to avoid any interference with some Apache + Mellon SP setups, where a REMOTE_USER env variable is always set, even as an empty value.')
+    fail('The external method should be dropped to avoid any interference with some \
+          Apache + Mellon SP setups, where a REMOTE_USER env variable is always set, even as an empty value.')
   }
 
   if !('saml2' in $methods ) {
