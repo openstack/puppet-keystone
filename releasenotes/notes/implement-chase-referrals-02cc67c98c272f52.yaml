@@ -1,0 +1,7 @@
+---
+features:
+  - python-ldap follows/chases referrals with
+    anonymous access but this is disabled by default
+    in Active Directory. There is an argument to set
+    this to default to disabled but for the moment
+    just present an option for the user to choose.

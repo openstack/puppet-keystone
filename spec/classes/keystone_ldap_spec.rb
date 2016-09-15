@@ -68,6 +68,7 @@ describe 'keystone::ldap' do
         :group_allow_update => 'False',
         :group_allow_delete => 'False',
         :group_additional_attribute_mapping => '',
+        :chase_referrals => 'False',
         :use_tls => 'False',
         :tls_cacertdir => '/etc/ssl/certs/',
         :tls_cacertfile => '/etc/ssl/certs/ca-certificates.crt',
@@ -161,6 +162,9 @@ describe 'keystone::ldap' do
       is_expected.to contain_keystone_config('ldap/group_allow_update').with_value('False')
       is_expected.to contain_keystone_config('ldap/group_allow_delete').with_value('False')
       is_expected.to contain_keystone_config('ldap/group_additional_attribute_mapping').with_value('')
+
+      # referrals
+      is_expected.to contain_keystone_config('ldap/chase_referrals').with_value('False')
 
       # tls
       is_expected.to contain_keystone_config('ldap/use_tls').with_value('False')

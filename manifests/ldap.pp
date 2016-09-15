@@ -291,6 +291,10 @@
 #   API attribute. (list value)
 #   Defaults to 'undef'
 #
+# [*chase_referrals*]
+#   Whether or not to chase returned referrals. (boolean value)
+#   Defaults to 'undef'
+#
 # [*use_tls*]
 #   Enable TLS for communicating with LDAP servers. (boolean value)
 #   Defaults to 'undef'
@@ -444,6 +448,7 @@ class keystone::ldap(
   $group_allow_update                  = undef,
   $group_allow_delete                  = undef,
   $group_additional_attribute_mapping  = undef,
+  $chase_referrals                     = undef,
   $use_tls                             = undef,
   $tls_cacertdir                       = undef,
   $tls_cacertfile                      = undef,
@@ -543,6 +548,7 @@ class keystone::ldap(
     'ldap/group_allow_update':                   value => $group_allow_update;
     'ldap/group_allow_delete':                   value => $group_allow_delete;
     'ldap/group_additional_attribute_mapping':   value => $group_additional_attribute_mapping;
+    'ldap/chase_referrals':                      value => $chase_referrals;
     'ldap/use_tls':                              value => $use_tls;
     'ldap/tls_cacertdir':                        value => $tls_cacertdir;
     'ldap/tls_cacertfile':                       value => $tls_cacertfile;

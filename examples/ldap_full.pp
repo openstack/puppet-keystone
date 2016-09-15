@@ -59,6 +59,7 @@ class { '::keystone:ldap':
   role_allow_update            => 'True',
   role_allow_delete            => 'True',
   identity_driver              => 'ldap',
+  chase_referrals              => 'False',
   use_tls                      => 'True',
   tls_cacertfile               => '/etc/ssl/certs/ca-certificates.crt',
   tls_req_cert                 => 'demand',
