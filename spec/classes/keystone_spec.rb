@@ -1051,6 +1051,36 @@ describe 'keystone' do
     end
   end
 
+  describe 'when setting fernet_keys parameter' do
+    let :params do
+      default_params.merge({
+        'enable_fernet_setup' => true,
+        'fernet_keys' => {
+          '/etc/keystone/fernet-keys/0' => {
+            'content' => 't-WdduhORSqoyAykuqWAQSYjg2rSRuJYySgI2xh48CI=',
+          },
+          '/etc/keystone/fernet-keys/1' => {
+            'content' => 'GLlnyygEVJP4-H2OMwClXn3sdSQUZsM5F194139Unv8=',
+          },
+        }
+      })
+    end
+
+    it { is_expected.to_not contain_exec('keystone-manage fernet_setup') }
+    it { is_expected.to contain_file('/etc/keystone/fernet-keys/0').with(
+      'content'   => 't-WdduhORSqoyAykuqWAQSYjg2rSRuJYySgI2xh48CI=',
+      'owner'     => 'keystone',
+      'owner'     => 'keystone',
+      'subscribe' => 'Anchor[keystone::install::end]',
+    )}
+    it { is_expected.to contain_file('/etc/keystone/fernet-keys/1').with(
+      'content'   => 'GLlnyygEVJP4-H2OMwClXn3sdSQUZsM5F194139Unv8=',
+      'owner'     => 'keystone',
+      'owner'     => 'keystone',
+      'subscribe' => 'Anchor[keystone::install::end]',
+    )}
+  end
+
   shared_examples_for "when configuring default domain" do
     describe 'with default domain and eventlet service is managed and enabled' do
       let :params do

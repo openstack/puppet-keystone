@@ -432,6 +432,20 @@
 #   (Optional) Number of maximum active Fernet keys. Integer > 0.
 #   Defaults to $::os_service_default
 #
+# [*fernet_keys*]
+#   (Optional) Hash of Keystone fernet keys
+#   If you enable this parameter, make sure enable_fernet_setup is set to True.
+#   Example of valid value:
+#   fernet_keys:
+#     /etc/keystone/fernet-keys/0:
+#       content: c_aJfy6At9y-toNS9SF1NQMTSkSzQ-OBYeYulTqKsWU=
+#     /etc/keystone/fernet-keys/1:
+#       content: zx0hNG7CStxFz5KXZRsf7sE4lju0dLYvXdGDIKGcd7k=
+#   Puppet will create a file per key in $fernet_key_repository.
+#   Note: defaults to false so keystone-manage fernet_setup will be executed.
+#   Otherwise Puppet will manage keys with File resource.
+#   Defaults to false
+#
 # [*enable_credential_setup*]
 #   (Optional) Setup keystone for credentials.
 #   In a cluster environment where multiple Keystone nodes are running, you might
@@ -713,6 +727,7 @@ class keystone(
   $enable_fernet_setup                  = false,
   $fernet_key_repository                = '/etc/keystone/fernet-keys',
   $fernet_max_active_keys               = $::os_service_default,
+  $fernet_keys                          = false,
   $enable_credential_setup              = false,
   $credential_key_repository            = '/etc/keystone/credential-keys',
   $credential_keys                      = false,
@@ -1112,16 +1127,26 @@ class keystone(
       subscribe => Anchor['keystone::install::end'],
     })
 
-    exec { 'keystone-manage fernet_setup':
-      command     => "keystone-manage fernet_setup --keystone-user ${keystone_user} --keystone-group ${keystone_group}",
-      path        => '/usr/bin',
-      user        => $keystone_user,
-      refreshonly => true,
-      creates     => "${fernet_key_repository}/0",
-      notify      => Anchor['keystone::service::begin'],
-      subscribe   => [Anchor['keystone::install::end'], Anchor['keystone::config::end']],
-      require     => File[$fernet_key_repository],
-      tag         => 'keystone-exec',
+  if $fernet_keys {
+      validate_hash($fernet_keys)
+      create_resources('file', $fernet_keys, {
+          'owner'     => $keystone_user,
+          'group'     => $keystone_group,
+          'subscribe' => 'Anchor[keystone::install::end]',
+        }
+      )
+    } else {
+      exec { 'keystone-manage fernet_setup':
+        command     => "keystone-manage fernet_setup --keystone-user ${keystone_user} --keystone-group ${keystone_group}",
+        path        => '/usr/bin',
+        user        => $keystone_user,
+        refreshonly => true,
+        creates     => "${fernet_key_repository}/0",
+        notify      => Anchor['keystone::service::begin'],
+        subscribe   => [Anchor['keystone::install::end'], Anchor['keystone::config::end']],
+        require     => File[$fernet_key_repository],
+        tag         => 'keystone-exec',
+      }
     }
   }
 
