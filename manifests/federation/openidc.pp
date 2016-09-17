@@ -29,6 +29,11 @@
 #  (Optional) String value.
 #  Defaults to 'openstack'
 #
+# [*openidc_response_type*]
+#  Response type to be expected from the OpenID Connect provider.
+#  (Optional) String value.
+#  Defaults to 'id_token'
+#
 # [*admin_port*]
 #  A boolean value to ensure that you want to configure openidc Federation
 #  using Keystone VirtualHost on port 35357.
@@ -66,6 +71,7 @@ class keystone::federation::openidc (
   $openidc_client_id,
   $openidc_client_secret,
   $openidc_crypto_passphrase   = 'openstack',
+  $openidc_response_type       = 'id_token',
   $admin_port                  = false,
   $main_port                   = true,
   $module_plugin               = 'keystone.auth.plugins.mapped.Mapped',

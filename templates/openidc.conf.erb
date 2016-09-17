@@ -1,15 +1,20 @@
   LoadModule auth_openidc_module modules/mod_auth_openidc.so
-  WSGIScriptAliasMatch ^(/v3/OS-FEDERATION/identity_providers/.*?/protocols/.*?/auth)$ <%= scope['keystone::params::keystone_wsgi_script_path'] -%>/$1
   OIDCClaimPrefix "OIDC-"
-  OIDCResponseType "id_token"
+  OIDCResponseType "<%= scope['keystone::federation::openidc::openidc_response_type']-%>"
   OIDCScope "openid email profile"
   OIDCProviderMetadataURL "<%= scope['keystone::federation::openidc::openidc_provider_metadata_url']-%>"
   OIDCClientID "<%= scope['keystone::federation::openidc::openidc_client_id']-%>"
   OIDCClientSecret "<%= scope['keystone::federation::openidc::openidc_client_secret']-%>"
   OIDCCryptoPassphrase "<%= scope['keystone::federation::openidc::openidc_crypto_passphrase']-%>"
-  OIDCRedirectURI "<%= @openidc_redirect_uri-%>"
 
-  <Location /v3/auth/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::openidc::idp_name']-%>/protocols/openidc/auth>
+  OIDCRedirectURI "<%= @keystone_endpoint-%>/v3/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::openidc::idp_name']-%>/protocols/openidc/auth/redirect"
+  <LocationMatch /v3/OS-FEDERATION/identity_providers/.*?/protocols/openidc/auth>
       AuthType "openid-connect"
       Require valid-user
-  </Location>
+  </LocationMatch>
+
+  OIDCRedirectURI "<%= @keystone_endpoint-%>/v3/auth/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::openidc::idp_name']-%>/protocols/openidc/websso/redirect"
+  <LocationMatch /v3/auth/OS-FEDERATION/identity_providers/.*?/protocols/openidc/websso>
+      AuthType "openid-connect"
+      Require valid-user
+  </LocationMatch>
