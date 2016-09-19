@@ -1,0 +1,6 @@
+---
+fixes:
+  - Fixes `bug 1559013
+    <https://bugs.launchpad.net/puppet-keystone/+bug/1559013>`__ so
+    update of a keystone_endpoint does not recreate all endpoints when
+    one or two network endpoint are missing.
