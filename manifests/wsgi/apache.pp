@@ -207,7 +207,7 @@ class keystone::wsgi::apache (
   include ::apache
   include ::apache::mod::wsgi
 
-  $servername_admin_real = pick($servername_admin, $servername)
+  $servername_admin_real = pick_default($servername_admin, $servername)
 
   if $ssl {
     include ::apache::mod::ssl
