@@ -121,7 +121,7 @@ class keystone::federation::openidc (
   if $main_port {
     keystone::federation::openidc_httpd_configuration{ 'main':
       port              => $::keystone::public_port,
-      keystone_endpoint => $::keystone::admin_endpoint,
+      keystone_endpoint => $::keystone::public_endpoint,
     }
   }
 
