@@ -279,8 +279,10 @@ class keystone::wsgi::apache (
   }
 
   if $wsgi_script_source {
-    warning('The single wsgi script source has been deprecated as part of the Mitaka cycle, please switch to \
-              $wsgi_admin_script_source and $wsgi_public_script_source')
+
+    warning("The single wsgi script source has been deprecated as part of the Mitaka cycle, please switch to \
+\$wsgi_admin_script_source and \$wsgi_public_script_source")
+
     $wsgi_admin_source = $wsgi_script_source
     $wsgi_public_source = $wsgi_script_source
   } else {

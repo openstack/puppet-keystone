@@ -468,8 +468,8 @@ define keystone::ldap_backend(
   $domain_enabled = getparam(Keystone_config['identity/domain_specific_drivers_enabled'], 'value')
   $domain_dir_enabled = getparam(Keystone_config['identity/domain_config_dir'], 'value')
   $err_msg = "You should add \"using_domain_config => true\" parameter to your Keystone class, \
-              got \"${domain_enabled}\" for identity/domain_specific_drivers_enabled \
-              and \"${domain_dir_enabled}\" for identity/domain_config_dir"
+got \"${domain_enabled}\" for identity/domain_specific_drivers_enabled \
+and \"${domain_dir_enabled}\" for identity/domain_config_dir"
 
   if(bool2num($domain_enabled) == 0) {
     fail($err_msg)
