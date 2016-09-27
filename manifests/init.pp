@@ -575,10 +575,6 @@
 # [*service_provider*]
 #   (optional) Deprecated. Provider, that can be used for keystone service.
 #
-# [*verbose*]
-#   (optional) Deprecated. Rather keystone should log at verbose level.
-#   Defaults to undef.
-#
 # [*enable_pki_setup*]
 #   (optional) Deprecated. Enable call to pki_setup to generate the cert for signing pki tokens and
 #   revocation lists if it doesn't already exist. This generates a cert and key stored in file
@@ -752,7 +748,6 @@ class keystone(
   $admin_workers                        = $::os_workers,
   $public_workers                       = $::os_workers,
   $service_provider                     = undef,
-  $verbose                              = undef,
   $enable_pki_setup                     = undef,
   $signing_certfile                     = $::os_service_default,
   $signing_keyfile                      = $::os_service_default,
@@ -772,10 +767,6 @@ class keystone(
   if $service_provider {
     warning("service_provider is deprecated, does nothing and will be removed in a future release, \
 use a Puppet resource collector if you want to modify the service provider.")
-  }
-
-  if $verbose {
-    warning('verbose is deprecated, has no effect and will be removed after Newton cycle.')
   }
 
   if ! $catalog_driver {

@@ -102,13 +102,6 @@
 #   (Optional) Uses logging handler designed to watch file system (boolean value).
 #   Defaults to $::os_service_default
 #
-# DEPRECATED
-#
-# [*verbose*]
-#   (Optional) Deprecated. Should the daemons log verbose messages
-#   Defaults to undef.
-#
-
 class keystone::logging(
   $use_syslog                    = $::os_service_default,
   $use_stderr                    = $::os_service_default,
@@ -129,15 +122,9 @@ class keystone::logging(
   $instance_uuid_format          = $::os_service_default,
   $log_date_format               = $::os_service_default,
   $watch_log_file                = $::os_service_default,
-  # DEPRECATED
-  $verbose                       = undef,
 ) {
 
   include ::keystone::deps
-
-  if $verbose {
-    warning('verbose is deprecated, has no effect and will be removed after Newton cycle.')
-  }
 
   # NOTE(spredzy): In order to keep backward compatibility we rely on the pick function
   # to use keystone::<myparam> first then keystone::logging::<myparam>.
