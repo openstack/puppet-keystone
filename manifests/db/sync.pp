@@ -21,6 +21,8 @@ class keystone::db::sync(
     path        => '/usr/bin',
     user        => 'keystone',
     refreshonly => true,
+    try_sleep   => 5,
+    tries       => 10,
     subscribe   => [
       Anchor['keystone::install::end'],
       Anchor['keystone::config::end'],
