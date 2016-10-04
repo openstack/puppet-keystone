@@ -74,11 +74,11 @@ Keystone ships with a collection of native types that can be used to interact wi
 ```puppet
 keystone_tenant { 'openstack':
   ensure  => present,
-  enabled => True,
+  enabled => true,
 }
 keystone_user { 'openstack':
   ensure  => present,
-  enabled => True,
+  enabled => true,
 }
 keystone_role { 'admin':
   ensure => present,
