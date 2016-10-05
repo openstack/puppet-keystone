@@ -1,0 +1,12 @@
+---
+features:
+  - keystone-manage can be used to setup Keystone Fernet Keys.  Disabled by default
+    as long as the proper version of keystone is not in UCA.
+    Upstream Keystone is moving to Fernet token support as the default provider.
+    With recent issues witj PKI, Fernet is the only viable token format for
+    multisite.
+
+    Note, if fernet_keys parameter is set to a valid hash, keystone-manage won't
+    be used to generate credential keys but Puppet will manage file resources for each
+    key in the hash. It allows  ensures that a the keys are synchronized in a
+    multinode environment.
