@@ -22,9 +22,6 @@ describe 'keystone::ldap' do
         :user_enabled_invert => 'False',
         :user_attribute_ignore => '',
         :user_default_project_id_attribute => 'defaultProject',
-        :user_allow_create => 'False',
-        :user_allow_update => 'False',
-        :user_allow_delete => 'False',
         :user_pass_attribute => 'krbPassword',
         :user_enabled_emulation => 'True',
         :user_enabled_emulation_dn => 'cn=openstack-enabled,cn=groups,cn=accounts,dc=example,dc=com',
@@ -110,9 +107,6 @@ describe 'keystone::ldap' do
       is_expected.to contain_keystone_config('ldap/user_attribute_ignore').with_value('')
       is_expected.to contain_keystone_config('ldap/user_default_project_id_attribute').with_value('defaultProject')
       is_expected.to contain_keystone_config('ldap/user_tree_dn').with_value('cn=users,dc=example,dc=com')
-      is_expected.to contain_keystone_config('ldap/user_allow_create').with_value('False')
-      is_expected.to contain_keystone_config('ldap/user_allow_update').with_value('False')
-      is_expected.to contain_keystone_config('ldap/user_allow_delete').with_value('False')
       is_expected.to contain_keystone_config('ldap/user_pass_attribute').with_value('krbPassword')
       is_expected.to contain_keystone_config('ldap/user_enabled_emulation').with_value('True')
       is_expected.to contain_keystone_config('ldap/user_enabled_emulation_dn').with_value('cn=openstack-enabled,cn=groups,cn=accounts,dc=example,dc=com')
