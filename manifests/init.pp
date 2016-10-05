@@ -1129,6 +1129,7 @@ running as a standalone service, or httpd for being run by a httpd server")
       ensure    => 'directory',
       owner     => $keystone_user,
       group     => $keystone_group,
+      mode      => '0600',
       subscribe => Anchor['keystone::install::end'],
     })
 
@@ -1137,6 +1138,7 @@ running as a standalone service, or httpd for being run by a httpd server")
       create_resources('file', $fernet_keys, {
           'owner'     => $keystone_user,
           'group'     => $keystone_group,
+          'mode'      => '0600',
           'subscribe' => 'Anchor[keystone::install::end]',
         }
       )
@@ -1162,6 +1164,7 @@ running as a standalone service, or httpd for being run by a httpd server")
       ensure    => 'directory',
       owner     => $keystone_user,
       group     => $keystone_group,
+      mode      => '0600',
       subscribe => Anchor['keystone::install::end'],
     })
 
@@ -1170,6 +1173,7 @@ running as a standalone service, or httpd for being run by a httpd server")
       create_resources('file', $credential_keys, {
           'owner'     => $keystone_user,
           'group'     => $keystone_group,
+          'mode'      => '0600',
           'subscribe' => 'Anchor[keystone::install::end]',
         }
       )

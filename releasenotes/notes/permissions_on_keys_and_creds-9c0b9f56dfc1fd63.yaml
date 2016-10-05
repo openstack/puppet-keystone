@@ -1,0 +1,5 @@
+---
+security:
+  - Make the fernet key directory, fernet keys, credential
+    folder, and credentials have mode 0600. This ensures
+    that only the keystone user can read the keys.
