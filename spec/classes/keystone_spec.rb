@@ -4,7 +4,6 @@ describe 'keystone' do
 
   let :global_facts do
     {
-      :processorcount => 42,
       :concat_basedir => '/var/lib/puppet/concat',
       :fqdn           => 'some.host.tld'
     }
@@ -15,7 +14,6 @@ describe 'keystone' do
       :osfamily               => 'Debian',
       :operatingsystem        => 'Debian',
       :operatingsystemrelease => '7.0',
-      :processorcount         => '1'
     }))
   end
 

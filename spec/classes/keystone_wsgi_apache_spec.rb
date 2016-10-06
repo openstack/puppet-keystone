@@ -4,7 +4,7 @@ describe 'keystone::wsgi::apache' do
 
   let :global_facts do
     {
-      :processorcount => 42,
+      :os_workers     => 8,
       :concat_basedir => '/var/lib/puppet/concat',
       :fqdn           => 'some.host.tld'
     }
