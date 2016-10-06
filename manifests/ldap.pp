@@ -88,18 +88,6 @@
 #   LDAP attribute mapped to default_project_id for users. (string value)
 #   Defaults to 'undef'
 #
-# [*user_allow_create*]
-#   Allow user creation in LDAP backend. (boolean value)
-#   Defaults to 'undef'
-#
-# [*user_allow_update*]
-#   Allow user updates in LDAP backend. (boolean value)
-#   Defaults to 'undef'
-#
-# [*user_allow_delete*]
-#   Allow user deletion in LDAP backend. (boolean value)
-#   Defaults to 'undef'
-#
 # [*user_pass_attribute*]
 #   LDAP attribute mapped to password. (string value)
 #   Defaults to 'undef'
@@ -372,6 +360,18 @@
 #
 # === DEPRECATED group/name
 #
+# [*user_allow_create*]
+#   Allow user creation in LDAP backend. (boolean value)
+#   Defaults to 'undef' DEPRECATED: Has no effect.
+#
+# [*user_allow_update*]
+#   Allow user updates in LDAP backend. (boolean value)
+#   Defaults to 'undef' DEPRECATED: Has no effect.
+#
+# [*user_allow_delete*]
+#   Allow user deletion in LDAP backend. (boolean value)
+#   Defaults to 'undef' DEPRECATED: Has no effect.
+#
 # == Dependencies
 # == Examples
 # == Authors
@@ -402,9 +402,6 @@ class keystone::ldap(
   $user_enabled_invert                 = undef,
   $user_attribute_ignore               = undef,
   $user_default_project_id_attribute   = undef,
-  $user_allow_create                   = undef,
-  $user_allow_update                   = undef,
-  $user_allow_delete                   = undef,
   $user_pass_attribute                 = undef,
   $user_enabled_emulation              = undef,
   $user_enabled_emulation_dn           = undef,
@@ -467,6 +464,10 @@ class keystone::ldap(
   $auth_pool_connection_lifetime       = 60,
   $package_ensure                      = present,
   $manage_packages                     = true,
+  # DEPRECATED
+  $user_allow_create                   = undef,
+  $user_allow_update                   = undef,
+  $user_allow_delete                   = undef,
 ) {
 
   include ::keystone::deps
@@ -481,6 +482,11 @@ class keystone::ldap(
     file { $tls_cacertdir:
       ensure => directory
     }
+  }
+
+  if $user_allow_create or $user_allow_update or $user_allow_delete {
+    warning("all user_allow_ options are deprecated and have no effect, \
+      they will be removed in the future")
   }
 
   keystone_config {
@@ -502,9 +508,6 @@ class keystone::ldap(
     'ldap/user_enabled_invert':                  value => $user_enabled_invert;
     'ldap/user_attribute_ignore':                value => $user_attribute_ignore;
     'ldap/user_default_project_id_attribute':    value => $user_default_project_id_attribute;
-    'ldap/user_allow_create':                    value => $user_allow_create;
-    'ldap/user_allow_update':                    value => $user_allow_update;
-    'ldap/user_allow_delete':                    value => $user_allow_delete;
     'ldap/user_pass_attribute':                  value => $user_pass_attribute;
     'ldap/user_enabled_emulation':               value => $user_enabled_emulation;
     'ldap/user_enabled_emulation_dn':            value => $user_enabled_emulation_dn;
