@@ -11,7 +11,7 @@ describe 'keystone::roles::admin' do
       :osfamily               => 'Debian',
       :operatingsystem        => 'Debian',
       :operatingsystemrelease => '7.0',
-      :processorcount         => '1'
+      :os_workers             => 1,
     })
   end
 

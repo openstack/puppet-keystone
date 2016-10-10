@@ -404,13 +404,13 @@
 #   (optional) The number of worker processes to serve the admin eventlet application.
 #   This option is deprecated along with eventlet and will be removed in M.
 #   This setting has no affect when using WSGI.
-#   Defaults to max($::processorcount, 2)
+#   Defaults to $::os_workers
 #
 # [*public_workers*]
 #   (optional) The number of worker processes to serve the public eventlet application.
 #   This option is deprecated along with eventlet and will be removed in M.
 #   This setting has no affect when using WSGI.
-#   Defaults to max($::processorcount, 2)
+#   Defaults to $::os_workers
 #
 # [*sync_db*]
 #   (Optional) Run db sync on the node.
@@ -749,8 +749,8 @@ class keystone(
   $enable_proxy_headers_parsing         = $::os_service_default,
   $purge_config                         = false,
   # DEPRECATED PARAMETERS
-  $admin_workers                        = max($::processorcount, 2),
-  $public_workers                       = max($::processorcount, 2),
+  $admin_workers                        = $::os_workers,
+  $public_workers                       = $::os_workers,
   $service_provider                     = undef,
   $verbose                              = undef,
   $enable_pki_setup                     = undef,
