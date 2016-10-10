@@ -305,7 +305,7 @@
 #
 # [*log_dir*]
 #   (optional) Directory where logs should be stored
-#   If set to boolean false, it will not log to any directory
+#   If set to $::os_service_default, it will not log to any directory
 #   Defaults to undef.
 #
 # [*log_file*]
