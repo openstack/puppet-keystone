@@ -907,6 +907,7 @@ describe 'keystone' do
         :ensure => 'directory',
         :owner  => params['keystone_user'],
         :group  => params['keystone_group'],
+        'mode'  => '0600',
       ) }
 
       it { is_expected.to contain_exec('keystone-manage credential_setup').with(
@@ -1004,6 +1005,7 @@ describe 'keystone' do
         :ensure => 'directory',
         :owner  => params['keystone_user'],
         :group  => params['keystone_group'],
+        :mode   => '0600',
       ) }
 
       it { is_expected.to contain_exec('keystone-manage fernet_setup').with(
@@ -1069,12 +1071,14 @@ describe 'keystone' do
       'content'   => 't-WdduhORSqoyAykuqWAQSYjg2rSRuJYySgI2xh48CI=',
       'owner'     => 'keystone',
       'owner'     => 'keystone',
+      'mode'      => '0600',
       'subscribe' => 'Anchor[keystone::install::end]',
     )}
     it { is_expected.to contain_file('/etc/keystone/fernet-keys/1').with(
       'content'   => 'GLlnyygEVJP4-H2OMwClXn3sdSQUZsM5F194139Unv8=',
       'owner'     => 'keystone',
       'owner'     => 'keystone',
+      'mode'      => '0600',
       'subscribe' => 'Anchor[keystone::install::end]',
     )}
   end
