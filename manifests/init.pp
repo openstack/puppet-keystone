@@ -421,7 +421,7 @@
 #   run on a single node, then the keys are replicated to the other nodes
 #   in a cluster. You would typically also pair this with a fernet token
 #   provider setting.
-#   Defaults to false
+#   Defaults to true
 #
 # [*fernet_key_repository*]
 #   (Optional) Location for the fernet key repository. This value must
@@ -658,7 +658,7 @@ class keystone(
   $catalog_type                         = 'sql',
   $catalog_driver                       = false,
   $catalog_template_file                = '/etc/keystone/default_catalog.templates',
-  $token_provider                       = 'uuid',
+  $token_provider                       = 'fernet',
   $token_driver                         = 'sql',
   $token_expiration                     = 3600,
   $revoke_driver                        = $::os_service_default,
@@ -720,7 +720,7 @@ class keystone(
   $service_name                         = $::keystone::params::service_name,
   $max_token_size                       = $::os_service_default,
   $sync_db                              = true,
-  $enable_fernet_setup                  = false,
+  $enable_fernet_setup                  = true,
   $fernet_key_repository                = '/etc/keystone/fernet-keys',
   $fernet_max_active_keys               = $::os_service_default,
   $fernet_keys                          = false,
@@ -759,10 +759,6 @@ class keystone(
 
   include ::keystone::deps
   include ::keystone::logging
-
-  if $token_provider == 'uuid' {
-    warning("Fernet token is recommended in Mitaka release. The default for token_provider will be changed to 'fernet' in O release.")
-  }
 
   if $service_provider {
     warning("service_provider is deprecated, does nothing and will be removed in a future release, \
