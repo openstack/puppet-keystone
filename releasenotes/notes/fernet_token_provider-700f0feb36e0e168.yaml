@@ -1,0 +1,5 @@
+---
+upgrade:
+  - Fernet token is now the default token provider for keystone.
+  - keystone::enable_fernet_setup is now true by default to ensure fernet tokens
+    work out of the box.

@@ -30,7 +30,7 @@ describe 'keystone' do
       'use_stderr'                         => true,
       'catalog_type'                       => 'sql',
       'catalog_driver'                     => false,
-      'token_provider'                     => 'uuid',
+      'token_provider'                     => 'fernet',
       'token_driver'                       => 'sql',
       'revoke_driver'                      => 'sql',
       'revoke_by_id'                       => true,
