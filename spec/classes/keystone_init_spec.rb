@@ -18,108 +18,108 @@ describe 'keystone' do
   end
 
   default_params = {
-      'admin_token'                         => 'service_token',
-      'admin_password'                      => 'special_password',
-      'package_ensure'                      => 'present',
-      'client_package_ensure'               => 'present',
-      'public_bind_host'                    => '0.0.0.0',
-      'admin_bind_host'                     => '0.0.0.0',
-      'public_port'                         => '5000',
-      'admin_port'                          => '35357',
-      'debug'                               => false,
-      'use_stderr'                          => true,
-      'catalog_type'                        => 'sql',
-      'catalog_driver'                      => false,
-      'token_provider'                      => 'uuid',
-      'token_driver'                        => 'sql',
-      'revoke_driver'                       => 'sql',
-      'revoke_by_id'                        => true,
-      'cache_dir'                           => '/var/cache/keystone',
-      'memcache_servers'                    => '<SERVICE DEFAULT>',
-      'cache_backend'                       => '<SERVICE DEFAULT>',
-      'cache_backend_argument'              => '<SERVICE DEFAULT>',
-      'cache_enabled'                       => '<SERVICE DEFAULT>',
-      'cache_memcache_servers'              => '<SERVICE DEFAULT>',
-      'enable_ssl'                          => false,
-      'ssl_certfile'                        => '/etc/keystone/ssl/certs/keystone.pem',
-      'ssl_keyfile'                         => '/etc/keystone/ssl/private/keystonekey.pem',
-      'ssl_ca_certs'                        => '/etc/keystone/ssl/certs/ca.pem',
-      'ssl_ca_key'                          => '/etc/keystone/ssl/private/cakey.pem',
-      'ssl_cert_subject'                    => '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
-      'enabled'                             => true,
-      'manage_service'                      => true,
-      'database_connection'                 => 'sqlite:////var/lib/keystone/keystone.db',
-      'database_idle_timeout'               => '200',
-      'signing_certfile'                    => '<SERVICE DEFAULT>',
-      'signing_keyfile'                     => '<SERVICE DEFAULT>',
-      'signing_ca_certs'                    => '<SERVICE DEFAULT>',
-      'signing_ca_key'                      => '<SERVICE DEFAULT>',
-      'signing_cert_subject'                => '<SERVICE DEFAULT>',
-      'signing_key_size'                    => '<SERVICE DEFAULT>',
-      'rabbit_host'                         => '<SERVICE DEFAULT>',
-      'rabbit_password'                     => '<SERVICE DEFAULT>',
-      'rabbit_userid'                       => '<SERVICE DEFAULT>',
-      'rabbit_heartbeat_timeout_threshold'  => '<SERVICE DEFAULT>',
-      'rabbit_heartbeat_rate'               => '<SERVICE DEFAULT>',
-      'admin_workers'                       => 20,
-      'public_workers'                      => 20,
-      'member_role_id'                      => '<SERVICE DEFAULT>',
-      'member_role_name'                    => '<SERVICE DEFAULT>',
-      'paste_config'                        => '<SERVICE DEFAULT>',
-      'sync_db'                             => true,
-      'purge_config'                        => false,
-      'keystone_user'                       => 'keystone',
-      'keystone_group'                      => 'keystone',
+      'admin_token'                        => 'service_token',
+      'admin_password'                     => 'special_password',
+      'package_ensure'                     => 'present',
+      'client_package_ensure'              => 'present',
+      'public_bind_host'                   => '0.0.0.0',
+      'admin_bind_host'                    => '0.0.0.0',
+      'public_port'                        => '5000',
+      'admin_port'                         => '35357',
+      'debug'                              => false,
+      'use_stderr'                         => true,
+      'catalog_type'                       => 'sql',
+      'catalog_driver'                     => false,
+      'token_provider'                     => 'uuid',
+      'token_driver'                       => 'sql',
+      'revoke_driver'                      => 'sql',
+      'revoke_by_id'                       => true,
+      'cache_dir'                          => '/var/cache/keystone',
+      'memcache_servers'                   => '<SERVICE DEFAULT>',
+      'cache_backend'                      => '<SERVICE DEFAULT>',
+      'cache_backend_argument'             => '<SERVICE DEFAULT>',
+      'cache_enabled'                      => '<SERVICE DEFAULT>',
+      'cache_memcache_servers'             => '<SERVICE DEFAULT>',
+      'enable_ssl'                         => false,
+      'ssl_certfile'                       => '/etc/keystone/ssl/certs/keystone.pem',
+      'ssl_keyfile'                        => '/etc/keystone/ssl/private/keystonekey.pem',
+      'ssl_ca_certs'                       => '/etc/keystone/ssl/certs/ca.pem',
+      'ssl_ca_key'                         => '/etc/keystone/ssl/private/cakey.pem',
+      'ssl_cert_subject'                   => '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
+      'enabled'                            => true,
+      'manage_service'                     => true,
+      'database_connection'                => 'sqlite:////var/lib/keystone/keystone.db',
+      'database_idle_timeout'              => '200',
+      'signing_certfile'                   => '<SERVICE DEFAULT>',
+      'signing_keyfile'                    => '<SERVICE DEFAULT>',
+      'signing_ca_certs'                   => '<SERVICE DEFAULT>',
+      'signing_ca_key'                     => '<SERVICE DEFAULT>',
+      'signing_cert_subject'               => '<SERVICE DEFAULT>',
+      'signing_key_size'                   => '<SERVICE DEFAULT>',
+      'rabbit_host'                        => '<SERVICE DEFAULT>',
+      'rabbit_password'                    => '<SERVICE DEFAULT>',
+      'rabbit_userid'                      => '<SERVICE DEFAULT>',
+      'rabbit_heartbeat_timeout_threshold' => '<SERVICE DEFAULT>',
+      'rabbit_heartbeat_rate'              => '<SERVICE DEFAULT>',
+      'admin_workers'                      => 20,
+      'public_workers'                     => 20,
+      'member_role_id'                     => '<SERVICE DEFAULT>',
+      'member_role_name'                   => '<SERVICE DEFAULT>',
+      'paste_config'                       => '<SERVICE DEFAULT>',
+      'sync_db'                            => true,
+      'purge_config'                       => false,
+      'keystone_user'                      => 'keystone',
+      'keystone_group'                     => 'keystone',
   }
 
   override_params = {
-      'package_ensure'                      => 'latest',
-      'client_package_ensure'               => 'latest',
-      'public_bind_host'                    => '0.0.0.0',
-      'admin_bind_host'                     => '0.0.0.0',
-      'public_port'                         => '5001',
-      'admin_port'                          => '35358',
-      'admin_token'                         => 'service_token_override',
-      'admin_password'                      => 'admin_openstack_password',
-      'debug'                               => true,
-      'use_stderr'                          => false,
-      'catalog_type'                        => 'template',
-      'token_provider'                      => 'uuid',
-      'token_driver'                        => 'kvs',
-      'revoke_driver'                       => 'kvs',
-      'revoke_by_id'                        => false,
-      'public_endpoint'                     => 'https://localhost:5000/v2.0/',
-      'admin_endpoint'                      => 'https://localhost:35357/v2.0/',
-      'enable_ssl'                          => true,
-      'ssl_certfile'                        => '/etc/keystone/ssl/certs/keystone.pem',
-      'ssl_keyfile'                         => '/etc/keystone/ssl/private/keystonekey.pem',
-      'ssl_ca_certs'                        => '/etc/keystone/ssl/certs/ca.pem',
-      'ssl_ca_key'                          => '/etc/keystone/ssl/private/cakey.pem',
-      'ssl_cert_subject'                    => '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
-      'enabled'                             => false,
-      'manage_service'                      => true,
-      'database_connection'                 => 'mysql://a:b@c/d',
-      'database_idle_timeout'               => '300',
-      'enable_pki_setup'                    => true,
-      'signing_certfile'                    => '/etc/keystone/ssl/certs/signing_cert.pem',
-      'signing_keyfile'                     => '/etc/keystone/ssl/private/signing_key.pem',
-      'signing_ca_certs'                    => '/etc/keystone/ssl/certs/ca.pem',
-      'signing_ca_key'                      => '/etc/keystone/ssl/private/cakey.pem',
-      'signing_cert_subject'                => '/C=US/ST=Unset/L=Unset/O=Unset/CN=www.example.com',
-      'signing_key_size'                    => 2048,
-      'rabbit_host'                         => '127.0.0.1',
-      'rabbit_password'                     => 'openstack',
-      'rabbit_userid'                       => 'admin',
-      'rabbit_heartbeat_timeout_threshold'  => '60',
-      'rabbit_heartbeat_rate'               => '10',
-      'rabbit_ha_queues'                    => true,
-      'default_domain'                      => 'other_domain',
-      'member_role_id'                      => '123456789',
-      'member_role_name'                    => 'othermember',
-      'paste_config'                        => '/usr/share/keystone/keystone-paste.ini',
-      'using_domain_config'                 => false,
-      'keystone_user'                       => 'test_user',
-      'keystone_group'                      => 'test_group',
+      'package_ensure'                     => 'latest',
+      'client_package_ensure'              => 'latest',
+      'public_bind_host'                   => '0.0.0.0',
+      'admin_bind_host'                    => '0.0.0.0',
+      'public_port'                        => '5001',
+      'admin_port'                         => '35358',
+      'admin_token'                        => 'service_token_override',
+      'admin_password'                     => 'admin_openstack_password',
+      'debug'                              => true,
+      'use_stderr'                         => false,
+      'catalog_type'                       => 'template',
+      'token_provider'                     => 'uuid',
+      'token_driver'                       => 'kvs',
+      'revoke_driver'                      => 'kvs',
+      'revoke_by_id'                       => false,
+      'public_endpoint'                    => 'https://localhost:5000/v2.0/',
+      'admin_endpoint'                     => 'https://localhost:35357/v2.0/',
+      'enable_ssl'                         => true,
+      'ssl_certfile'                       => '/etc/keystone/ssl/certs/keystone.pem',
+      'ssl_keyfile'                        => '/etc/keystone/ssl/private/keystonekey.pem',
+      'ssl_ca_certs'                       => '/etc/keystone/ssl/certs/ca.pem',
+      'ssl_ca_key'                         => '/etc/keystone/ssl/private/cakey.pem',
+      'ssl_cert_subject'                   => '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
+      'enabled'                            => false,
+      'manage_service'                     => true,
+      'database_connection'                => 'mysql://a:b@c/d',
+      'database_idle_timeout'              => '300',
+      'enable_pki_setup'                   => true,
+      'signing_certfile'                   => '/etc/keystone/ssl/certs/signing_cert.pem',
+      'signing_keyfile'                    => '/etc/keystone/ssl/private/signing_key.pem',
+      'signing_ca_certs'                   => '/etc/keystone/ssl/certs/ca.pem',
+      'signing_ca_key'                     => '/etc/keystone/ssl/private/cakey.pem',
+      'signing_cert_subject'               => '/C=US/ST=Unset/L=Unset/O=Unset/CN=www.example.com',
+      'signing_key_size'                   => 2048,
+      'rabbit_host'                        => '127.0.0.1',
+      'rabbit_password'                    => 'openstack',
+      'rabbit_userid'                      => 'admin',
+      'rabbit_heartbeat_timeout_threshold' => '60',
+      'rabbit_heartbeat_rate'              => '10',
+      'rabbit_ha_queues'                   => true,
+      'default_domain'                     => 'other_domain',
+      'member_role_id'                     => '123456789',
+      'member_role_name'                   => 'othermember',
+      'paste_config'                       => '/usr/share/keystone/keystone-paste.ini',
+      'using_domain_config'                => false,
+      'keystone_user'                      => 'test_user',
+      'keystone_group'                     => 'test_group',
     }
 
   httpd_params = {'service_name' => 'httpd'}.merge(default_params)
@@ -373,17 +373,17 @@ describe 'keystone' do
     describe 'when configuring as PKI' do
       let :params do
         {
-          'enable_pki_setup'                    => true,
-          'admin_token'                         => 'service_token',
-          'token_provider'                      => 'pki',
-          'signing_certfile'                    => '/etc/keystone/ssl/certs/signing_cert.pem',
-          'signing_keyfile'                     => '/etc/keystone/ssl/private/signing_key.pem',
-          'signing_ca_certs'                    => '/etc/keystone/ssl/certs/ca.pem',
-          'signing_ca_key'                      => '/etc/keystone/ssl/private/cakey.pem',
-          'signing_cert_subject'                => '/C=US/ST=Unset/L=Unset/O=Unset/CN=www.example.com',
-          'signing_key_size'                    => 2048,
-          'keystone_user'                       => 'keystone',
-          'keystone_group'                      => 'keystone',
+          'enable_pki_setup'     => true,
+          'admin_token'          => 'service_token',
+          'token_provider'       => 'pki',
+          'signing_certfile'     => '/etc/keystone/ssl/certs/signing_cert.pem',
+          'signing_keyfile'      => '/etc/keystone/ssl/private/signing_key.pem',
+          'signing_ca_certs'     => '/etc/keystone/ssl/certs/ca.pem',
+          'signing_ca_key'       => '/etc/keystone/ssl/private/cakey.pem',
+          'signing_cert_subject' => '/C=US/ST=Unset/L=Unset/O=Unset/CN=www.example.com',
+          'signing_key_size'     => 2048,
+          'keystone_user'        => 'keystone',
+          'keystone_group'       => 'keystone',
         }
       end
 
@@ -548,8 +548,8 @@ describe 'keystone' do
   describe 'when enable_bootstrap is set to false' do
     let :params do
       {
-        'admin_token' => 'service_token',
-        'enable_bootstrap'     => false,
+        'admin_token'      => 'service_token',
+        'enable_bootstrap' => false,
       }
     end
 
@@ -700,10 +700,10 @@ describe 'keystone' do
   describe 'when enabling SSL' do
     let :params do
       {
-        'admin_token' => 'service_token',
-        'enable_ssl'  => true,
-        'public_endpoint'  => 'https://localhost:5000/v2.0/',
-        'admin_endpoint'   => 'https://localhost:35357/v2.0/',
+        'admin_token'     => 'service_token',
+        'enable_ssl'      => true,
+        'public_endpoint' => 'https://localhost:5000/v2.0/',
+        'admin_endpoint'  => 'https://localhost:35357/v2.0/',
       }
     end
     it {is_expected.to contain_keystone_config('ssl/enable').with_value(true)}
@@ -788,10 +788,10 @@ describe 'keystone' do
   describe 'setting notification settings' do
     let :params do
       default_params.merge({
-        :notification_driver   => ['keystone.openstack.common.notifier.rpc_notifier'],
-        :notification_topics   => ['notifications'],
-        :notification_format   => 'cadf',
-        :control_exchange      => 'keystone'
+        :notification_driver => ['keystone.openstack.common.notifier.rpc_notifier'],
+        :notification_topics => ['notifications'],
+        :notification_format => 'cadf',
+        :control_exchange    => 'keystone'
       })
     end
 
@@ -841,8 +841,8 @@ describe 'keystone' do
   describe 'setting default template catalog' do
     let :params do
       {
-        :admin_token    => 'service_token',
-        :catalog_type   => 'template'
+        :admin_token  => 'service_token',
+        :catalog_type => 'template'
       }
     end
 
@@ -853,10 +853,10 @@ describe 'keystone' do
   describe 'with overridden validation_auth_url' do
     let :params do
       {
-        :admin_token            => 'service_token',
-        :validate_service       => true,
-        :validate_auth_url      => 'http://some.host:35357/v2.0',
-        :admin_endpoint         => 'http://some.host:35357'
+        :admin_token       => 'service_token',
+        :validate_service  => true,
+        :validate_auth_url => 'http://some.host:35357/v2.0',
+        :admin_endpoint    => 'http://some.host:35357'
       }
     end
 
@@ -870,9 +870,9 @@ describe 'keystone' do
   describe 'with service validation' do
     let :params do
       {
-        :admin_token            => 'service_token',
-        :validate_service       => true,
-        :admin_endpoint         => 'http://some.host:35357'
+        :admin_token      => 'service_token',
+        :validate_service => true,
+        :admin_endpoint   => 'http://some.host:35357'
       }
     end
 
@@ -885,9 +885,9 @@ describe 'keystone' do
   describe 'setting another template catalog' do
     let :params do
       {
-        :admin_token            => 'service_token',
-        :catalog_type           => 'template',
-        :catalog_template_file  => '/some/template_file'
+        :admin_token           => 'service_token',
+        :catalog_type          => 'template',
+        :catalog_template_file => '/some/template_file'
       }
     end
 
