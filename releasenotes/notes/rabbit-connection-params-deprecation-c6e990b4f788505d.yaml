@@ -1,0 +1,6 @@
+---
+deprecations:
+  - keystone::rabbit_host, keystone::rabbit_hosts, keystone::rabbit_password,
+    keystone::rabbit_port, keystone::rabbit_userid and
+    keystone::rabbit_virtual_host are deprecated.
+    keystone::default_transport_url should be used instead.
