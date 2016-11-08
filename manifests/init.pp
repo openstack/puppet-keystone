@@ -195,6 +195,12 @@
 #   (optional) If set, use this value for max_overflow with sqlalchemy.
 #   Defaults to: undef
 #
+# [*default_transport_url*]
+#    (optional) A URL representing the messaging driver to use and its full
+#    configuration. Transport URLs take the form:
+#      transport://user:pass@host1:port[,hostN:portN]/virtual_host
+#    Defaults to $::os_service_default
+#
 # [*rabbit_host*]
 #   (optional) Location of rabbitmq installation.
 #    Defaults to $::os_service_default
@@ -570,7 +576,7 @@
 #   in the keystone config.
 #   Defaults to false.
 #
-# DEPRECATED PARAMETERS
+# === DEPRECATED PARAMETERS
 #
 # [*service_provider*]
 #   (optional) Deprecated. Provider, that can be used for keystone service.
@@ -704,6 +710,7 @@ class keystone(
   $rabbit_heartbeat_timeout_threshold   = $::os_service_default,
   $rabbit_heartbeat_rate                = $::os_service_default,
   $rabbit_use_ssl                       = $::os_service_default,
+  $default_transport_url                = $::os_service_default,
   $rabbit_ha_queues                     = $::os_service_default,
   $kombu_ssl_ca_certs                   = $::os_service_default,
   $kombu_ssl_certfile                   = $::os_service_default,
@@ -1034,6 +1041,7 @@ Fernet or UUID tokens are recommended.")
   }
 
   oslo::messaging::default { 'keystone_config':
+    transport_url    => $default_transport_url,
     control_exchange => $control_exchange,
   }
 

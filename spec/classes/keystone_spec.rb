@@ -58,6 +58,7 @@ describe 'keystone' do
       'signing_ca_key'                      => '<SERVICE DEFAULT>',
       'signing_cert_subject'                => '<SERVICE DEFAULT>',
       'signing_key_size'                    => '<SERVICE DEFAULT>',
+      'default_transport_url'               => '<SERVICE DEFAULT>',
       'rabbit_host'                         => '<SERVICE DEFAULT>',
       'rabbit_password'                     => '<SERVICE DEFAULT>',
       'rabbit_userid'                       => '<SERVICE DEFAULT>',
@@ -109,6 +110,7 @@ describe 'keystone' do
       'signing_ca_key'                      => '/etc/keystone/ssl/private/cakey.pem',
       'signing_cert_subject'                => '/C=US/ST=Unset/L=Unset/O=Unset/CN=www.example.com',
       'signing_key_size'                    => 2048,
+      'default_transport_url'               => 'rabbit://user:pass@host:1234/virt',
       'rabbit_host'                         => '127.0.0.1',
       'rabbit_password'                     => 'openstack',
       'rabbit_userid'                       => 'admin',
@@ -228,6 +230,10 @@ describe 'keystone' do
 
     it 'should contain correct rabbit_password' do
       is_expected.to contain_keystone_config('oslo_messaging_rabbit/rabbit_password').with_value(param_hash['rabbit_password']).with_secret(true)
+    end
+
+    it 'should contain correct default transport url' do
+      is_expected.to contain_keystone_config('DEFAULT/transport_url').with_value(params['default_transport_url'])
     end
 
     it 'should contain correct rabbit heartbeat configuration' do
