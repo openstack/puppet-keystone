@@ -261,6 +261,7 @@ class keystone::wsgi::apache (
     ensure  => directory,
     owner   => 'keystone',
     group   => 'keystone',
+    mode    => '0755',
     require => Anchor['keystone::install::end'],
   }
 
