@@ -211,11 +211,6 @@ class keystone::wsgi::apache (
 
   if $ssl {
     include ::apache::mod::ssl
-    # This is probably a bug in Class[apache::mod::ssl] or in the mod_ssl EL
-    # package but for now I want this to pass p-o-i CI.  The issue is that the
-    # mod_ssl package is placing a ssl.conf file after the confd_dir is purged
-    # on Puppet 4.
-    Class['::apache::mod::ssl'] -> File[$::apache::confd_dir]
     # Attempt to use the admin cert/key, else default to the public one.
     # Since it's possible that no cert/key were given, we allow this to be
     # empty with pick_default
