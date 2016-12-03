@@ -8,7 +8,10 @@ describe 'keystone::db::sync' do
       it {
         is_expected.to contain_exec('keystone-manage db_sync').with(
           :command     => 'keystone-manage  db_sync',
+          :path        => '/usr/bin',
           :user        => 'keystone',
+          :try_sleep   => 5,
+          :tries       => 10,
           :refreshonly => true,
           :subscribe   => ['Anchor[keystone::install::end]',
                           'Anchor[keystone::config::end]',
@@ -29,7 +32,10 @@ describe 'keystone::db::sync' do
       it {
         is_expected.to contain_exec('keystone-manage db_sync').with(
           :command     => 'keystone-manage --config-file /etc/keystone/keystone.conf db_sync',
+          :path        => '/usr/bin',
           :user        => 'test_user',
+          :try_sleep   => 5,
+          :tries       => 10,
           :refreshonly => true,
           :subscribe   => ['Anchor[keystone::install::end]',
                           'Anchor[keystone::config::end]',
