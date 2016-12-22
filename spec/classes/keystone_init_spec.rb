@@ -1129,6 +1129,7 @@ describe 'keystone' do
     let :facts do
       @default_facts.merge(global_facts.merge({
         :osfamily               => 'RedHat',
+        :operatingsystem        => 'RedHat',
         :operatingsystemrelease => '7.0'
       }))
     end
