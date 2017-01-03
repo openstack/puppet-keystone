@@ -206,10 +206,6 @@
 #  reduce performance. Only valid for PKI tokens. Integer value
 #  Defaults to $::os_service_default.
 #
-# [*signing_dir*]
-#  (Optional) Directory used to cache files related to PKI tokens.
-#  Defaults to $::os_service_default.
-#
 # [*token_cache_time*]
 #  (Optional) In order to prevent excessive effort spent validating tokens,
 #  the middleware caches previously-seen tokens for a configurable duration
@@ -219,6 +215,12 @@
 # [*manage_memcache_package*]
 #  (Optional) Whether to install the python-memcache package.
 #  Defaults to false.
+#
+# DEPRECATED PARAMETERS
+#
+# [*signing_dir*]
+#   (Optional) Directory used to cache files related to PKI tokens.
+#   Defaults to undef
 #
 define keystone::resource::authtoken(
   $username,
@@ -254,9 +256,10 @@ define keystone::resource::authtoken(
   $memcached_servers              = $::os_service_default,
   $region_name                    = $::os_service_default,
   $revocation_cache_time          = $::os_service_default,
-  $signing_dir                    = $::os_service_default,
   $token_cache_time               = $::os_service_default,
   $manage_memcache_package        = false,
+  # DEPRECATED PARAMETERS
+  $signing_dir                    = undef,
 ) {
 
   include ::keystone::deps
@@ -298,6 +301,10 @@ define keystone::resource::authtoken(
     $memcached_servers_real = $::os_service_default
   }
 
+  if $signing_dir {
+    warning('signing_dir parameter is deprecated, has no effect and will be removed in the Pike release.')
+  }
+
   $keystonemiddleware_options = {
     'keystone_authtoken/auth_section'                   => {'value' => $auth_section},
     'keystone_authtoken/auth_uri'                       => {'value' => $auth_uri},
@@ -325,7 +332,6 @@ define keystone::resource::authtoken(
     'keystone_authtoken/memcached_servers'              => {'value' => $memcached_servers_real},
     'keystone_authtoken/region_name'                    => {'value' => $region_name},
     'keystone_authtoken/revocation_cache_time'          => {'value' => $revocation_cache_time},
-    'keystone_authtoken/signing_dir'                    => {'value' => $signing_dir},
     'keystone_authtoken/token_cache_time'               => {'value' => $token_cache_time},
     'keystone_authtoken/auth_url'                       => {'value' => $auth_url},
     'keystone_authtoken/username'                       => {'value' => $username},
