@@ -189,13 +189,13 @@ ac43ec53d5a74a0b9f51523ae41a29f0
 
     it 'checks the password with domain scoped token' do
       provider.expects(:id).twice.returns('project1_id')
-      provider.expects(:domain).returns('domain1')
+      provider.expects(:domain_id).returns('domain1_id')
       mock_creds = Puppet::Provider::Openstack::CredentialsV3.new
       mock_creds.auth_url    = 'http://127.0.0.1:5000'
       mock_creds.password    = 'foo'
       mock_creds.username    = 'foo'
       mock_creds.user_id     = 'project1_id'
-      mock_creds.domain_name = 'domain1'
+      mock_creds.domain_id = 'domain1_id'
       Puppet::Provider::Openstack::CredentialsV3.expects(:new).returns(mock_creds)
       described_class.expects(:openstack)
         .with('project', 'list', '--quiet', '--format', 'csv',
