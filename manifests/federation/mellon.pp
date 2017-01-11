@@ -46,15 +46,28 @@
 #   accepts latest or specific versions.
 #   Defaults to present.
 #
+# [*enable_websso*]
+#   (optional) Wheater or not to enable Web Single Sign-On (SSO)
+#   Defaults to false
+#
+# [*trusted_dashboards*]
+#   (optional) URL list of trusted horizon servers.
+#   This setting ensures that keystone only sends token data back to trusted
+#   servers. This is performed as a precaution, specifically to prevent man-in-
+#   the-middle (MITM) attacks.
+#   Defaults to undef
+#
 class keystone::federation::mellon (
   $methods,
   $idp_name,
   $protocol_name,
-  $admin_port     = false,
-  $main_port      = true,
-  $module_plugin  = 'keystone.auth.plugins.mapped.Mapped',
-  $template_order = 331,
-  $package_ensure = present,
+  $admin_port         = false,
+  $main_port          = true,
+  $module_plugin      = 'keystone.auth.plugins.mapped.Mapped',
+  $template_order     = 331,
+  $package_ensure     = present,
+  $enable_websso      = false,
+  $trusted_dashboards = undef,
 ) {
 
   include ::apache
@@ -81,6 +94,7 @@ Apache + Mellon SP setups, where a REMOTE_USER env variable is always set, even 
 
   validate_bool($admin_port)
   validate_bool($main_port)
+  validate_bool($enable_websso)
 
   if( !$admin_port and !$main_port){
     fail('No VirtualHost port to configure, please choose at least one.')
@@ -89,6 +103,16 @@ Apache + Mellon SP setups, where a REMOTE_USER env variable is always set, even 
   keystone_config {
     'auth/methods': value => join(any2array($methods),',');
     'auth/saml2':   value => $module_plugin;
+  }
+
+  if($enable_websso){
+    if( !trusted_dashboards){
+      fail('No trusted dashboard specified, please add at least one.')
+    }
+    keystone_config {
+      'mapped/remote_id_attribute': value => 'MELLON_IDP';
+      'federation/trusted_dashboard': value => join(any2array($trusted_dashboards),',');
+    }
   }
 
   ensure_packages([$::keystone::params::mellon_package_name], {

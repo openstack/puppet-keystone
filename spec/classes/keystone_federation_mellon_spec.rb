@@ -89,6 +89,33 @@ describe 'keystone::federation::mellon' do
         :order  => params[:template_order],
       })}
     end
+
+    context 'with websso enabled' do
+      before do
+        params.merge!({
+          :enable_websso => true,
+          :trusted_dashboards => [
+            'http://acme.horizon.com/auth/websso/',
+            'http://beta.horizon.com/auth/websso/',
+          ],
+        })
+      end
+
+      it 'should have basic params for mellon in Keystone configuration' do
+        is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2')
+        is_expected.to contain_keystone_config('auth/saml2').with_value('keystone.auth.plugins.mapped.Mapped')
+      end
+
+      it 'should have parameters for websso in Keystone configuration' do
+        is_expected.to contain_keystone_config('mapped/remote_id_attribute').with_value('MELLON_IDP')
+        is_expected.to contain_keystone_config('federation/trusted_dashboard').with_value('http://acme.horizon.com/auth/websso/,http://beta.horizon.com/auth/websso/')
+      end
+
+      it { is_expected.to contain_concat__fragment('configure_mellon_on_port_5000').with({
+        :target => "10-keystone_wsgi_main.conf",
+        :order  => params[:template_order],
+      })}
+    end
   end
 
   on_supported_os({
