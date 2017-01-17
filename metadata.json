@@ -1,6 +1,6 @@
 {
   "name": "openstack-keystone",
-  "version": "9.4.0",
+  "version": "9.5.0",
   "author": "Puppet Labs and OpenStack Contributors",
   "summary": "Puppet module for OpenStack Keystone",
   "license": "Apache-2.0",
@@ -61,11 +61,11 @@
     },
     {
       "name": "openstack/openstacklib",
-      "version_requirement": ">=9.4.0 <10.0.0"
+      "version_requirement": ">=9.5.0 <10.0.0"
     },
     {
       "name": "openstack/oslo",
-      "version_requirement": ">=9.4.0 <10.0.0"
+      "version_requirement": ">=9.5.0 <10.0.0"
     }
   ]
 }
