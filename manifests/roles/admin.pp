@@ -11,12 +11,13 @@
 #
 # === Parameters:
 #
-# [*email*]
-#   The email address for the admin. Required.
-#
 # [*password*]
 #   The admin password. Required. In a later release
 #   this will default to $keystone::admin_password.
+#
+# [*email*]
+#   The email address for the admin. Optional.
+#   Defaults to 'admin@localhost'.
 #
 # [*admin_roles*]
 #   The list of the roles with admin privileges. Optional.
@@ -78,8 +79,8 @@
 # Copyright 2012 Puppetlabs Inc, unless otherwise noted.
 #
 class keystone::roles::admin(
-  $email,
   $password,
+  $email                  = 'admin@localhost',
   $admin                  = 'admin',
   $admin_tenant           = 'openstack',
   $admin_roles            = ['admin'],
