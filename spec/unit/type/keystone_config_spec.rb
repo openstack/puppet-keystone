@@ -1,6 +1,6 @@
 require 'spec_helper'
 # this hack is required for now to ensure that the path is set up correctly
-# to retrive the parent provider
+# to retrieve the parent provider
 $LOAD_PATH.push(
   File.join(
     File.dirname(__FILE__),
