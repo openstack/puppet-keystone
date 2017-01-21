@@ -260,18 +260,6 @@
 #   List of attributes stripped off the group on update. (list value)
 #   Defaults to 'undef'
 #
-# [*group_allow_create*]
-#   Allow group creation in LDAP backend. (boolean value)
-#   Defaults to 'undef'
-#
-# [*group_allow_update*]
-#   Allow group update in LDAP backend. (boolean value)
-#   Defaults to 'undef'
-#
-# [*group_allow_delete*]
-#   Allow group deletion in LDAP backend. (boolean value)
-#   Defaults to 'undef'
-#
 # [*group_additional_attribute_mapping*]
 #   Additional attribute mappings for groups. Attribute mapping
 #   format is <ldap_attr>:<user_attr>, where ldap_attr is the
@@ -358,19 +346,31 @@
 #   LDAP support packages.
 #   Defaults to true.
 #
-# === DEPRECATED group/name
+# === DEPRECATED PARAMETERS
 #
 # [*user_allow_create*]
 #   Allow user creation in LDAP backend. (boolean value)
-#   Defaults to 'undef' DEPRECATED: Has no effect.
+#   Defaults to undef
 #
 # [*user_allow_update*]
 #   Allow user updates in LDAP backend. (boolean value)
-#   Defaults to 'undef' DEPRECATED: Has no effect.
+#   Defaults to undef
 #
 # [*user_allow_delete*]
 #   Allow user deletion in LDAP backend. (boolean value)
-#   Defaults to 'undef' DEPRECATED: Has no effect.
+#   Defaults to undef
+#
+# [*group_allow_create*]
+#   Allow group creation in LDAP backend. (boolean value)
+#   Defaults to undef
+#
+# [*group_allow_update*]
+#   Allow group update in LDAP backend. (boolean value)
+#   Defaults to undef
+#
+# [*group_allow_delete*]
+#   Allow group deletion in LDAP backend. (boolean value)
+#   Defaults to undef
 #
 # == Dependencies
 # == Examples
@@ -384,90 +384,90 @@
 # Copyright 2012 Puppetlabs Inc, unless otherwise noted.
 #
 class keystone::ldap(
-  $url                                 = undef,
-  $user                                = undef,
-  $password                            = undef,
-  $suffix                              = undef,
-  $query_scope                         = undef,
-  $page_size                           = undef,
-  $user_tree_dn                        = undef,
-  $user_filter                         = undef,
-  $user_objectclass                    = undef,
-  $user_id_attribute                   = undef,
-  $user_name_attribute                 = undef,
-  $user_mail_attribute                 = undef,
-  $user_enabled_attribute              = undef,
-  $user_enabled_mask                   = undef,
-  $user_enabled_default                = undef,
-  $user_enabled_invert                 = undef,
-  $user_attribute_ignore               = undef,
-  $user_default_project_id_attribute   = undef,
-  $user_pass_attribute                 = undef,
-  $user_enabled_emulation              = undef,
-  $user_enabled_emulation_dn           = undef,
-  $user_additional_attribute_mapping   = undef,
-  $project_tree_dn                     = undef,
-  $project_filter                      = undef,
-  $project_objectclass                 = undef,
-  $project_id_attribute                = undef,
-  $project_member_attribute            = undef,
-  $project_desc_attribute              = undef,
-  $project_name_attribute              = undef,
-  $project_enabled_attribute           = undef,
-  $project_domain_id_attribute         = undef,
-  $project_attribute_ignore            = undef,
-  $project_allow_create                = undef,
-  $project_allow_update                = undef,
-  $project_allow_delete                = undef,
-  $project_enabled_emulation           = undef,
-  $project_enabled_emulation_dn        = undef,
-  $project_additional_attribute_mapping= undef,
-  $role_tree_dn                        = undef,
-  $role_filter                         = undef,
-  $role_objectclass                    = undef,
-  $role_id_attribute                   = undef,
-  $role_name_attribute                 = undef,
-  $role_member_attribute               = undef,
-  $role_attribute_ignore               = undef,
-  $role_allow_create                   = undef,
-  $role_allow_update                   = undef,
-  $role_allow_delete                   = undef,
-  $role_additional_attribute_mapping   = undef,
-  $group_tree_dn                       = undef,
-  $group_filter                        = undef,
-  $group_objectclass                   = undef,
-  $group_id_attribute                  = undef,
-  $group_name_attribute                = undef,
-  $group_member_attribute              = undef,
-  $group_desc_attribute                = undef,
-  $group_attribute_ignore              = undef,
-  $group_allow_create                  = undef,
-  $group_allow_update                  = undef,
-  $group_allow_delete                  = undef,
-  $group_additional_attribute_mapping  = undef,
-  $chase_referrals                     = undef,
-  $use_tls                             = undef,
-  $tls_cacertdir                       = undef,
-  $tls_cacertfile                      = undef,
-  $tls_req_cert                        = undef,
-  $identity_driver                     = undef,
-  $assignment_driver                   = undef,
-  $credential_driver                   = undef,
-  $use_pool                            = false,
-  $pool_size                           = 10,
-  $pool_retry_max                      = 3,
-  $pool_retry_delay                    = 0.1,
-  $pool_connection_timeout             = -1,
-  $pool_connection_lifetime            = 600,
-  $use_auth_pool                       = false,
-  $auth_pool_size                      = 100,
-  $auth_pool_connection_lifetime       = 60,
-  $package_ensure                      = present,
-  $manage_packages                     = true,
-  # DEPRECATED
-  $user_allow_create                   = undef,
-  $user_allow_update                   = undef,
-  $user_allow_delete                   = undef,
+  $url                                  = undef,
+  $user                                 = undef,
+  $password                             = undef,
+  $suffix                               = undef,
+  $query_scope                          = undef,
+  $page_size                            = undef,
+  $user_tree_dn                         = undef,
+  $user_filter                          = undef,
+  $user_objectclass                     = undef,
+  $user_id_attribute                    = undef,
+  $user_name_attribute                  = undef,
+  $user_mail_attribute                  = undef,
+  $user_enabled_attribute               = undef,
+  $user_enabled_mask                    = undef,
+  $user_enabled_default                 = undef,
+  $user_enabled_invert                  = undef,
+  $user_attribute_ignore                = undef,
+  $user_default_project_id_attribute    = undef,
+  $user_pass_attribute                  = undef,
+  $user_enabled_emulation               = undef,
+  $user_enabled_emulation_dn            = undef,
+  $user_additional_attribute_mapping    = undef,
+  $project_tree_dn                      = undef,
+  $project_filter                       = undef,
+  $project_objectclass                  = undef,
+  $project_id_attribute                 = undef,
+  $project_member_attribute             = undef,
+  $project_desc_attribute               = undef,
+  $project_name_attribute               = undef,
+  $project_enabled_attribute            = undef,
+  $project_domain_id_attribute          = undef,
+  $project_attribute_ignore             = undef,
+  $project_allow_create                 = undef,
+  $project_allow_update                 = undef,
+  $project_allow_delete                 = undef,
+  $project_enabled_emulation            = undef,
+  $project_enabled_emulation_dn         = undef,
+  $project_additional_attribute_mapping = undef,
+  $role_tree_dn                         = undef,
+  $role_filter                          = undef,
+  $role_objectclass                     = undef,
+  $role_id_attribute                    = undef,
+  $role_name_attribute                  = undef,
+  $role_member_attribute                = undef,
+  $role_attribute_ignore                = undef,
+  $role_allow_create                    = undef,
+  $role_allow_update                    = undef,
+  $role_allow_delete                    = undef,
+  $role_additional_attribute_mapping    = undef,
+  $group_tree_dn                        = undef,
+  $group_filter                         = undef,
+  $group_objectclass                    = undef,
+  $group_id_attribute                   = undef,
+  $group_name_attribute                 = undef,
+  $group_member_attribute               = undef,
+  $group_desc_attribute                 = undef,
+  $group_attribute_ignore               = undef,
+  $group_additional_attribute_mapping   = undef,
+  $chase_referrals                      = undef,
+  $use_tls                              = undef,
+  $tls_cacertdir                        = undef,
+  $tls_cacertfile                       = undef,
+  $tls_req_cert                         = undef,
+  $identity_driver                      = undef,
+  $assignment_driver                    = undef,
+  $credential_driver                    = undef,
+  $use_pool                             = false,
+  $pool_size                            = 10,
+  $pool_retry_max                       = 3,
+  $pool_retry_delay                     = 0.1,
+  $pool_connection_timeout              = -1,
+  $pool_connection_lifetime             = 600,
+  $use_auth_pool                        = false,
+  $auth_pool_size                       = 100,
+  $auth_pool_connection_lifetime        = 60,
+  $package_ensure                       = present,
+  $manage_packages                      = true,
+  # DEPRECATED PARAMETERS
+  $user_allow_create                    = undef,
+  $user_allow_update                    = undef,
+  $user_allow_delete                    = undef,
+  $group_allow_create                   = undef,
+  $group_allow_update                   = undef,
+  $group_allow_delete                   = undef,
 ) {
 
   include ::keystone::deps
@@ -486,7 +486,12 @@ class keystone::ldap(
 
   if $user_allow_create or $user_allow_update or $user_allow_delete {
     warning("all user_allow_ options are deprecated and have no effect, \
-      they will be removed in the future")
+      they will be removed in the future release.")
+  }
+
+  if $group_allow_create or $group_allow_update or $group_allow_delete {
+    warning("all group_allow_ options are deprecated and have no effect, \
+      they will be removed in the future release.")
   }
 
   keystone_config {
@@ -547,9 +552,6 @@ class keystone::ldap(
     'ldap/group_member_attribute':               value => $group_member_attribute;
     'ldap/group_desc_attribute':                 value => $group_desc_attribute;
     'ldap/group_attribute_ignore':               value => $group_attribute_ignore;
-    'ldap/group_allow_create':                   value => $group_allow_create;
-    'ldap/group_allow_update':                   value => $group_allow_update;
-    'ldap/group_allow_delete':                   value => $group_allow_delete;
     'ldap/group_additional_attribute_mapping':   value => $group_additional_attribute_mapping;
     'ldap/chase_referrals':                      value => $chase_referrals;
     'ldap/use_tls':                              value => $use_tls;
