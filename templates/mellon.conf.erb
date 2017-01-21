@@ -14,3 +14,16 @@
       AuthType "Mellon"
       MellonEnable "auth"
   </Location>
+
+<% if @enable_websso -%>
+  <Location ~ "/v3/auth/OS-FEDERATION/websso/mapped">
+    AuthType Mellon
+    MellonEnable auth
+    Require valid-user
+  </Location>
+  <Location ~ "/v3/auth/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::mellon::idp_name']-%>/protocols/mapped/websso">
+    AuthType Mellon
+    MellonEnable auth
+    Require valid-user
+  </Location>
+<% end -%>
