@@ -1,0 +1,5 @@
+---
+deprecations:
+  - group_allow_* options for ldap are deprecated in Keystone.
+    Setting these will now have no effect and these will be
+    removed as parameters in a future release.
