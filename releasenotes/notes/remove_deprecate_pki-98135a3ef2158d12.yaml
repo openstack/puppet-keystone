@@ -1,6 +1,0 @@
----
-deprecations:
-  - cache_dir parameter is deprecated, has no effect and will be
-    removed in the future release.
-other:
-  - Remove PKI signing related parameters.
