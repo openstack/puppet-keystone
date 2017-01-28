@@ -1,0 +1,4 @@
+---
+features:
+  - Add oslo.messaging notification transport_url via puppet-oslo
+    resource.
