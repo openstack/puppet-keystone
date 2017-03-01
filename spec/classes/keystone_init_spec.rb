@@ -744,6 +744,7 @@ describe 'keystone' do
     it { is_expected.to contain_keystone_config('oslo_messaging_notifications/topics').with_value('<SERVICE DEFAULT>') }
     it { is_expected.to contain_keystone_config('DEFAULT/notification_format').with_value('<SERVICE DEFAULT>') }
     it { is_expected.to contain_keystone_config('DEFAULT/control_exchange').with_value('<SERVICE DEFAULT>') }
+    it { is_expected.to contain_keystone_config('DEFAULT/rpc_response_timeout').with_value('<SERVICE DEFAULT>') }
   end
 
   describe 'with RabbitMQ communication SSLed' do
@@ -797,10 +798,11 @@ describe 'keystone' do
   describe 'setting notification settings' do
     let :params do
       default_params.merge({
-        :notification_driver => ['keystone.openstack.common.notifier.rpc_notifier'],
-        :notification_topics => ['notifications'],
-        :notification_format => 'cadf',
-        :control_exchange    => 'keystone'
+        :notification_driver  => ['keystone.openstack.common.notifier.rpc_notifier'],
+        :notification_topics  => ['notifications'],
+        :notification_format  => 'cadf',
+        :control_exchange     => 'keystone',
+        :rpc_response_timeout => '120'
       })
     end
 
@@ -808,6 +810,7 @@ describe 'keystone' do
     it { is_expected.to contain_keystone_config('oslo_messaging_notifications/topics').with_value('notifications') }
     it { is_expected.to contain_keystone_config('DEFAULT/notification_format').with_value('cadf') }
     it { is_expected.to contain_keystone_config('DEFAULT/control_exchange').with_value('keystone') }
+    it { is_expected.to contain_keystone_config('DEFAULT/rpc_response_timeout').with_value('120') }
   end
 
   describe 'setting kombu settings' do

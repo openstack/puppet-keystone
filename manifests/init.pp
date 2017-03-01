@@ -283,6 +283,10 @@
 #   (string value)
 #   Default to $::os_service_default
 #
+# [*rpc_response_timeout*]
+#  (Optional) Seconds to wait for a response from a call.
+#  Defaults to $::os_service_default
+#
 # [*public_bind_host*]
 #   (optional) The IP address of the public network interface to listen on
 #   Default to '0.0.0.0'.
@@ -720,6 +724,7 @@ class keystone(
   $notification_topics                  = $::os_service_default,
   $notification_format                  = $::os_service_default,
   $control_exchange                     = $::os_service_default,
+  $rpc_response_timeout                 = $::os_service_default,
   $validate_service                     = false,
   $validate_insecure                    = false,
   $validate_auth_url                    = false,
@@ -1046,8 +1051,9 @@ Fernet or UUID tokens are recommended.")
   }
 
   oslo::messaging::default { 'keystone_config':
-    transport_url    => $default_transport_url,
-    control_exchange => $control_exchange,
+    transport_url        => $default_transport_url,
+    control_exchange     => $control_exchange,
+    rpc_response_timeout => $rpc_response_timeout,
   }
 
   oslo::messaging::notifications { 'keystone_config':
