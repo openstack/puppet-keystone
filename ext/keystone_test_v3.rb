@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # this script verifies that keystone has
 # been successfully installed using the instructions
-# found here: http://keystone.openstack.org/configuration.html
+# found here: https://docs.openstack.org/developer/keystone/configuration.html
 # and can use the v3 api http://developer.openstack.org/api-ref-identity-v3.html
 
 begin
