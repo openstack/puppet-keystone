@@ -1,0 +1,9 @@
+---
+deprecations:
+  - keystone::endpoint::version is not default to undef which means
+    Keystone endpoints will be versionless by default, so it enables
+    services to reach Keystone v3 with is the current stable version.
+    Therefore, we don't need the version parameter, so we deprecate it
+    in this cycle and will remove it later.
+    If the user used to set 'unset' to $version, it will keep v2.0 endpoint
+    but a migration to undef is recommended.

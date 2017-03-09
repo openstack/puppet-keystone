@@ -38,7 +38,7 @@
 #
 # [*version*]
 #   (optional) API version for endpoint.
-#   Defaults to 'v2.0'. Valid values are 'v2.0', 'v3', or the empty string ''.
+#   Defaults to ''. Valid values are 'v2.0', 'v3', or the empty string ''.
 #   If the version is set to the empty string (''), then it won't be
 #   used. This is the expected behaviour since Keystone V3 handles API versions
 #   from the context.
@@ -59,17 +59,13 @@ class keystone::endpoint (
   $user_domain       = undef,
   $project_domain    = undef,
   $default_domain    = undef,
-  $version           = 'unset', # defaults to 'v2.0' if unset by user
+  $version           = '',
 ) {
 
   include ::keystone::deps
 
   if $version == 'unset' {
-    # $version will be set to empty '' once tempest & all openstack clients
-    # actually support versionless endpoints.
-    # See ongoing work in Tempest:
-    # https://review.openstack.org/#/q/status:open+project:openstack/tempest-lib+branch:master+topic:bug/1530181
-    # Until that, we need to set a version by default.
+    warning('keystone::endpoint::version parameter is deprecated and will be removed in a future release.')
     $_version = 'v2.0'
   } else {
     $_version = $version
