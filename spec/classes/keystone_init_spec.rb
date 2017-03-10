@@ -758,13 +758,13 @@ describe 'keystone' do
       })
     end
 
-    it do
-      is_expected.to contain_keystone_config('oslo_messaging_rabbit/rabbit_use_ssl').with_value('true')
-      is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_ssl_ca_certs').with_value('/path/to/ssl/ca/certs')
-      is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_ssl_certfile').with_value('/path/to/ssl/cert/file')
-      is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_ssl_keyfile').with_value('/path/to/ssl/keyfile')
-      is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_ssl_version').with_value('TLSv1')
-    end
+    it { is_expected.to contain_oslo__messaging__rabbit('keystone_config').with(
+        :rabbit_use_ssl     => true,
+        :kombu_ssl_ca_certs => '/path/to/ssl/ca/certs',
+        :kombu_ssl_certfile => '/path/to/ssl/cert/file',
+        :kombu_ssl_keyfile  => '/path/to/ssl/keyfile',
+        :kombu_ssl_version  => 'TLSv1'
+    )}
   end
 
   describe 'with RabbitMQ communication not SSLed' do
@@ -778,13 +778,13 @@ describe 'keystone' do
       })
     end
 
-    it do
-      is_expected.to contain_keystone_config('oslo_messaging_rabbit/rabbit_use_ssl').with_value('<SERVICE DEFAULT>')
-      is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_ssl_ca_certs').with_value('<SERVICE DEFAULT>')
-      is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_ssl_certfile').with_value('<SERVICE DEFAULT>')
-      is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_ssl_keyfile').with_value('<SERVICE DEFAULT>')
-      is_expected.to contain_keystone_config('oslo_messaging_rabbit/kombu_ssl_version').with_value('<SERVICE DEFAULT>')
-    end
+    it { is_expected.to contain_oslo__messaging__rabbit('keystone_config').with(
+        :rabbit_use_ssl     => '<SERVICE DEFAULT>',
+        :kombu_ssl_ca_certs => '<SERVICE DEFAULT>',
+        :kombu_ssl_certfile => '<SERVICE DEFAULT>',
+        :kombu_ssl_keyfile  => '<SERVICE DEFAULT>',
+        :kombu_ssl_version  => '<SERVICE DEFAULT>'
+    )}
   end
 
   describe 'when configuring max_token_size' do
