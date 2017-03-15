@@ -1,0 +1,6 @@
+---
+features:
+  - The parameter 'fernet_replace_keys' was added; this tells the manifest to
+    not replace the fernet keys if they have been added already. This is useful
+    in cases where rotation happens outside of puppet, and running puppet again
+    would replace the keys and result in an invalid setup.
