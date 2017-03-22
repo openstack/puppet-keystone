@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    Implement a basic crontab that does fernet keys rotations with
+    keystone::cron::fernet_rotate class. This crontab won't take
+    care of the key distribution but just run `keystone-manage fernet_rotate`
+    command in a scheduled way.
