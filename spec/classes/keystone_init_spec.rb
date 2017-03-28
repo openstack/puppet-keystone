@@ -1082,15 +1082,48 @@ describe 'keystone' do
     it { is_expected.to contain_file('/etc/keystone/fernet-keys/0').with(
       'content'   => 't-WdduhORSqoyAykuqWAQSYjg2rSRuJYySgI2xh48CI=',
       'owner'     => 'keystone',
-      'owner'     => 'keystone',
       'mode'      => '0600',
+      'replace'   => true,
       'subscribe' => 'Anchor[keystone::install::end]',
     )}
     it { is_expected.to contain_file('/etc/keystone/fernet-keys/1').with(
       'content'   => 'GLlnyygEVJP4-H2OMwClXn3sdSQUZsM5F194139Unv8=',
       'owner'     => 'keystone',
+      'mode'      => '0600',
+      'replace'   => true,
+      'subscribe' => 'Anchor[keystone::install::end]',
+    )}
+  end
+
+  describe 'when not replacing fernet_keys and setting fernet_keys parameter' do
+    let :params do
+      default_params.merge({
+        'enable_fernet_setup' => true,
+        'fernet_keys' => {
+          '/etc/keystone/fernet-keys/0' => {
+            'content' => 't-WdduhORSqoyAykuqWAQSYjg2rSRuJYySgI2xh48CI=',
+          },
+          '/etc/keystone/fernet-keys/1' => {
+            'content' => 'GLlnyygEVJP4-H2OMwClXn3sdSQUZsM5F194139Unv8=',
+          },
+        },
+        'fernet_replace_keys' => false,
+      })
+    end
+
+    it { is_expected.to_not contain_exec('keystone-manage fernet_setup') }
+    it { is_expected.to contain_file('/etc/keystone/fernet-keys/0').with(
+      'content'   => 't-WdduhORSqoyAykuqWAQSYjg2rSRuJYySgI2xh48CI=',
       'owner'     => 'keystone',
       'mode'      => '0600',
+      'replace'   => false,
+      'subscribe' => 'Anchor[keystone::install::end]',
+    )}
+    it { is_expected.to contain_file('/etc/keystone/fernet-keys/1').with(
+      'content'   => 'GLlnyygEVJP4-H2OMwClXn3sdSQUZsM5F194139Unv8=',
+      'owner'     => 'keystone',
+      'mode'      => '0600',
+      'replace'   => false,
       'subscribe' => 'Anchor[keystone::install::end]',
     )}
   end

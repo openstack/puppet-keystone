@@ -438,6 +438,11 @@
 #   Otherwise Puppet will manage keys with File resource.
 #   Defaults to false
 #
+# [*fernet_replace_keys*]
+#   (Optional) Whether or not to replace the fernet keys if they are already in
+#   the filesystem
+#   Defaults to true
+#
 # [*enable_credential_setup*]
 #   (Optional) Setup keystone for credentials.
 #   In a cluster environment where multiple Keystone nodes are running, you might
@@ -737,6 +742,7 @@ class keystone(
   $fernet_key_repository                = '/etc/keystone/fernet-keys',
   $fernet_max_active_keys               = $::os_service_default,
   $fernet_keys                          = false,
+  $fernet_replace_keys                  = true,
   $enable_credential_setup              = false,
   $credential_key_repository            = '/etc/keystone/credential-keys',
   $credential_keys                      = false,
@@ -1159,6 +1165,7 @@ running as a standalone service, or httpd for being run by a httpd server")
           'owner'     => $keystone_user,
           'group'     => $keystone_group,
           'mode'      => '0600',
+          'replace'   => $fernet_replace_keys,
           'subscribe' => 'Anchor[keystone::install::end]',
         }
       )
