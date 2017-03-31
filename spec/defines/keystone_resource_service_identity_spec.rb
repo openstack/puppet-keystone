@@ -159,6 +159,9 @@ describe 'keystone::resource::service_identity' do
         :email    => 'neutron@localhost',
         :domain   => 'userdomain',
       )}
+      it { is_expected.to contain_keystone_role('admin').with(
+        :ensure => 'present',
+      )}
       it { is_expected.to contain_keystone_user_role("#{title}@services").with(
         :ensure => 'present',
         :roles  => ['admin'],

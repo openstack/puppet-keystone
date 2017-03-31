@@ -170,6 +170,13 @@ define keystone::resource::service_identity(
   }
 
   if $configure_user_role {
+    if $ensure == 'present' {
+      # NOTE(jaosorior): We only handle ensure 'present' here, since deleting a
+      # role might be conflicting in some cases. e.g. the deployer removing a
+      # role from one service but adding it to another in the same puppet run.
+      # So role deletion should be handled elsewhere.
+      ensure_resource('keystone_role', $roles, { 'ensure' => 'present' })
+    }
     ensure_resource('keystone_user_role', "${auth_name}@${tenant}", {
       'ensure' => $ensure,
       'roles'  => $roles,

@@ -1,0 +1,5 @@
+---
+features:
+    - Calls to the '::keystone::resource::service_identity' will automatically
+      create roles as needed. So if a role is specified, the resource will
+      make sure it exists.
