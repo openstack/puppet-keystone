@@ -1,0 +1,7 @@
+---
+features:
+  - The flag 'create_domain_entry' was added to the 'keystone::ldap_backend'
+    resource. It defaults to false. But, if set to true, it will create the
+    domain in keystone and will attempt to refresh the keystone server. Note
+    that in order for the keystone server to be refreshed, the 'manage_service'
+    and 'enabled' flags need to be set in the base ::keystone module.

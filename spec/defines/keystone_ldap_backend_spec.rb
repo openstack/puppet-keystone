@@ -5,6 +5,11 @@ describe 'keystone::ldap_backend' do
     let(:title) { 'Default' }
     let(:pre_condition) do
       <<-EOM
+      exec { 'restart_keystone':
+        path        => ['/usr/sbin', '/usr/bin', '/sbin', '/bin/'],
+        command     => "service ${service_name_real} restart",
+        refreshonly => true,
+      }
       keystone_config {'identity/domain_specific_drivers_enabled': value => true}
       keystone_config {'identity/domain_config_dir': value => '/etc/keystone/domains'}
       file {'/etc/keystone/keystone.conf': ensure => present }
@@ -194,6 +199,20 @@ describe 'keystone::ldap_backend' do
 
         # drivers
         is_expected.to contain_keystone_domain_config('Default::identity/driver').with_value('ldap')
+      end
+
+      context 'with keystone domain creation enabled' do
+        before do
+          params.merge! ({
+            :create_domain_entry => true
+          })
+        end
+        it 'creates the keystone domain and refreshes the service' do
+          is_expected.to contain_keystone_domain(title).with(
+            :ensure  => 'present',
+            :enabled => true
+          )
+        end
       end
     end
   end
