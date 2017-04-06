@@ -373,6 +373,11 @@
 #   LDAP support packages.
 #   Defaults to true.
 #
+# [*create_domain_entry*]
+#   (optional) Creates the domain in keystone via a keystone_domain resource
+#   and attempts to refresh the kesytone service.
+#   Defaults to false.
+#
 # === DEPRECATED group/name
 #
 # == Dependencies
@@ -461,6 +466,7 @@ define keystone::ldap_backend(
   $auth_pool_connection_lifetime       = 60,
   $package_ensure                      = present,
   $manage_packages                     = true,
+  $create_domain_entry                 = false,
 ) {
 
   include ::keystone::deps
@@ -581,5 +587,14 @@ and \"${domain_dir_enabled}\" for identity/domain_config_dir"
     "${domain}::identity/driver":                           value => $identity_driver;
     "${domain}::credential/driver":                         value => $credential_driver;
     "${domain}::assignment/driver":                         value => $assignment_driver;
+  }
+
+  if $create_domain_entry {
+    keystone_domain { $domain :
+      ensure  => 'present',
+      enabled => true,
+      tag     => 'domain-specific-ldap'
+    }
+    Keystone_domain[$domain] ~> Exec<| title == 'restart_keystone' |>
   }
 }
