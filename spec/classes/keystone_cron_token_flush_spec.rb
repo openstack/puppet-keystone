@@ -9,7 +9,7 @@ describe 'keystone::cron::token_flush' do
   let :params do
     { :ensure      => 'present',
       :minute      => 1,
-      :hour        => 0,
+      :hour        => [0,12],
       :monthday    => '*',
       :month       => '*',
       :weekday     => '*',
@@ -71,7 +71,7 @@ describe 'keystone::cron::token_flush' do
         :environment => 'PATH=/bin:/usr/bin:/usr/sbin SHELL=/bin/sh',
         :user        => 'keystonecustom',
         :minute      => 1,
-        :hour        => 0,
+        :hour        => [0,12],
         :monthday    => '*',
         :month       => '*',
         :weekday     => '*',
