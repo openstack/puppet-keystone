@@ -86,7 +86,7 @@ describe 'keystone server running with Apache/WSGI as Service Provider with Shib
     end
 
     describe cron do
-      it { is_expected.to have_entry('1 0 * * * keystone-manage token_flush >>/var/log/keystone/keystone-tokenflush.log 2>&1').with_user('keystone') }
+      it { is_expected.to have_entry('1 * * * * keystone-manage token_flush >>/var/log/keystone/keystone-tokenflush.log 2>&1').with_user('keystone') }
     end
 
     shared_examples_for 'keystone user/tenant/service/role/endpoint resources using v2 API' do |auth_creds|
