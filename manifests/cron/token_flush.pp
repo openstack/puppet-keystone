@@ -29,7 +29,7 @@
 #    (optional) Defaults to '1'.
 #
 #  [*hour*]
-#    (optional) Defaults to [0,12].
+#    (optional) Defaults to *.
 #
 #  [*monthday*]
 #    (optional) Defaults to '*'.
@@ -56,7 +56,7 @@
 class keystone::cron::token_flush (
   $ensure      = present,
   $minute      = 1,
-  $hour        = [0,12],
+  $hour        = '*',
   $monthday    = '*',
   $month       = '*',
   $weekday     = '*',
