@@ -1,6 +1,6 @@
 {
   "name": "openstack-keystone",
-  "version": "10.3.0",
+  "version": "10.3.1",
   "author": "Puppet Labs and OpenStack Contributors",
   "summary": "Puppet module for OpenStack Keystone",
   "license": "Apache-2.0",
