@@ -9,7 +9,6 @@ coverage/
 *.swp
 *.iml
 openstack/
-log/
 
 # Files created by releasenotes build
 releasenotes/build
