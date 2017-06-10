@@ -122,6 +122,22 @@
 #     is copied to the apache cgi-bin path as keystone-admin.
 #     Defaults to undef.
 #
+#   [*custom_wsgi_process_options_main*]
+#     (optional) gives you the oportunity to add custom process options or to
+#     overwrite the default options for the WSGI main process.
+#     eg. to use a virtual python environment for the WSGI process
+#     you could set it to:
+#     { python-path => '/my/python/virtualenv' }
+#     Defaults to {}
+#
+#   [*custom_wsgi_process_options_admin*]
+#     (optional) gives you the oportunity to add custom process options or to
+#     overwrite the default options for the WSGI admin process.
+#     eg. to use a virtual python environment for the WSGI process
+#     you could set it to:
+#     { python-path => '/my/python/virtualenv' }
+#     Defaults to {}
+#
 #   [*access_log_format*]
 #     The log format for the virtualhost.
 #     Optional. Defaults to false.
@@ -169,38 +185,40 @@
 #   Copyright 2013 eNovance <licensing@enovance.com>
 #
 class keystone::wsgi::apache (
-  $servername                = $::fqdn,
-  $servername_admin          = undef,
-  $public_port               = 5000,
-  $admin_port                = 35357,
-  $bind_host                 = undef,
-  $admin_bind_host           = undef,
-  $public_path               = '/',
-  $admin_path                = '/',
-  $ssl                       = true,
-  $workers                   = 1,
-  $ssl_cert                  = undef,
-  $ssl_key                   = undef,
-  $ssl_cert_admin            = undef,
-  $ssl_key_admin             = undef,
-  $ssl_chain                 = undef,
-  $ssl_ca                    = undef,
-  $ssl_crl_path              = undef,
-  $ssl_crl                   = undef,
-  $ssl_certs_dir             = undef,
-  $threads                   = $::os_workers,
-  $priority                  = '10',
-  $wsgi_application_group    = '%{GLOBAL}',
-  $wsgi_pass_authorization   = 'On',
-  $wsgi_chunked_request      = undef,
-  $wsgi_admin_script_source  = $::keystone::params::keystone_wsgi_admin_script_path,
-  $wsgi_public_script_source = $::keystone::params::keystone_wsgi_public_script_path,
-  $wsgi_script_ensure        = undef,
-  $access_log_format         = false,
-  $headers                   = undef,
-  $vhost_custom_fragment     = undef,
+  $servername                        = $::fqdn,
+  $servername_admin                  = undef,
+  $public_port                       = 5000,
+  $admin_port                        = 35357,
+  $bind_host                         = undef,
+  $admin_bind_host                   = undef,
+  $public_path                       = '/',
+  $admin_path                        = '/',
+  $ssl                               = true,
+  $workers                           = 1,
+  $ssl_cert                          = undef,
+  $ssl_key                           = undef,
+  $ssl_cert_admin                    = undef,
+  $ssl_key_admin                     = undef,
+  $ssl_chain                         = undef,
+  $ssl_ca                            = undef,
+  $ssl_crl_path                      = undef,
+  $ssl_crl                           = undef,
+  $ssl_certs_dir                     = undef,
+  $threads                           = $::os_workers,
+  $priority                          = '10',
+  $wsgi_application_group            = '%{GLOBAL}',
+  $wsgi_pass_authorization           = 'On',
+  $wsgi_chunked_request              = undef,
+  $wsgi_admin_script_source          = $::keystone::params::keystone_wsgi_admin_script_path,
+  $wsgi_public_script_source         = $::keystone::params::keystone_wsgi_public_script_path,
+  $wsgi_script_ensure                = undef,
+  $access_log_format                 = false,
+  $headers                           = undef,
+  $vhost_custom_fragment             = undef,
+  $custom_wsgi_process_options_main  = {},
+  $custom_wsgi_process_options_admin = {},
   #DEPRECATED
-  $wsgi_script_source        = undef,
+  $wsgi_script_source                = undef,
 ) inherits ::keystone::params {
 
   include ::keystone::deps
@@ -299,21 +317,27 @@ class keystone::wsgi::apache (
 
   create_resources('file', $wsgi_files, $wsgi_file_defaults)
 
-  $wsgi_daemon_process_options_main = {
-    user         => 'keystone',
-    group        => 'keystone',
-    processes    => $workers,
-    threads      => $threads,
-    display-name => 'keystone-main',
-  }
+  $wsgi_daemon_process_options_main = merge(
+    {
+      user         => 'keystone',
+      group        => 'keystone',
+      processes    => $workers,
+      threads      => $threads,
+      display-name => 'keystone-main',
+    },
+    $custom_wsgi_process_options_main
+  )
 
-  $wsgi_daemon_process_options_admin = {
-    user         => 'keystone',
-    group        => 'keystone',
-    processes    => $workers,
-    threads      => $threads,
-    display-name => 'keystone-admin',
-  }
+  $wsgi_daemon_process_options_admin = merge(
+    {
+      user         => 'keystone',
+      group        => 'keystone',
+      processes    => $workers,
+      threads      => $threads,
+      display-name => 'keystone-admin',
+    },
+    $custom_wsgi_process_options_admin
+  )
 
   $wsgi_script_aliases_main = hash([$public_path_real,"${::keystone::params::keystone_wsgi_script_path}/keystone-public"])
   $wsgi_script_aliases_admin = hash([$admin_path_real, "${::keystone::params::keystone_wsgi_script_path}/keystone-admin"])

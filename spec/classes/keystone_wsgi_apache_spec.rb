@@ -211,6 +211,39 @@ describe 'keystone::wsgi::apache' do
 
     end
 
+    describe 'when wsgi_daemon_process_options are overriden' do
+      let :params do
+        {
+          :custom_wsgi_process_options_admin => {
+                         user => 'keystone-admin',
+                  python_path => '/my/python/admin/path',
+          },
+          :custom_wsgi_process_options_main  => {
+                         user => 'keystone-main',
+                  python_path => '/my/python/main/path',
+          },
+        }
+      end
+
+      it { is_expected.to contain_apache__vhost('keystone_wsgi_admin').with(
+        'wsgi_daemon_process_options' => {
+                  'user' => 'keystone-admin',
+                 'group' => 'keystone',
+           'python-path' => '/my/python/admin/path',
+          'display-name' => 'keystone_main',
+        },
+      )}
+
+      it { is_expected.to contain_apache__vhost('keystone_wsgi_main').with(
+        'wsgi_daemon_process_options' => {
+                  'user' => 'keystone-main',
+                 'group' => 'keystone',
+           'python-path' => '/my/python/main/path',
+          'display-name' => 'keystone-main',
+        },
+      )}
+    end
+
     describe 'when overriding parameters using same port' do
       let :params do
         {

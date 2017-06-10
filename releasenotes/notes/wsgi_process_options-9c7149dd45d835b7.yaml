@@ -1,0 +1,4 @@
+---
+features:
+  - Add two parameters to apache wsgi to allow overwrite
+    and/or add additional wsgi process options.
