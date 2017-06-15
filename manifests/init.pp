@@ -784,6 +784,7 @@ class keystone(
 
   include ::keystone::deps
   include ::keystone::logging
+  include ::keystone::policy
 
   if $service_provider {
     warning("service_provider is deprecated, does nothing and will be removed in a future release, \

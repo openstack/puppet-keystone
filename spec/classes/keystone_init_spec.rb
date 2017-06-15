@@ -131,6 +131,7 @@ describe 'keystone' do
   shared_examples_for 'core keystone examples' do |param_hash|
     it { is_expected.to contain_class('keystone::logging') }
     it { is_expected.to contain_class('keystone::params') }
+    it { is_expected.to contain_class('keystone::policy') }
 
     it { is_expected.to contain_package('keystone').with(
       'ensure' => param_hash['package_ensure'],
