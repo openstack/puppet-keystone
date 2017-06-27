@@ -294,6 +294,11 @@
 #   API attribute. (list value)
 #   Defaults to 'undef'
 #
+# [*group_ad_nesting*]
+#   If enabled, group queries will use Active Directory specific
+#   filters for nested groups. (boolean value)
+#   Defaults to 'undef'
+#
 # [*chase_referrals*]
 #   Whether or not to chase returned referrals. (boolean value)
 #   Defaults to 'undef'
@@ -447,6 +452,7 @@ define keystone::ldap_backend(
   $group_allow_update                  = undef,
   $group_allow_delete                  = undef,
   $group_additional_attribute_mapping  = undef,
+  $group_ad_nesting                    = undef,
   $chase_referrals                     = undef,
   $use_tls                             = undef,
   $tls_cacertdir                       = undef,
@@ -570,6 +576,7 @@ and \"${domain_dir_enabled}\" for identity/domain_config_dir"
     "${domain}::ldap/group_allow_update":                   value => $group_allow_update;
     "${domain}::ldap/group_allow_delete":                   value => $group_allow_delete;
     "${domain}::ldap/group_additional_attribute_mapping":   value => $group_additional_attribute_mapping;
+    "${domain}::ldap/group_ad_nesting":                     value => $group_ad_nesting;
     "${domain}::ldap/chase_referrals":                      value => $chase_referrals;
     "${domain}::ldap/use_tls":                              value => $use_tls;
     "${domain}::ldap/tls_cacertdir":                        value => $tls_cacertdir;
