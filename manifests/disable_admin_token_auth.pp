@@ -12,17 +12,9 @@
 #
 class keystone::disable_admin_token_auth {
 
+  require ::keystone::roles::admin
+
   Keystone::Resource::Service_identity<||> -> Class['::keystone::disable_admin_token_auth']
-
-  Ini_subsetting {
-    require => Class['keystone::roles::admin'],
-  }
-
-  if $::keystone::manage_service and $::keystone::enabled {
-    Ini_subsetting {
-      notify => Exec['restart_keystone'],
-    }
-  }
 
   ini_subsetting { 'public_api/admin_token_auth':
     ensure     => absent,
@@ -30,6 +22,7 @@ class keystone::disable_admin_token_auth {
     section    => 'pipeline:public_api',
     setting    => 'pipeline',
     subsetting => 'admin_token_auth',
+    tag        => 'disable-admin-token-auth',
   }
   ini_subsetting { 'admin_api/admin_token_auth':
     ensure     => absent,
@@ -37,6 +30,7 @@ class keystone::disable_admin_token_auth {
     section    => 'pipeline:admin_api',
     setting    => 'pipeline',
     subsetting => 'admin_token_auth',
+    tag        => 'disable-admin-token-auth',
   }
   ini_subsetting { 'api_v3/admin_token_auth':
     ensure     => absent,
@@ -44,5 +38,9 @@ class keystone::disable_admin_token_auth {
     section    => 'pipeline:api_v3',
     setting    => 'pipeline',
     subsetting => 'admin_token_auth',
+    tag        => 'disable-admin-token-auth',
   }
+
+  Ini_subsetting <| tag == 'disable-admin-token-auth' |> ~>
+    Exec<| name == 'restart_keystone' |>
 }

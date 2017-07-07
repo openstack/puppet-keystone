@@ -1257,8 +1257,7 @@ running as a standalone service, or httpd for being run by a httpd server")
       enabled    => true,
       is_default => true,
       require    => Service[$service_name],
-      notify     => Exec['restart_keystone'],
-    }
+    } ~> Exec<| title == 'restart_keystone' |>
     anchor { 'default_domain_created':
       require => Keystone_domain[$default_domain],
     }

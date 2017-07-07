@@ -29,7 +29,7 @@ describe 'keystone::cron::token_flush' do
         :monthday    => params[:monthday],
         :month       => params[:month],
         :weekday     => params[:weekday],
-        :require     => 'Package[keystone]',
+        :require     => 'Anchor[keystone::install::end]',
       )
     end
   end
@@ -52,7 +52,7 @@ describe 'keystone::cron::token_flush' do
         :monthday    => params[:monthday],
         :month       => params[:month],
         :weekday     => params[:weekday],
-        :require     => 'Package[keystone]',
+        :require     => 'Anchor[keystone::install::end]',
       )
     end
   end
@@ -75,7 +75,7 @@ describe 'keystone::cron::token_flush' do
         :monthday    => '*',
         :month       => '*',
         :weekday     => '*',
-        :require     => 'Package[keystone]',
+        :require     => 'Anchor[keystone::install::end]',
       )
     end
   end
@@ -98,7 +98,7 @@ describe 'keystone::cron::token_flush' do
         :monthday    => params[:monthday],
         :month       => params[:month],
         :weekday     => params[:weekday],
-        :require     => 'Package[keystone]',
+        :require     => 'Anchor[keystone::install::end]',
       )
     end
   end

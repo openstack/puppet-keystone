@@ -83,6 +83,6 @@ class keystone::cron::token_flush (
     monthday    => $monthday,
     month       => $month,
     weekday     => $weekday,
-    require     => Package['keystone'],
+    require     => Anchor['keystone::install::end'],
   }
 }

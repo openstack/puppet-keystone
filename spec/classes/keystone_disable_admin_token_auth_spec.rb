@@ -6,7 +6,9 @@ describe 'keystone::disable_admin_token_auth' do
   end
 
   let :pre_condition do
-    'class { "keystone": admin_token => "secret", }'
+    'class { "::keystone": admin_token => "secret", }
+     class { "::keystone::roles::admin": password => "secret" }
+    '
   end
 
   it { is_expected.to contain_ini_subsetting('public_api/admin_token_auth') }
