@@ -216,12 +216,6 @@
 #  (Optional) Whether to install the python-memcache package.
 #  Defaults to false.
 #
-# DEPRECATED PARAMETERS
-#
-# [*signing_dir*]
-#   (Optional) Directory used to cache files related to PKI tokens.
-#   Defaults to undef
-#
 define keystone::resource::authtoken(
   $username,
   $password,
@@ -258,8 +252,6 @@ define keystone::resource::authtoken(
   $revocation_cache_time          = $::os_service_default,
   $token_cache_time               = $::os_service_default,
   $manage_memcache_package        = false,
-  # DEPRECATED PARAMETERS
-  $signing_dir                    = undef,
 ) {
 
   include ::keystone::deps
@@ -299,10 +291,6 @@ define keystone::resource::authtoken(
     }
   } else {
     $memcached_servers_real = $::os_service_default
-  }
-
-  if $signing_dir {
-    warning('signing_dir parameter is deprecated, has no effect and will be removed in the Pike release.')
   }
 
   $keystonemiddleware_options = {
