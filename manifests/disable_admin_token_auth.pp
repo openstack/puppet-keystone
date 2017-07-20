@@ -41,6 +41,6 @@ class keystone::disable_admin_token_auth {
     tag        => 'disable-admin-token-auth',
   }
 
-  Ini_subsetting <| tag == 'disable-admin-token-auth' |> ~>
-    Exec<| name == 'restart_keystone' |>
+  Ini_subsetting <| tag == 'disable-admin-token-auth' |>
+    ~> Exec<| name == 'restart_keystone' |>
 }
