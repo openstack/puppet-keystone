@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # this script verifies that keystone has
 # been successfully installed using the instructions
-# found here: https://docs.openstack.org/developer/keystone/configuration.html
+# found here: https://docs.openstack.org/keystone/latest/configuration.html
 
 begin
   require 'rubygems'
