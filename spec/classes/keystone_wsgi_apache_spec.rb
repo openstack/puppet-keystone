@@ -74,7 +74,13 @@ describe 'keystone::wsgi::apache' do
         'wsgi_pass_authorization'     => 'On',
         'headers'                     => nil,
         'require'                     => 'File[keystone_wsgi_admin]',
+        'access_log_file'             => false,
+        'access_log_pipe'             => false,
+        'access_log_syslog'           => false,
         'access_log_format'           => false,
+        'error_log_file'              => nil,
+        'error_log_pipe'              => nil,
+        'error_log_syslog'            => nil,
       )}
 
       it { is_expected.to contain_apache__vhost('keystone_wsgi_main').with(
@@ -99,7 +105,13 @@ describe 'keystone::wsgi::apache' do
         'wsgi_pass_authorization'     => 'On',
         'headers'                     => nil,
         'require'                     => 'File[keystone_wsgi_main]',
+        'access_log_file'             => false,
+        'access_log_pipe'             => false,
+        'access_log_syslog'           => false,
         'access_log_format'           => false,
+        'error_log_file'              => nil,
+        'error_log_pipe'              => nil,
+        'error_log_syslog'            => nil,
       )}
       it { is_expected.to contain_concat("#{platform_parameters[:httpd_ports_file]}") }
     end
@@ -307,11 +319,13 @@ describe 'keystone::wsgi::apache' do
         {
           :servername        => 'dummy.host',
           :access_log_format => 'foo',
+          :access_log_syslog => 'syslog:local0',
         }
       end
       it { is_expected.to contain_apache__vhost('keystone_wsgi_main').with(
           'servername'                  => 'dummy.host',
           'access_log_format'           => 'foo',
+          'access_log_syslog'           => 'syslog:local0',
           )}
     end
 
