@@ -138,9 +138,33 @@
 #     { python-path => '/my/python/virtualenv' }
 #     Defaults to {}
 #
+#   [*access_log_file*]
+#     The log file name for the virtualhost.
+#     Optional. Defaults to false.
+#
+#   [*access_log_pipe*]
+#     Specifies a pipe where Apache sends access logs for the virtualhost.
+#     Optional. Defaults to false.
+#
+#   [*access_log_syslog*]
+#     Sends the virtualhost access log messages to syslog.
+#     Optional. Defaults to false.
+#
 #   [*access_log_format*]
 #     The log format for the virtualhost.
 #     Optional. Defaults to false.
+#
+#   [*error_log_file*]
+#     The error log file name for the virtualhost.
+#     Optional. Defaults to undef.
+#
+#   [*error_log_pipe*]
+#     Specifies a pipe where Apache sends error logs for the virtualhost.
+#     Optional. Defaults to undef.
+#
+#   [*error_log_syslog*]
+#     Sends the virtualhost error log messages to syslog.
+#     Optional. Defaults to undef.
 #
 #   [*headers*]
 #     (optional) Headers for the vhost.
@@ -212,7 +236,13 @@ class keystone::wsgi::apache (
   $wsgi_admin_script_source          = $::keystone::params::keystone_wsgi_admin_script_path,
   $wsgi_public_script_source         = $::keystone::params::keystone_wsgi_public_script_path,
   $wsgi_script_ensure                = undef,
+  $access_log_file                   = false,
+  $access_log_pipe                   = false,
+  $access_log_syslog                 = false,
   $access_log_format                 = false,
+  $error_log_file                    = undef,
+  $error_log_pipe                    = undef,
+  $error_log_syslog                  = undef,
   $headers                           = undef,
   $vhost_custom_fragment             = undef,
   $custom_wsgi_process_options_main  = {},
@@ -382,7 +412,13 @@ class keystone::wsgi::apache (
     custom_fragment             => $vhost_custom_fragment,
     wsgi_chunked_request        => $wsgi_chunked_request,
     require                     => File['keystone_wsgi_main'],
+    access_log_file             => $access_log_file,
+    access_log_pipe             => $access_log_pipe,
+    access_log_syslog           => $access_log_syslog,
     access_log_format           => $access_log_format,
+    error_log_file              => $error_log_file,
+    error_log_pipe              => $error_log_pipe,
+    error_log_syslog            => $error_log_syslog,
   }
 
   if $public_port != $admin_port {
@@ -413,7 +449,13 @@ class keystone::wsgi::apache (
       custom_fragment             => $vhost_custom_fragment,
       wsgi_chunked_request        => $wsgi_chunked_request,
       require                     => File['keystone_wsgi_admin'],
+      access_log_file             => $access_log_file,
+      access_log_pipe             => $access_log_pipe,
+      access_log_syslog           => $access_log_syslog,
       access_log_format           => $access_log_format,
+      error_log_file              => $error_log_file,
+      error_log_pipe              => $error_log_pipe,
+      error_log_syslog            => $error_log_syslog,
     }
   }
 }
