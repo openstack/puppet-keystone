@@ -500,8 +500,7 @@ and \"${domain_dir_enabled}\" for identity/domain_config_dir"
   $domain = $name
 
   if $manage_packages {
-    $ldap_packages = ['python-ldap', 'python-ldappool']
-    ensure_resource('package', $ldap_packages, {
+    ensure_resource('package', 'python-ldappool', {
       ensure  => $package_ensure,
       tag => ['openstack', 'keystone-package'],
     })

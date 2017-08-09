@@ -100,7 +100,6 @@ describe 'keystone::ldap_backend' do
           :auth_pool_connection_lifetime => 200,
         }
       end
-      it { is_expected.to contain_package('python-ldap') }
       it { is_expected.to contain_package('python-ldappool') }
       it 'should have basic params' do
         # basic params
