@@ -54,15 +54,15 @@
 #    Allow to run the crontab on behalf any user.
 #
 class keystone::cron::token_flush (
-  $ensure      = present,
-  $minute      = 1,
-  $hour        = '*',
-  $monthday    = '*',
-  $month       = '*',
-  $weekday     = '*',
-  $maxdelay    = 0,
-  $destination = '/var/log/keystone/keystone-tokenflush.log',
-  $user        = 'keystone',
+  $ensure           = present,
+  $minute           = 1,
+  $hour             = '*',
+  $monthday         = '*',
+  $month            = '*',
+  $weekday          = '*',
+  Integer $maxdelay = 0,
+  $destination      = '/var/log/keystone/keystone-tokenflush.log',
+  $user             = 'keystone',
 ) {
 
   include ::keystone::deps
