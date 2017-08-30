@@ -67,6 +67,7 @@ class keystone::cron::token_flush (
 
   include ::keystone::deps
 
+  validate_integer($maxdelay)
   if $maxdelay == 0 {
     $sleep = ''
   } else {
