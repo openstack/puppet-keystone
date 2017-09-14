@@ -199,13 +199,6 @@
 #  (Optional) The region in which the identity server can be found.
 #  Defaults to $::os_service_default.
 #
-# [*revocation_cache_time*]
-#  (Optional) Determines the frequency at which the list of revoked tokens is
-#  retrieved from the Identity service (in seconds). A high number of
-#  revocation events combined with a low cache duration may significantly
-#  reduce performance. Only valid for PKI tokens. Integer value
-#  Defaults to $::os_service_default.
-#
 # [*token_cache_time*]
 #  (Optional) In order to prevent excessive effort spent validating tokens,
 #  the middleware caches previously-seen tokens for a configurable duration
@@ -215,6 +208,15 @@
 # [*manage_memcache_package*]
 #  (Optional) Whether to install the python-memcache package.
 #  Defaults to false.
+#
+# DEPRECATED PARAMETERS
+#
+# [*revocation_cache_time*]
+#   (Optional) Determines the frequency at which the list of revoked tokens is
+#   retrieved from the Identity service (in seconds). A high number of
+#   revocation events combined with a low cache duration may significantly
+#   reduce performance. Only valid for PKI tokens. Integer value
+#   Defaults to undef
 #
 define keystone::resource::authtoken(
   $username,
@@ -249,9 +251,10 @@ define keystone::resource::authtoken(
   $memcache_use_advanced_pool     = $::os_service_default,
   $memcached_servers              = $::os_service_default,
   $region_name                    = $::os_service_default,
-  $revocation_cache_time          = $::os_service_default,
   $token_cache_time               = $::os_service_default,
   $manage_memcache_package        = false,
+  # DEPRECATED PARAMETERS
+  $revocation_cache_time          = undef,
 ) {
 
   include ::keystone::deps
@@ -278,6 +281,10 @@ define keystone::resource::authtoken(
 
   if !is_service_default($delay_auth_decision) {
     validate_bool($delay_auth_decision)
+  }
+
+  if $revocation_cache_time {
+    warning('revocation_cache_time parameter is deprecated, has no effect and will be removed in the future.')
   }
 
   if !is_service_default($memcached_servers) and !empty($memcached_servers){
@@ -319,7 +326,6 @@ define keystone::resource::authtoken(
     'keystone_authtoken/memcache_use_advanced_pool'     => {'value' => $memcache_use_advanced_pool},
     'keystone_authtoken/memcached_servers'              => {'value' => $memcached_servers_real},
     'keystone_authtoken/region_name'                    => {'value' => $region_name},
-    'keystone_authtoken/revocation_cache_time'          => {'value' => $revocation_cache_time},
     'keystone_authtoken/token_cache_time'               => {'value' => $token_cache_time},
     'keystone_authtoken/auth_url'                       => {'value' => $auth_url},
     'keystone_authtoken/username'                       => {'value' => $username},
