@@ -91,38 +91,6 @@ describe 'keystone server running with Apache/WSGI as Identity Provider' do
       it { is_expected.to have_entry('1 * * * * keystone-manage token_flush >>/var/log/keystone/keystone-tokenflush.log 2>&1').with_user('keystone') }
     end
 
-    shared_examples_for 'keystone user/tenant/service/role/endpoint resources using v2 API' do |auth_creds|
-      it 'should find users in the default domain' do
-        shell("openstack #{auth_creds} --os-auth-url http://127.0.0.1:5000/v2.0 --os-identity-api-version 2 user list") do |r|
-          expect(r.stdout).to match(/admin/)
-          expect(r.stderr).to be_empty
-        end
-      end
-      it 'should find tenants in the default domain' do
-        shell("openstack #{auth_creds} --os-auth-url http://127.0.0.1:5000/v2.0 --os-identity-api-version 2 project list") do |r|
-          expect(r.stdout).to match(/openstack/)
-          expect(r.stderr).to be_empty
-        end
-      end
-      it 'should find beaker service' do
-        shell("openstack #{auth_creds} --os-auth-url http://127.0.0.1:5000/v2.0 --os-identity-api-version 2 service list") do |r|
-          expect(r.stdout).to match(/beaker/)
-          expect(r.stderr).to be_empty
-        end
-      end
-      it 'should find admin role' do
-        shell("openstack #{auth_creds} --os-auth-url http://127.0.0.1:5000/v2.0 --os-identity-api-version 2 role list") do |r|
-          expect(r.stdout).to match(/admin/)
-          expect(r.stderr).to be_empty
-        end
-      end
-      it 'should find beaker endpoints' do
-        shell("openstack #{auth_creds} --os-auth-url http://127.0.0.1:5000/v2.0 --os-identity-api-version 2 endpoint list --long") do |r|
-          expect(r.stdout).to match(/1234/)
-          expect(r.stderr).to be_empty
-        end
-      end
-    end
     shared_examples_for 'keystone user/tenant/service/role/endpoint resources using v3 API' do |auth_creds|
       it 'should find beaker user' do
         shell("openstack #{auth_creds} --os-auth-url http://127.0.0.1:5000/v3 --os-identity-api-version 3 user list") do |r|
@@ -154,14 +122,6 @@ describe 'keystone server running with Apache/WSGI as Identity Provider' do
           expect(r.stderr).to be_empty
         end
       end
-    end
-    describe 'with v2 admin with v2 credentials' do
-      include_examples 'keystone user/tenant/service/role/endpoint resources using v2 API',
-                       '--os-username admin --os-password a_big_secret --os-project-name openstack'
-    end
-    describe 'with v2 service with v2 credentials' do
-      include_examples 'keystone user/tenant/service/role/endpoint resources using v2 API',
-                       '--os-username beaker-ci --os-password secret --os-project-name services'
     end
     describe 'with v2 admin with v3 credentials' do
       include_examples 'keystone user/tenant/service/role/endpoint resources using v3 API',
