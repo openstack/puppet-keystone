@@ -48,7 +48,7 @@ keystone_tenant { 'project_one':
 
 # is identical to
 
-keystone_project { 'project_one::domain_one': ensure => present }
+keystone_tenant { 'project_one::domain_one': ensure => present }
 
 # For user_role:
 
