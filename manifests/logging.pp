@@ -12,6 +12,10 @@
 #    (Optional) Use syslog for logging.
 #    Defaults to $::os_service_default
 #
+#  [*use_journal*]
+#    (Optional) Use journal for logging.
+#    Defaults to $::os_service_default
+#
 #  [*use_stderr*]
 #    (optional) Use stderr for logging
 #    Defaults to $::os_service_default
@@ -104,6 +108,7 @@
 #
 class keystone::logging(
   $use_syslog                    = $::os_service_default,
+  $use_journal                   = $::os_service_default,
   $use_stderr                    = $::os_service_default,
   $log_facility                  = $::os_service_default,
   $log_dir                       = '/var/log/keystone',
@@ -151,6 +156,7 @@ class keystone::logging(
     log_dir                       => $log_dir_real,
     watch_log_file                => $watch_log_file,
     use_syslog                    => $use_syslog_real,
+    use_journal                   => $use_journal,
     syslog_log_facility           => $log_facility_real,
     use_stderr                    => $use_stderr_real,
     logging_context_format_string => $logging_context_format_string,
