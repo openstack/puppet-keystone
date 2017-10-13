@@ -51,7 +51,7 @@
 #
 #   [*workers*]
 #     Number of WSGI workers to spawn.
-#     Optional. Defaults to 1
+#     Optional. Defaults to $::os_workers
 #
 #   [*ssl_cert*]
 #     (optional) Path to SSL certificate
@@ -95,7 +95,7 @@
 #
 #   [*threads*]
 #     (optional) The number of threads for the vhost.
-#     Defaults to $::os_workers
+#     Defaults to 1
 #
 #   [*wsgi_application_group*]
 #     (optional) The application group of the WSGI script.
@@ -218,7 +218,7 @@ class keystone::wsgi::apache (
   $public_path                       = '/',
   $admin_path                        = '/',
   $ssl                               = true,
-  $workers                           = 1,
+  $workers                           = $::os_workers,
   $ssl_cert                          = undef,
   $ssl_key                           = undef,
   $ssl_cert_admin                    = undef,
@@ -228,7 +228,7 @@ class keystone::wsgi::apache (
   $ssl_crl_path                      = undef,
   $ssl_crl                           = undef,
   $ssl_certs_dir                     = undef,
-  $threads                           = $::os_workers,
+  $threads                           = 1,
   $priority                          = '10',
   $wsgi_application_group            = '%{GLOBAL}',
   $wsgi_pass_authorization           = 'On',
