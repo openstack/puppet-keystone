@@ -380,7 +380,7 @@
 #
 # [*create_domain_entry*]
 #   (optional) Creates the domain in keystone via a keystone_domain resource
-#   and attempts to refresh the kesytone service.
+#   and attempts to refresh the keystone service.
 #   Defaults to false.
 #
 # === DEPRECATED group/name
