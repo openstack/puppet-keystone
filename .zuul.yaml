@@ -1,0 +1,7 @@
+- project:
+    name: openstack/puppet-keystone
+    templates:
+      - puppet-openstack-check-jobs
+      - puppet-openstack-module-unit-jobs
+      - puppet-openstack-integration-jobs-all
+      - puppet-openstack-beaker-jobs
