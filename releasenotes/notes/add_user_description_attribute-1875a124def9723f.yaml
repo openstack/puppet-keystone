@@ -1,0 +1,4 @@
+---
+features:
+  - Adds user_description_attribute mapping support to the
+    LDAP backend.
