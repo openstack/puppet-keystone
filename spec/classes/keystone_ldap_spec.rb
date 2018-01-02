@@ -15,6 +15,7 @@ describe 'keystone::ldap' do
         :user_objectclass                     => 'inetUser',
         :user_id_attribute                    => 'uid',
         :user_name_attribute                  => 'cn',
+        :user_description_attribute           => 'description',
         :user_mail_attribute                  => 'mail',
         :user_enabled_attribute               => 'UserAccountControl',
         :user_enabled_mask                    => '2',
@@ -95,6 +96,7 @@ describe 'keystone::ldap' do
       is_expected.to contain_keystone_config('ldap/user_objectclass').with_value('inetUser')
       is_expected.to contain_keystone_config('ldap/user_id_attribute').with_value('uid')
       is_expected.to contain_keystone_config('ldap/user_name_attribute').with_value('cn')
+      is_expected.to contain_keystone_config('ldap/user_description_attribute').with_value('description')
       is_expected.to contain_keystone_config('ldap/user_mail_attribute').with_value('mail')
       is_expected.to contain_keystone_config('ldap/user_enabled_attribute').with_value('UserAccountControl')
       is_expected.to contain_keystone_config('ldap/user_enabled_mask').with_value('2')

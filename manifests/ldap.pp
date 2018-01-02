@@ -49,6 +49,10 @@
 #   LDAP attribute mapped to user name. (string value)
 #   Defaults to 'undef'
 #
+# [*user_description_attribute*]
+#   LDAP attribute mapped to user description. (string value)
+#   Defaults to 'undef'
+#
 # [*user_mail_attribute*]
 #   LDAP attribute mapped to user email. (string value)
 #
@@ -395,6 +399,7 @@ class keystone::ldap(
   $user_objectclass                     = undef,
   $user_id_attribute                    = undef,
   $user_name_attribute                  = undef,
+  $user_description_attribute           = undef,
   $user_mail_attribute                  = undef,
   $user_enabled_attribute               = undef,
   $user_enabled_mask                    = undef,
@@ -505,6 +510,7 @@ class keystone::ldap(
     'ldap/user_objectclass':                     value => $user_objectclass;
     'ldap/user_id_attribute':                    value => $user_id_attribute;
     'ldap/user_name_attribute':                  value => $user_name_attribute;
+    'ldap/user_description_attribute':           value => $user_description_attribute;
     'ldap/user_mail_attribute':                  value => $user_mail_attribute;
     'ldap/user_enabled_attribute':               value => $user_enabled_attribute;
     'ldap/user_enabled_mask':                    value => $user_enabled_mask;
