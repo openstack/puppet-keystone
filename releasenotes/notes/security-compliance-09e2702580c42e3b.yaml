@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    The security_compliance module was added, which configures the values in
+    the security_compliance section of keystone.conf. This is useful for the
+    SQL backend and to comply with PCI-DSS.
