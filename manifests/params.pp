@@ -8,6 +8,7 @@ class keystone::params {
   $keystone_group      = 'keystone'
   $keystone_wsgi_admin_script_path  = '/usr/bin/keystone-wsgi-admin'
   $keystone_wsgi_public_script_path = '/usr/bin/keystone-wsgi-public'
+  $group                            = 'keystone'
   case $::osfamily {
     'Debian': {
       $package_name                 = 'keystone'

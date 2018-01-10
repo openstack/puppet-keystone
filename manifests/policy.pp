@@ -29,13 +29,18 @@ class keystone::policy (
 ) {
 
   include ::keystone::deps
+  include ::keystone::params
 
   validate_hash($policies)
 
   Openstacklib::Policy::Base {
-    file_path => $policy_path,
+    file_path  => $policy_path,
+    file_user  => 'root',
+    file_group => $::keystone::params::group,
   }
 
   create_resources('openstacklib::policy::base', $policies)
+
   oslo::policy { 'keystone_config': policy_file => $policy_path }
+
 }
