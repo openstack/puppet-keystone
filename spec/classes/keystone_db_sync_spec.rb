@@ -18,6 +18,7 @@ describe 'keystone::db::sync' do
                           'Anchor[keystone::config::end]',
                           'Anchor[keystone::dbsync::begin]'],
           :notify      => 'Anchor[keystone::dbsync::end]',
+          :tag         => ['keystone-exec', 'openstack-db'],
         )
       }
     end
@@ -43,6 +44,7 @@ describe 'keystone::db::sync' do
                           'Anchor[keystone::config::end]',
                           'Anchor[keystone::dbsync::begin]'],
           :notify      => 'Anchor[keystone::dbsync::end]',
+          :tag         => ['keystone-exec', 'openstack-db'],
         )
       }
     end
