@@ -35,6 +35,6 @@ class keystone::db::sync(
       Anchor['keystone::dbsync::begin']
     ],
     notify      => Anchor['keystone::dbsync::end'],
-    tag         => 'keystone-exec',
+    tag         => ['keystone-exec', 'openstack-db']
   }
 }
