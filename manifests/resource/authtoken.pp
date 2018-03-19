@@ -321,7 +321,7 @@ define keystone::resource::authtoken(
     'keystone_authtoken/memcache_pool_maxsize'          => {'value' => $memcache_pool_maxsize},
     'keystone_authtoken/memcache_pool_socket_timeout'   => {'value' => $memcache_pool_socket_timeout},
     'keystone_authtoken/memcache_pool_unused_timeout'   => {'value' => $memcache_pool_unused_timeout},
-    'keystone_authtoken/memcache_secret_key'            => {'value' => $memcache_secret_key},
+    'keystone_authtoken/memcache_secret_key'            => {'value' => $memcache_secret_key, 'secret' => true},
     'keystone_authtoken/memcache_security_strategy'     => {'value' => $memcache_security_strategy},
     'keystone_authtoken/memcache_use_advanced_pool'     => {'value' => $memcache_use_advanced_pool},
     'keystone_authtoken/memcached_servers'              => {'value' => $memcached_servers_real},
