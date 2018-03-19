@@ -380,6 +380,10 @@
 #   web service.  For example, after calling class {'keystone'...}
 #   use class { 'keystone::wsgi::apache'...} to make keystone be
 #   a web app using apache mod_wsgi.
+#   If the value is 'keystone-public-keystone-admin', then the
+#   module will use 2 services, one called keystone-public, and
+#   one called keystone-admin (as per the new Debian package
+#   which uses UWSGI instead of Apache).
 #   Defaults to '$::keystone::params::service_name'
 #   NOTE: validate_service only applies if the default value is used.
 #
@@ -1104,45 +1108,51 @@ Fernet or UUID tokens are recommended.")
     warning('Execution of db_sync does not depend on $enabled anymore. Please use sync_db instead.')
   }
 
-  if $service_name == $::keystone::params::service_name {
-    $service_name_real = $::keystone::params::service_name
-    if $validate_service {
-      if $validate_auth_url {
-        $v_auth_url = $validate_auth_url
-      } else {
-        $v_auth_url = $admin_endpoint
-      }
+  case $service_name {
+    $::keystone::params::service_name, 'keystone-public-keystone-admin' : {
+      $service_name_real = $::keystone::params::service_name
+      if $validate_service {
+        if $validate_auth_url {
+          $v_auth_url = $validate_auth_url
+        } else {
+          $v_auth_url = $admin_endpoint
+        }
 
-      class { '::keystone::service':
-        ensure         => $service_ensure,
-        service_name   => $service_name,
-        enable         => $enabled,
-        hasstatus      => true,
-        hasrestart     => true,
-        validate       => true,
-        admin_endpoint => $v_auth_url,
-        admin_token    => $admin_token,
-        insecure       => $validate_insecure,
-        cacert         => $validate_cacert,
+        class { '::keystone::service':
+          ensure         => $service_ensure,
+          service_name   => $service_name,
+          enable         => $enabled,
+          hasstatus      => true,
+          hasrestart     => true,
+          validate       => true,
+          admin_endpoint => $v_auth_url,
+          admin_token    => $admin_token,
+          insecure       => $validate_insecure,
+          cacert         => $validate_cacert,
+        }
+      } else {
+        class { '::keystone::service':
+          ensure       => $service_ensure,
+          service_name => $service_name,
+          enable       => $enabled,
+          hasstatus    => true,
+          hasrestart   => true,
+          validate     => false,
+        }
       }
-    } else {
-      class { '::keystone::service':
-        ensure       => $service_ensure,
-        service_name => $service_name,
-        enable       => $enabled,
-        hasstatus    => true,
-        hasrestart   => true,
-        validate     => false,
+      if $service_name == $::keystone::params::service_name {
+        warning("Keystone under Eventlet has been deprecated during the Kilo cycle. \
+Support for deploying under eventlet will be dropped as of the M-release of OpenStack.")
       }
     }
-    warning("Keystone under Eventlet has been deprecated during the Kilo cycle. \
-Support for deploying under eventlet will be dropped as of the M-release of OpenStack.")
-  } elsif $service_name == 'httpd' {
-    include ::apache::params
-    $service_name_real = $::apache::params::service_name
-  } else {
-    fail("Invalid service_name. Either keystone/openstack-keystone for \
+    'httpd': {
+      include ::apache::params
+      $service_name_real = $::apache::params::service_name
+    }
+    default: {
+      fail("Invalid service_name. Either keystone/openstack-keystone for \
 running as a standalone service, or httpd for being run by a httpd server")
+    }
   }
 
   if $sync_db {
