@@ -350,32 +350,6 @@
 #   LDAP support packages.
 #   Defaults to true.
 #
-# === DEPRECATED PARAMETERS
-#
-# [*user_allow_create*]
-#   Allow user creation in LDAP backend. (boolean value)
-#   Defaults to undef
-#
-# [*user_allow_update*]
-#   Allow user updates in LDAP backend. (boolean value)
-#   Defaults to undef
-#
-# [*user_allow_delete*]
-#   Allow user deletion in LDAP backend. (boolean value)
-#   Defaults to undef
-#
-# [*group_allow_create*]
-#   Allow group creation in LDAP backend. (boolean value)
-#   Defaults to undef
-#
-# [*group_allow_update*]
-#   Allow group update in LDAP backend. (boolean value)
-#   Defaults to undef
-#
-# [*group_allow_delete*]
-#   Allow group deletion in LDAP backend. (boolean value)
-#   Defaults to undef
-#
 # == Dependencies
 # == Examples
 # == Authors
@@ -466,13 +440,6 @@ class keystone::ldap(
   $auth_pool_connection_lifetime        = 60,
   $package_ensure                       = present,
   $manage_packages                      = true,
-  # DEPRECATED PARAMETERS
-  $user_allow_create                    = undef,
-  $user_allow_update                    = undef,
-  $user_allow_delete                    = undef,
-  $group_allow_create                   = undef,
-  $group_allow_update                   = undef,
-  $group_allow_delete                   = undef,
 ) {
 
   include ::keystone::deps
@@ -486,16 +453,6 @@ class keystone::ldap(
     file { $tls_cacertdir:
       ensure => directory
     }
-  }
-
-  if $user_allow_create or $user_allow_update or $user_allow_delete {
-    warning("all user_allow_ options are deprecated and have no effect, \
-      they will be removed in the future release.")
-  }
-
-  if $group_allow_create or $group_allow_update or $group_allow_delete {
-    warning("all group_allow_ options are deprecated and have no effect, \
-      they will be removed in the future release.")
   }
 
   keystone_config {

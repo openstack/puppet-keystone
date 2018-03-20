@@ -1,0 +1,3 @@
+---
+other:
+  - Remove deprecated user_allow_* and group_allow_* options for ldap.
