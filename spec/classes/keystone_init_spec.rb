@@ -832,7 +832,9 @@ describe 'keystone' do
       default_params.merge({:enable_proxy_headers_parsing => true })
     end
 
-    it { is_expected.to contain_keystone_config('oslo_middleware/enable_proxy_headers_parsing').with_value(true) }
+    it { is_expected.to contain_oslo__middleware('keystone_config').with(
+      :enable_proxy_headers_parsing => true,
+    )}
   end
 
   describe 'setting sql policy driver' do
