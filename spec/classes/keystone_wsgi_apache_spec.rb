@@ -205,7 +205,7 @@ describe 'keystone::wsgi::apache' do
       it { is_expected.to contain_concat("#{platform_parameters[:httpd_ports_file]}") }
     end
 
-    describe 'when servername_admin is overriden' do
+    describe 'when servername_admin is overridden' do
       let :params do
         {
           :servername            => 'dummy1.host',
@@ -223,7 +223,7 @@ describe 'keystone::wsgi::apache' do
 
     end
 
-    describe 'when wsgi_daemon_process_options are overriden' do
+    describe 'when wsgi_daemon_process_options are overridden' do
       let :params do
         {
           :custom_wsgi_process_options_admin => {
