@@ -38,6 +38,10 @@
 #   If set, use this value for max_overflow with sqlalchemy.
 #   (Optional) Defaults to $::os_service_default
 #
+# [*database_pool_timeout*]
+#   (Optional) If set, use this value for pool_timeout with SQLAlchemy.
+#   Defaults to $::os_service_default
+#
 class keystone::db (
   $database_db_max_retries = $::os_service_default,
   $database_connection     = 'sqlite:////var/lib/keystone/keystone.sqlite',
@@ -47,6 +51,7 @@ class keystone::db (
   $database_max_retries    = $::os_service_default,
   $database_retry_interval = $::os_service_default,
   $database_max_overflow   = $::os_service_default,
+  $database_pool_timeout   = $::os_service_default,
 ) {
 
   include ::keystone::deps
@@ -73,6 +78,7 @@ class keystone::db (
     max_retries    => $database_max_retries_real,
     retry_interval => $database_retry_interval_real,
     max_overflow   => $database_max_overflow_real,
+    pool_timeout   => $database_pool_timeout,
   }
 
 }
