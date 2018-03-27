@@ -209,15 +209,6 @@
 #  (Optional) Whether to install the python-memcache package.
 #  Defaults to false.
 #
-# DEPRECATED PARAMETERS
-#
-# [*revocation_cache_time*]
-#   (Optional) Determines the frequency at which the list of revoked tokens is
-#   retrieved from the Identity service (in seconds). A high number of
-#   revocation events combined with a low cache duration may significantly
-#   reduce performance. Only valid for PKI tokens. Integer value
-#   Defaults to undef
-#
 define keystone::resource::authtoken(
   $username,
   $password,
@@ -253,8 +244,6 @@ define keystone::resource::authtoken(
   $region_name                    = $::os_service_default,
   $token_cache_time               = $::os_service_default,
   $manage_memcache_package        = false,
-  # DEPRECATED PARAMETERS
-  $revocation_cache_time          = undef,
 ) {
 
   include ::keystone::deps
@@ -281,10 +270,6 @@ define keystone::resource::authtoken(
 
   if !is_service_default($delay_auth_decision) {
     validate_bool($delay_auth_decision)
-  }
-
-  if $revocation_cache_time {
-    warning('revocation_cache_time parameter is deprecated, has no effect and will be removed in the future.')
   }
 
   if !is_service_default($memcached_servers) and !empty($memcached_servers){
