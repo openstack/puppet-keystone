@@ -1,0 +1,3 @@
+---
+upgrade:
+  - Deprecated keystone::authtoken::revocation_cache_time option has been removed.
