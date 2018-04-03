@@ -75,7 +75,7 @@
 #  (Optional) Authentication type to load
 #  Defaults to $::os_service_default
 #
-# [*auth_uri*]
+# [*www_authenticate_uri*]
 #  (Optional) Complete public Identity API endpoint.
 #  Defaults to $::os_service_default.
 #
@@ -209,6 +209,12 @@
 #  (Optional) Whether to install the python-memcache package.
 #  Defaults to false.
 #
+# DEPRECATED PARAMETERS
+#
+# [*auth_uri*]
+#   (Optional) Complete public Identity API endpoint.
+#   Defaults to undef
+#
 define keystone::resource::authtoken(
   $username,
   $password,
@@ -219,7 +225,7 @@ define keystone::resource::authtoken(
   $insecure                       = $::os_service_default,
   $auth_section                   = $::os_service_default,
   $auth_type                      = $::os_service_default,
-  $auth_uri                       = $::os_service_default,
+  $www_authenticate_uri           = $::os_service_default,
   $auth_version                   = $::os_service_default,
   $cache                          = $::os_service_default,
   $cafile                         = $::os_service_default,
@@ -244,9 +250,16 @@ define keystone::resource::authtoken(
   $region_name                    = $::os_service_default,
   $token_cache_time               = $::os_service_default,
   $manage_memcache_package        = false,
+  # DEPRECATED PARAMETERS
+  $auth_uri                       = undef,
 ) {
 
   include ::keystone::deps
+
+  if $auth_uri {
+    warning('The auth_uri parameter is deprecated. Please use www_authenticate_uri instead.')
+  }
+  $www_authenticate_uri_real = pick($auth_uri, $www_authenticate_uri)
 
   if !is_service_default($check_revocations_for_cached) {
     validate_bool($check_revocations_for_cached)
@@ -287,7 +300,7 @@ define keystone::resource::authtoken(
 
   $keystonemiddleware_options = {
     'keystone_authtoken/auth_section'                   => {'value' => $auth_section},
-    'keystone_authtoken/auth_uri'                       => {'value' => $auth_uri},
+    'keystone_authtoken/www_authenticate_uri'           => {'value' => $www_authenticate_uri_real},
     'keystone_authtoken/auth_type'                      => {'value' => $auth_type},
     'keystone_authtoken/auth_version'                   => {'value' => $auth_version},
     'keystone_authtoken/cache'                          => {'value' => $cache},

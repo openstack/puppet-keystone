@@ -23,7 +23,7 @@ describe 'keystone::resource::authtoken' do
         is_expected.to contain_keystone_config('keystone_authtoken/insecure').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('keystone_authtoken/auth_section').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('keystone_authtoken/auth_type').with_value('<SERVICE DEFAULT>')
-        is_expected.to contain_keystone_config('keystone_authtoken/auth_uri').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/www_authenticate_uri').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('keystone_authtoken/auth_version').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('keystone_authtoken/cache').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('keystone_authtoken/cafile').with_value('<SERVICE DEFAULT>')
@@ -62,7 +62,7 @@ describe 'keystone::resource::authtoken' do
           :insecure                     =>  true,
           :auth_section                 => 'some_section',
           :auth_type                    => 'password',
-          :auth_uri                     => 'http://127.1.1.127:5000/',
+          :www_authenticate_uri         => 'http://127.1.1.127:5000/',
           :auth_version                 => '3',
           :cache                        => 'somevalue',
           :cafile                       => 'cafile.pem',
@@ -88,7 +88,7 @@ describe 'keystone::resource::authtoken' do
         is_expected.to contain_keystone_config('keystone_authtoken/project_domain_name').with_value(params[:project_domain_name])
         is_expected.to contain_keystone_config('keystone_authtoken/insecure').with_value(params[:insecure])
         is_expected.to contain_keystone_config('keystone_authtoken/auth_section').with_value(params[:auth_section])
-        is_expected.to contain_keystone_config('keystone_authtoken/auth_uri').with_value(params[:auth_uri])
+        is_expected.to contain_keystone_config('keystone_authtoken/www_authenticate_uri').with_value(params[:www_authenticate_uri])
         is_expected.to contain_keystone_config('keystone_authtoken/auth_version').with_value(params[:auth_version])
         is_expected.to contain_keystone_config('keystone_authtoken/cache').with_value(params[:cache])
         is_expected.to contain_keystone_config('keystone_authtoken/check_revocations_for_cached').with_value(params[:check_revocations_for_cached])
