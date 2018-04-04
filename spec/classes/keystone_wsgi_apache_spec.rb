@@ -17,103 +17,99 @@ describe 'keystone::wsgi::apache' do
   end
 
   shared_examples_for 'apache serving keystone with mod_wsgi' do
-    it { is_expected.to contain_service('httpd').with_name(platform_parameters[:httpd_service_name]) }
+    it { is_expected.to contain_service('httpd').with_name(platform_params[:httpd_service_name]) }
     it { is_expected.to contain_class('keystone::params') }
     it { is_expected.to contain_class('apache') }
     it { is_expected.to contain_class('apache::mod::wsgi') }
+    it { is_expected.to contain_class('apache::mod::ssl') }
     it { is_expected.to contain_class('keystone::db::sync') }
 
     describe 'with default parameters' do
 
-      it { is_expected.to contain_file("#{platform_parameters[:wsgi_script_path]}").with(
-        'ensure'  => 'directory',
-        'owner'   => 'keystone',
-        'group'   => 'keystone',
-        'require' => 'Anchor[keystone::install::end]',
+      it { is_expected.to contain_file("#{platform_params[:wsgi_script_path]}").with(
+        :ensure  => 'directory',
+        :owner   => 'keystone',
+        :group   => 'keystone',
+        :require => 'Anchor[keystone::install::end]',
       )}
 
       it { is_expected.to contain_file('keystone_wsgi_admin').with(
-        'ensure'  => 'file',
-        'path'    => "#{platform_parameters[:wsgi_script_path]}/keystone-admin",
-        'source'  => platform_parameters[:wsgi_admin_script_source],
-        'owner'   => 'keystone',
-        'group'   => 'keystone',
-        'mode'    => '0644',
-        'require' => "File[#{platform_parameters[:wsgi_script_path]}]",
+        :ensure  => 'file',
+        :path    => "#{platform_params[:wsgi_script_path]}/keystone-admin",
+        :source  => platform_params[:wsgi_admin_script_source],
+        :owner   => 'keystone',
+        :group   => 'keystone',
+        :mode    => '0644',
+        :require => "File[#{platform_params[:wsgi_script_path]}]",
       )}
 
       it { is_expected.to contain_file('keystone_wsgi_main').with(
-        'ensure'  => 'file',
-        'path'    => "#{platform_parameters[:wsgi_script_path]}/keystone-public",
-        'source'  => platform_parameters[:wsgi_public_script_source],
-        'owner'   => 'keystone',
-        'group'   => 'keystone',
-        'mode'    => '0644',
-        'require' => "File[#{platform_parameters[:wsgi_script_path]}]",
+        :ensure  => 'file',
+        :path    => "#{platform_params[:wsgi_script_path]}/keystone-public",
+        :source  => platform_params[:wsgi_public_script_source],
+        :owner   => 'keystone',
+        :group   => 'keystone',
+        :mode    => '0644',
+        :require => "File[#{platform_params[:wsgi_script_path]}]",
       )}
 
-      it { is_expected.to contain_apache__vhost('keystone_wsgi_admin').with(
-        'servername'                  => 'some.host.tld',
-        'ip'                          => nil,
-        'port'                        => '35357',
-        'docroot'                     => "#{platform_parameters[:wsgi_script_path]}",
-        'docroot_owner'               => 'keystone',
-        'docroot_group'               => 'keystone',
-        'ssl'                         => 'true',
-        'wsgi_daemon_process'         => 'keystone_admin',
-        'wsgi_daemon_process_options' => {
-          'user'         => 'keystone',
-          'group'        => 'keystone',
-          'processes'    => '42',
-          'threads'      => '1',
-          'display-name' => 'keystone-admin',
-        },
-        'wsgi_process_group'          => 'keystone_admin',
-        'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/keystone-admin" },
-        'wsgi_application_group'      => '%{GLOBAL}',
-        'wsgi_pass_authorization'     => 'On',
-        'headers'                     => nil,
-        'require'                     => 'File[keystone_wsgi_admin]',
-        'access_log_file'             => false,
-        'access_log_pipe'             => false,
-        'access_log_syslog'           => false,
-        'access_log_format'           => false,
-        'error_log_file'              => nil,
-        'error_log_pipe'              => nil,
-        'error_log_syslog'            => nil,
+      it { is_expected.to contain_openstacklib__wsgi__apache('keystone_wsgi_main').with(
+        :servername                  => 'some.host.tld',
+        :bind_port                   => 35357,
+        :group                       => 'keystone',
+        :workers                     => facts[:os_workers],
+        :threads                     => 1,
+        :user                        => 'keystone',
+        :priority                    => '10',
+        :ssl                         => true,
+        :wsgi_daemon_process         => 'keystone_main',
+        :wsgi_process_display_name   => 'keystone-main',
+        :wsgi_process_group          => 'keystone_main',
+        :wsgi_application_group      => '%{GLOBAL}',
+        :wsgi_script_dir             => platform_params[:wsgi_script_path],
+        :wsgi_script_file            => 'keystone-public',
+        :wsgi_pass_authorization     => 'On',
+        :headers                     => nil,
+        :custom_wsgi_process_options => {},
+        :access_log_file             => false,
+        :access_log_pipe             => false,
+        :access_log_syslog           => false,
+        :access_log_format           => false,
+        :error_log_file              => nil,
+        :error_log_pipe              => nil,
+        :error_log_syslog            => nil,
+        :require                     => 'File[keystone_wsgi_main]',
       )}
 
-      it { is_expected.to contain_apache__vhost('keystone_wsgi_main').with(
-        'servername'                  => 'some.host.tld',
-        'ip'                          => nil,
-        'port'                        => '5000',
-        'docroot'                     => "#{platform_parameters[:wsgi_script_path]}",
-        'docroot_owner'               => 'keystone',
-        'docroot_group'               => 'keystone',
-        'ssl'                         => 'true',
-        'wsgi_daemon_process'         => 'keystone_main',
-        'wsgi_daemon_process_options' => {
-          'user'         => 'keystone',
-          'group'        => 'keystone',
-          'processes'    => '42',
-          'threads'      => '1',
-          'display-name' => 'keystone-main',
-        },
-        'wsgi_process_group'          => 'keystone_main',
-        'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/main" },
-        'wsgi_application_group'      => '%{GLOBAL}',
-        'wsgi_pass_authorization'     => 'On',
-        'headers'                     => nil,
-        'require'                     => 'File[keystone_wsgi_main]',
-        'access_log_file'             => false,
-        'access_log_pipe'             => false,
-        'access_log_syslog'           => false,
-        'access_log_format'           => false,
-        'error_log_file'              => nil,
-        'error_log_pipe'              => nil,
-        'error_log_syslog'            => nil,
+      it { is_expected.to contain_openstacklib__wsgi__apache('keystone_wsgi_admin').with(
+        :servername                  => 'some.host.tld',
+        :bind_port                   => 5000,
+        :group                       => 'keystone',
+        :workers                     => facts[:os_workers],
+        :threads                     => 1,
+        :user                        => 'keystone',
+        :priority                    => '10',
+        :ssl                         => true,
+        :wsgi_daemon_process         => 'keystone_admin',
+        :wsgi_process_display_name   => 'keystone-admin',
+        :wsgi_process_group          => 'keystone_admin',
+        :wsgi_application_group      => '%{GLOBAL}',
+        :wsgi_script_dir             => platform_params[:wsgi_script_path],
+        :wsgi_script_file            => 'keystone-admin',
+        :wsgi_pass_authorization     => 'On',
+        :headers                     => nil,
+        :custom_wsgi_process_options => {},
+        :access_log_file             => false,
+        :access_log_pipe             => false,
+        :access_log_syslog           => false,
+        :access_log_format           => false,
+        :error_log_file              => nil,
+        :error_log_pipe              => nil,
+        :error_log_syslog            => nil,
+        :require                     => 'File[keystone_wsgi_admin]',
       )}
-      it { is_expected.to contain_concat("#{platform_parameters[:httpd_ports_file]}") }
+
+      it { is_expected.to contain_concat("#{platform_params[:httpd_ports_file]}") }
     end
 
     describe 'when overriding parameters using different ports' do
@@ -130,55 +126,67 @@ describe 'keystone::wsgi::apache' do
         }
       end
 
-      it { is_expected.to contain_apache__vhost('keystone_wsgi_admin').with(
-        'servername'                  => 'dummy.host',
-        'ip'                          => '10.42.51.2',
-        'port'                        => '4142',
-        'docroot'                     => "#{platform_parameters[:wsgi_script_path]}",
-        'docroot_owner'               => 'keystone',
-        'docroot_group'               => 'keystone',
-        'ssl'                         => 'false',
-        'wsgi_daemon_process'         => 'keystone_admin',
-        'wsgi_daemon_process_options' => {
-                  'user' => 'keystone',
-                 'group' => 'keystone',
-             'processes' => '37',
-               'threads' => '1',
-          'display-name' => 'keystone-admin',
-        },
-        'wsgi_process_group'          => 'keystone_admin',
-        'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/keystone-admin" },
-        'wsgi_application_group'      => '%{GLOBAL}',
-        'wsgi_pass_authorization'     => 'On',
-        'require'                     => 'File[keystone_wsgi_admin]',
-        'custom_fragment'             => 'LimitRequestFieldSize 81900'
+      it { is_expected.to contain_openstacklib__wsgi__apache('keystone_wsgi_main').with(
+        :servername                  => 'dummy.host',
+        :bind_host                   => '10.42.51.1',
+        :bind_port                   => 12345,
+        :user                        => 'keystone',
+        :group                       => 'keystone',
+        :workers                     => 37,
+        :threads                     => 1,
+        :priority                    => '10',
+        :ssl                         => false,
+        :wsgi_daemon_process         => 'keystone_main',
+        :wsgi_process_display_name   => 'keystone-main',
+        :wsgi_process_group          => 'keystone_main',
+        :wsgi_application_group      => '%{GLOBAL}',
+        :wsgi_script_dir             => platform_params[:wsgi_script_path],
+        :wsgi_script_file            => 'keystone-public',
+        :wsgi_pass_authorization     => 'On',
+        :headers                     => nil,
+        :custom_wsgi_process_options => {},
+        :vhost_custom_fragment       => 'LimitRequestFieldSize 81900',
+        :access_log_file             => false,
+        :access_log_pipe             => false,
+        :access_log_syslog           => false,
+        :access_log_format           => false,
+        :error_log_file              => nil,
+        :error_log_pipe              => nil,
+        :error_log_syslog            => nil,
+        :require                     => 'File[keystone_wsgi_main]',
       )}
 
-      it { is_expected.to contain_apache__vhost('keystone_wsgi_main').with(
-        'servername'                  => 'dummy.host',
-        'ip'                          => '10.42.51.1',
-        'port'                        => '12345',
-        'docroot'                     => "#{platform_parameters[:wsgi_script_path]}",
-        'docroot_owner'               => 'keystone',
-        'docroot_group'               => 'keystone',
-        'ssl'                         => 'false',
-        'wsgi_daemon_process'         => 'keystone_main',
-        'wsgi_daemon_process_options' => {
-                  'user' => 'keystone',
-                 'group' => 'keystone',
-             'processes' => '37',
-               'threads' => '1',
-          'display-name' => 'keystone-main',
-        },
-        'wsgi_process_group'          => 'keystone_main',
-        'wsgi_script_aliases'         => { '/' => "#{platform_parameters[:wsgi_script_path]}/main" },
-        'wsgi_application_group'      => '%{GLOBAL}',
-        'wsgi_pass_authorization'     => 'On',
-        'require'                     => 'File[keystone_wsgi_main]',
-        'custom_fragment'             => 'LimitRequestFieldSize 81900'
+      it { is_expected.to contain_openstacklib__wsgi__apache('keystone_wsgi_admin').with(
+        :servername                  => 'dummy.host',
+        :bind_host                   => '10.42.51.1',
+        :bind_port                   => 4142,
+        :group                       => 'keystone',
+        :workers                     => 37,
+        :threads                     => 1,
+        :user                        => 'keystone',
+        :priority                    => '10',
+        :ssl                         => false,
+        :wsgi_daemon_process         => 'keystone_admin',
+        :wsgi_process_display_name   => 'keystone-admin',
+        :wsgi_process_group          => 'keystone_admin',
+        :wsgi_application_group      => '%{GLOBAL}',
+        :wsgi_script_dir             => platform_params[:wsgi_script_path],
+        :wsgi_script_file            => 'keystone-admin',
+        :wsgi_pass_authorization     => 'On',
+        :headers                     => nil,
+        :custom_wsgi_process_options => {},
+        :vhost_custom_fragment       => 'LimitRequestFieldSize 81900',
+        :access_log_file             => false,
+        :access_log_pipe             => false,
+        :access_log_syslog           => false,
+        :access_log_format           => false,
+        :error_log_file              => nil,
+        :error_log_pipe              => nil,
+        :error_log_syslog            => nil,
+        :require                     => 'File[keystone_wsgi_admin]',
       )}
 
-      it { is_expected.to contain_concat("#{platform_parameters[:httpd_ports_file]}") }
+      it { is_expected.to contain_concat("#{platform_params[:httpd_ports_file]}") }
     end
 
     describe 'when admin_bind_host is not set default to bind_host' do
@@ -194,15 +202,25 @@ describe 'keystone::wsgi::apache' do
         }
       end
 
-      it { is_expected.to contain_apache__vhost('keystone_wsgi_admin').with(
-        'ip'                          => '10.42.51.1'
+      it { is_expected.to contain_openstacklib__wsgi__apache('keystone_wsgi_main').with(
+        :servername            => 'dummy.host',
+        :bind_host             => '10.42.51.1',
+        :bind_port             => 12345,
+        :ssl                   => false,
+        :workers               => 37,
+        :vhost_custom_fragment => 'LimitRequestFieldSize 81900'
       )}
 
-      it { is_expected.to contain_apache__vhost('keystone_wsgi_main').with(
-        'ip'                          => '10.42.51.1'
+      it { is_expected.to contain_openstacklib__wsgi__apache('keystone_wsgi_admin').with(
+        :servername            => 'dummy.host',
+        :bind_host             => '10.42.51.1',
+        :bind_port             => 4142,
+        :ssl                   => false,
+        :workers               => 37,
+        :vhost_custom_fragment => 'LimitRequestFieldSize 81900'
       )}
 
-      it { is_expected.to contain_concat("#{platform_parameters[:httpd_ports_file]}") }
+      it { is_expected.to contain_concat("#{platform_params[:httpd_ports_file]}") }
     end
 
     describe 'when servername_admin is overridden' do
@@ -213,12 +231,12 @@ describe 'keystone::wsgi::apache' do
         }
       end
 
-      it { is_expected.to contain_apache__vhost('keystone_wsgi_admin').with(
-        'servername'                  => 'dummy2.host',
+      it { is_expected.to contain_openstacklib__wsgi__apache('keystone_wsgi_main').with(
+        :servername => 'dummy1.host',
       )}
 
-      it { is_expected.to contain_apache__vhost('keystone_wsgi_main').with(
-        'servername'                  => 'dummy1.host',
+      it { is_expected.to contain_openstacklib__wsgi__apache('keystone_wsgi_admin').with(
+        :servername => 'dummy2.host',
       )}
 
     end
@@ -226,34 +244,23 @@ describe 'keystone::wsgi::apache' do
     describe 'when wsgi_daemon_process_options are overridden' do
       let :params do
         {
-          :custom_wsgi_process_options_admin => {
-                         user => 'keystone-admin',
-                  python_path => '/my/python/admin/path',
-          },
           :custom_wsgi_process_options_main  => {
-                         user => 'keystone-main',
                   python_path => '/my/python/main/path',
+          },
+          :custom_wsgi_process_options_admin => {
+                  python_path => '/my/python/admin/path',
           },
         }
       end
 
-      it { is_expected.to contain_apache__vhost('keystone_wsgi_admin').with(
-        'wsgi_daemon_process_options' => {
-                  'user' => 'keystone-admin',
-                 'group' => 'keystone',
-           'python-path' => '/my/python/admin/path',
-          'display-name' => 'keystone_main',
-        },
+      it { is_expected.to contain_openstacklib__wsgi__apache('keystone_wsgi_main').with(
+        :custom_wsgi_process_options => { 'python-path' => '/my/python/main/path' },
       )}
 
-      it { is_expected.to contain_apache__vhost('keystone_wsgi_main').with(
-        'wsgi_daemon_process_options' => {
-                  'user' => 'keystone-main',
-                 'group' => 'keystone',
-           'python-path' => '/my/python/main/path',
-          'display-name' => 'keystone-main',
-        },
+      it { is_expected.to contain_openstacklib__wsgi__apache('keystone_wsgi_admin').with(
+        :custom_wsgi_process_options => { 'python-path' => '/my/python/admin/path' },
       )}
+
     end
 
     describe 'when overriding parameters using same port' do
@@ -269,32 +276,35 @@ describe 'keystone::wsgi::apache' do
         }
       end
 
-      it { is_expected.to_not contain_apache__vhost('keystone_wsgi_admin') }
+      it { is_expected.to_not contain_openstacklib__wsgi__apache('keystone_wsgi_admin') }
 
-      it { is_expected.to contain_apache__vhost('keystone_wsgi_main').with(
-        'servername'                  => 'dummy.host',
-        'ip'                          => nil,
-        'port'                        => '4242',
-        'docroot'                     => "#{platform_parameters[:wsgi_script_path]}",
-        'docroot_owner'               => 'keystone',
-        'docroot_group'               => 'keystone',
-        'ssl'                         => 'true',
-        'wsgi_daemon_process'         => 'keystone_main',
-        'wsgi_daemon_process_options' => {
-                  'user' => 'keystone',
-                 'group' => 'keystone',
-             'processes' => '37',
-               'threads' => '1',
-          'display-name' => 'keystone-main',
-        },
-        'wsgi_process_group'          => 'keystone_main',
-        'wsgi_script_aliases'         => {
-        '/main/endpoint'  => "#{platform_parameters[:wsgi_script_path]}/keystone-public",
-        '/admin/endpoint' => "#{platform_parameters[:wsgi_script_path]}/keystone-admin"
-        },
-        'wsgi_application_group'      => '%{GLOBAL}',
-        'wsgi_pass_authorization'     => 'On',
-        'require'                     => 'File[keystone_wsgi_main]'
+      it { is_expected.to contain_openstacklib__wsgi__apache('keystone_wsgi_main').with(
+        :servername => 'dummy.host',
+        :bind_port  => 4242,
+        :user                        => 'keystone',
+        :group                       => 'keystone',
+        :workers                     => 37,
+        :threads                     => 1,
+        :priority                    => '10',
+        :ssl                         => true,
+        :wsgi_daemon_process         => 'keystone_main',
+        :wsgi_process_display_name   => 'keystone-main',
+        :wsgi_process_group          => 'keystone_main',
+        :wsgi_application_group      => '%{GLOBAL}',
+        :wsgi_script_dir             => platform_params[:wsgi_script_path],
+        :wsgi_script_file            => 'keystone-public',
+        :wsgi_pass_authorization     => 'On',
+        :headers                     => nil,
+        :custom_wsgi_process_options => {},
+        :custom_wsgi_script_aliases  => { '/admin/endpoint' => "#{platform_parameters[:wsgi_script_path]}/keystone-admin" },
+        :access_log_file             => false,
+        :access_log_pipe             => false,
+        :access_log_syslog           => false,
+        :access_log_format           => false,
+        :error_log_file              => nil,
+        :error_log_pipe              => nil,
+        :error_log_syslog            => nil,
+        :require                     => 'File[keystone_wsgi_main]'
       )}
     end
 
@@ -311,7 +321,7 @@ describe 'keystone::wsgi::apache' do
         }
       end
 
-      it_raises 'a Puppet::Error', /When using the same port for public & private endpoints, public_path and admin_path should be different\./
+      it_raises 'a Puppet::Error', /When using the same port for public and admin endpoints, public_path and admin_path should be different\./
     end
 
     describe 'when overriding default apache logging' do
@@ -322,11 +332,11 @@ describe 'keystone::wsgi::apache' do
           :access_log_syslog => 'syslog:local0',
         }
       end
-      it { is_expected.to contain_apache__vhost('keystone_wsgi_main').with(
-          'servername'                  => 'dummy.host',
-          'access_log_format'           => 'foo',
-          'access_log_syslog'           => 'syslog:local0',
-          )}
+      it { is_expected.to contain_openstacklib__wsgi__apache('keystone_wsgi_main').with(
+          :servername        => 'dummy.host',
+          :access_log_format => 'foo',
+          :access_log_syslog => 'syslog:local0',
+         )}
     end
 
     describe 'when overriding parameters using symlink and custom file source' do
@@ -338,23 +348,23 @@ describe 'keystone::wsgi::apache' do
       end
 
       it { is_expected.to contain_file('keystone_wsgi_admin').with(
-        'ensure'  => 'link',
-        'path'    => "#{platform_parameters[:wsgi_script_path]}/keystone-admin",
-        'target'  => '/opt/keystone/httpd/keystone.py',
-        'owner'   => 'keystone',
-        'group'   => 'keystone',
-        'mode'    => '0644',
-        'require' => "File[#{platform_parameters[:wsgi_script_path]}]",
+        :ensure  => 'link',
+        :path    => "#{platform_params[:wsgi_script_path]}/keystone-admin",
+        :target  => '/opt/keystone/httpd/keystone.py',
+        :owner   => 'keystone',
+        :group   => 'keystone',
+        :mode    => '0644',
+        :require => "File[#{platform_params[:wsgi_script_path]}]",
       )}
 
       it { is_expected.to contain_file('keystone_wsgi_main').with(
-        'ensure'  => 'link',
-        'path'    => "#{platform_parameters[:wsgi_script_path]}/keystone-public",
-        'target'  => '/opt/keystone/httpd/keystone.py',
-        'owner'   => 'keystone',
-        'group'   => 'keystone',
-        'mode'    => '0644',
-        'require' => "File[#{platform_parameters[:wsgi_script_path]}]",
+        :ensure  => 'link',
+        :path    => "#{platform_params[:wsgi_script_path]}/keystone-public",
+        :target  => '/opt/keystone/httpd/keystone.py',
+        :owner   => 'keystone',
+        :group   => 'keystone',
+        :mode    => '0644',
+        :require => "File[#{platform_params[:wsgi_script_path]}]",
       )}
     end
 
@@ -365,13 +375,13 @@ describe 'keystone::wsgi::apache' do
           :ssl_key  => 'some key',
         }
       end
-      it { is_expected.to contain_apache__vhost('keystone_wsgi_main').with(
-          'ssl_cert' => 'some cert',
-          'ssl_key'  => 'some key',
+      it { is_expected.to contain_openstacklib__wsgi__apache('keystone_wsgi_main').with(
+          :ssl_cert => 'some cert',
+          :ssl_key  => 'some key',
           )}
-      it { is_expected.to contain_apache__vhost('keystone_wsgi_admin').with(
-          'ssl_cert' => 'some cert',
-          'ssl_key'  => 'some key',
+      it { is_expected.to contain_openstacklib__wsgi__apache('keystone_wsgi_admin').with(
+          :ssl_cert => 'some cert',
+          :ssl_key  => 'some key',
           )}
     end
 
@@ -384,13 +394,13 @@ describe 'keystone::wsgi::apache' do
           :ssl_key_admin  => 'some key admin',
         }
       end
-      it { is_expected.to contain_apache__vhost('keystone_wsgi_main').with(
-          'ssl_cert' => 'some cert',
-          'ssl_key'  => 'some key',
+      it { is_expected.to contain_openstacklib__wsgi__apache('keystone_wsgi_main').with(
+          :ssl_cert => 'some cert',
+          :ssl_key  => 'some key',
           )}
-      it { is_expected.to contain_apache__vhost('keystone_wsgi_admin').with(
-          'ssl_cert' => 'some cert admin',
-          'ssl_key'  => 'some key admin',
+      it { is_expected.to contain_openstacklib__wsgi__apache('keystone_wsgi_admin').with(
+          :ssl_cert => 'some cert admin',
+          :ssl_key  => 'some key admin',
           )}
     end
 
@@ -401,27 +411,29 @@ describe 'keystone::wsgi::apache' do
         }
       end
 
-      it { is_expected.to contain_apache__vhost('keystone_wsgi_admin').with(
-        'wsgi_chunked_request' => 'On'
+      it { is_expected.to contain_openstacklib__wsgi__apache('keystone_wsgi_main').with(
+        :wsgi_chunked_request => 'On'
       )}
-      it { is_expected.to contain_apache__vhost('keystone_wsgi_main').with(
-        'wsgi_chunked_request' => 'On'
+      it { is_expected.to contain_openstacklib__wsgi__apache('keystone_wsgi_admin').with(
+        :wsgi_chunked_request => 'On'
       )}
+
     end
 
-    describe 'when overriding parameters using additional headers' do
+   describe 'when overriding parameters using additional headers' do
       let :params do
         {
           :headers => 'set X-Frame-Options "DENY"'
         }
       end
 
-      it { is_expected.to contain_apache__vhost('keystone_wsgi_admin').with(
-        'headers' => 'set X-Frame-Options "DENY"'
+      it { is_expected.to contain_openstacklib__wsgi__apache('keystone_wsgi_main').with(
+        :headers => 'set X-Frame-Options "DENY"'
       )}
-      it { is_expected.to contain_apache__vhost('keystone_wsgi_main').with(
-        'headers' => 'set X-Frame-Options "DENY"'
+      it { is_expected.to contain_openstacklib__wsgi__apache('keystone_wsgi_admin').with(
+        :headers => 'set X-Frame-Options "DENY"'
       )}
+
     end
 
     describe 'when overriding script paths with link' do
@@ -434,13 +446,13 @@ describe 'keystone::wsgi::apache' do
       end
 
       it 'should contain correct files' do
-        is_expected.to contain_file('keystone_wsgi_admin').with(
-          'path'   => "#{facts[:wsgi_script_path]}/keystone-admin",
-          'target' => params[:wsgi_admin_script_source]
-        )
         is_expected.to contain_file('keystone_wsgi_main').with(
-          'path'   => "#{facts[:wsgi_script_path]}/keystone-public",
-          'target' => params[:wsgi_public_script_source]
+          :path   => "#{facts[:wsgi_script_path]}/keystone-public",
+          :target => params[:wsgi_public_script_source]
+        )
+        is_expected.to contain_file('keystone_wsgi_admin').with(
+          :path   => "#{facts[:wsgi_script_path]}/keystone-admin",
+          :target => params[:wsgi_admin_script_source]
         )
       end
     end
@@ -454,13 +466,13 @@ describe 'keystone::wsgi::apache' do
       end
 
       it 'should contain correct files' do
-        is_expected.to contain_file('keystone_wsgi_admin').with(
-          'path'   => "#{facts[:wsgi_script_path]}/keystone-admin",
-          'source' => params[:wsgi_admin_script_source]
-        )
         is_expected.to contain_file('keystone_wsgi_main').with(
-          'path'   => "#{facts[:wsgi_script_path]}/keystone-public",
-          'source' => params[:wsgi_public_script_source]
+          :path   => "#{facts[:wsgi_script_path]}/keystone-public",
+          :source => params[:wsgi_public_script_source]
+        )
+        is_expected.to contain_file('keystone_wsgi_admin').with(
+          :path   => "#{facts[:wsgi_script_path]}/keystone-admin",
+          :source => params[:wsgi_admin_script_source]
         )
       end
     end
@@ -472,7 +484,7 @@ describe 'keystone::wsgi::apache' do
       facts.merge!(OSDefaults.get_facts({}))
     end
 
-    let(:platform_parameters) do
+    let(:platform_params) do
       case facts[:osfamily]
       when 'Debian'
         {

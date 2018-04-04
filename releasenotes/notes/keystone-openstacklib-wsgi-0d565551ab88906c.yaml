@@ -1,0 +1,8 @@
+---
+upgrade:
+  - |
+    The deprecated parameter keystone::wsgi::apache::wsgi_script_source is now removed.
+    Please use the wsgi_public_script_source and wsgi_admin_script_source instead.
+deprecations:
+  - |
+    The wsgi_script_ensure parameter now has NO affect and is deprecated for removal.

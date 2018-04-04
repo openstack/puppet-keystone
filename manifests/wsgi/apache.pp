@@ -1,212 +1,182 @@
 #
-# Class to serve keystone with apache mod_wsgi in place of keystone service
+# Copyright 2013 eNovance <licensing@enovance.com>
 #
-# Serving keystone from apache is the recommended way to go for production
-# systems as the current keystone implementation is not multi-processor aware,
-# thus limiting the performance for concurrent accesses.
+# Author: Francois Charlier <francois.charlier@enovance.com>
 #
-# See the following URIs for reference:
-#    https://etherpad.openstack.org/havana-keystone-performance
-#    http://adam.younglogic.com/2012/03/keystone-should-move-to-apache-httpd/
+# == Class: keystone::wsgi::apache
 #
+# Serve keystone with apache mod_wsgi in place of keystone service
 # When using this class you should disable your keystone service.
 #
 # == Parameters
 #
-#   [*servername*]
-#     The servername for the virtualhost.
-#     Optional. Defaults to $::fqdn
+# [*servername*]
+#   (Optional) The servername for the virtualhost.
+#   Defaults to $::fqdn
 #
-#   [*servername_admin*]
-#     The servername for the admin virtualhost.
-#     Optional. Defaults to $servername
+# [*servername_admin*]
+#   (Optional) The servername for the admin virtualhost.
+#   Defaults to $servername
 #
-#   [*public_port*]
-#     The public port.
-#     Optional. Defaults to 5000
+# [*public_port*]
+#   (Optional) The public port.
+#   Defaults to 5000
 #
-#   [*admin_port*]
-#     The admin port.
-#     Optional. Defaults to 35357
+# [*admin_port*]
+#   (Optional) The admin port.
+#   Defaults to 35357
 #
-#   [*bind_host*]
-#     The host/ip address Apache will listen on.
-#     Optional. Defaults to undef (listen on all ip addresses).
+# [*bind_host*]
+#   (Optional) The host/ip address Apache will listen on.
+#   Defaults to undef (listen on all ip addresses)
 #
-#   [*admin_bind_host*]
-#     The host/ip address Apache will listen on for admin API connections.
-#     Optional. Defaults to undef or bind_host if only that setting is used.
+# [*admin_bind_host*]
+#   (Optional) The host/ip address Apache will listen on for admin API connections.
+#   Defaults to undef or bind_host if only that setting is used
 #
-#   [*public_path*]
-#     The prefix for the public endpoint.
-#     Optional. Defaults to '/'
+# [*public_path*]
+#   (Optional) The prefix for the public endpoint.
+#   Defaults to '/'
 #
-#   [*admin_path*]
-#     The prefix for the admin endpoint.
-#     Optional. Defaults to '/'
+# [*admin_path*]
+#   (Optional) The prefix for the admin endpoint.
+#   Defaults to '/'
 #
-#   [*ssl*]
-#     Use ssl ? (boolean)
-#     Optional. Defaults to true
+# [*ssl*]
+#   (Optional) Use SSL.
+#   Defaults to true
 #
-#   [*workers*]
-#     Number of WSGI workers to spawn.
-#     Optional. Defaults to $::os_workers
+# [*workers*]
+#   (Optional) Number of WSGI workers to spawn.
+#   Defaults to $::os_workers
 #
-#   [*ssl_cert*]
-#     (optional) Path to SSL certificate
-#     Default to apache::vhost 'ssl_*' defaults.
+# [*ssl_cert*]
+#   (Optional) Path to SSL certificate
+#   Default to apache::vhost 'ssl_*' defaults
 #
-#   [*ssl_key*]
-#     (optional) Path to SSL key
-#     Default to apache::vhost 'ssl_*' defaults.
+# [*ssl_key*]
+#   (Optional) Path to SSL key
+#   Default to apache::vhost 'ssl_*' defaults
 #
-#   [*ssl_cert_admin*]
-#     (optional) Path to SSL certificate for the admin endpoint.
-#     Default to apache::vhost 'ssl_*' defaults.
+# [*ssl_cert_admin*]
+#   (Optional) Path to SSL certificate for the admin endpoint.
+#   Default to apache::vhost 'ssl_*' defaults
 #
-#   [*ssl_key_admin*]
-#     (optional) Path to SSL key for the admin endpoint.
-#     Default to apache::vhost 'ssl_*' defaults.
+# [*ssl_key_admin*]
+#   (Optional) Path to SSL key for the admin endpoint.
+#   Default to apache::vhost 'ssl_*' defaults
 #
-#   [*ssl_chain*]
-#     (optional) SSL chain
-#     Default to apache::vhost 'ssl_*' defaults.
+# [*ssl_chain*]
+#   (Optional) SSL chain.
+#   Default to apache::vhost 'ssl_*' defaults
 #
-#   [*ssl_ca*]
-#     (optional) Path to SSL certificate authority
-#     Default to apache::vhost 'ssl_*' defaults.
+# [*ssl_ca*]
+#   (Optional) Path to SSL certificate authority.
+#   Default to apache::vhost 'ssl_*' defaults
 #
-#   [*ssl_crl_path*]
-#     (optional) Path to SSL certificate revocation list
-#     Default to apache::vhost 'ssl_*' defaults.
+# [*ssl_crl_path*]
+#   (Optional) Path to SSL certificate revocation list.
+#   Default to apache::vhost 'ssl_*' defaults
 #
-#   [*ssl_crl*]
-#     (optional) SSL certificate revocation list name
-#     Default to apache::vhost 'ssl_*' defaults.
+# [*ssl_crl*]
+#   (Optional) SSL certificate revocation list name.
+#   Default to apache::vhost 'ssl_*' defaults
 #
-#   [*ssl_certs_dir*]
-#     apache::vhost ssl parameters.
-#     Optional. Default to apache::vhost 'ssl_*' defaults.
+# [*ssl_certs_dir*]
+#   (Optional) apache::vhost ssl parameters.
+#   Default to apache::vhost 'ssl_*' defaults
 #
-#   [*priority*]
-#     (optional) The priority for the vhost.
-#     Defaults to '10'
+# [*priority*]
+#   (Optional) The priority for the vhost.
+#   Defaults to '10'
 #
-#   [*threads*]
-#     (optional) The number of threads for the vhost.
-#     Defaults to 1
+# [*threads*]
+#   (Optional) The number of threads for the vhost.
+#   Defaults to 1
 #
-#   [*wsgi_application_group*]
-#     (optional) The application group of the WSGI script.
-#     Defaults to '%{GLOBAL}'
+# [*wsgi_application_group*]
+#   (Optional) The application group of the WSGI script.
+#   Defaults to '%{GLOBAL}'
 #
-#   [*wsgi_pass_authorization*]
-#     (optional) Whether HTTP authorisation headers are passed through to a WSGI
-#     script when the equivalent HTTP request headers are present.
-#     Defaults to 'On'
+# [*wsgi_pass_authorization*]
+#   (Optional) Whether HTTP authorisation headers are passed through to a WSGI
+#   script when the equivalent HTTP request headers are present.
+#   Defaults to 'On'
 #
-#   [*wsgi_script_ensure*]
-#     (optional) File ensure parameter for wsgi scripts.
-#     Defaults to undef.
+# [*wsgi_admin_script_source*]
+#   (Optional) Wsgi script source for the admin endpoint. If set to undef
+#   $::keystone::params::keystone_wsgi_admin_script_path is used. This source
+#   is copied to the apache cgi-bin path as keystone-admin.
+#   Defaults to undef
 #
-#   [*wsgi_admin_script_source*]
-#     (optional) Wsgi script source for the admin endpoint. If set to undef
-#     $::keystone::params::keystone_wsgi_admin_script_path is used. This source
-#     is copied to the apache cgi-bin path as keystone-admin.
-#     Defaults to undef.
+# [*wsgi_public_script_source*]
+#   (Optional) Wsgi script source for the public endpoint. If set to undef
+#   $::keystone::params::keystone_wsgi_public_script_path is used. This source
+#   is copied to the apache cgi-bin path as keystone-main.
+#   Defaults to undef
 #
-#   [*wsgi_public_script_source*]
-#     (optional) Wsgi script source for the public endpoint. If set to undef
-#     $::keystone::params::keystone_wsgi_public_script_path is used. This source
-#     is copied to the apache cgi-bin path as keystone-admin.
-#     Defaults to undef.
+# [*custom_wsgi_process_options_main*]
+#   (Optional) gives you the oportunity to add custom process options or to
+#   overwrite the default options for the WSGI main process.
+#   For example to use a virtual python environment for the WSGI process
+#   you could set it to:
+#   { python-path => '/my/python/virtualenv' }
+#   Defaults to {}
 #
-#   [*custom_wsgi_process_options_main*]
-#     (optional) gives you the oportunity to add custom process options or to
-#     overwrite the default options for the WSGI main process.
-#     eg. to use a virtual python environment for the WSGI process
-#     you could set it to:
-#     { python-path => '/my/python/virtualenv' }
-#     Defaults to {}
+# [*custom_wsgi_process_options_admin*]
+#   (Optional) gives you the oportunity to add custom process options or to
+#   overwrite the default options for the WSGI admin process.
+#   eg. to use a virtual python environment for the WSGI process
+#   you could set it to:
+#   { python-path => '/my/python/virtualenv' }
+#   Defaults to {}
 #
-#   [*custom_wsgi_process_options_admin*]
-#     (optional) gives you the oportunity to add custom process options or to
-#     overwrite the default options for the WSGI admin process.
-#     eg. to use a virtual python environment for the WSGI process
-#     you could set it to:
-#     { python-path => '/my/python/virtualenv' }
-#     Defaults to {}
+# [*access_log_file*]
+#   (Optional) The log file name for the virtualhost.
+#   Defaults to false
 #
-#   [*access_log_file*]
-#     The log file name for the virtualhost.
-#     Optional. Defaults to false.
+# [*access_log_pipe*]
+#   (Optional) Specifies a pipe where Apache sends access logs for the virtualhost.
+#   Defaults to false
 #
-#   [*access_log_pipe*]
-#     Specifies a pipe where Apache sends access logs for the virtualhost.
-#     Optional. Defaults to false.
+# [*access_log_syslog*]
+#   (Optional) Sends the virtualhost access log messages to syslog.
+#   Defaults to false
 #
-#   [*access_log_syslog*]
-#     Sends the virtualhost access log messages to syslog.
-#     Optional. Defaults to false.
+# [*access_log_format*]
+#   (Optional) The log format for the virtualhost.
+#   Defaults to false
 #
-#   [*access_log_format*]
-#     The log format for the virtualhost.
-#     Optional. Defaults to false.
+# [*error_log_file*]
+#   (Optional) The error log file name for the virtualhost.
+#   Defaults to undef
 #
-#   [*error_log_file*]
-#     The error log file name for the virtualhost.
-#     Optional. Defaults to undef.
+# [*error_log_pipe*]
+#   (Optional) Specifies a pipe where Apache sends error logs for the virtualhost.
+#   Defaults to undef
 #
-#   [*error_log_pipe*]
-#     Specifies a pipe where Apache sends error logs for the virtualhost.
-#     Optional. Defaults to undef.
+# [*error_log_syslog*]
+#   (Optional) Sends the virtualhost error log messages to syslog.
+#   Defaults to undef
 #
-#   [*error_log_syslog*]
-#     Sends the virtualhost error log messages to syslog.
-#     Optional. Defaults to undef.
+# [*headers*]
+#   (Optional) Headers for the vhost.
+#   Defaults to undef
 #
-#   [*headers*]
-#     (optional) Headers for the vhost.
-#     Defaults to undef.
+# [*vhost_custom_fragment*]
+#   (Optional) Passes a string of custom configuration
+#   directives to be placed at the end of the vhost configuration.
+#   Defaults to undef
 #
-#   [*vhost_custom_fragment*]
-#     (optional) Passes a string of custom configuration
-#     directives to be placed at the end of the vhost configuration.
-#     Defaults to undef.
+# [*wsgi_chunked_request*]
+#   (Optional) apache::vhost wsgi_chunked_request parameter.
+#   Defaults to undef
 #
-#   [*wsgi_chunked_request*]
-#     (optional) apache::vhost wsgi_chunked_request parameter.
-#     Defaults to undef
+# DEPRECATED PARAMETERS
 #
-#  DEPRECATED OPTIONS
-#
-#   [*wsgi_script_source*]
-#     (optional) Wsgi script source.
-#     Defaults to undef.
-#
-# == Dependencies
-#
-#   requires Class['apache'] & Class['keystone']
-#
-# == Examples
-#
-#   include apache
-#
-#   class { 'keystone::wsgi::apache': }
-#
-# == Note about ports & paths
-#
-#   When using same port for both endpoints (443 anyone ?), you *MUST* use two
-#  different public_path & admin_path !
-#
-# == Authors
-#
-#   Francois Charlier <francois.charlier@enovance.com>
-#
-# == Copyright
-#
-#   Copyright 2013 eNovance <licensing@enovance.com>
+# [*wsgi_script_ensure*]
+#   (Optional) File ensure parameter for wsgi scripts.
+#   Defaults to undef
 #
 class keystone::wsgi::apache (
   $servername                        = $::fqdn,
@@ -235,7 +205,6 @@ class keystone::wsgi::apache (
   $wsgi_chunked_request              = undef,
   $wsgi_admin_script_source          = $::keystone::params::keystone_wsgi_admin_script_path,
   $wsgi_public_script_source         = $::keystone::params::keystone_wsgi_public_script_path,
-  $wsgi_script_ensure                = undef,
   $access_log_file                   = false,
   $access_log_pipe                   = false,
   $access_log_syslog                 = false,
@@ -247,21 +216,17 @@ class keystone::wsgi::apache (
   $vhost_custom_fragment             = undef,
   $custom_wsgi_process_options_main  = {},
   $custom_wsgi_process_options_admin = {},
-  #DEPRECATED
-  $wsgi_script_source                = undef,
+  ## DEPRECATED PARAMETERS
+  $wsgi_script_ensure                = undef,
 ) inherits ::keystone::params {
 
   include ::keystone::deps
-  include ::apache
-  include ::apache::mod::wsgi
 
   $servername_admin_real = pick_default($servername_admin, $servername)
 
   if $ssl {
-    include ::apache::mod::ssl
     # Attempt to use the admin cert/key, else default to the public one.
-    # Since it's possible that no cert/key were given, we allow this to be
-    # empty with pick_default
+    # Since it's possible that no cert/key were given, we allow this to be empty with pick_default
     $ssl_cert_admin_real = pick_default($ssl_cert_admin, $ssl_cert)
     $ssl_key_admin_real = pick_default($ssl_key_admin, $ssl_key)
   } else {
@@ -289,15 +254,12 @@ class keystone::wsgi::apache (
   Anchor['keystone::config::end']
   ~> Service['httpd']
 
-  ## Sanitize parameters
-
   # Ensure there's no trailing '/' except if this is also the only character
   $public_path_real = regsubst($public_path, '(^/.*)/$', '\1')
-  # Ensure there's no trailing '/' except if this is also the only character
   $admin_path_real = regsubst($admin_path, '(^/.*)/$', '\1')
 
   if $public_port == $admin_port and $public_path_real == $admin_path_real {
-    fail('When using the same port for public & private endpoints, public_path and admin_path should be different.')
+    fail('When using the same port for public and admin endpoints, public_path and admin_path should be different.')
   }
 
   file { $::keystone::params::keystone_wsgi_script_path:
@@ -308,74 +270,32 @@ class keystone::wsgi::apache (
     require => Anchor['keystone::install::end'],
   }
 
-
-  $wsgi_file_target = $wsgi_script_ensure ? {
-    'link'  => 'target',
-    default => 'source'
+  # TODO(tobasco): Delete this when wsgi_script_ensure is removed.
+  if $wsgi_script_ensure {
+    warning('wsgi_script_ensure has NO effect and is deprecated for removal')
   }
-
-  $wsgi_file_defaults = {
-    'ensure'  => $wsgi_script_ensure,
-    'owner'   => 'keystone',
-    'group'   => 'keystone',
-    'mode'    => '0644',
-    'require' => File[$::keystone::params::keystone_wsgi_script_path],
-  }
-
-  if $wsgi_script_source {
-
-    warning("The single wsgi script source has been deprecated as part of the Mitaka cycle, please switch to \
-\$wsgi_admin_script_source and \$wsgi_public_script_source")
-
-    $wsgi_admin_source = $wsgi_script_source
-    $wsgi_public_source = $wsgi_script_source
-  } else {
-    $wsgi_admin_source = $wsgi_admin_script_source
-    $wsgi_public_source = $wsgi_public_script_source
-  }
-
-  $wsgi_files = {
-    'keystone_wsgi_admin' => {
-      'path'                => "${::keystone::params::keystone_wsgi_script_path}/keystone-admin",
-      "${wsgi_file_target}" => $wsgi_admin_source,
-    },
-    'keystone_wsgi_main'  => {
-      'path'                => "${::keystone::params::keystone_wsgi_script_path}/keystone-public",
-      "${wsgi_file_target}" => $wsgi_public_source,
-    },
-  }
-
-  create_resources('file', $wsgi_files, $wsgi_file_defaults)
-
-  $wsgi_daemon_process_options_main = merge(
-    {
-      user         => 'keystone',
-      group        => 'keystone',
-      processes    => $workers,
-      threads      => $threads,
-      display-name => 'keystone-main',
-    },
-    $custom_wsgi_process_options_main
-  )
-
-  $wsgi_daemon_process_options_admin = merge(
-    {
-      user         => 'keystone',
-      group        => 'keystone',
-      processes    => $workers,
-      threads      => $threads,
-      display-name => 'keystone-admin',
-    },
-    $custom_wsgi_process_options_admin
-  )
-
-  $wsgi_script_aliases_main = hash([$public_path_real,"${::keystone::params::keystone_wsgi_script_path}/keystone-public"])
-  $wsgi_script_aliases_admin = hash([$admin_path_real, "${::keystone::params::keystone_wsgi_script_path}/keystone-admin"])
 
   if $public_port == $admin_port {
-    $wsgi_script_aliases_main_real = merge($wsgi_script_aliases_main, $wsgi_script_aliases_admin)
+    $custom_wsgi_script_aliases = { $admin_path_real => "${::keystone::params::keystone_wsgi_script_path}/keystone-admin" }
+
+    # NOTE(tobasco): Create this here since openstacklib::wsgi::apache only handles
+    # the keystone-public file if running public and admin on the same port.
+    file { 'keystone_wsgi_admin':
+      ensure  => present,
+      path    => "${::keystone::params::keystone_wsgi_script_path}/keystone-admin",
+      owner   => 'keystone',
+      group   => 'keystone',
+      mode    => '0644',
+      source  => $wsgi_admin_script_source,
+      require => File[$::keystone::params::keystone_wsgi_script_path],
+    }
+
+    $apache_require = [
+      File['keystone_wsgi_admin'],
+    ]
   } else {
-    $wsgi_script_aliases_main_real = $wsgi_script_aliases_main
+    $custom_wsgi_script_aliases = undef
+    $apache_require = []
   }
 
   if $admin_bind_host {
@@ -385,14 +305,15 @@ class keystone::wsgi::apache (
     $real_admin_bind_host = $bind_host
   }
 
-  ::apache::vhost { 'keystone_wsgi_main':
-    ensure                      => 'present',
+  ::openstacklib::wsgi::apache { 'keystone_wsgi_main':
     servername                  => $servername,
-    ip                          => $bind_host,
-    port                        => $public_port,
-    docroot                     => $::keystone::params::keystone_wsgi_script_path,
-    docroot_owner               => 'keystone',
-    docroot_group               => 'keystone',
+    bind_host                   => $bind_host,
+    bind_port                   => $public_port,
+    group                       => 'keystone',
+    path                        => $public_path_real,
+    workers                     => $workers,
+    threads                     => $threads,
+    user                        => 'keystone',
     priority                    => $priority,
     ssl                         => $ssl,
     ssl_cert                    => $ssl_cert,
@@ -403,15 +324,18 @@ class keystone::wsgi::apache (
     ssl_crl                     => $ssl_crl,
     ssl_certs_dir               => $ssl_certs_dir,
     wsgi_daemon_process         => 'keystone_main',
-    wsgi_daemon_process_options => $wsgi_daemon_process_options_main,
+    wsgi_process_display_name   => 'keystone-main',
     wsgi_process_group          => 'keystone_main',
-    wsgi_script_aliases         => $wsgi_script_aliases_main_real,
+    wsgi_script_dir             => $::keystone::params::keystone_wsgi_script_path,
+    wsgi_script_file            => 'keystone-public',
+    wsgi_script_source          => $wsgi_public_script_source,
     wsgi_application_group      => $wsgi_application_group,
     wsgi_pass_authorization     => $wsgi_pass_authorization,
-    headers                     => $headers,
-    custom_fragment             => $vhost_custom_fragment,
     wsgi_chunked_request        => $wsgi_chunked_request,
-    require                     => File['keystone_wsgi_main'],
+    headers                     => $headers,
+    custom_wsgi_process_options => $custom_wsgi_process_options_main,
+    custom_wsgi_script_aliases  => $custom_wsgi_script_aliases,
+    vhost_custom_fragment       => $vhost_custom_fragment,
     access_log_file             => $access_log_file,
     access_log_pipe             => $access_log_pipe,
     access_log_syslog           => $access_log_syslog,
@@ -419,17 +343,19 @@ class keystone::wsgi::apache (
     error_log_file              => $error_log_file,
     error_log_pipe              => $error_log_pipe,
     error_log_syslog            => $error_log_syslog,
+    require                     => $apache_require,
   }
 
   if $public_port != $admin_port {
-    ::apache::vhost { 'keystone_wsgi_admin':
-      ensure                      => 'present',
+    ::openstacklib::wsgi::apache { 'keystone_wsgi_admin':
       servername                  => $servername_admin_real,
-      ip                          => $real_admin_bind_host,
-      port                        => $admin_port,
-      docroot                     => $::keystone::params::keystone_wsgi_script_path,
-      docroot_owner               => 'keystone',
-      docroot_group               => 'keystone',
+      bind_host                   => $real_admin_bind_host,
+      bind_port                   => $admin_port,
+      group                       => 'keystone',
+      path                        => $admin_path_real,
+      workers                     => $workers,
+      threads                     => $threads,
+      user                        => 'keystone',
       priority                    => $priority,
       ssl                         => $ssl,
       ssl_cert                    => $ssl_cert_admin_real,
@@ -440,15 +366,17 @@ class keystone::wsgi::apache (
       ssl_crl                     => $ssl_crl,
       ssl_certs_dir               => $ssl_certs_dir,
       wsgi_daemon_process         => 'keystone_admin',
-      wsgi_daemon_process_options => $wsgi_daemon_process_options_admin,
+      wsgi_process_display_name   => 'keystone-admin',
       wsgi_process_group          => 'keystone_admin',
-      wsgi_script_aliases         => $wsgi_script_aliases_admin,
+      wsgi_script_dir             => $::keystone::params::keystone_wsgi_script_path,
+      wsgi_script_file            => 'keystone-admin',
+      wsgi_script_source          => $wsgi_admin_script_source,
       wsgi_application_group      => $wsgi_application_group,
       wsgi_pass_authorization     => $wsgi_pass_authorization,
-      headers                     => $headers,
-      custom_fragment             => $vhost_custom_fragment,
+      custom_wsgi_process_options => $custom_wsgi_process_options_admin,
+      vhost_custom_fragment       => $vhost_custom_fragment,
       wsgi_chunked_request        => $wsgi_chunked_request,
-      require                     => File['keystone_wsgi_admin'],
+      headers                     => $headers,
       access_log_file             => $access_log_file,
       access_log_pipe             => $access_log_pipe,
       access_log_syslog           => $access_log_syslog,
