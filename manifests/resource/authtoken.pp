@@ -301,6 +301,8 @@ define keystone::resource::authtoken(
   $keystonemiddleware_options = {
     'keystone_authtoken/auth_section'                   => {'value' => $auth_section},
     'keystone_authtoken/www_authenticate_uri'           => {'value' => $www_authenticate_uri_real},
+    #TODO(aschultz): needs to be defined until all providers have been cut over
+    'keystone_authtoken/auth_uri'                       => {'value' => $www_authenticate_uri_real},
     'keystone_authtoken/auth_type'                      => {'value' => $auth_type},
     'keystone_authtoken/auth_version'                   => {'value' => $auth_version},
     'keystone_authtoken/cache'                          => {'value' => $cache},
