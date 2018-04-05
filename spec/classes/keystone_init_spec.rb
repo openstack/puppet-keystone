@@ -159,7 +159,8 @@ describe 'keystone' do
     it 'should bootstrap $enable_bootstrap is true' do
       if param_hash['enable_bootstrap']
         is_expected.to contain_exec('keystone-manage bootstrap').with(
-          :command     => 'keystone-manage bootstrap --bootstrap-password service_password',
+          :command     => 'keystone-manage bootstrap',
+          :environment => 'OS_BOOTSTRAP_PASSWORD=service_password',
           :user        => param_hash['keystone_user'],
           :refreshonly => true
         )
