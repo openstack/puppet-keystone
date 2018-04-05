@@ -1270,7 +1270,8 @@ running as a standalone service, or httpd for being run by a httpd server")
     # this requires the database to be up and running and configured
     # and is only run once, so we don't need to notify the service
     exec { 'keystone-manage bootstrap':
-      command     => "keystone-manage bootstrap --bootstrap-password ${admin_password_real}",
+      command     => 'keystone-manage bootstrap',
+      environment => "OS_BOOTSTRAP_PASSWORD=${admin_password_real}",
       user        => $keystone_user,
       path        => '/usr/bin',
       refreshonly => true,
