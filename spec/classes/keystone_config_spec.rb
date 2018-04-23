@@ -14,6 +14,8 @@ describe 'keystone::config' do
       { :keystone_config => config_hash }
     end
 
+    it { is_expected.to contain_class('keystone::deps') }
+
     it 'configures arbitrary keystone-config configurations' do
       is_expected.to contain_keystone_config('DEFAULT/foo').with_value('fooValue')
       is_expected.to contain_keystone_config('DEFAULT/bar').with_value('barValue')
