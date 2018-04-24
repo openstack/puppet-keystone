@@ -3,7 +3,12 @@
 #
 class keystone::params {
   include ::openstacklib::defaults
-  $client_package_name = 'python-keystoneclient'
+  if ($::os_package_type == 'debian') {
+    $pyvers = '3'
+  } else {
+    $pyvers = ''
+  }
+  $client_package_name = "python${pyvers}-keystoneclient"
   $keystone_user       = 'keystone'
   $keystone_group      = 'keystone'
   $keystone_wsgi_admin_script_path  = '/usr/bin/keystone-wsgi-admin'
@@ -14,13 +19,7 @@ class keystone::params {
       $package_name                 = 'keystone'
       $service_name                 = 'keystone'
       $keystone_wsgi_script_path    = '/usr/lib/cgi-bin/keystone'
-
-      if $::os_package_type == 'debian' {
-        $python_memcache_package_name = 'python3-memcache'
-      } else {
-        $python_memcache_package_name = 'python-memcache'
-      }
-
+      $python_memcache_package_name = "python${pyvers}-memcache"
       $mellon_package_name          = 'libapache2-mod-auth-mellon'
       $openidc_package_name         = 'libapache2-mod-auth-openidc'
     }

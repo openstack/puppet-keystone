@@ -585,10 +585,17 @@ describe 'keystone' do
     it { is_expected.to contain_keystone_config('cache/memcache_pool_maxsize').with_value('1000') }
     it { is_expected.to contain_keystone_config('cache/memcache_pool_unused_timeout').with_value('60') }
     it { is_expected.to contain_keystone_config('cache/memcache_servers').with_value('SERVER1:11211,SERVER2:11211') }
-    it { is_expected.to contain_package('python-memcache').with(
-      :name   => 'python-memcache',
-      :ensure => 'present'
-    ) }
+    it {
+      if facts[:os_package_type] == 'debian'
+        pkg = 'python3-memcache'
+      else
+        pkg = 'python-memcache'
+      end
+      is_expected.to contain_package('python-memcache').with(
+        :name   => pkg,
+        :ensure => 'present'
+      )
+    }
   end
 
   describe 'configure cache memcache servers if set' do
