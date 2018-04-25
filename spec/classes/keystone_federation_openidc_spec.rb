@@ -37,12 +37,6 @@ describe 'keystone::federation::openidc' do
     end
 
     before do
-      params.merge!(:methods       => 'password, token, oauth1, openidc',
-                    :module_plugin => 'keystone.auth.plugins')
-      it_raises 'a Puppet:Error', /The plugin for openidc should be keystone.auth.plugins.mapped.Mapped/
-    end
-
-    before do
       params.merge!(:admin_port => false,
                     :main_port  => false)
       it_raises 'a Puppet:Error', /No VirtualHost port to configure, please choose at least one./
@@ -81,7 +75,7 @@ describe 'keystone::federation::openidc' do
     context 'with only required parameters' do
       it 'should have basic params for mellon in Keystone configuration' do
         is_expected.to contain_keystone_config('auth/methods').with_value('password, token, openidc')
-        is_expected.to contain_keystone_config('auth/openidc').with_value('keystone.auth.plugins.mapped.Mapped')
+        is_expected.to contain_keystone_config('auth/openidc').with_ensure('absent')
       end
 
       it { is_expected.to contain_concat__fragment('configure_openidc_on_port_5000').with({
@@ -99,7 +93,7 @@ describe 'keystone::federation::openidc' do
 
       it 'should have basic params for mellon in Keystone configuration' do
         is_expected.to contain_keystone_config('auth/methods').with_value('password, token, openidc')
-        is_expected.to contain_keystone_config('auth/openidc').with_value('keystone.auth.plugins.mapped.Mapped')
+        is_expected.to contain_keystone_config('auth/openidc').with_ensure('absent')
       end
 
       it { is_expected.to contain_concat__fragment('configure_openidc_on_port_5000').with({
