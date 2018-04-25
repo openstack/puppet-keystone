@@ -27,12 +27,6 @@ describe 'keystone::federation::shibboleth' do
       it_raises 'a Puppet::Error', /Methods should contain saml2 as one of the auth methods./
     end
 
-    context 'wrong plugin' do
-      let (:params) { default_params.merge(:methods => ['password', 'token', 'oauth1', 'saml2'],
-                    :module_plugin => 'keystone.auth.plugins') }
-      it_raises 'a Puppet::Error', /The plugin for saml and shibboleth should be keystone.auth.plugins.mapped.Mapped/
-    end
-
     context 'no ports' do
       let (:params) { default_params.merge(:admin_port => false,
                     :main_port  => false) }
@@ -64,7 +58,7 @@ describe 'keystone::federation::shibboleth' do
       let (:params) { default_params }
       it 'should have basic params for shibboleth in Keystone configuration' do
         is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2')
-        is_expected.to contain_keystone_config('auth/saml2').with_value('keystone.auth.plugins.mapped.Mapped')
+        is_expected.to contain_keystone_config('auth/saml2').with_ensure('absent')
       end
     end
 
@@ -107,7 +101,7 @@ describe 'keystone::federation::shibboleth' do
         }) }
 
         it { is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2') }
-        it {is_expected.to contain_keystone_config('auth/saml2').with_value('keystone.auth.plugins.mapped.Mapped') }
+        it {is_expected.to contain_keystone_config('auth/saml2').with_ensure('absent') }
         it {
           is_expected.to contain_concat__fragment('configure_shibboleth_on_port_35357').with({
             :target => "10-keystone_wsgi_admin.conf",
@@ -144,7 +138,7 @@ describe 'keystone::federation::shibboleth' do
         }) }
 
         it { is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2') }
-        it { is_expected.to contain_keystone_config('auth/saml2').with_value('keystone.auth.plugins.mapped.Mapped') }
+        it { is_expected.to contain_keystone_config('auth/saml2').with_ensure('absent') }
         it {
           is_expected.to contain_concat__fragment('configure_shibboleth_on_port_35357').with({
             :target => "10-keystone_wsgi_admin.conf",
@@ -169,7 +163,7 @@ describe 'keystone::federation::shibboleth' do
         }) }
 
         it { is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2') }
-        it { is_expected.to contain_keystone_config('auth/saml2').with_value('keystone.auth.plugins.mapped.Mapped') }
+        it { is_expected.to contain_keystone_config('auth/saml2').with_ensure('absent') }
         it { is_expected.to_not contain_concat__fragment('configure_shibboleth_on_port_35357') }
       end
     end

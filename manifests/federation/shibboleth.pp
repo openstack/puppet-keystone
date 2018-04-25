@@ -18,11 +18,6 @@
 #  (Required) (string or array value).
 #  Note: The external value should be dropped to avoid problems.
 #
-# [*module_plugin*]
-#  The plugin for authentication according to the choice made with protocol and
-#  module.
-#  (Optional) Defaults to 'keystone.auth.plugins.mapped.Mapped' (string value)
-#
 # [*suppress_warning*]
 #  A boolean value to disable the warning about not installing shibboleth on RedHat.
 #  (Optional) Defaults to false.
@@ -52,6 +47,12 @@
 #      require  => Anchor['openstack_extras_redhat']
 #    }
 #
+# === DEPRECATED
+# [*module_plugin*]
+#  The plugin for authentication according to the choice made with protocol and
+#  module.
+#  (Optional) Defaults to 'keystone.auth.plugins.mapped.Mapped' (string value)
+#
 # == Note about Redhat osfamily
 #    According to puppet-apache we need to enable a new repo, but in puppet-openstack
 #    we won't enable any external third party repo.
@@ -62,10 +63,11 @@ class keystone::federation::shibboleth(
   $methods,
   $admin_port       = false,
   $main_port        = true,
-  $module_plugin    = 'keystone.auth.plugins.mapped.Mapped',
   $suppress_warning = false,
   $template_order   = 331,
-  $yum_repo_name    = 'shibboleth'
+  $yum_repo_name    = 'shibboleth',
+  # DEPRECATED
+  $module_plugin    = undef,
 ) {
 
   include ::apache
@@ -83,10 +85,6 @@ Apache + Shibboleth SP setups, where a REMOTE_USER env variable is always set, e
 
   if !('saml2' in $methods ) {
     fail('Methods should contain saml2 as one of the auth methods.')
-  }else{
-    if ($module_plugin != 'keystone.auth.plugins.mapped.Mapped') {
-      fail('The plugin for saml and shibboleth should be keystone.auth.plugins.mapped.Mapped')
-    }
   }
 
   validate_bool($admin_port)
@@ -98,8 +96,8 @@ Apache + Shibboleth SP setups, where a REMOTE_USER env variable is always set, e
   }
 
   keystone_config {
-    'auth/methods': value => join(any2array($methods),',');
-    'auth/saml2':   value => $module_plugin;
+    'auth/methods': value  => join(any2array($methods),',');
+    'auth/saml2':   ensure => absent;
   }
 
   if $::osfamily == 'Debian' or ($::osfamily == 'RedHat' and (defined(Yumrepo[$yum_repo_name])) or defined(Package['shibboleth'])) {

@@ -30,12 +30,6 @@ describe 'keystone::federation::mellon' do
     end
 
     before do
-      params.merge!({:methods       => 'password, token, oauth1, saml2',
-                     :module_plugin => 'keystone.auth.plugins'})
-      it_raises 'a Puppet::Error', /The plugin for saml and mellon should be keystone.auth.plugins.mapped.Mapped/
-    end
-
-    before do
       params.merge!({:admin_port => false,
                      :main_port  => false})
       it_raises 'a Puppet::Error', /No VirtualHost port to configure, please choose at least one./
@@ -56,7 +50,7 @@ describe 'keystone::federation::mellon' do
     context 'with only required parameters' do
       it 'should have basic params for mellon in Keystone configuration' do
         is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2')
-        is_expected.to contain_keystone_config('auth/saml2').with_value('keystone.auth.plugins.mapped.Mapped')
+        is_expected.to contain_keystone_config('auth/saml2').with_ensure('absent')
       end
 
       it { is_expected.to contain_concat__fragment('configure_mellon_on_port_5000').with({
@@ -74,7 +68,7 @@ describe 'keystone::federation::mellon' do
 
       it 'should have basic params for mellon in Keystone configuration' do
         is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2')
-        is_expected.to contain_keystone_config('auth/saml2').with_value('keystone.auth.plugins.mapped.Mapped')
+        is_expected.to contain_keystone_config('auth/saml2').with_ensure('absent')
       end
 
       it { is_expected.to contain_concat__fragment('configure_mellon_on_port_5000').with({
@@ -103,7 +97,7 @@ describe 'keystone::federation::mellon' do
 
       it 'should have basic params for mellon in Keystone configuration' do
         is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2')
-        is_expected.to contain_keystone_config('auth/saml2').with_value('keystone.auth.plugins.mapped.Mapped')
+        is_expected.to contain_keystone_config('auth/saml2').with_ensure('absent')
       end
 
       it 'should have parameters for websso in Keystone configuration' do

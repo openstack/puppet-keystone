@@ -44,11 +44,6 @@
 #  using Keystone VirtualHost on port 5000.
 #  (Optional) Defaults to true.
 #
-# [*module_plugin*]
-#  The plugin for authentication acording to the choice made with protocol and
-#  module.
-#  (Optional) Defaults to 'keystone.auth.plugins.mapped.Mapped' (string value)
-#
 # [*template_order*]
 #  This number indicates the order for the concat::fragment that will apply
 #  the shibboleth configuration to Keystone VirtualHost. The value should
@@ -64,6 +59,13 @@
 #   accepts latest or specific versions.
 #   Defaults to present.
 #
+# === DEPRECATED
+#
+# [*module_plugin*]
+#  The plugin for authentication acording to the choice made with protocol and
+#  module.
+#  (Optional) Defaults to 'keystone.auth.plugins.mapped.Mapped' (string value)
+#
 class keystone::federation::openidc (
   $methods,
   $idp_name,
@@ -74,9 +76,10 @@ class keystone::federation::openidc (
   $openidc_response_type       = 'id_token',
   $admin_port                  = false,
   $main_port                   = true,
-  $module_plugin               = 'keystone.auth.plugins.mapped.Mapped',
   $template_order              = 331,
   $package_ensure              = present,
+  # DEPRECATED
+  $module_plugin               = undef,
 ) {
 
   include ::apache
@@ -94,10 +97,6 @@ class keystone::federation::openidc (
 
   if !('openidc' in $methods ) {
     fail('Methods should contain openidc as one of the auth methods.')
-  } else {
-    if ($module_plugin != 'keystone.auth.plugins.mapped.Mapped') {
-      fail('Other plugins are not currently supported for openidc')
-    }
   }
 
   validate_bool($admin_port)
@@ -108,8 +107,8 @@ class keystone::federation::openidc (
   }
 
   keystone_config {
-    'auth/methods': value => join(any2array($methods),',');
-    'auth/openidc': value => $module_plugin;
+    'auth/methods': value  => join(any2array($methods),',');
+    'auth/openidc': ensure => absent;
   }
 
   ensure_packages([$::keystone::params::openidc_package_name], {

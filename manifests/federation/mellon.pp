@@ -26,11 +26,6 @@
 #  using Keystone VirtualHost on port 5000.
 #  (Optional) Defaults to true.
 #
-# [*module_plugin*]
-#  The plugin for authentication acording to the choice made with protocol and
-#  module.
-#  (Optional) Defaults to 'keystone.auth.plugins.mapped.Mapped' (string value)
-#
 # [*template_order*]
 #  This number indicates the order for the concat::fragment that will apply
 #  the shibboleth configuration to Keystone VirtualHost. The value should
@@ -57,17 +52,25 @@
 #   the-middle (MITM) attacks.
 #   Defaults to undef
 #
+# === DEPRECATED
+#
+# [*module_plugin*]
+#  The plugin for authentication acording to the choice made with protocol and
+#  module.
+#  (Optional) Defaults to 'keystone.auth.plugins.mapped.Mapped' (string value)
+#
 class keystone::federation::mellon (
   $methods,
   $idp_name,
   $protocol_name,
   $admin_port         = false,
   $main_port          = true,
-  $module_plugin      = 'keystone.auth.plugins.mapped.Mapped',
   $template_order     = 331,
   $package_ensure     = present,
   $enable_websso      = false,
   $trusted_dashboards = undef,
+  # DEPRECATED
+  $module_plugin      = undef,
 ) {
 
   include ::apache
@@ -86,10 +89,6 @@ Apache + Mellon SP setups, where a REMOTE_USER env variable is always set, even 
 
   if !('saml2' in $methods ) {
     fail('Methods should contain saml2 as one of the auth methods.')
-  }else{
-    if ($module_plugin != 'keystone.auth.plugins.mapped.Mapped') {
-      fail('The plugin for saml and mellon should be keystone.auth.plugins.mapped.Mapped')
-    }
   }
 
   validate_bool($admin_port)
@@ -101,8 +100,8 @@ Apache + Mellon SP setups, where a REMOTE_USER env variable is always set, even 
   }
 
   keystone_config {
-    'auth/methods': value => join(any2array($methods),',');
-    'auth/saml2':   value => $module_plugin;
+    'auth/methods': value  => join(any2array($methods),',');
+    'auth/saml2':   ensure => absent;
   }
 
   if($enable_websso){
