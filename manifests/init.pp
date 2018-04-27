@@ -613,30 +613,6 @@
 #   (optional) Deprecated. Key size (in bits) for token signing cert (auto generated certificate)
 #   Defaults to $::os_service_default
 #
-# [*rabbit_host*]
-#   (optional) Location of rabbitmq installation.
-#    Defaults to $::os_service_default
-#
-# [*rabbit_port*]
-#   (optional) Port for rabbitmq instance.
-#   Defaults to $::os_service_default
-#
-# [*rabbit_hosts*]
-#   (optional) Location of rabbitmq installation.
-#   Defaults to $::os_service_default
-#
-# [*rabbit_password*]
-#   (optional) Password used to connect to rabbitmq.
-#   Defaults to $::os_service_default
-#
-# [*rabbit_userid*]
-#   (optional) User used to connect to rabbitmq.
-#   Defaults to $::os_service_default
-#
-# [*rabbit_virtual_host*]
-#   (optional) The RabbitMQ virtual host.
-#   Defaults to $::os_service_default
-#
 # == Dependencies
 #  None
 #
@@ -778,12 +754,6 @@ class keystone(
   $signing_ca_key                       = $::os_service_default,
   $signing_cert_subject                 = $::os_service_default,
   $signing_key_size                     = $::os_service_default,
-  $rabbit_host                          = $::os_service_default,
-  $rabbit_hosts                         = $::os_service_default,
-  $rabbit_password                      = $::os_service_default,
-  $rabbit_port                          = $::os_service_default,
-  $rabbit_userid                        = $::os_service_default,
-  $rabbit_virtual_host                  = $::os_service_default,
 ) inherits keystone::params {
 
   include ::keystone::deps
@@ -793,17 +763,6 @@ class keystone(
   if $service_provider {
     warning("service_provider is deprecated, does nothing and will be removed in a future release, \
 use a Puppet resource collector if you want to modify the service provider.")
-  }
-
-  if !is_service_default($rabbit_host) or
-    !is_service_default($rabbit_hosts) or
-    !is_service_default($rabbit_password) or
-    !is_service_default($rabbit_port) or
-    !is_service_default($rabbit_userid) or
-    !is_service_default($rabbit_virtual_host) {
-    warning("keystone::rabbit_host, keystone::rabbit_hosts, keystone::rabbit_password, \
-keystone::rabbit_port, keystone::rabbit_userid and keystone::rabbit_virtual_host are \
-deprecated. Please use keystone::default_transport_url instead.")
   }
 
   if ! $catalog_driver {
@@ -1081,13 +1040,7 @@ Fernet or UUID tokens are recommended.")
     kombu_reconnect_delay       => $kombu_reconnect_delay,
     kombu_failover_strategy     => $kombu_failover_strategy,
     kombu_compression           => $kombu_compression,
-    rabbit_host                 => $rabbit_host,
-    rabbit_port                 => $rabbit_port,
-    rabbit_hosts                => $rabbit_hosts,
     rabbit_use_ssl              => $rabbit_use_ssl,
-    rabbit_userid               => $rabbit_userid,
-    rabbit_password             => $rabbit_password,
-    rabbit_virtual_host         => $rabbit_virtual_host,
     rabbit_ha_queues            => $rabbit_ha_queues,
     heartbeat_timeout_threshold => $rabbit_heartbeat_timeout_threshold,
     heartbeat_rate              => $rabbit_heartbeat_rate,

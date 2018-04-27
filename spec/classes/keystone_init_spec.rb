@@ -58,9 +58,6 @@ describe 'keystone' do
       'signing_key_size'                   => '<SERVICE DEFAULT>',
       'default_transport_url'              => '<SERVICE DEFAULT>',
       'notification_transport_url'         => '<SERVICE DEFAULT>',
-      'rabbit_host'                        => '<SERVICE DEFAULT>',
-      'rabbit_password'                    => '<SERVICE DEFAULT>',
-      'rabbit_userid'                      => '<SERVICE DEFAULT>',
       'rabbit_heartbeat_timeout_threshold' => '<SERVICE DEFAULT>',
       'rabbit_heartbeat_rate'              => '<SERVICE DEFAULT>',
       'admin_workers'                      => 20,
@@ -111,9 +108,6 @@ describe 'keystone' do
       'signing_key_size'                   => 2048,
       'default_transport_url'              => 'rabbit://user:pass@host:1234/virt',
       'notification_transport_url'         => 'rabbit://user:pass@host:1234/virt',
-      'rabbit_host'                        => '127.0.0.1',
-      'rabbit_password'                    => 'openstack',
-      'rabbit_userid'                      => 'admin',
       'rabbit_heartbeat_timeout_threshold' => '60',
       'rabbit_heartbeat_rate'              => '10',
       'rabbit_ha_queues'                   => true,
@@ -228,10 +222,6 @@ describe 'keystone' do
       else
         is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value('<SERVICE DEFAULT>')
       end
-    end
-
-    it 'should contain correct rabbit_password' do
-      is_expected.to contain_keystone_config('oslo_messaging_rabbit/rabbit_password').with_value(param_hash['rabbit_password']).with_secret(true)
     end
 
     it 'should contain correct default transport url' do
