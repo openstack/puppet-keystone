@@ -254,6 +254,7 @@ define keystone::resource::authtoken(
   $auth_uri                       = undef,
 ) {
 
+  include ::keystone::params
   include ::keystone::deps
 
   if $auth_uri {

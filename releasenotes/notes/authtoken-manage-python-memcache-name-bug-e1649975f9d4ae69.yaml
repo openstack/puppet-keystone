@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    Fixed bug where it would select the wrong memcache python binding package
+    name when installing on RedHat based operating systems.
+    Deployments settings the manage_memcache_package to true is now working as intended.
