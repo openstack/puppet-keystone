@@ -151,6 +151,11 @@ describe 'keystone::resource::authtoken' do
         is_expected.to contain_keystone_config('keystone_authtoken/memcache_pool_maxsize').with_value( params[:memcache_pool_maxsize] )
         is_expected.to contain_keystone_config('keystone_authtoken/memcache_pool_dead_retry').with_value( params[:memcache_pool_dead_retry] )
         is_expected.to contain_keystone_config('keystone_authtoken/memcache_pool_conn_get_timeout').with_value( params[:memcache_pool_conn_get_timeout] )
+        if facts[:os_package_type] == 'debian'
+          pkg = 'python3-memcache'
+        else
+          pkg = 'python-memcache'
+        end
         is_expected.to contain_package('python-memcache').with(
           :name   => platform_params[:memcache_package_name],
           :ensure => 'present'
