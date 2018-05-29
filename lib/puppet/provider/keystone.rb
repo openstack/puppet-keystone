@@ -175,7 +175,7 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
       if url = get_section('DEFAULT', 'admin_endpoint')
         endpoint = url.chomp('/')
       else
-        admin_port = get_section('DEFAULT', 'admin_port') || '35357'
+        admin_port = get_section('DEFAULT', 'admin_port') || '5000'
         host = clean_host(get_section('DEFAULT', 'admin_bind_host'))
         protocol = ssl? ? 'https' : 'http'
         endpoint = "#{protocol}://#{host}:#{admin_port}"

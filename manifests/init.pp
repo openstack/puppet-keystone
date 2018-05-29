@@ -317,7 +317,7 @@
 #   advertised to clients (NOTE: this does NOT affect how keystone listens
 #   for connections) (string value)
 #   If set to false, no admin_endpoint will be defined in keystone.conf.
-#   Sample value: 'http://localhost:35357/'
+#   Sample value: 'http://localhost:5000/'
 #   Defaults to $::os_service_default
 #
 # [*enable_ssl*]

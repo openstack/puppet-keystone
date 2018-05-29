@@ -23,7 +23,7 @@ class { '::keystone::roles::admin':
 }
 class { '::keystone::endpoint':
   public_url => 'http://192.168.1.1:5000/',
-  admin_url  => 'http://192.168.1.1:35357/',
+  admin_url  => 'http://192.168.1.1:5000/',
 }
 
 # Creates the /etc/keystone/domains/keystone.my_domain.conf file and

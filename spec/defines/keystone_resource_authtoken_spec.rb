@@ -7,7 +7,7 @@ describe 'keystone::resource::authtoken' do
   let :params do
     { :username     => 'keystone',
       :password     => 'secret',
-      :auth_url     => 'http://127.0.0.1:35357',
+      :auth_url     => 'http://127.0.0.1:5000',
       :project_name => 'services' }
   end
 
@@ -57,7 +57,7 @@ describe 'keystone::resource::authtoken' do
         params.merge! ({
           :username                     => 'username',
           :password                     => 'hardpassword',
-          :auth_url                     => 'http://127.1.1.127:35357/',
+          :auth_url                     => 'http://127.1.1.127:5000/',
           :project_name                 => 'NoProject',
           :user_domain_name             => 'MyDomain',
           :project_domain_name          => 'OurDomain',

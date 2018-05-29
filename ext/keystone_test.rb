@@ -35,7 +35,7 @@ end
 
 puts `puppet apply -e "package {curl: ensure => present }"`
 
-get_token = %(curl -d '{"auth":{"passwordCredentials":{"username": "#{username}", "password": "#{password}"}}}' -H "Content-type: application/json" http://localhost:35357/v2.0/tokens)
+get_token = %(curl -d '{"auth":{"passwordCredentials":{"username": "#{username}", "password": "#{password}"}}}' -H "Content-type: application/json" http://localhost:5000/v2.0/tokens)
 token = nil
 
 puts "Running auth command: #{get_token}"
@@ -44,12 +44,12 @@ token = PSON.load(run_command(get_token))["access"]["token"]["id"]
 if token
   puts "We were able to retrieve a token"
   puts token
-  verify_token = "curl -H 'X-Auth-Token: #{service_token}' http://localhost:35357/v2.0/tokens/#{token}"
+  verify_token = "curl -H 'X-Auth-Token: #{service_token}' http://localhost:5000/v2.0/tokens/#{token}"
   puts 'verifying token'
   run_command(verify_token)
   ['endpoints', 'tenants', 'users'].each do |x|
     puts "getting #{x}"
-    get_keystone_data = "curl -H 'X-Auth-Token: #{service_token}' http://localhost:35357/v2.0/#{x}"
+    get_keystone_data = "curl -H 'X-Auth-Token: #{service_token}' http://localhost:5000/v2.0/#{x}"
     run_command(get_keystone_data)
   end
 end

@@ -38,7 +38,7 @@ def run_command(cmd)
 end
 
 puts `puppet apply -e "package {curl: ensure => present }"`
-get_token = %(curl -D - -d '{"auth":{"identity":{"methods":["password"],"password":{"user":{"domain":{"name":"#{user_domain}"},"name":"#{username}","password": "#{password}"}}},"scope":{"project":{"domain":{"name":"#{project_domain}"},"name": "#{project}"}}}}' -H "Content-type: application/json" http://localhost:35357/v3/auth/tokens)
+get_token = %(curl -D - -d '{"auth":{"identity":{"methods":["password"],"password":{"user":{"domain":{"name":"#{user_domain}"},"name":"#{username}","password": "#{password}"}}},"scope":{"project":{"domain":{"name":"#{project_domain}"},"name": "#{project}"}}}}' -H "Content-type: application/json" http://localhost:5000/v3/auth/tokens)
 token = nil
 
 puts "Running auth command: #{get_token}"
@@ -53,12 +53,12 @@ end
 if token
   puts "We were able to retrieve a token"
   puts token
-  verify_token = "curl -H 'X-Auth-Token: #{service_token}' 'X-Subject-Token: #{token}' http://localhost:35357/v3/auth/tokens"
+  verify_token = "curl -H 'X-Auth-Token: #{service_token}' 'X-Subject-Token: #{token}' http://localhost:5000/v3/auth/tokens"
   puts 'verifying token'
   run_command(verify_token)
   ['endpoints', 'projects', 'users'].each do |x|
     puts "getting #{x}"
-    get_keystone_data = "curl -H 'X-Auth-Token: #{token}' http://localhost:35357/v3/#{x}"
+    get_keystone_data = "curl -H 'X-Auth-Token: #{token}' http://localhost:5000/v3/#{x}"
     pp PSON.load(run_command(get_keystone_data))
   end
 end

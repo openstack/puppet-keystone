@@ -38,7 +38,7 @@
 #
 # [*admin_endpoint*]
 #   (optional) The admin endpont to use for validation
-#   Defaults to 'http://localhost:35357/v2.0'
+#   Defaults to 'http://localhost:5000/v2.0'
 #
 # [*retries*]
 #   (optional) Number of times to retry validation
@@ -67,7 +67,7 @@ class keystone::service(
   $hasrestart     = true,
   $validate       = false,
   $admin_token    = undef,
-  $admin_endpoint = 'http://localhost:35357/v2.0',
+  $admin_endpoint = 'http://localhost:5000/v2.0',
   $retries        = 10,
   $delay          = 2,
   $insecure       = false,

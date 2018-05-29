@@ -56,7 +56,7 @@ class { '::keystone::roles::admin':
 
 class { '::keystone::endpoint':
   public_url => "https://${::fqdn}:5000/",
-  admin_url  => "https://${::fqdn}:35357/",
+  admin_url  => "https://${::fqdn}:5000/",
 }
 
 keystone_config { 'ssl/enable': value => true }
