@@ -102,6 +102,10 @@
 #  boolean value.
 #  Defaults to $::os_service_default.
 #
+# [*collect_timing*]
+#  (Optional) If true, collect per-method timing information for each API call.
+#  Defaults to $::os_service_default.
+#
 # [*delay_auth_decision*]
 #  (Optional) Do not handle authorization requests within the middleware, but
 #  delegate the authorization decision to downstream WSGI components. Boolean value
@@ -231,6 +235,7 @@ define keystone::resource::authtoken(
   $cafile                         = $::os_service_default,
   $certfile                       = $::os_service_default,
   $check_revocations_for_cached   = $::os_service_default,
+  $collect_timing                 = $::os_service_default,
   $delay_auth_decision            = $::os_service_default,
   $enforce_token_bind             = $::os_service_default,
   $hash_algorithms                = $::os_service_default,
@@ -310,6 +315,7 @@ define keystone::resource::authtoken(
     'keystone_authtoken/cafile'                         => {'value' => $cafile},
     'keystone_authtoken/certfile'                       => {'value' => $certfile},
     'keystone_authtoken/check_revocations_for_cached'   => {'value' => $check_revocations_for_cached},
+    'keystone_authtoken/collect_timing'                 => {'value' => $collect_timing},
     'keystone_authtoken/delay_auth_decision'            => {'value' => $delay_auth_decision},
     'keystone_authtoken/enforce_token_bind'             => {'value' => $enforce_token_bind},
     'keystone_authtoken/hash_algorithms'                => {'value' => $hash_algorithms},

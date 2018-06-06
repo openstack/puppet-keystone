@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The collect_timing parameter has been added to keystone::resource::authtoken
+    which will set this config option in the keystone_authtoken section.

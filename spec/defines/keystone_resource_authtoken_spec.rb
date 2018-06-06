@@ -29,6 +29,7 @@ describe 'keystone::resource::authtoken' do
         is_expected.to contain_keystone_config('keystone_authtoken/cafile').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('keystone_authtoken/certfile').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('keystone_authtoken/check_revocations_for_cached').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/collect_timing').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('keystone_authtoken/delay_auth_decision').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('keystone_authtoken/enforce_token_bind').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('keystone_authtoken/hash_algorithms').with_value('<SERVICE DEFAULT>')
@@ -68,6 +69,7 @@ describe 'keystone::resource::authtoken' do
           :cafile                       => 'cafile.pem',
           :certfile                     => 'certfile.crt',
           :check_revocations_for_cached =>  true,
+          :collect_timing               =>  true,
           :delay_auth_decision          =>  true,
           :enforce_token_bind           => 'strict',
           :hash_algorithms              => 'sha1',
@@ -92,6 +94,7 @@ describe 'keystone::resource::authtoken' do
         is_expected.to contain_keystone_config('keystone_authtoken/auth_version').with_value(params[:auth_version])
         is_expected.to contain_keystone_config('keystone_authtoken/cache').with_value(params[:cache])
         is_expected.to contain_keystone_config('keystone_authtoken/check_revocations_for_cached').with_value(params[:check_revocations_for_cached])
+        is_expected.to contain_keystone_config('keystone_authtoken/collect_timing').with_value(params[:collect_timing])
         is_expected.to contain_keystone_config('keystone_authtoken/delay_auth_decision').with_value(params[:delay_auth_decision])
         is_expected.to contain_keystone_config('keystone_authtoken/enforce_token_bind').with_value(params[:enforce_token_bind])
         is_expected.to contain_keystone_config('keystone_authtoken/hash_algorithms').with_value(params[:hash_algorithms])
