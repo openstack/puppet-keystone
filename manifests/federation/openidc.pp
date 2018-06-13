@@ -4,7 +4,8 @@
 #
 # [*methods*]
 #  A list of methods used for authentication separated by comma or an array.
-#  The allowed values are: 'external', 'password', 'token', 'oauth1', 'saml2'
+#  The allowed values are: 'external', 'password', 'token', 'oauth1', 'saml2',
+#  and 'openid'
 #  (Required) (string or array value).
 #  Note: The external value should be dropped to avoid problems.
 #
@@ -34,6 +35,10 @@
 #  (Optional) String value.
 #  Defaults to 'id_token'
 #
+# [*remote_id_attribute*]
+#  (optional) Value to be used to obtain the entity ID of the Identity
+#  Provider from the environment.
+#
 # [*admin_port*]
 #  A boolean value to ensure that you want to configure openidc Federation
 #  using Keystone VirtualHost on port 35357.
@@ -59,12 +64,16 @@
 #   accepts latest or specific versions.
 #   Defaults to present.
 #
+# [*keystone_public_url*]
+#   (optional) URL to keystone public endpoint.
+#
+# [*keystone_admin_url*]
+#    (optional) URL to keystone admin endpoint.
+#
 # === DEPRECATED
 #
 # [*module_plugin*]
-#  The plugin for authentication acording to the choice made with protocol and
-#  module.
-#  (Optional) Defaults to 'keystone.auth.plugins.mapped.Mapped' (string value)
+#  This value is no longer used.
 #
 class keystone::federation::openidc (
   $methods,
@@ -74,10 +83,13 @@ class keystone::federation::openidc (
   $openidc_client_secret,
   $openidc_crypto_passphrase   = 'openstack',
   $openidc_response_type       = 'id_token',
+  $remote_id_attribute         = undef,
   $admin_port                  = false,
   $main_port                   = true,
   $template_order              = 331,
   $package_ensure              = present,
+  $keystone_public_url         = undef,
+  $keystone_admin_url          = undef,
   # DEPRECATED
   $module_plugin               = undef,
 ) {
@@ -86,21 +98,24 @@ class keystone::federation::openidc (
   include ::keystone::deps
   include ::keystone::params
 
+  $_keystone_public_url = pick($keystone_public_url, $::keystone::public_endpoint)
+  $_keystone_admin_url = pick($keystone_admin_url, $::keystone::admin_endpoint)
+
   # Note: if puppet-apache modify these values, this needs to be updated
   if $template_order <= 330 or $template_order >= 999 {
     fail('The template order should be greater than 330 and less than 999.')
   }
 
   if ('external' in $methods ) {
-    fail('The external method should be dropped to avoid any interference with openidc')
+    fail('The external method should be dropped to avoid any interference with openid.')
   }
 
-  if !('openidc' in $methods ) {
-    fail('Methods should contain openidc as one of the auth methods.')
+  if !('openid' in $methods ) {
+    fail('Methods should contain openid as one of the auth methods.')
   }
 
-  validate_bool($admin_port)
-  validate_bool($main_port)
+  validate_legacy(Boolean, 'validate_bool', $admin_port)
+  validate_legacy(Boolean, 'validate_bool', $main_port)
 
   if( !$admin_port and !$main_port){
     fail('No VirtualHost port to configure, please choose at least one.')
@@ -108,7 +123,13 @@ class keystone::federation::openidc (
 
   keystone_config {
     'auth/methods': value  => join(any2array($methods),',');
-    'auth/openidc': ensure => absent;
+    'auth/openid':   ensure => absent;
+  }
+
+  if $remote_id_attribute {
+    keystone_config {
+      'openid/remote_id_attribute': value => $remote_id_attribute;
+    }
   }
 
   ensure_packages([$::keystone::params::openidc_package_name], {
@@ -116,18 +137,15 @@ class keystone::federation::openidc (
     tag    => 'keystone-support-package',
   })
 
-  if $admin_port {
+  if $admin_port and $_keystone_admin_url {
     keystone::federation::openidc_httpd_configuration{ 'admin':
-      port              => $::keystone::admin_port,
-      keystone_endpoint => $::keystone::admin_endpoint,
+      keystone_endpoint => $_keystone_admin_url,
     }
   }
 
-  if $main_port {
+  if $main_port and $_keystone_public_url {
     keystone::federation::openidc_httpd_configuration{ 'main':
-      port              => $::keystone::public_port,
-      keystone_endpoint => $::keystone::public_endpoint,
+      keystone_endpoint => $_keystone_public_url,
     }
   }
-
 }
