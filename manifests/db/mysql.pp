@@ -6,8 +6,7 @@
 # == parameters
 #
 # [*password*]
-#   (Mandatory) Password to connect to the database.
-#   Defaults to 'false'.
+#   (Required) Password to connect to the database.
 #
 # [*dbname*]
 #   (Optional) Name of the database.
