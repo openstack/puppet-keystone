@@ -51,7 +51,7 @@ Puppet::Type.type(:keystone_role).provide(
     list = request('role', 'list')
     reallist = list.collect do |role|
       new(
-        :name        => role[:name],
+        :name        => role[:name].downcase,
         :ensure      => :present,
         :id          => role[:id]
       )
@@ -63,7 +63,7 @@ Puppet::Type.type(:keystone_role).provide(
   def self.prefetch(resources)
     roles = instances
     resources.keys.each do |name|
-       if provider = roles.find{ |role| role.name == name }
+       if provider = roles.find{ |role| role.name == name.downcase }
         resources[name].provider = provider
       end
     end
