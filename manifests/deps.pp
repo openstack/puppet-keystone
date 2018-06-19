@@ -79,4 +79,9 @@ class keystone::deps {
   # Installation or config changes will always restart services.
   Anchor['keystone::install::end'] ~> Anchor['keystone::service::begin']
   Anchor['keystone::config::end']  ~> Anchor['keystone::service::begin']
+
+  # Install the package before the Apache module purges wsgi-keystone.conf.
+  # Otherwise, the run isn't indempotent.
+  Package<| tag == 'keystone-package'|> -> File<| title == '/etc/apache2/sites-enabled' |>
+  Package<| tag == 'keystone-package'|> -> File<| title == '/etc/apache2/sites-available' |>
 }
