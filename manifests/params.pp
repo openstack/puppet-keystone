@@ -14,7 +14,13 @@ class keystone::params {
       $package_name                 = 'keystone'
       $service_name                 = 'keystone'
       $keystone_wsgi_script_path    = '/usr/lib/cgi-bin/keystone'
-      $python_memcache_package_name = 'python-memcache'
+
+      if $::os_package_type == 'debian' {
+        $python_memcache_package_name = 'python3-memcache'
+      } else {
+        $python_memcache_package_name = 'python-memcache'
+      }
+
       $mellon_package_name          = 'libapache2-mod-auth-mellon'
       $openidc_package_name         = 'libapache2-mod-auth-openidc'
     }

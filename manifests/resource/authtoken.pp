@@ -257,6 +257,7 @@ define keystone::resource::authtoken(
   $revocation_cache_time          = undef,
 ) {
 
+  include ::keystone::params
   include ::keystone::deps
 
   if !is_service_default($check_revocations_for_cached) {
