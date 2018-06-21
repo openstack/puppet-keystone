@@ -326,3 +326,8 @@ Contributors
 ------------
 
 * https://github.com/openstack/puppet-keystone/graphs/contributors
+
+Release Notes
+-------------
+
+* https://docs.openstack.org/releasenotes/puppet-keystone
