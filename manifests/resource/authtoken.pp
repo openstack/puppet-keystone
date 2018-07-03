@@ -213,6 +213,12 @@
 #  (Optional) Whether to install the python-memcache package.
 #  Defaults to false.
 #
+# [*service_token_roles_required*]
+#  (optional) backwards compatibility to ensure that the service tokens are
+#  compared against a list of possible roles for validity
+#  true/false
+#  Defaults to $::os_service_default.
+#
 # DEPRECATED PARAMETERS
 #
 # [*auth_uri*]
@@ -255,6 +261,7 @@ define keystone::resource::authtoken(
   $region_name                    = $::os_service_default,
   $token_cache_time               = $::os_service_default,
   $manage_memcache_package        = false,
+  $service_token_roles_required   = $::os_service_default,
   # DEPRECATED PARAMETERS
   $auth_uri                       = undef,
 ) {
@@ -341,6 +348,7 @@ define keystone::resource::authtoken(
     'keystone_authtoken/project_name'                   => {'value' => $project_name},
     'keystone_authtoken/project_domain_name'            => {'value' => $project_domain_name},
     'keystone_authtoken/insecure'                       => {'value' => $insecure},
+    'keystone_authtoken/service_token_roles_required'   => {'value' => $service_token_roles_required},
   }
   create_resources($name, $keystonemiddleware_options)
 }

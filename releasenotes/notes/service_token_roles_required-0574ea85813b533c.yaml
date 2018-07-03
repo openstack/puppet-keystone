@@ -1,0 +1,5 @@
+---
+features:
+  - Add 'service_token_roles_required' missing in the authtoken which
+    allows backwards compatibility to ensure that the service tokens are
+    compared against a list of possible roles for validity.
