@@ -17,7 +17,7 @@ node 'keystone_sqlite' {
   }
   class { '::keystone::endpoint':
     public_url => "http://${::fqdn}:5000/",
-    admin_url  => "http://${::fqdn}:35357/",
+    admin_url  => "http://${::fqdn}:5000/",
   }
 }
 
@@ -56,7 +56,7 @@ node 'keystone' {
   }
   class { '::keystone::endpoint':
     public_url => "http://${::fqdn}:5000/",
-    admin_url  => "http://${::fqdn}:35357/",
+    admin_url  => "http://${::fqdn}:5000/",
   }
 }
 

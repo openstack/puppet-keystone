@@ -11,7 +11,7 @@ describe 'keystone::endpoint' do
     it { is_expected.to contain_keystone_endpoint('RegionOne/keystone::identity').with(
       :ensure       => 'present',
       :public_url   => 'http://127.0.0.1:5000',
-      :admin_url    => 'http://127.0.0.1:35357',
+      :admin_url    => 'http://127.0.0.1:5000',
       :internal_url => 'http://127.0.0.1:5000',
       :region       => 'RegionOne'
     )}
@@ -45,7 +45,7 @@ describe 'keystone::endpoint' do
     it { is_expected.to contain_keystone_endpoint('RegionOne/keystone::identity').with(
       :ensure       => 'present',
       :public_url   => 'http://127.0.0.1:5000/v2.0',
-      :admin_url    => 'http://127.0.0.1:35357/v2.0',
+      :admin_url    => 'http://127.0.0.1:5000/v2.0',
       :internal_url => 'http://127.0.0.1:5000/v2.0'
     )}
   end

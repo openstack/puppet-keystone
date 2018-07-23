@@ -88,7 +88,7 @@ describe 'keystone' do
       'revoke_driver'                      => 'kvs',
       'revoke_by_id'                       => false,
       'public_endpoint'                    => 'https://localhost:5000/v2.0/',
-      'admin_endpoint'                     => 'https://localhost:35357/v2.0/',
+      'admin_endpoint'                     => 'https://localhost:5000/v2.0/',
       'enable_ssl'                         => true,
       'ssl_certfile'                       => '/etc/keystone/ssl/certs/keystone.pem',
       'ssl_keyfile'                        => '/etc/keystone/ssl/private/keystonekey.pem',
@@ -710,7 +710,7 @@ describe 'keystone' do
         'admin_token'     => 'service_token',
         'enable_ssl'      => true,
         'public_endpoint' => 'https://localhost:5000/v2.0/',
-        'admin_endpoint'  => 'https://localhost:35357/v2.0/',
+        'admin_endpoint'  => 'https://localhost:5000/v2.0/',
       }
     end
     it {is_expected.to contain_keystone_config('ssl/enable').with_value(true)}
@@ -720,7 +720,7 @@ describe 'keystone' do
     it {is_expected.to contain_keystone_config('ssl/ca_key').with_value('/etc/keystone/ssl/private/cakey.pem')}
     it {is_expected.to contain_keystone_config('ssl/cert_subject').with_value('/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost')}
     it {is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value('https://localhost:5000/v2.0/')}
-    it {is_expected.to contain_keystone_config('DEFAULT/admin_endpoint').with_value('https://localhost:35357/v2.0/')}
+    it {is_expected.to contain_keystone_config('DEFAULT/admin_endpoint').with_value('https://localhost:5000/v2.0/')}
   end
   describe 'when disabling SSL' do
     let :params do
@@ -868,15 +868,15 @@ describe 'keystone' do
       {
         :admin_token       => 'service_token',
         :validate_service  => true,
-        :validate_auth_url => 'http://some.host:35357/v2.0',
-        :admin_endpoint    => 'http://some.host:35357'
+        :validate_auth_url => 'http://some.host:5000/v2.0',
+        :admin_endpoint    => 'http://some.host:5000'
       }
     end
 
-    it { is_expected.to contain_keystone_config('DEFAULT/admin_endpoint').with_value('http://some.host:35357') }
+    it { is_expected.to contain_keystone_config('DEFAULT/admin_endpoint').with_value('http://some.host:5000') }
     it { is_expected.to contain_class('keystone::service').with(
       'validate'       => true,
-      'admin_endpoint' => 'http://some.host:35357/v2.0'
+      'admin_endpoint' => 'http://some.host:5000/v2.0'
     )}
   end
 
@@ -885,13 +885,13 @@ describe 'keystone' do
       {
         :admin_token      => 'service_token',
         :validate_service => true,
-        :admin_endpoint   => 'http://some.host:35357'
+        :admin_endpoint   => 'http://some.host:5000'
       }
     end
 
     it { is_expected.to contain_class('keystone::service').with(
       'validate'       => true,
-      'admin_endpoint' => 'http://some.host:35357'
+      'admin_endpoint' => 'http://some.host:5000'
     )}
   end
 

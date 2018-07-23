@@ -10,7 +10,7 @@ describe Puppet::Type.type(:keystone_domain).provider(:openstack) do
     ENV['OS_USERNAME']     = 'test'
     ENV['OS_PASSWORD']     = 'abc123'
     ENV['OS_PROJECT_NAME'] = 'test'
-    ENV['OS_AUTH_URL']     = 'http://127.0.0.1:35357/v2.0'
+    ENV['OS_AUTH_URL']     = 'http://127.0.0.1:5000/v2.0'
   end
 
   describe 'when managing a domain' do

@@ -63,7 +63,7 @@ class { 'keystone::roles::admin':
 # Installs the service user endpoint.
 class { 'keystone::endpoint':
   public_url   => 'http://10.16.0.101:5000/v2.0',
-  admin_url    => 'http://10.16.1.101:35357/v2.0',
+  admin_url    => 'http://10.16.1.101:5000/v2.0',
   internal_url => 'http://10.16.2.101:5000/v2.0',
   region       => 'example-1',
 }

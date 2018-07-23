@@ -16,7 +16,7 @@
 #
 # [*admin_url*]
 #   (optional) Admin url for keystone endpoint.
-#   Defaults to 'http://127.0.0.1:35357'
+#   Defaults to 'http://127.0.0.1:5000'
 #   This url should *not* contain any version or trailing '/'.
 #
 # [*region*]
@@ -48,13 +48,13 @@
 #  class { 'keystone::endpoint':
 #    public_url   => 'https://154.10.10.23:5000',
 #    internal_url => 'https://11.0.1.7:5000',
-#    admin_url    => 'https://10.0.1.7:35357',
+#    admin_url    => 'https://10.0.1.7:5000',
 #  }
 #
 class keystone::endpoint (
   $public_url        = 'http://127.0.0.1:5000',
   $internal_url      = undef,
-  $admin_url         = 'http://127.0.0.1:35357',
+  $admin_url         = 'http://127.0.0.1:5000',
   $region            = 'RegionOne',
   $user_domain       = undef,
   $project_domain    = undef,

@@ -15,7 +15,7 @@
 #   $ export OS_PASSWORD=ChangeMe
 #   $ export OS_PROJECT_NAME=admin
 #   $ export OS_PROJECT_DOMAIN_NAME=admin_domain
-#   $ export OS_AUTH_URL=http://keystone.local:35357/v3
+#   $ export OS_AUTH_URL=http://keystone.local:5000/v3
 #   $ openstack user list
 #
 
@@ -42,5 +42,5 @@ class { '::keystone::roles::admin':
 }
 class { '::keystone::endpoint':
   public_url => 'http://127.0.0.1:5000/',
-  admin_url  => 'http://127.0.0.1:35357/',
+  admin_url  => 'http://127.0.0.1:5000/',
 }
