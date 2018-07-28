@@ -1,0 +1,11 @@
+---
+upgrade:
+  - |
+    All references for the Keystone port 35357 in the module has been replaced
+    with port 5000, we recommend you update any hardcoded values for port 35357
+    to port 5000 because port 35357 will be removed in a future release.
+deprecations:
+  - |
+    Keystone is currently deployed with port 35357 and port 5000 and will continue
+    being deployed with both ports however the usage of port 35357 is now deprecated
+    and deployment of port 35357 will be removed in a future release.
