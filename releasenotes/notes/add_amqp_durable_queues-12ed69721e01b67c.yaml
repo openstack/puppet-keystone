@@ -1,0 +1,4 @@
+---
+features:
+  - Add new parameter "amqp_durable_queues", to indicate whether to use
+    durable queues in AMQP

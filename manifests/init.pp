@@ -571,6 +571,10 @@
 #   in the keystone config.
 #   Defaults to false.
 #
+# [*amqp_durable_queues*]
+#   (optional) Whether to use durable queues in AMQP.
+#   Defaults to $::os_service_default.
+#
 # === DEPRECATED PARAMETERS
 #
 # [*enable_pki_setup*]
@@ -740,6 +744,7 @@ class keystone(
   $manage_policyrcd                     = false,
   $enable_proxy_headers_parsing         = $::os_service_default,
   $purge_config                         = false,
+  $amqp_durable_queues                  = $::os_service_default,
   # DEPRECATED PARAMETERS
   $admin_workers                        = $::os_workers,
   $public_workers                       = $::os_workers,
@@ -1035,6 +1040,7 @@ Fernet or UUID tokens are recommended.")
     rabbit_ha_queues            => $rabbit_ha_queues,
     heartbeat_timeout_threshold => $rabbit_heartbeat_timeout_threshold,
     heartbeat_rate              => $rabbit_heartbeat_rate,
+    amqp_durable_queues         => $amqp_durable_queues,
   }
 
   keystone_config {
