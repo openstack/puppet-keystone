@@ -55,10 +55,6 @@
     "project_page": "https://launchpad.net/puppet-keystone",
     "requirements": [
         {
-            "name": "pe",
-            "version_requirement": "4.x"
-        },
-        {
             "name": "puppet",
             "version_requirement": "4.x"
         }
