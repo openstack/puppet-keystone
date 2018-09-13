@@ -32,6 +32,8 @@ describe 'keystone' do
       'catalog_driver'                     => false,
       'token_provider'                     => 'fernet',
       'token_driver'                       => 'sql',
+      'password_hash_algorithm'            => '<SERVICE DEFAULT>',
+      'password_hash_rounds'               => '<SERVICE DEFAULT>',
       'revoke_driver'                      => 'sql',
       'revoke_by_id'                       => true,
       'cache_dir'                          => '/var/cache/keystone',
@@ -86,6 +88,8 @@ describe 'keystone' do
       'catalog_type'                       => 'template',
       'token_provider'                     => 'uuid',
       'token_driver'                       => 'kvs',
+      'password_hash_algorithm'            => 'pbkdf2_sha512',
+      'password_hash_rounds'               => '29000',
       'revoke_driver'                      => 'kvs',
       'revoke_by_id'                       => false,
       'public_endpoint'                    => 'https://localhost:5000/v2.0/',
@@ -203,6 +207,14 @@ describe 'keystone' do
 
     it 'should contain correct revoke driver' do
       is_expected.to contain_keystone_config('revoke/driver').with_value(param_hash['revoke_driver'])
+    end
+
+    it 'should contain password_hash_algorithm' do
+      is_expected.to contain_keystone_config('identity/password_hash_algorithm').with_value(param_hash['password_hash_algorithm'])
+    end
+
+    it 'should contain password_hash_rounds' do
+      is_expected.to contain_keystone_config('identity/password_hash_rounds').with_value(param_hash['password_hash_rounds'])
     end
 
     it 'should contain default revoke_by_id value ' do
