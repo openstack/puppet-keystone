@@ -532,6 +532,10 @@
 #   client connection. (integer value)
 #   Defaults to $::os_service_default
 #
+# [*manage_backend_package*]
+#   (Optional) (Optional) Whether to install the backend package for the cache.
+#   Defaults to true
+#
 # [*policy_driver*]
 #   Policy backend driver. (string value)
 #   Defaults to $::os_service_default.
@@ -732,6 +736,7 @@ class keystone(
   $memcache_pool_maxsize                = $::os_service_default,
   $memcache_pool_unused_timeout         = $::os_service_default,
   $memcache_pool_connection_get_timeout = $::os_service_default,
+  $manage_backend_package               = true,
   $policy_driver                        = $::os_service_default,
   $using_domain_config                  = false,
   $domain_config_directory              = '/etc/keystone/domains',
@@ -917,6 +922,7 @@ We have enabled caching as a backwards compatibility that will be removed in the
     memcache_pool_maxsize                => $memcache_pool_maxsize,
     memcache_pool_unused_timeout         => $memcache_pool_unused_timeout,
     memcache_pool_connection_get_timeout => $memcache_pool_connection_get_timeout,
+    manage_backend_package               => $manage_backend_package,
   }
 
   oslo::middleware { 'keystone_config':
