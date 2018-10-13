@@ -62,5 +62,5 @@
     ],
     "source": "git://github.com/openstack/puppet-keystone.git",
     "summary": "Puppet module for OpenStack Keystone",
-    "version": "13.3.0"
+    "version": "13.3.1"
 }
