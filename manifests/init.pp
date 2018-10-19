@@ -75,6 +75,14 @@
 #   (optional) Amount of time a token should remain valid (seconds).
 #   Defaults to 3600 (1 hour).
 #
+# [*password_hash_algorithm*]
+#   (optional) The password hash algorithm to use.
+#   Defaults to $::os_service_default
+#
+# [*password_hash_rounds*]
+#   (optional) The amount of rounds to do on the hash.
+#   Defaults to $::os_service_default
+#
 # [*revoke_driver*]
 #   (optional) Driver for token revocation.
 #   Defaults to $::os_service_default
@@ -667,6 +675,8 @@ class keystone(
   $token_provider                       = 'fernet',
   $token_driver                         = 'sql',
   $token_expiration                     = 3600,
+  $password_hash_algorithm              = $::os_service_default,
+  $password_hash_rounds                 = $::os_service_default,
   $revoke_driver                        = $::os_service_default,
   $revoke_by_id                         = true,
   $public_endpoint                      = $::os_service_default,
@@ -851,7 +861,12 @@ admin_token will be removed in a later release")
   }
 
   keystone_config {
-    'revoke/driver':    value => $revoke_driver;
+    'identity/password_hash_algorithm': value => $password_hash_algorithm;
+    'identity/password_hash_rounds':    value => $password_hash_rounds;
+  }
+
+  keystone_config {
+    'revoke/driver': value => $revoke_driver;
   }
 
   keystone_config {
