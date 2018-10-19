@@ -53,7 +53,7 @@ keystone_tenant { 'project_one::domain_one': ensure => present }
 # For user_role:
 
 # 1: for associating a role to an user in a project scope.
-keystone_user_role { 'user_one::project_one':
+keystone_user_role { 'user_one@project_one':
   ensure         => present,
   user_domain    => 'domain_one',
   project_domain => 'domain_two',
