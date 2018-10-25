@@ -395,11 +395,6 @@
 #   Defaults to '$::keystone::params::service_name'
 #   NOTE: validate_service only applies if the default value is used.
 #
-# [*paste_config*]
-#   (optional) Name of the paste configuration file that defines the
-#   available pipelines. (string value)
-#   Defaults to $::os_service_default
-#
 # [*max_token_size*]
 #   (optional) maximum allowable Keystone token size
 #   Defaults to $::os_service_default
@@ -626,6 +621,11 @@
 #   (optional) Deprecated. Key size (in bits) for token signing cert (auto generated certificate)
 #   Defaults to $::os_service_default
 #
+# [*paste_config*]
+#   (optional) Name of the paste configuration file that defines the
+#   available pipelines. (string value)
+#   Defaults to undef
+#
 # == Dependencies
 #  None
 #
@@ -729,7 +729,6 @@ class keystone(
   $validate_insecure                    = false,
   $validate_auth_url                    = false,
   $validate_cacert                      = undef,
-  $paste_config                         = $::os_service_default,
   $service_name                         = $::keystone::params::service_name,
   $max_token_size                       = $::os_service_default,
   $sync_db                              = true,
@@ -770,11 +769,17 @@ class keystone(
   $signing_ca_key                       = $::os_service_default,
   $signing_cert_subject                 = $::os_service_default,
   $signing_key_size                     = $::os_service_default,
+  $paste_config                         = undef,
 ) inherits keystone::params {
 
   include ::keystone::deps
   include ::keystone::logging
   include ::keystone::policy
+
+  # TODO(tobias-urdin): Remove when paste_config is removed.
+  if $paste_config {
+    warning('keystone::paste_config is deprecated, has no effect and will be removed in a later release')
+  }
 
   if ! $catalog_driver {
     validate_re($catalog_type, 'template|sql')
@@ -837,7 +842,6 @@ admin_token will be removed in a later release")
     'DEFAULT/admin_port':       value => $admin_port;
     'DEFAULT/member_role_id':   value => $member_role_id;
     'DEFAULT/member_role_name': value => $member_role_name;
-    'paste_deploy/config_file': value => $paste_config;
   }
 
   # Endpoint configuration

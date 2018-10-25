@@ -68,7 +68,6 @@ describe 'keystone' do
       'public_workers'                     => 20,
       'member_role_id'                     => '<SERVICE DEFAULT>',
       'member_role_name'                   => '<SERVICE DEFAULT>',
-      'paste_config'                       => '<SERVICE DEFAULT>',
       'sync_db'                            => true,
       'purge_config'                       => false,
       'keystone_user'                      => 'keystone',
@@ -121,7 +120,6 @@ describe 'keystone' do
       'default_domain'                     => 'other_domain',
       'member_role_id'                     => '123456789',
       'member_role_name'                   => 'othermember',
-      'paste_config'                       => '/usr/share/keystone/keystone-paste.ini',
       'using_domain_config'                => false,
       'keystone_user'                      => 'test_user',
       'keystone_group'                     => 'test_group',
@@ -220,10 +218,6 @@ describe 'keystone' do
 
     it 'should contain default revoke_by_id value ' do
       is_expected.to contain_keystone_config('token/revoke_by_id').with_value(param_hash['revoke_by_id'])
-    end
-
-    it 'should contain default paste_config' do
-      is_expected.to contain_keystone_config('paste_deploy/config_file').with_value(param_hash['paste_config'])
     end
 
     it 'should ensure proper setting of admin_endpoint and public_endpoint' do

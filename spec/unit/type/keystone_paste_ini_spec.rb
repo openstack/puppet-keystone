@@ -1,3 +1,4 @@
+# TODO(tobias-urdin): This is deprecated and should be removed in T release.
 require 'spec_helper'
 # this hack is required for now to ensure that the path is set up correctly
 # to retrieve the parent provider
