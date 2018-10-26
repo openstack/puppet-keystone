@@ -12,6 +12,7 @@ describe 'keystone::roles::admin' do
       :operatingsystem        => 'Debian',
       :operatingsystemrelease => '7.0',
       :os_workers             => 1,
+      :os                     => { :name  => 'Debian', :family => 'Debian', :release => { :major => '7', :minor => '0' } },
     })
   end
 

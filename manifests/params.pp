@@ -3,7 +3,8 @@
 #
 class keystone::params {
   include ::openstacklib::defaults
-  if ($::os_package_type == 'debian') {
+  if ($::os_package_type == 'debian') or ($::os['name'] == 'Fedora') or
+     ($::os['family'] == 'RedHat' and Integer.new($::os['release']['major']) > 7) {
     $pyvers = '3'
   } else {
     $pyvers = ''

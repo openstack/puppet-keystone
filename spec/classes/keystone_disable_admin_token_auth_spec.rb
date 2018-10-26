@@ -2,7 +2,10 @@ require 'spec_helper'
 
 describe 'keystone::disable_admin_token_auth' do
   let :facts do
-    @default_facts.merge(:osfamily => 'Debian')
+    @default_facts.merge({
+       :osfamily => 'Debian',
+       :os       => { :name  => 'Debian', :family => 'Debian', :release => { :major => '8', :minor => '0' } },
+    })
   end
 
   let :pre_condition do
