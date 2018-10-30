@@ -14,6 +14,7 @@ describe 'keystone' do
       :osfamily               => 'Debian',
       :operatingsystem        => 'Debian',
       :operatingsystemrelease => '7.0',
+      :os                     => { :name  => 'Debian', :family => 'Debian', :release => { :major => '7', :minor => '0' } },
     }))
   end
 
@@ -1189,7 +1190,8 @@ describe 'keystone' do
       @default_facts.merge(global_facts.merge({
         :osfamily               => 'RedHat',
         :operatingsystem        => 'RedHat',
-        :operatingsystemrelease => '7.0'
+        :operatingsystemrelease => '7.0',
+        :os                     => { :name  => 'RedHat', :family => 'RedHat', :release => { :major => '7', :minor => '0' } },
       }))
     end
 
@@ -1209,7 +1211,8 @@ describe 'keystone' do
       @default_facts.merge(global_facts.merge({
         :osfamily               => 'Debian',
         :operatingsystem        => 'Debian',
-        :operatingsystemrelease => '7.0'
+        :operatingsystemrelease => '7.0',
+        :os                     => { :name  => 'Debian', :family => 'Debian', :release => { :major => '7', :minor => '0' } },
       }))
     end
 
