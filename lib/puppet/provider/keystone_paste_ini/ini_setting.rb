@@ -1,3 +1,4 @@
+# TODO(tobias-urdin): This is deprecated and should be removed in T release.
 Puppet::Type.type(:keystone_paste_ini).provide(
   :ini_setting,
   :parent => Puppet::Type.type(:ini_setting).provider(:ruby)

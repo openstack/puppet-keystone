@@ -23,18 +23,6 @@ describe 'keystone::config' do
     end
   end
 
-  shared_examples_for 'keystone_paste_ini' do
-    let :params do
-      { :keystone_paste_ini => config_hash }
-    end
-
-    it 'configures arbitrary keystone-paste-ini configurations' do
-      is_expected.to contain_keystone_paste_ini('DEFAULT/foo').with_value('fooValue')
-      is_expected.to contain_keystone_paste_ini('DEFAULT/bar').with_value('barValue')
-      is_expected.to contain_keystone_paste_ini('DEFAULT/baz').with_ensure('absent')
-    end
-  end
-
   on_supported_os({
     :supported_os   => OSDefaults.get_supported_os
   }).each do |os,facts|
@@ -44,7 +32,6 @@ describe 'keystone::config' do
       end
 
       it_configures 'keystone_config'
-      it_configures 'keystone_paste_ini'
     end
   end
 end

@@ -1,3 +1,4 @@
+# TODO(tobias-urdin): This is deprecated and should be removed in T release.
 Puppet::Type.newtype(:keystone_paste_ini) do
 
   ensurable
@@ -10,6 +11,8 @@ Puppet::Type.newtype(:keystone_paste_ini) do
   newproperty(:value) do
     desc 'The value of the setting to be defined.'
     munge do |value|
+      Puppet.deprecation_warning('keystone_paste_ini is deprecated, has no effect and will be removed in a later release')
+
       value = value.to_s.strip
       value.capitalize! if value =~ /^(true|false)$/i
       value
