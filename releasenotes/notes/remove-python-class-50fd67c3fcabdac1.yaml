@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    The deprecated keystone::python class is now removed.
