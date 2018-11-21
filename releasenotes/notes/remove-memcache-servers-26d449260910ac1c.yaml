@@ -1,0 +1,7 @@
+---
+upgrade:
+  - |
+    The deprecated parameter keystone::memcache_servers is now removed and the
+    automatic behavior to set cache_enabled and cache_backend has been removed.
+    You must now set the cache_memcached_servers and explicitly set cache_enabled
+    to true and cache_backend to the backend you want to use for caching.
