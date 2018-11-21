@@ -96,12 +96,6 @@
 #  (Optional) Required if identity server requires client certificate
 #  Defaults to $::os_service_default.
 #
-# [*check_revocations_for_cached*]
-#  (Optional) If true, the revocation list will be checked for cached tokens.
-#  This requires that PKI tokens are configured on the identity server.
-#  boolean value.
-#  Defaults to $::os_service_default.
-#
 # [*collect_timing*]
 #  (Optional) If true, collect per-method timing information for each API call.
 #  Defaults to $::os_service_default.
@@ -119,17 +113,6 @@
 #  type is unknown the token will be rejected. "required" any form of token
 #  binding is needed to be allowed. Finally the name of a binding method that
 #  must be present in tokens. String value.
-#  Defaults to $::os_service_default.
-#
-# [*hash_algorithms*]
-#  (Optional) Hash algorithms to use for hashing PKI tokens. This may be a
-#  single algorithm or multiple. The algorithms are those supported by Python
-#  standard hashlib.new(). The hashes will be tried in the order given, so put
-#  the preferred one first for performance. The result of the first hash will
-#  be stored in the cache. This will typically be set to multiple values only
-#  while migrating from a less secure algorithm to a more secure one. Once all
-#  the old tokens are expired this option should be set to a single value for
-#  better performance. List value.
 #  Defaults to $::os_service_default.
 #
 # [*http_connect_timeout*]
@@ -225,6 +208,23 @@
 #   (Optional) Complete public Identity API endpoint.
 #   Defaults to undef
 #
+# [*check_revocations_for_cached*]
+#  (Optional) If true, the revocation list will be checked for cached tokens.
+#  This requires that PKI tokens are configured on the identity server.
+#  boolean value.
+#  Defaults to undef
+#
+# [*hash_algorithms*]
+#  (Optional) Hash algorithms to use for hashing PKI tokens. This may be a
+#  single algorithm or multiple. The algorithms are those supported by Python
+#  standard hashlib.new(). The hashes will be tried in the order given, so put
+#  the preferred one first for performance. The result of the first hash will
+#  be stored in the cache. This will typically be set to multiple values only
+#  while migrating from a less secure algorithm to a more secure one. Once all
+#  the old tokens are expired this option should be set to a single value for
+#  better performance. List value.
+#  Defaults to undef
+#
 define keystone::resource::authtoken(
   $username,
   $password,
@@ -240,11 +240,9 @@ define keystone::resource::authtoken(
   $cache                          = $::os_service_default,
   $cafile                         = $::os_service_default,
   $certfile                       = $::os_service_default,
-  $check_revocations_for_cached   = $::os_service_default,
   $collect_timing                 = $::os_service_default,
   $delay_auth_decision            = $::os_service_default,
   $enforce_token_bind             = $::os_service_default,
-  $hash_algorithms                = $::os_service_default,
   $http_connect_timeout           = $::os_service_default,
   $http_request_max_retries       = $::os_service_default,
   $include_service_catalog        = $::os_service_default,
@@ -264,6 +262,8 @@ define keystone::resource::authtoken(
   $service_token_roles_required   = $::os_service_default,
   # DEPRECATED PARAMETERS
   $auth_uri                       = undef,
+  $check_revocations_for_cached   = undef,
+  $hash_algorithms                = undef,
 ) {
 
   include ::keystone::params
@@ -274,8 +274,12 @@ define keystone::resource::authtoken(
   }
   $www_authenticate_uri_real = pick($auth_uri, $www_authenticate_uri)
 
-  if !is_service_default($check_revocations_for_cached) {
-    validate_bool($check_revocations_for_cached)
+  if $check_revocations_for_cached {
+    warning('keystone::resource::authtoken::check_revocations_for_cached is deprecated and will be removed')
+  }
+
+  if $hash_algorithms {
+    warning('keystone::resource::authtoken::hash_algorithms is deprecated and will be removed')
   }
 
   if !is_service_default($include_service_catalog) {
@@ -321,11 +325,9 @@ define keystone::resource::authtoken(
     'keystone_authtoken/cache'                          => {'value' => $cache},
     'keystone_authtoken/cafile'                         => {'value' => $cafile},
     'keystone_authtoken/certfile'                       => {'value' => $certfile},
-    'keystone_authtoken/check_revocations_for_cached'   => {'value' => $check_revocations_for_cached},
     'keystone_authtoken/collect_timing'                 => {'value' => $collect_timing},
     'keystone_authtoken/delay_auth_decision'            => {'value' => $delay_auth_decision},
     'keystone_authtoken/enforce_token_bind'             => {'value' => $enforce_token_bind},
-    'keystone_authtoken/hash_algorithms'                => {'value' => $hash_algorithms},
     'keystone_authtoken/http_connect_timeout'           => {'value' => $http_connect_timeout},
     'keystone_authtoken/http_request_max_retries'       => {'value' => $http_request_max_retries},
     'keystone_authtoken/include_service_catalog'        => {'value' => $include_service_catalog},

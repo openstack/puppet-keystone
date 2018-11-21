@@ -1,0 +1,19 @@
+---
+upgrade:
+  - |
+    The deprecated params keystone::enable_pki_setup, signing_certfile,
+    signing_keyfile, signing_ca_certs, signing_ca_key, signing_cert_subject
+    and signing_key_size is now removed.
+deprecations:
+  - |
+    The keystone::cache_dir parameter is now deprecated and will be removed
+    in a future release. It has no effect since it was only related to PKI
+    which is removed.
+  - |
+    The parameter keystone::resource::authtoken::check_revocations_for_cached
+    is deprecated and will be removed in a future release. It was related
+    to PKI which is removed.
+  - |
+    The parameter keystone::resource::authtoken::hash_algorithms is deprecated
+    and will be removed in a future release. It was related to PKI which is
+    removed.

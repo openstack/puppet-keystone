@@ -49,7 +49,7 @@
 # [*token_provider*]
 #   (optional) Format keystone uses for tokens.
 #   Defaults to 'fernet'
-#   Supports pki, pkiz, fernet, and uuid.
+#   Supports fernet or uuid.
 #
 # [*token_driver*]
 #   (optional) Driver to use for managing tokens.
@@ -78,11 +78,6 @@
 #   Only disable if you are switching to using the Revoke extension with a backend
 #   other than KVS, which stores events in memory.
 #   Defaults to true.
-#
-# [*cache_dir*]
-#   (optional) Directory created when token_provider is pki. This folder is not
-#   created unless enable_pki_setup is set to True.
-#   Defaults to /var/cache/keystone.
 #
 # [*cache_backend*]
 #   (optional) Dogpile.cache backend module. It is recommended that Memcache with pooling
@@ -555,46 +550,14 @@
 #
 # === DEPRECATED PARAMETERS
 #
-# [*enable_pki_setup*]
-#   (optional) Deprecated. Enable call to pki_setup to generate the cert for signing pki tokens and
-#   revocation lists if it doesn't already exist. This generates a cert and key stored in file
-#   locations based on the signing_certfile and signing_keyfile paramters below. If you are
-#   providing your own signing cert, make this false.
-#   Default to undef.
-#
-# [*signing_certfile*]
-#   (optional) Deprecated. Location of the cert file for signing pki tokens and revocation lists.
-#   Note that if this file already exists (i.e. you are providing your own signing cert),
-#   the file will not be overwritten, even if enable_pki_setup is set to true.
-#   Defaults to $::os_service_default
-#
-# [*signing_keyfile*]
-#   (optional) Deprecated. Location of the key file for signing pki tokens and revocation lists.
-#   Note that if this file already exists (i.e. you are providing your own signing cert), the file
-#   will not be overwritten, even if enable_pki_setup is set to true.
-#   Defaults to $::os_service_default
-#
-# [*signing_ca_certs*]
-#   (optional) Deprecated. Use this CA certs file along with signing_certfile/signing_keyfile for
-#   signing pki tokens and revocation lists.
-#   Defaults to $::os_service_default
-#
-# [*signing_ca_key*]
-#   (optional) Deprecated. Use this CA key file along with signing_certfile/signing_keyfile for signing
-#   pki tokens and revocation lists.
-#   Defaults to $::os_service_default
-#
-# [*signing_cert_subject*]
-#   (optional) Deprecated. Certificate subject (auto generated certificate) for token signing.
-#   Defaults to $::os_service_default
-#
-# [*signing_key_size*]
-#   (optional) Deprecated. Key size (in bits) for token signing cert (auto generated certificate)
-#   Defaults to $::os_service_default
-#
 # [*paste_config*]
 #   (optional) Name of the paste configuration file that defines the
 #   available pipelines. (string value)
+#   Defaults to undef
+#
+# [*cache_dir*]
+#   (optional) Directory created when token_provider is pki. This folder is not
+#   created unless enable_pki_setup is set to True.
 #   Defaults to undef
 #
 # == Dependencies
@@ -654,7 +617,6 @@ class keystone(
   $ssl_ca_certs                         = '/etc/keystone/ssl/certs/ca.pem',
   $ssl_ca_key                           = '/etc/keystone/ssl/private/cakey.pem',
   $ssl_cert_subject                     = '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
-  $cache_dir                            = '/var/cache/keystone',
   $manage_service                       = true,
   $cache_backend                        = $::os_service_default,
   $cache_backend_argument               = $::os_service_default,
@@ -728,14 +690,8 @@ class keystone(
   # DEPRECATED PARAMETERS
   $admin_workers                        = $::os_workers,
   $public_workers                       = $::os_workers,
-  $enable_pki_setup                     = undef,
-  $signing_certfile                     = $::os_service_default,
-  $signing_keyfile                      = $::os_service_default,
-  $signing_ca_certs                     = $::os_service_default,
-  $signing_ca_key                       = $::os_service_default,
-  $signing_cert_subject                 = $::os_service_default,
-  $signing_key_size                     = $::os_service_default,
   $paste_config                         = undef,
+  $cache_dir                            = undef,
 ) inherits keystone::params {
 
   include ::keystone::deps
@@ -745,6 +701,10 @@ class keystone(
   # TODO(tobias-urdin): Remove when paste_config is removed.
   if $paste_config {
     warning('keystone::paste_config is deprecated, has no effect and will be removed in a later release')
+  }
+
+  if $cache_dir {
+    warning('keystone::cache_dir is deprecated, has no effect and will be removed in a later release')
   }
 
   if ! $catalog_driver {
@@ -906,72 +866,6 @@ admin_token will be removed in a later release")
   keystone_config {
     'catalog/driver':        value => $catalog_driver_real;
     'catalog/template_file': value => $catalog_template_file;
-  }
-
-  # Set the signing key/cert configuration values.
-  if (!is_service_default($signing_certfile)) {
-    warning("PKI token support has been deprecated in the M release and will be removed in the O release. \
-Fernet or UUID tokens are recommended.")
-  }
-
-  if (!is_service_default($signing_keyfile)) {
-    warning("PKI token support has been deprecated in the M release and will be removed in the O release. \
-Fernet or UUID tokens are recommended.")
-  }
-
-  if (!is_service_default($signing_ca_certs)) {
-    warning("PKI token support has been deprecated in the M release and will be removed in the O release. \
-Fernet or UUID tokens are recommended.")
-  }
-
-  if (!is_service_default($signing_ca_key)) {
-    warning("PKI token support has been deprecated in the M release and will be removed in the O release. \
-Fernet or UUID tokens are recommended.")
-  }
-
-  if (!is_service_default($signing_cert_subject)) {
-    warning("PKI token support has been deprecated in the M release and will be removed in the O release. \
-Fernet or UUID tokens are recommended.")
-  }
-
-  if (!is_service_default($signing_key_size)) {
-    warning("PKI token support has been deprecated in the M release and will be removed in the O release. \
-Fernet or UUID tokens are recommended.")
-  }
-
-  keystone_config {
-    'signing/certfile':     value => $signing_certfile;
-    'signing/keyfile':      value => $signing_keyfile;
-    'signing/ca_certs':     value => $signing_ca_certs;
-    'signing/ca_key':       value => $signing_ca_key;
-    'signing/cert_subject': value => $signing_cert_subject;
-    'signing/key_size':     value => $signing_key_size;
-  }
-
-  # Only do pki_setup if we were asked to do so.  This is needed
-  # regardless of the token provider since token revocation lists
-  # are always signed.
-  if $enable_pki_setup == true {
-
-    if is_service_default($signing_keyfile) {
-      fail('Please specify path to key file')
-    } else {
-    # Create cache directory used for signing.
-      file { $cache_dir:
-        ensure => directory,
-      }
-
-      exec { 'keystone-manage pki_setup':
-        command     => "keystone-manage pki_setup --keystone-user ${keystone_user} --keystone-group ${keystone_group}",
-        path        => '/usr/bin',
-        user        => $keystone_user,
-        refreshonly => true,
-        creates     => $signing_keyfile,
-        notify      => Anchor['keystone::service::begin'],
-        subscribe   => [Anchor['keystone::install::end'], Anchor['keystone::config::end']],
-        tag         => 'keystone-exec',
-      }
-    }
   }
 
   keystone_config {
