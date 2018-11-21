@@ -342,7 +342,6 @@ describe 'keystone::wsgi::apache' do
     describe 'when overriding parameters using symlink and custom file source' do
       let :params do
         {
-          :wsgi_script_ensure => 'link',
           :wsgi_script_source => '/opt/keystone/httpd/keystone.py',
         }
       end
