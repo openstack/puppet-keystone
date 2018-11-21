@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    The deprecated parameters keystone::debug, keystone::use_syslog,
+    keystone::use_stderr and keystone::log_facility is removed, please
+    set them in the keystone::logging class.

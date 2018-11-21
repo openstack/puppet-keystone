@@ -136,35 +136,18 @@ class keystone::logging(
 
   include ::keystone::deps
 
-  # NOTE(spredzy): In order to keep backward compatibility we rely on the pick function
-  # to use keystone::<myparam> first then keystone::logging::<myparam>.
-  $use_syslog_real = pick($::keystone::use_syslog,$use_syslog)
-  $use_stderr_real = pick($::keystone::use_stderr,$use_stderr)
-  $log_facility_real = pick($::keystone::log_facility,$log_facility)
-  if $log_dir != '' {
-    $log_dir_real = pick($::keystone::log_dir,$log_dir)
-  } else {
-    $log_dir_real = $log_dir
-  }
-  if $log_file != '' {
-    $log_file_real = pick($::keystone::log_file,$log_file)
-  } else {
-    $log_file_real = $log_file
-  }
-  $debug_real = pick($::keystone::debug,$debug)
-
   oslo::log { 'keystone_config':
-    debug                         => $debug_real,
+    debug                         => $debug,
     log_config_append             => $log_config_append,
     log_date_format               => $log_date_format,
-    log_file                      => $log_file_real,
-    log_dir                       => $log_dir_real,
+    log_file                      => $log_file,
+    log_dir                       => $log_dir,
     watch_log_file                => $watch_log_file,
-    use_syslog                    => $use_syslog_real,
+    use_syslog                    => $use_syslog,
     use_journal                   => $use_journal,
     use_json                      => $use_json,
-    syslog_log_facility           => $log_facility_real,
-    use_stderr                    => $use_stderr_real,
+    syslog_log_facility           => $log_facility,
+    use_stderr                    => $use_stderr,
     logging_context_format_string => $logging_context_format_string,
     logging_default_format_string => $logging_default_format_string,
     logging_debug_format_suffix   => $logging_debug_format_suffix,
@@ -176,5 +159,4 @@ class keystone::logging(
     instance_uuid_format          => $instance_uuid_format,
     fatal_deprecations            => $fatal_deprecations,
   }
-
 }
