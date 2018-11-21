@@ -30,12 +30,6 @@ describe 'keystone::federation::mellon' do
     end
 
     before do
-      params.merge!({:admin_port => false,
-                     :main_port  => false})
-      it_raises 'a Puppet::Error', /No VirtualHost port to configure, please choose at least one./
-    end
-
-    before do
       params.merge!({:template_port => 330})
       it_raises 'a Puppet::Error', /The template order should be greater than 330 and less than 999./
     end
@@ -53,33 +47,9 @@ describe 'keystone::federation::mellon' do
         is_expected.to contain_keystone_config('auth/saml2').with_ensure('absent')
       end
 
-      it { is_expected.to contain_concat__fragment('configure_mellon_on_port_5000').with({
+      it { is_expected.to contain_concat__fragment('configure_mellon_keystone').with({
         # This need to change if priority is changed in keystone::wsgi::apache
-        :target => "10-keystone_wsgi_main.conf",
-        :order  => params[:template_order],
-      })}
-    end
-
-    context 'with override default parameters' do
-      before do
-        params.merge!({
-          :admin_port => true })
-      end
-
-      it 'should have basic params for mellon in Keystone configuration' do
-        is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2')
-        is_expected.to contain_keystone_config('auth/saml2').with_ensure('absent')
-      end
-
-      it { is_expected.to contain_concat__fragment('configure_mellon_on_port_5000').with({
-        # This need to change if priority is changed in keystone::wsgi::apache
-        :target => "10-keystone_wsgi_main.conf",
-        :order  => params[:template_order],
-      })}
-
-      it { is_expected.to contain_concat__fragment('configure_mellon_on_port_35357').with({
-        # This need to change if priority is changed in keystone::wsgi::apache
-        :target => "10-keystone_wsgi_admin.conf",
+        :target => "10-keystone_wsgi.conf",
         :order  => params[:template_order],
       })}
     end
@@ -105,8 +75,8 @@ describe 'keystone::federation::mellon' do
         is_expected.to contain_keystone_config('federation/trusted_dashboard').with_value('http://acme.horizon.com/auth/websso/,http://beta.horizon.com/auth/websso/')
       end
 
-      it { is_expected.to contain_concat__fragment('configure_mellon_on_port_5000').with({
-        :target => "10-keystone_wsgi_main.conf",
+      it { is_expected.to contain_concat__fragment('configure_mellon_keystone').with({
+        :target => "10-keystone_wsgi.conf",
         :order  => params[:template_order],
       })}
     end

@@ -81,10 +81,6 @@ describe 'keystone server running with Apache/WSGI as Service Provider with Shib
       it { is_expected.to be_listening }
     end
 
-    describe port(35357) do
-      it { is_expected.to be_listening }
-    end
-
     describe cron do
       it { is_expected.to have_entry('1 * * * * keystone-manage token_flush >>/var/log/keystone/keystone-tokenflush.log 2>&1').with_user('keystone') }
     end

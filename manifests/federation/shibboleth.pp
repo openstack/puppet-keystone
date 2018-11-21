@@ -2,16 +2,6 @@
 #
 # == Parameters
 #
-# [*admin_port*]
-#  A boolean value to ensure that you want to configure K2K Federation
-#  using Keystone VirtualHost on port 35357.
-#  (Optional) Defaults to false.
-#
-# [*main_port*]
-#  A boolean value to ensure that you want to configure K2K Federation
-#  using Keystone VirtualHost on port 5000.
-#  (Optional) Defaults to true.
-#
 # [*methods*]
 #  A list of methods used for authentication separated by comma or an array.
 #  The allowed values are: 'external', 'password', 'token', 'oauth1', 'saml2'
@@ -47,6 +37,18 @@
 #      require  => Anchor['openstack_extras_redhat']
 #    }
 #
+# === DEPRECATED
+#
+# [*admin_port*]
+#  A boolean value to ensure that you want to configure K2K Federation
+#  using Keystone VirtualHost on port 35357.
+#  (Optional) Defaults to undef
+#
+# [*main_port*]
+#  A boolean value to ensure that you want to configure K2K Federation
+#  using Keystone VirtualHost on port 5000.
+#  (Optional) Defaults to undef
+#
 # == Note about Redhat osfamily
 #    According to puppet-apache we need to enable a new repo, but in puppet-openstack
 #    we won't enable any external third party repo.
@@ -55,15 +57,20 @@
 #
 class keystone::federation::shibboleth(
   $methods,
-  $admin_port       = false,
-  $main_port        = true,
   $suppress_warning = false,
   $template_order   = 331,
   $yum_repo_name    = 'shibboleth',
+  # DEPRECATED
+  $admin_port       = undef,
+  $main_port        = undef,
 ) {
 
   include ::apache
   include ::keystone::deps
+
+  if $admin_port or $main_port {
+    warning('keystone::federation::shibboleth::admin_port and main_port are deprecated and have no effect')
+  }
 
   # Note: if puppet-apache modify these values, this needs to be updated
   if $template_order <= 330 or $template_order >= 999 {
@@ -79,13 +86,7 @@ Apache + Shibboleth SP setups, where a REMOTE_USER env variable is always set, e
     fail('Methods should contain saml2 as one of the auth methods.')
   }
 
-  validate_bool($admin_port)
-  validate_bool($main_port)
   validate_bool($suppress_warning)
-
-  if( !$admin_port and !$main_port){
-    fail('No VirtualHost port to configure, please choose at least one.')
-  }
 
   keystone_config {
     'auth/methods': value  => join(any2array($methods),',');
@@ -103,20 +104,10 @@ Apache + Shibboleth SP setups, where a REMOTE_USER env variable is always set, e
       class { '::apache::mod::shib': }
     }
 
-    if $admin_port {
-      concat::fragment { 'configure_shibboleth_on_port_35357':
-        target  => "${keystone::wsgi::apache::priority}-keystone_wsgi_admin.conf",
-        content => template('keystone/shibboleth.conf.erb'),
-        order   => $template_order,
-      }
-    }
-
-    if $main_port {
-      concat::fragment { 'configure_shibboleth_on_port_5000':
-        target  => "${keystone::wsgi::apache::priority}-keystone_wsgi_main.conf",
-        content => template('keystone/shibboleth.conf.erb'),
-        order   => $template_order,
-      }
+    concat::fragment { 'configure_shibboleth_keystone':
+      target  => "${keystone::wsgi::apache::priority}-keystone_wsgi.conf",
+      content => template('keystone/shibboleth.conf.erb'),
+      order   => $template_order,
     }
   } elsif $::osfamily == 'Redhat' {
     if !$suppress_warning {

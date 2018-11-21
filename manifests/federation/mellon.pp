@@ -17,16 +17,6 @@
 #  The name for your protocol associated with the IdP.
 #  (Required) String value.
 #
-# [*admin_port*]
-#  A boolean value to ensure that you want to configure K2K Federation
-#  using Keystone VirtualHost on port 35357.
-#  (Optional) Defaults to false.
-#
-# [*main_port*]
-#  A boolean value to ensure that you want to configure K2K Federation
-#  using Keystone VirtualHost on port 5000.
-#  (Optional) Defaults to true.
-#
 # [*template_order*]
 #  This number indicates the order for the concat::fragment that will apply
 #  the shibboleth configuration to Keystone VirtualHost. The value should
@@ -57,17 +47,27 @@
 #   trusted_dashboards configuration instead of this parameter.
 #   Defaults to undef
 #
+# [*admin_port*]
+#  A boolean value to ensure that you want to configure K2K Federation
+#  using Keystone VirtualHost on port 35357.
+#  (Optional) Defaults to undef.
+#
+# [*main_port*]
+#  A boolean value to ensure that you want to configure K2K Federation
+#  using Keystone VirtualHost on port 5000.
+#  (Optional) Defaults to undef.
+#
 class keystone::federation::mellon (
   $methods,
   $idp_name,
   $protocol_name,
-  $admin_port         = false,
-  $main_port          = true,
   $template_order     = 331,
   $package_ensure     = present,
   $enable_websso      = false,
   # DEPRECATED
   $trusted_dashboards = undef,
+  $admin_port         = undef,
+  $main_port          = undef,
 ) {
 
   include ::apache
@@ -77,6 +77,10 @@ class keystone::federation::mellon (
   if ($trusted_dashboards) {
     warning("keystone::federation::mellon::trusted_dashboards is deprecated \
 in Stein and will be removed in future releases")
+  }
+
+  if $admin_port or $main_port {
+    warning('keystone::federation::mellon::admin_port and main_port are deprecated and have no effect')
   }
 
   # Note: if puppet-apache modify these values, this needs to be updated
@@ -93,13 +97,7 @@ Apache + Mellon SP setups, where a REMOTE_USER env variable is always set, even 
     fail('Methods should contain saml2 as one of the auth methods.')
   }
 
-  validate_bool($admin_port)
-  validate_bool($main_port)
   validate_bool($enable_websso)
-
-  if( !$admin_port and !$main_port){
-    fail('No VirtualHost port to configure, please choose at least one.')
-  }
 
   keystone_config {
     'auth/methods': value  => join(any2array($methods),',');
@@ -122,20 +120,10 @@ Apache + Mellon SP setups, where a REMOTE_USER env variable is always set, even 
     tag    => 'keystone-support-package',
   })
 
-  if $admin_port {
-    concat::fragment { 'configure_mellon_on_port_35357':
-      target  => "${keystone::wsgi::apache::priority}-keystone_wsgi_admin.conf",
-      content => template('keystone/mellon.conf.erb'),
-      order   => $template_order,
-    }
-  }
-
-  if $main_port {
-    concat::fragment { 'configure_mellon_on_port_5000':
-      target  => "${keystone::wsgi::apache::priority}-keystone_wsgi_main.conf",
-      content => template('keystone/mellon.conf.erb'),
-      order   => $template_order,
-    }
+  concat::fragment { 'configure_mellon_keystone':
+    target  => "${keystone::wsgi::apache::priority}-keystone_wsgi.conf",
+    content => template('keystone/mellon.conf.erb'),
+    order   => $template_order,
   }
 
 }
