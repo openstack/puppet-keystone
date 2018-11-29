@@ -77,6 +77,7 @@ describe 'keystone::ldap_backend' do
           :group_id_attribute                   => 'cn',
           :group_name_attribute                 => 'cn',
           :group_member_attribute               => 'roleOccupant',
+          :group_members_are_ids                => 'True',
           :group_desc_attribute                 => 'description',
           :group_attribute_ignore               => '',
           :group_allow_create                   => 'False',
@@ -171,6 +172,7 @@ describe 'keystone::ldap_backend' do
         is_expected.to contain_keystone_domain_config('Default::ldap/group_objectclass').with_value('organizationalRole')
         is_expected.to contain_keystone_domain_config('Default::ldap/group_id_attribute').with_value('cn')
         is_expected.to contain_keystone_domain_config('Default::ldap/group_member_attribute').with_value('roleOccupant')
+        is_expected.to contain_keystone_domain_config('Default::ldap/group_members_are_ids').with_value('True')
         is_expected.to contain_keystone_domain_config('Default::ldap/group_desc_attribute').with_value('description')
         is_expected.to contain_keystone_domain_config('Default::ldap/group_name_attribute').with_value('cn')
         is_expected.to contain_keystone_domain_config('Default::ldap/group_attribute_ignore').with_value('')
