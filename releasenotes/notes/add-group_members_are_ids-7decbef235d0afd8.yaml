@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    In Keystone, we can set group_members_are_ids option. This parameter enables
+    the members of the group object class to be keystone user IDs
+    rather than LDAP DNs. This is the case when using posixGroup as the group
+    object class in Open Directory.
