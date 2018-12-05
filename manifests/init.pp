@@ -100,46 +100,32 @@
 #   created unless enable_pki_setup is set to True.
 #   Defaults to /var/cache/keystone.
 #
-# [*memcache_servers*]
-#   (optional) List of memcache servers as a comma separated string of
-#   'server:port,server:port' or an array of servers ['server:port',
-#   'server:port'].
-#   Used with token_driver 'memcache'.
-#   This configures the memcache/servers for keystone and is used as a default
-#   for $cache_memcache_servers if it is not specified.
-#   Defaults to $::os_service_default
-#
 # [*cache_backend*]
 #   (optional) Dogpile.cache backend module. It is recommended that Memcache with pooling
 #   (keystone.cache.memcache_pool) or Redis (dogpile.cache.redis) be used in production.
-#   This has no effects unless 'memcache_servers' is set.
+#   This has no effect unless cache_enabled is true and cache_memcache_servers is set.
 #   Defaults to $::os_service_default
 #
 # [*cache_backend_argument*]
 #   (optional) List of arguments in format of argname:value supplied to the backend module.
 #   Specify this option once per argument to be passed to the dogpile.cache backend.
-#   This has no effects unless 'memcache_servers' is set.
+#   This has no effect unless cache_backend and cache_enabled is set.
 #   Default to $::os_service_default
 #
 # [*cache_enabled*]
-#   (optional) Setting this will enable the caching backend for Keystone.
-#   For legacy purposes, this will be enabled automatically enabled if it is
-#   not provided and $memcache_servers (or $cache_memcache_servers) is set and
-#   cache_backend is provided as well.
+#   (optional) Setting this boolean will enable the caching backend for Keystone.
 #   Defaults to $::os_service_default
 #
 # [*cache_memcache_servers*]
 #   (optional) List of memcache servers to be used with the caching backend to
-#   configure cache/memcache_servers.
+#   configure cache/memcache_servers. This has no effect unless cache_backend
+#   is set and cache_enabled is true.
 #   Specified as a comma separated string of 'server:port,server:port' or an
 #   array of servers ['server:port', 'server:port'].
-#   By default this will be set to the memcache_servers if that is configured
-#   and this is left unconfigured.
 #   Default to $::os_service_default
 #
 # [*debug_cache_backend*]
 #   (optional) Extra debugging from the cache backend (cache keys, get/set/delete calls).
-#   This has no effects unless 'memcache_servers' is set.
 #   Default to $::os_service_default
 #
 # [*cache_config_prefix*]
@@ -163,7 +149,8 @@
 #   Defaults to $::os_service_default
 #
 # [*token_caching*]
-#   (optional) Toggle for token system caching. This has no effects unless 'memcache_servers' is set.
+#   (optional) Toggle for token system caching. This has no effect unless
+#   cache_backend, cache_enabled and cache_memcache_servers is set.
 #   Default to $::os_service_default
 #
 # [*manage_service*]
@@ -688,7 +675,6 @@ class keystone(
   $ssl_ca_key                           = '/etc/keystone/ssl/private/cakey.pem',
   $ssl_cert_subject                     = '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
   $cache_dir                            = '/var/cache/keystone',
-  $memcache_servers                     = $::os_service_default,
   $manage_service                       = true,
   $cache_backend                        = $::os_service_default,
   $cache_backend_argument               = $::os_service_default,
@@ -893,41 +879,14 @@ admin_token will be removed in a later release")
     }
   }
 
-  if !is_service_default($memcache_servers) or !is_service_default($cache_memcache_servers) {
+  if !is_service_default($cache_memcache_servers) {
     Service<| title == 'memcached' |> -> Anchor['keystone::service::begin']
-  }
-
-  # TODO(aschultz): remove in N cycle
-  if is_service_default($cache_memcache_servers) and !is_service_default($memcache_servers) {
-
-    warning("The keystone module now provides a \$cache_memcache_servers to be used with caching. \
-Please specify it separately to configure cache/memcache_servers for keystone. \
-This backwards compatibility will be removed in the N cycle.")
-
-    $cache_memcache_servers_real = $memcache_servers
-  } else {
-    $cache_memcache_servers_real = $cache_memcache_servers
-  }
-
-  # TODO(aschultz): remove in N cycle
-  if is_service_default($cache_enabled)
-      and (!is_service_default($memcache_servers) or !is_service_default($cache_memcache_servers_real))
-      and !is_service_default($cache_backend) {
-
-    warning("cache_enabled has been added to control weither or not to enable caching. \
-Please specify it separately to configure caching.
-We have enabled caching as a backwards compatibility that will be removed in the N cycle")
-
-    $cache_enabled_real = true
-  } else {
-    $cache_enabled_real = $cache_enabled
   }
 
   keystone_config {
     'memcache/dead_retry':                value => $memcache_dead_retry;
     'memcache/pool_maxsize':              value => $memcache_pool_maxsize;
     'memcache/pool_unused_timeout':       value => $memcache_pool_unused_timeout;
-    'memcache/servers':                   value => join(any2array($memcache_servers), ',');
     'memcache/socket_timeout':            value => $memcache_socket_timeout;
     'token/caching':                      value => $token_caching;
   }
@@ -938,9 +897,9 @@ We have enabled caching as a backwards compatibility that will be removed in the
     backend                              => $cache_backend,
     backend_argument                     => $cache_backend_argument,
     proxies                              => $cache_proxies,
-    enabled                              => $cache_enabled_real,
+    enabled                              => $cache_enabled,
     debug_cache_backend                  => $debug_cache_backend,
-    memcache_servers                     => $cache_memcache_servers_real,
+    memcache_servers                     => $cache_memcache_servers,
     memcache_dead_retry                  => $memcache_dead_retry,
     memcache_socket_timeout              => $memcache_socket_timeout,
     memcache_pool_maxsize                => $memcache_pool_maxsize,

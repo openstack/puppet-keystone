@@ -38,7 +38,6 @@ describe 'keystone' do
       'revoke_driver'                      => 'sql',
       'revoke_by_id'                       => true,
       'cache_dir'                          => '/var/cache/keystone',
-      'memcache_servers'                   => '<SERVICE DEFAULT>',
       'cache_backend'                      => '<SERVICE DEFAULT>',
       'cache_backend_argument'             => '<SERVICE DEFAULT>',
       'cache_enabled'                      => '<SERVICE DEFAULT>',
@@ -570,10 +569,10 @@ describe 'keystone' do
     let :params do
       {
         'admin_token'                  => 'service_token',
-        'memcache_servers'             => [ 'SERVER1:11211', 'SERVER2:11211' ],
         'token_driver'                 => 'memcache',
         'cache_backend'                => 'dogpile.cache.memcached',
         'cache_backend_argument'       => ['url:SERVER1:12211'],
+        'cache_memcache_servers'       => 'SERVER1:11211,SERVER2:11211',
         'memcache_dead_retry'          => '60',
         'memcache_socket_timeout'      => '2',
         'memcache_pool_maxsize'        => '1000',
@@ -581,8 +580,7 @@ describe 'keystone' do
       }
     end
 
-    it { is_expected.to contain_keystone_config("memcache/servers").with_value('SERVER1:11211,SERVER2:11211') }
-    it { is_expected.to contain_keystone_config('cache/enabled').with_value(true) }
+    it { is_expected.to contain_keystone_config('cache/enabled').with_value('<SERVICE DEFAULT>') }
     it { is_expected.to contain_keystone_config('token/caching').with_value('<SERVICE DEFAULT>') }
     it { is_expected.to contain_keystone_config('cache/backend').with_value('dogpile.cache.memcached') }
     it { is_expected.to contain_keystone_config('cache/backend_argument').with_value('url:SERVER1:12211') }
@@ -612,11 +610,10 @@ describe 'keystone' do
     let :params do
       {
         'admin_token'                          => 'service_token',
-        'memcache_servers'                     => [ 'SERVER1:11211', 'SERVER2:11211' ],
         'token_driver'                         => 'noop',
         'cache_backend'                        => 'dogpile.cache.memcached',
         'cache_backend_argument'               => ['url:SERVER3:12211'],
-        'cache_memcache_servers'               => [ 'SERVER3:11211', 'SERVER4:11211' ],
+        'cache_memcache_servers'               => [ 'SERVER1:11211', 'SERVER2:11211' ],
         'memcache_dead_retry'                  => '60',
         'memcache_socket_timeout'              => '2',
         'memcache_pool_maxsize'                => '1000',
@@ -626,7 +623,41 @@ describe 'keystone' do
       }
     end
 
-    it { is_expected.to contain_keystone_config("memcache/servers").with_value('SERVER1:11211,SERVER2:11211') }
+    it { is_expected.to contain_keystone_config('cache/enabled').with_value('<SERVICE DEFAULT>') }
+    it { is_expected.to contain_keystone_config('token/caching').with_value('<SERVICE DEFAULT>') }
+    it { is_expected.to contain_keystone_config('cache/backend').with_value('dogpile.cache.memcached') }
+    it { is_expected.to contain_keystone_config('cache/backend_argument').with_value('url:SERVER3:12211') }
+    it { is_expected.to contain_keystone_config('memcache/dead_retry').with_value('60') }
+    it { is_expected.to contain_keystone_config('memcache/socket_timeout').with_value('2') }
+    it { is_expected.to contain_keystone_config('memcache/pool_maxsize').with_value('1000') }
+    it { is_expected.to contain_keystone_config('memcache/pool_unused_timeout').with_value('60') }
+    it { is_expected.to contain_keystone_config('cache/memcache_dead_retry').with_value('60') }
+    it { is_expected.to contain_keystone_config('cache/memcache_socket_timeout').with_value('2') }
+    it { is_expected.to contain_keystone_config('cache/memcache_pool_maxsize').with_value('1000') }
+    it { is_expected.to contain_keystone_config('cache/memcache_pool_unused_timeout').with_value('60') }
+    it { is_expected.to contain_keystone_config('cache/memcache_pool_connection_get_timeout').with_value('30') }
+    it { is_expected.to contain_keystone_config('cache/memcache_servers').with_value('SERVER1:11211,SERVER2:11211') }
+    it { is_expected.to contain_oslo__cache('keystone_config').with_manage_backend_package(false) }
+    it { is_expected.not_to contain_package('python-memcache') }
+  end
+
+  describe 'configure cache enabled if set' do
+    let :params do
+      {
+        'admin_token'                          => 'service_token',
+        'token_driver'                         => 'memcache',
+        'cache_backend'                        => 'dogpile.cache.memcached',
+        'cache_backend_argument'               => ['url:SERVER3:12211'],
+        'cache_enabled'                        => true,
+        'cache_memcache_servers'               => [ 'SERVER1:11211', 'SERVER2:11211' ],
+        'memcache_dead_retry'                  => '60',
+        'memcache_socket_timeout'              => '2',
+        'memcache_pool_maxsize'                => '1000',
+        'memcache_pool_unused_timeout'         => '60',
+        'memcache_pool_connection_get_timeout' => '30',
+      }
+    end
+
     it { is_expected.to contain_keystone_config('cache/enabled').with_value(true) }
     it { is_expected.to contain_keystone_config('token/caching').with_value('<SERVICE DEFAULT>') }
     it { is_expected.to contain_keystone_config('cache/backend').with_value('dogpile.cache.memcached') }
@@ -640,44 +671,7 @@ describe 'keystone' do
     it { is_expected.to contain_keystone_config('cache/memcache_pool_maxsize').with_value('1000') }
     it { is_expected.to contain_keystone_config('cache/memcache_pool_unused_timeout').with_value('60') }
     it { is_expected.to contain_keystone_config('cache/memcache_pool_connection_get_timeout').with_value('30') }
-    it { is_expected.to contain_keystone_config('cache/memcache_servers').with_value('SERVER3:11211,SERVER4:11211') }
-    it { is_expected.to contain_oslo__cache('keystone_config').with_manage_backend_package(false) }
-    it { is_expected.not_to contain_package('python-memcache') }
-  end
-
-  describe 'configure cache enabled if set' do
-    let :params do
-      {
-        'admin_token'                          => 'service_token',
-        'memcache_servers'                     => [ 'SERVER1:11211', 'SERVER2:11211' ],
-        'token_driver'                         => 'memcache',
-        'cache_backend'                        => 'dogpile.cache.memcached',
-        'cache_backend_argument'               => ['url:SERVER3:12211'],
-        'cache_enabled'                        => false,
-        'cache_memcache_servers'               => [ 'SERVER3:11211', 'SERVER4:11211' ],
-        'memcache_dead_retry'                  => '60',
-        'memcache_socket_timeout'              => '2',
-        'memcache_pool_maxsize'                => '1000',
-        'memcache_pool_unused_timeout'         => '60',
-        'memcache_pool_connection_get_timeout' => '30',
-      }
-    end
-
-    it { is_expected.to contain_keystone_config("memcache/servers").with_value('SERVER1:11211,SERVER2:11211') }
-    it { is_expected.to contain_keystone_config('cache/enabled').with_value(false) }
-    it { is_expected.to contain_keystone_config('token/caching').with_value('<SERVICE DEFAULT>') }
-    it { is_expected.to contain_keystone_config('cache/backend').with_value('dogpile.cache.memcached') }
-    it { is_expected.to contain_keystone_config('cache/backend_argument').with_value('url:SERVER3:12211') }
-    it { is_expected.to contain_keystone_config('memcache/dead_retry').with_value('60') }
-    it { is_expected.to contain_keystone_config('memcache/socket_timeout').with_value('2') }
-    it { is_expected.to contain_keystone_config('memcache/pool_maxsize').with_value('1000') }
-    it { is_expected.to contain_keystone_config('memcache/pool_unused_timeout').with_value('60') }
-    it { is_expected.to contain_keystone_config('cache/memcache_dead_retry').with_value('60') }
-    it { is_expected.to contain_keystone_config('cache/memcache_socket_timeout').with_value('2') }
-    it { is_expected.to contain_keystone_config('cache/memcache_pool_maxsize').with_value('1000') }
-    it { is_expected.to contain_keystone_config('cache/memcache_pool_unused_timeout').with_value('60') }
-    it { is_expected.to contain_keystone_config('cache/memcache_pool_connection_get_timeout').with_value('30') }
-    it { is_expected.to contain_keystone_config('cache/memcache_servers').with_value('SERVER3:11211,SERVER4:11211') }
+    it { is_expected.to contain_keystone_config('cache/memcache_servers').with_value('SERVER1:11211,SERVER2:11211') }
     it { is_expected.to contain_package('python-memcache').with(
       :name   => 'python-memcache',
       :ensure => 'present'
@@ -687,13 +681,11 @@ describe 'keystone' do
   describe 'configure memcache servers with a string' do
     let :params do
       default_params.merge({
-        'memcache_servers'       => 'SERVER1:11211,SERVER2:11211',
-        'cache_memcache_servers' => 'SERVER3:11211,SERVER4:11211'
+        'cache_memcache_servers' => 'SERVER1:11211,SERVER2:11211'
       })
     end
 
-    it { is_expected.to contain_keystone_config("memcache/servers").with_value('SERVER1:11211,SERVER2:11211') }
-    it { is_expected.to contain_keystone_config('cache/memcache_servers').with_value('SERVER3:11211,SERVER4:11211') }
+    it { is_expected.to contain_keystone_config('cache/memcache_servers').with_value('SERVER1:11211,SERVER2:11211') }
   end
 
   describe 'do not configure memcache servers when not set' do
@@ -706,7 +698,6 @@ describe 'keystone' do
     it { is_expected.to contain_keystone_config("cache/backend").with_value('<SERVICE DEFAULT>') }
     it { is_expected.to contain_keystone_config("cache/backend_argument").with_value('<SERVICE DEFAULT>') }
     it { is_expected.to contain_keystone_config("cache/debug_cache_backend").with_value('<SERVICE DEFAULT>') }
-    it { is_expected.to contain_keystone_config("memcache/servers").with_value('<SERVICE DEFAULT>') }
     it { is_expected.to contain_keystone_config('memcache/dead_retry').with_value('<SERVICE DEFAULT>') }
     it { is_expected.to contain_keystone_config('memcache/pool_maxsize').with_value('<SERVICE DEFAULT>') }
     it { is_expected.to contain_keystone_config('memcache/pool_unused_timeout').with_value('<SERVICE DEFAULT>') }
