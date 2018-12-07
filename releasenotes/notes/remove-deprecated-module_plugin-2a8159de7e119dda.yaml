@@ -1,0 +1,6 @@
+---
+deprecations:
+  - |
+    keystone::federation::mellon::module_plugin,
+    keystone::federation::shibboleth::module_plugin,
+    keystone::federation::openidc::module_plugin have been removed.
