@@ -271,6 +271,10 @@
 #   LDAP attribute mapped to show group membership. (string value)
 #   Defaults to 'undef'
 #
+# [*group_members_are_ids*]
+#   LDAP attribute when members of the group object class are keystone user IDs. (boolean value)
+#   Defaults to 'undef'
+#
 # [*group_desc_attribute*]
 #   LDAP attribute mapped to group description. (string value)
 #   Defaults to 'undef'
@@ -451,6 +455,7 @@ define keystone::ldap_backend(
   $group_id_attribute                   = undef,
   $group_name_attribute                 = undef,
   $group_member_attribute               = undef,
+  $group_members_are_ids                = undef,
   $group_desc_attribute                 = undef,
   $group_attribute_ignore               = undef,
   $group_allow_create                   = undef,
@@ -575,6 +580,7 @@ and \"${domain_dir_enabled}\" for identity/domain_config_dir"
     "${domain}::ldap/group_id_attribute":                   value => $group_id_attribute;
     "${domain}::ldap/group_name_attribute":                 value => $group_name_attribute;
     "${domain}::ldap/group_member_attribute":               value => $group_member_attribute;
+    "${domain}::ldap/group_members_are_ids":                value => $group_members_are_ids;
     "${domain}::ldap/group_desc_attribute":                 value => $group_desc_attribute;
     "${domain}::ldap/group_attribute_ignore":               value => $group_attribute_ignore;
     "${domain}::ldap/group_allow_create":                   value => $group_allow_create;
