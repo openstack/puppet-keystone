@@ -33,22 +33,6 @@
 #   This is the password that the admin user signs into keystone with.
 #   Required.
 #
-# [*debug*]
-#   (optional) Rather keystone should log at debug level.
-#   Defaults to undef.
-#
-# [*use_syslog*]
-#   (optional) Use syslog for logging.
-#   Defaults to undef.
-#
-# [*use_stderr*]
-#   (optional) Use stderr for logging
-#   Defaults to undef.
-#
-# [*log_facility*]
-#   (optional) Syslog facility to receive log lines.
-#   Defaults to undef.
-#
 # [*catalog_type*]
 #   (optional) Type of catalog that keystone uses to store endpoints,services.
 #   Defaults to sql. (Also accepts template)
@@ -650,12 +634,8 @@ class keystone(
   $admin_bind_host                      = '0.0.0.0',
   $public_port                          = '5000',
   $admin_port                           = '35357',
-  $debug                                = undef,
   $log_dir                              = undef,
   $log_file                             = undef,
-  $use_syslog                           = undef,
-  $use_stderr                           = undef,
-  $log_facility                         = undef,
   $catalog_type                         = 'sql',
   $catalog_driver                       = false,
   $catalog_template_file                = '/etc/keystone/default_catalog.templates',

@@ -27,8 +27,6 @@ describe 'keystone' do
       'admin_bind_host'                    => '0.0.0.0',
       'public_port'                        => '5000',
       'admin_port'                         => '35357',
-      'debug'                              => false,
-      'use_stderr'                         => true,
       'catalog_type'                       => 'sql',
       'catalog_driver'                     => false,
       'token_provider'                     => 'fernet',
@@ -82,8 +80,6 @@ describe 'keystone' do
       'admin_port'                         => '35358',
       'admin_token'                        => 'service_token_override',
       'admin_password'                     => 'admin_openstack_password',
-      'debug'                              => true,
-      'use_stderr'                         => false,
       'catalog_type'                       => 'template',
       'token_provider'                     => 'uuid',
       'token_driver'                       => 'kvs',
@@ -179,8 +175,6 @@ describe 'keystone' do
        'admin_port',
        'member_role_id',
        'member_role_name',
-       'debug',
-       'use_stderr'
       ].each do |config|
         is_expected.to contain_keystone_config("DEFAULT/#{config}").with_value(param_hash[config])
       end
