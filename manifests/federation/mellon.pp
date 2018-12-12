@@ -4,7 +4,8 @@
 #
 # [*methods*]
 #  A list of methods used for authentication separated by comma or an array.
-#  The allowed values are: 'external', 'password', 'token', 'oauth1', 'saml2'
+#  The allowed values are: 'external', 'password', 'token', 'oauth1', 'saml2',
+#  and 'openid'
 #  (Required) (string or array value).
 #  Note: The external value should be dropped to avoid problems.
 #
@@ -45,19 +46,21 @@
 #   (optional) Wheater or not to enable Web Single Sign-On (SSO)
 #   Defaults to false
 #
-# [*trusted_dashboards*]
-#   (optional) URL list of trusted horizon servers.
-#   This setting ensures that keystone only sends token data back to trusted
-#   servers. This is performed as a precaution, specifically to prevent man-in-
-#   the-middle (MITM) attacks.
-#   Defaults to undef
-#
 # === DEPRECATED
 #
 # [*module_plugin*]
 #  The plugin for authentication acording to the choice made with protocol and
 #  module.
 #  (Optional) Defaults to 'keystone.auth.plugins.mapped.Mapped' (string value)
+#
+# [*trusted_dashboards*]
+#   (optional) URL list of trusted horizon servers.
+#   This setting ensures that keystone only sends token data back to trusted
+#   servers. This is performed as a precaution, specifically to prevent man-in-
+#   the-middle (MITM) attacks.
+#   It is recommended to use the keystone::federation class to set the
+#   trusted_dashboards configuration instead of this parameter.
+#   Defaults to undef
 #
 class keystone::federation::mellon (
   $methods,
@@ -68,14 +71,19 @@ class keystone::federation::mellon (
   $template_order     = 331,
   $package_ensure     = present,
   $enable_websso      = false,
-  $trusted_dashboards = undef,
   # DEPRECATED
+  $trusted_dashboards = undef,
   $module_plugin      = undef,
 ) {
 
   include ::apache
   include ::keystone::deps
   include ::keystone::params
+
+  if ($trusted_dashboards) {
+    warning("keystone::federation::mellon::trusted_dashboards is deprecated \
+in Stein and will be removed in future releases")
+  }
 
   # Note: if puppet-apache modify these values, this needs to be updated
   if $template_order <= 330 or $template_order >= 999 {
@@ -105,12 +113,13 @@ Apache + Mellon SP setups, where a REMOTE_USER env variable is always set, even 
   }
 
   if($enable_websso){
-    if( !trusted_dashboards){
-      fail('No trusted dashboard specified, please add at least one.')
+    if($trusted_dashboards){
+      keystone_config {
+        'federation/trusted_dashboard': value => join(any2array($trusted_dashboards),',');
+      }
     }
     keystone_config {
       'mapped/remote_id_attribute': value => 'MELLON_IDP';
-      'federation/trusted_dashboard': value => join(any2array($trusted_dashboards),',');
     }
   }
 

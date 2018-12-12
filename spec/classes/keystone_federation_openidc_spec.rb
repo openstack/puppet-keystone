@@ -6,17 +6,16 @@ describe 'keystone::federation::openidc' do
     <<-EOS
     class { 'keystone':
       admin_token => 'service_token',
-      admin_password => 'special_password',
+      public_endpoint => 'http://os.example.com:5000',
+      admin_endpoint => 'http://os.example.com:35357',
     }
 
-    include apache
-
-    class { 'keystone::wsgi::apache': }
+    include keystone::wsgi::apache
     EOS
   end
 
   let :params do
-    { :methods => 'password, token, openidc',
+    { :methods => 'password, token, openid',
       :idp_name => 'myidp',
       :openidc_provider_metadata_url => 'https://accounts.google.com/.well-known/openid-configuration',
       :openidc_client_id => 'openid_client_id',
@@ -27,13 +26,13 @@ describe 'keystone::federation::openidc' do
 
   context 'with invalid params' do
     before do
-      params.merge!(:methods => 'external, password, token, oauth1')
-      it_raises 'a Puppet::Error', /The external method should be dropped to avoid any interference with openidc/
+      params.merge!(:methods => 'external, password, token, oauth1, openid')
+      it_raises 'a Puppet::Error', /The external method should be dropped to avoid any interference with openid/
     end
 
     before do
       params.merge!(:methods => 'password, token, oauth1')
-      it_raises 'a Puppet::Error', /Methods should contain openidc as one of the auth methods./
+      it_raises 'a Puppet::Error', /Methods should contain openid as one of the auth methods./
     end
 
     before do
@@ -73,12 +72,12 @@ describe 'keystone::federation::openidc' do
     end
 
     context 'with only required parameters' do
-      it 'should have basic params for mellon in Keystone configuration' do
-        is_expected.to contain_keystone_config('auth/methods').with_value('password, token, openidc')
-        is_expected.to contain_keystone_config('auth/openidc').with_ensure('absent')
+      it 'should have basic params for openidc in Keystone configuration' do
+        is_expected.to contain_keystone_config('auth/methods').with_value('password, token, openid')
+        is_expected.to contain_keystone_config('auth/openid').with_ensure('absent')
       end
 
-      it { is_expected.to contain_concat__fragment('configure_openidc_on_port_5000').with({
+      it { is_expected.to contain_concat__fragment('configure_openidc_on_main').with({
         :target => "10-keystone_wsgi_main.conf",
         :order  => params[:template_order],
       })}
@@ -91,23 +90,35 @@ describe 'keystone::federation::openidc' do
         })
       end
 
-      it 'should have basic params for mellon in Keystone configuration' do
-        is_expected.to contain_keystone_config('auth/methods').with_value('password, token, openidc')
-        is_expected.to contain_keystone_config('auth/openidc').with_ensure('absent')
+      it 'should have basic params for openidc in Keystone configuration' do
+        is_expected.to contain_keystone_config('auth/methods').with_value('password, token, openid')
+        is_expected.to contain_keystone_config('auth/openid').with_ensure('absent')
       end
 
-      it { is_expected.to contain_concat__fragment('configure_openidc_on_port_5000').with({
+      it { is_expected.to contain_concat__fragment('configure_openidc_on_main').with({
         :target => "10-keystone_wsgi_main.conf",
         :order  => params[:template_order],
       })}
 
-      it { is_expected.to contain_concat__fragment('configure_openidc_on_port_35357').with({
+      it { is_expected.to contain_concat__fragment('configure_openidc_on_admin').with({
         :target => "10-keystone_wsgi_admin.conf",
         :order  => params[:template_order],
       })}
     end
 
-    it { is_expected.to contain_package(platform_parameters[:openidc_package_name]) }
+    context 'with remote id attribute' do
+      before do
+        params.merge!({
+          :remote_id_attribute => 'myremoteid',
+        })
+      end
 
+      it 'should set remote id attribute in Keystone configuration' do
+        is_expected.to contain_keystone_config('openid/remote_id_attribute').with_value('myremoteid')
+      end
+
+    end
+
+    it { is_expected.to contain_package(platform_parameters[:openidc_package_name]) }
   end
 end
