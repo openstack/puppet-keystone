@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    The deprecated parameter keystone::wsgi::wsgi_script_ensure is now deleted.

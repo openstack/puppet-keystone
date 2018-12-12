@@ -172,12 +172,6 @@
 #   (Optional) apache::vhost wsgi_chunked_request parameter.
 #   Defaults to undef
 #
-# DEPRECATED PARAMETERS
-#
-# [*wsgi_script_ensure*]
-#   (Optional) File ensure parameter for wsgi scripts.
-#   Defaults to undef
-#
 class keystone::wsgi::apache (
   $servername                        = $::fqdn,
   $servername_admin                  = undef,
@@ -216,8 +210,6 @@ class keystone::wsgi::apache (
   $vhost_custom_fragment             = undef,
   $custom_wsgi_process_options_main  = {},
   $custom_wsgi_process_options_admin = {},
-  ## DEPRECATED PARAMETERS
-  $wsgi_script_ensure                = undef,
 ) inherits ::keystone::params {
 
   include ::keystone::deps
@@ -268,11 +260,6 @@ class keystone::wsgi::apache (
     group   => 'keystone',
     mode    => '0755',
     require => Anchor['keystone::install::end'],
-  }
-
-  # TODO(tobasco): Delete this when wsgi_script_ensure is removed.
-  if $wsgi_script_ensure {
-    warning('wsgi_script_ensure has NO effect and is deprecated for removal')
   }
 
   if $public_port == $admin_port {
