@@ -35,7 +35,6 @@ describe 'keystone' do
       'password_hash_rounds'               => '<SERVICE DEFAULT>',
       'revoke_driver'                      => 'sql',
       'revoke_by_id'                       => true,
-      'cache_dir'                          => '/var/cache/keystone',
       'cache_backend'                      => '<SERVICE DEFAULT>',
       'cache_backend_argument'             => '<SERVICE DEFAULT>',
       'cache_enabled'                      => '<SERVICE DEFAULT>',
@@ -50,12 +49,6 @@ describe 'keystone' do
       'manage_service'                     => true,
       'database_connection'                => 'sqlite:////var/lib/keystone/keystone.db',
       'database_idle_timeout'              => '200',
-      'signing_certfile'                   => '<SERVICE DEFAULT>',
-      'signing_keyfile'                    => '<SERVICE DEFAULT>',
-      'signing_ca_certs'                   => '<SERVICE DEFAULT>',
-      'signing_ca_key'                     => '<SERVICE DEFAULT>',
-      'signing_cert_subject'               => '<SERVICE DEFAULT>',
-      'signing_key_size'                   => '<SERVICE DEFAULT>',
       'default_transport_url'              => '<SERVICE DEFAULT>',
       'notification_transport_url'         => '<SERVICE DEFAULT>',
       'rabbit_heartbeat_timeout_threshold' => '<SERVICE DEFAULT>',
@@ -99,13 +92,6 @@ describe 'keystone' do
       'manage_service'                     => true,
       'database_connection'                => 'mysql://a:b@c/d',
       'database_idle_timeout'              => '300',
-      'enable_pki_setup'                   => true,
-      'signing_certfile'                   => '/etc/keystone/ssl/certs/signing_cert.pem',
-      'signing_keyfile'                    => '/etc/keystone/ssl/private/signing_key.pem',
-      'signing_ca_certs'                   => '/etc/keystone/ssl/certs/ca.pem',
-      'signing_ca_key'                     => '/etc/keystone/ssl/private/cakey.pem',
-      'signing_cert_subject'               => '/C=US/ST=Unset/L=Unset/O=Unset/CN=www.example.com',
-      'signing_key_size'                   => 2048,
       'default_transport_url'              => 'rabbit://user:pass@host:1234/virt',
       'notification_transport_url'         => 'rabbit://user:pass@host:1234/virt',
       'rabbit_heartbeat_timeout_threshold' => '60',
@@ -365,135 +351,6 @@ describe 'keystone' do
           'admin_token'    => 'service_token',
           'token_provider' => 'keystone.token.providers.uuid.Provider'
         }
-      end
-
-      describe 'pki_setup is disabled by default' do
-        it { is_expected.to_not contain_exec('keystone-manage pki_setup') }
-        it { is_expected.to_not contain_file('/var/cache/keystone').with_ensure('directory') }
-      end
-    end
-
-    describe 'when configuring as PKI' do
-      let :params do
-        {
-          'enable_pki_setup'     => true,
-          'admin_token'          => 'service_token',
-          'token_provider'       => 'pki',
-          'signing_certfile'     => '/etc/keystone/ssl/certs/signing_cert.pem',
-          'signing_keyfile'      => '/etc/keystone/ssl/private/signing_key.pem',
-          'signing_ca_certs'     => '/etc/keystone/ssl/certs/ca.pem',
-          'signing_ca_key'       => '/etc/keystone/ssl/private/cakey.pem',
-          'signing_cert_subject' => '/C=US/ST=Unset/L=Unset/O=Unset/CN=www.example.com',
-          'signing_key_size'     => 2048,
-          'keystone_user'        => 'keystone',
-          'keystone_group'       => 'keystone',
-        }
-      end
-
-      it { is_expected.to contain_file('/var/cache/keystone').with_ensure('directory') }
-
-      describe 'when overriding the cache dir' do
-        before do
-          params.merge!(:cache_dir => '/var/lib/cache/keystone')
-        end
-        it { is_expected.to contain_file('/var/lib/cache/keystone') }
-      end
-
-      it { is_expected.to contain_exec('keystone-manage pki_setup').with(
-        :command => "keystone-manage pki_setup --keystone-user #{params['keystone_user']} --keystone-group #{params['keystone_group']}",
-        :creates => '/etc/keystone/ssl/private/signing_key.pem'
-      ) }
-      it { is_expected.to contain_file('/var/cache/keystone').with_ensure('directory') }
-
-      describe 'when overriding the cache dir' do
-        before do
-          params.merge!(:cache_dir => '/var/lib/cache/keystone')
-        end
-        it { is_expected.to contain_file('/var/lib/cache/keystone') }
-      end
-    end
-
-    describe 'when configuring PKI signing cert paths with UUID and with pki_setup disabled' do
-      let :params do
-        {
-          'admin_token'          => 'service_token',
-          'token_provider'       => 'uuid',
-          'enable_pki_setup'     => false,
-          'signing_certfile'     => 'signing_certfile',
-          'signing_keyfile'      => 'signing_keyfile',
-          'signing_ca_certs'     => 'signing_ca_certs',
-          'signing_ca_key'       => 'signing_ca_key',
-          'signing_cert_subject' => 'signing_cert_subject',
-          'signing_key_size'     => 2048
-        }
-      end
-
-      it { is_expected.to_not contain_exec('keystone-manage pki_setup') }
-
-      it 'should contain correct PKI certfile config' do
-        is_expected.to contain_keystone_config('signing/certfile').with_value('signing_certfile')
-      end
-
-      it 'should contain correct PKI keyfile config' do
-        is_expected.to contain_keystone_config('signing/keyfile').with_value('signing_keyfile')
-      end
-
-      it 'should contain correct PKI ca_certs config' do
-        is_expected.to contain_keystone_config('signing/ca_certs').with_value('signing_ca_certs')
-      end
-
-      it 'should contain correct PKI ca_key config' do
-        is_expected.to contain_keystone_config('signing/ca_key').with_value('signing_ca_key')
-      end
-
-      it 'should contain correct PKI cert_subject config' do
-        is_expected.to contain_keystone_config('signing/cert_subject').with_value('signing_cert_subject')
-      end
-
-      it 'should contain correct PKI key_size config' do
-        is_expected.to contain_keystone_config('signing/key_size').with_value('2048')
-      end
-    end
-
-    describe 'when configuring PKI signing cert paths with pki_setup disabled' do
-      let :params do
-        {
-          'admin_token'          => 'service_token',
-          'token_provider'       => 'pki',
-          'enable_pki_setup'     => false,
-          'signing_certfile'     => 'signing_certfile',
-          'signing_keyfile'      => 'signing_keyfile',
-          'signing_ca_certs'     => 'signing_ca_certs',
-          'signing_ca_key'       => 'signing_ca_key',
-          'signing_cert_subject' => 'signing_cert_subject',
-          'signing_key_size'     => 2048
-        }
-      end
-
-      it { is_expected.to_not contain_exec('keystone-manage pki_setup') }
-
-      it 'should contain correct PKI certfile config' do
-        is_expected.to contain_keystone_config('signing/certfile').with_value('signing_certfile')
-      end
-
-      it 'should contain correct PKI keyfile config' do
-        is_expected.to contain_keystone_config('signing/keyfile').with_value('signing_keyfile')
-      end
-
-      it 'should contain correct PKI ca_certs config' do
-        is_expected.to contain_keystone_config('signing/ca_certs').with_value('signing_ca_certs')
-      end
-
-      it 'should contain correct PKI ca_key config' do
-        is_expected.to contain_keystone_config('signing/ca_key').with_value('signing_ca_key')
-      end
-
-      it 'should contain correct PKI cert_subject config' do
-        is_expected.to contain_keystone_config('signing/cert_subject').with_value('signing_cert_subject')
-      end
-
-      it 'should contain correct PKI key_size config' do
-        is_expected.to contain_keystone_config('signing/key_size').with_value('2048')
       end
     end
 
