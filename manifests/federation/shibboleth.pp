@@ -47,12 +47,6 @@
 #      require  => Anchor['openstack_extras_redhat']
 #    }
 #
-# === DEPRECATED
-# [*module_plugin*]
-#  The plugin for authentication according to the choice made with protocol and
-#  module.
-#  (Optional) Defaults to 'keystone.auth.plugins.mapped.Mapped' (string value)
-#
 # == Note about Redhat osfamily
 #    According to puppet-apache we need to enable a new repo, but in puppet-openstack
 #    we won't enable any external third party repo.
@@ -66,8 +60,6 @@ class keystone::federation::shibboleth(
   $suppress_warning = false,
   $template_order   = 331,
   $yum_repo_name    = 'shibboleth',
-  # DEPRECATED
-  $module_plugin    = undef,
 ) {
 
   include ::apache

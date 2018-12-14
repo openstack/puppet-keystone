@@ -70,11 +70,6 @@
 # [*keystone_admin_url*]
 #    (optional) URL to keystone admin endpoint.
 #
-# === DEPRECATED
-#
-# [*module_plugin*]
-#  This value is no longer used.
-#
 class keystone::federation::openidc (
   $methods,
   $idp_name,
@@ -90,8 +85,6 @@ class keystone::federation::openidc (
   $package_ensure              = present,
   $keystone_public_url         = undef,
   $keystone_admin_url          = undef,
-  # DEPRECATED
-  $module_plugin               = undef,
 ) {
 
   include ::apache

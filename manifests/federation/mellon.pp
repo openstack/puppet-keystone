@@ -48,11 +48,6 @@
 #
 # === DEPRECATED
 #
-# [*module_plugin*]
-#  The plugin for authentication acording to the choice made with protocol and
-#  module.
-#  (Optional) Defaults to 'keystone.auth.plugins.mapped.Mapped' (string value)
-#
 # [*trusted_dashboards*]
 #   (optional) URL list of trusted horizon servers.
 #   This setting ensures that keystone only sends token data back to trusted
@@ -73,7 +68,6 @@ class keystone::federation::mellon (
   $enable_websso      = false,
   # DEPRECATED
   $trusted_dashboards = undef,
-  $module_plugin      = undef,
 ) {
 
   include ::apache
