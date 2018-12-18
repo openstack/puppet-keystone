@@ -4,14 +4,14 @@
 # == Parameters
 #
 # [*extra_params*]
-#   (optional) String of extra command line parameters to append
+#   (Optional) String of extra command line parameters to append
 #   to the keystone-manage db_sync command.  These will be
 #   inserted in the command line between 'keystone-manage' and
 #   'db_sync' in the command line.
 #   Defaults to ''
 #
 # [*keystone_user*]
-#   (optional) Specify the keystone system user to be used with keystone-manage.
+#   (Optional) Specify the keystone system user to be used with keystone-manage.
 #   Defaults to $::keystone::params::keystone_user
 #
 class keystone::db::sync(

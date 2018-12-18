@@ -3,7 +3,7 @@
 # This class can be used to create tables, users and grant
 # privilege for a mysql keystone database.
 #
-# == parameters
+# == Parameters
 #
 # [*password*]
 #   (Required) Password to connect to the database.
@@ -32,20 +32,6 @@
 #   (Optional) The database collate.
 #   Only used with mysql modules >= 2.2.
 #   Defaults to 'utf8_general_ci'
-#
-# === Deprecated Parameters
-#
-# == Dependencies
-#   Class['mysql::server']
-#
-# == Examples
-# == Authors
-#
-#   Dan Bode dan@puppetlabs.com
-#
-# == Copyright
-#
-# Copyright 2012 Puppetlabs Inc, unless otherwise noted.
 #
 class keystone::db::mysql(
   $password,
