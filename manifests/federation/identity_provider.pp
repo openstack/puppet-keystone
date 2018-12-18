@@ -136,7 +136,7 @@ class keystone::federation::identity_provider(
 
   exec {'saml_idp_metadata':
     path      => '/usr/bin',
-    user      => "${user}",
+    user      => $user,
     command   => "keystone-manage saml_idp_metadata > ${idp_metadata_path}",
     creates   => $idp_metadata_path,
     subscribe => Anchor['keystone::config::end'],
@@ -147,7 +147,7 @@ class keystone::federation::identity_provider(
   file { $idp_metadata_path:
     ensure => present,
     mode   => '0600',
-    owner  => "${user}",
+    owner  => $user,
   }
 
 }
