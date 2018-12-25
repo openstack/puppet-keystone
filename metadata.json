@@ -14,6 +14,10 @@
             "version_requirement": ">=5.0.0 <6.0.0"
         },
         {
+            "name": "puppetlabs/rabbitmq",
+            "version_requirement": ">=8.4.0 <9.0.0"
+        },
+        {
             "name": "openstack/openstacklib",
             "version_requirement": ">=14.1.0 <15.0.0"
         },
