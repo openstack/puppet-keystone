@@ -204,6 +204,10 @@
 #
 # DEPRECATED PARAMETERS
 #
+# [*auth_uri*]
+#   (Optional) Complete public Identity API endpoint.
+#   Defaults to undef
+#
 # [*check_revocations_for_cached*]
 #  (Optional) If true, the revocation list will be checked for cached tokens.
 #  This requires that PKI tokens are configured on the identity server.
@@ -257,12 +261,18 @@ define keystone::resource::authtoken(
   $manage_memcache_package        = false,
   $service_token_roles_required   = $::os_service_default,
   # DEPRECATED PARAMETERS
+  $auth_uri                       = undef,
   $check_revocations_for_cached   = undef,
   $hash_algorithms                = undef,
 ) {
 
   include ::keystone::params
   include ::keystone::deps
+
+  if $auth_uri {
+    warning('The auth_uri parameter is deprecated. Please use www_authenticate_uri instead.')
+  }
+  $www_authenticate_uri_real = pick($auth_uri, $www_authenticate_uri)
 
   if $check_revocations_for_cached {
     warning('keystone::resource::authtoken::check_revocations_for_cached is deprecated and will be removed')
@@ -307,7 +317,9 @@ define keystone::resource::authtoken(
 
   $keystonemiddleware_options = {
     'keystone_authtoken/auth_section'                   => {'value' => $auth_section},
-    'keystone_authtoken/www_authenticate_uri'           => {'value' => $www_authenticate_uri},
+    'keystone_authtoken/www_authenticate_uri'           => {'value' => $www_authenticate_uri_real},
+    #TODO(aschultz): needs to be defined until all providers have been cut over
+    'keystone_authtoken/auth_uri'                       => {'value' => $www_authenticate_uri_real},
     'keystone_authtoken/auth_type'                      => {'value' => $auth_type},
     'keystone_authtoken/auth_version'                   => {'value' => $auth_version},
     'keystone_authtoken/cache'                          => {'value' => $cache},
