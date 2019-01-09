@@ -9,12 +9,12 @@ class keystone::params {
   } else {
     $pyvers = ''
   }
+
   $client_package_name = "python${pyvers}-keystoneclient"
   $keystone_user       = 'keystone'
   $keystone_group      = 'keystone'
-  $keystone_wsgi_admin_script_path  = '/usr/bin/keystone-wsgi-admin'
-  $keystone_wsgi_public_script_path = '/usr/bin/keystone-wsgi-public'
-  $group                            = 'keystone'
+  $group               = 'keystone'
+
   case $::osfamily {
     'Debian': {
       $package_name                 = 'keystone'

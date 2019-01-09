@@ -16,8 +16,8 @@
 
   # The following directives are necessary to support websso from Horizon
   # (Per https://docs.openstack.org/keystone/pike/advanced-topics/federation/websso.html)
-  OIDCRedirectURI "<%= @keystone_endpoint-%>/v3/auth/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::openidc::idp_name']-%>/protocols/openid/websso"
-  OIDCRedirectURI "<%= @keystone_endpoint-%>/v3/auth/OS-FEDERATION/websso/openid"
+  OIDCRedirectURI "<%= @keystone_url_real -%>/v3/auth/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::openidc::idp_name']-%>/protocols/openid/websso"
+  OIDCRedirectURI "<%= @keystone_url_real -%>/v3/auth/OS-FEDERATION/websso/openid"
 
   <LocationMatch "/v3/auth/OS-FEDERATION/websso/openid">
       AuthType "openid-connect"

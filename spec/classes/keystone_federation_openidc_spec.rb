@@ -36,12 +36,6 @@ describe 'keystone::federation::openidc' do
     end
 
     before do
-      params.merge!(:admin_port => false,
-                    :main_port  => false)
-      it_raises 'a Puppet:Error', /No VirtualHost port to configure, please choose at least one./
-    end
-
-    before do
       params.merge!(:template_port => 330)
       it_raises 'a Puppet:Error', /The template order should be greater than 330 and less than 999./
     end
@@ -77,31 +71,8 @@ describe 'keystone::federation::openidc' do
         is_expected.to contain_keystone_config('auth/openid').with_ensure('absent')
       end
 
-      it { is_expected.to contain_concat__fragment('configure_openidc_on_main').with({
-        :target => "10-keystone_wsgi_main.conf",
-        :order  => params[:template_order],
-      })}
-    end
-
-    context 'with override default parameters' do
-      before do
-        params.merge!({
-          :admin_port => true,
-        })
-      end
-
-      it 'should have basic params for openidc in Keystone configuration' do
-        is_expected.to contain_keystone_config('auth/methods').with_value('password, token, openid')
-        is_expected.to contain_keystone_config('auth/openid').with_ensure('absent')
-      end
-
-      it { is_expected.to contain_concat__fragment('configure_openidc_on_main').with({
-        :target => "10-keystone_wsgi_main.conf",
-        :order  => params[:template_order],
-      })}
-
-      it { is_expected.to contain_concat__fragment('configure_openidc_on_admin').with({
-        :target => "10-keystone_wsgi_admin.conf",
+      it { is_expected.to contain_concat__fragment('configure_openidc_keystone').with({
+        :target => "10-keystone_wsgi.conf",
         :order  => params[:template_order],
       })}
     end

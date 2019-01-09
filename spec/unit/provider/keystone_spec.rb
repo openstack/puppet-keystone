@@ -171,7 +171,7 @@ id="the_user_id"
     end
 
     it 'should use the specified bind_host in the admin endpoint' do
-      mock = {'DEFAULT' => {'admin_bind_host' => '192.168.56.210', 'admin_port' => '5001' }}
+      mock = {'DEFAULT' => {'admin_bind_host' => '192.168.56.210', 'public_port' => '5001' }}
       File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)
       mock.expects(:read).with('/etc/keystone/keystone.conf')
@@ -179,7 +179,7 @@ id="the_user_id"
     end
 
     it 'should use localhost in the admin endpoint if bind_host is 0.0.0.0' do
-      mock = {'DEFAULT' => { 'admin_bind_host' => '0.0.0.0', 'admin_port' => '5001' }}
+      mock = {'DEFAULT' => { 'admin_bind_host' => '0.0.0.0', 'public_port' => '5001' }}
       File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)
       mock.expects(:read).with('/etc/keystone/keystone.conf')
@@ -187,7 +187,7 @@ id="the_user_id"
     end
 
     it 'should use [::1] in the admin endpoint if bind_host is ::0' do
-      mock = {'DEFAULT' => { 'admin_bind_host' => '::0', 'admin_port' => '5001' }}
+      mock = {'DEFAULT' => { 'admin_bind_host' => '::0', 'public_port' => '5001' }}
       File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)
       mock.expects(:read).with('/etc/keystone/keystone.conf')
@@ -195,7 +195,7 @@ id="the_user_id"
     end
 
     it 'should use [2620:52:0:23a9::25] in the admin endpoint if bind_host is 2620:52:0:23a9::25' do
-      mock = {'DEFAULT' => { 'admin_bind_host' => '2620:52:0:23a9::25', 'admin_port' => '5001' }}
+      mock = {'DEFAULT' => { 'admin_bind_host' => '2620:52:0:23a9::25', 'public_port' => '5001' }}
       File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)
       mock.expects(:read).with('/etc/keystone/keystone.conf')
@@ -203,7 +203,7 @@ id="the_user_id"
     end
 
     it 'should use localhost in the admin endpoint if bind_host is unspecified' do
-      mock = {'DEFAULT' => { 'admin_port' => '5001' }}
+      mock = {'DEFAULT' => { 'public_port' => '5001' }}
       File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)
       mock.expects(:read).with('/etc/keystone/keystone.conf')
@@ -211,7 +211,7 @@ id="the_user_id"
     end
 
     it 'should use https if ssl is enabled' do
-      mock = {'DEFAULT' => {'admin_bind_host' => '192.168.56.210', 'admin_port' => '5001' }, 'ssl' => {'enable' => 'True'}}
+      mock = {'DEFAULT' => {'admin_bind_host' => '192.168.56.210', 'public_port' => '5001' }, 'ssl' => {'enable' => 'True'}}
       File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)
       mock.expects(:read).with('/etc/keystone/keystone.conf')
@@ -219,7 +219,7 @@ id="the_user_id"
     end
 
     it 'should use http if ssl is disabled' do
-      mock = {'DEFAULT' => {'admin_bind_host' => '192.168.56.210', 'admin_port' => '5001' }, 'ssl' => {'enable' => 'False'}}
+      mock = {'DEFAULT' => {'admin_bind_host' => '192.168.56.210', 'public_port' => '5001' }, 'ssl' => {'enable' => 'False'}}
       File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)
       mock.expects(:read).with('/etc/keystone/keystone.conf')

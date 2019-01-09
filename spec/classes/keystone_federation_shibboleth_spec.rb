@@ -27,12 +27,6 @@ describe 'keystone::federation::shibboleth' do
       it_raises 'a Puppet::Error', /Methods should contain saml2 as one of the auth methods./
     end
 
-    context 'no ports' do
-      let (:params) { default_params.merge(:admin_port => false,
-                    :main_port  => false) }
-      it_raises 'a Puppet::Error', /No VirtualHost port to configure, please choose at least one./
-    end
-
     context 'template port too low' do
       let(:params) { default_params.merge(:template_order => 330) }
       it_raises 'a Puppet::Error', /The template order should be greater than 330 and less than 999./
@@ -85,29 +79,15 @@ describe 'keystone::federation::shibboleth' do
       end
 
       context 'with defaults' do
-
         let (:params) { default_params }
 
         it { is_expected.to contain_apache__mod('shib2') }
-        it { is_expected.to contain_concat__fragment('configure_shibboleth_on_port_5000').with({
-          :target => "10-keystone_wsgi_main.conf",
+        it { is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2') }
+        it { is_expected.to contain_keystone_config('auth/saml2').with_ensure('absent') }
+        it { is_expected.to contain_concat__fragment('configure_shibboleth_keystone').with({
+          :target => "10-keystone_wsgi.conf",
           :order  => params[:template_order],
         })}
-      end
-      context 'with overrides' do
-        let (:params) { default_params.merge({
-          :admin_port => true,
-          :template_order => 332
-        }) }
-
-        it { is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2') }
-        it {is_expected.to contain_keystone_config('auth/saml2').with_ensure('absent') }
-        it {
-          is_expected.to contain_concat__fragment('configure_shibboleth_on_port_35357').with({
-            :target => "10-keystone_wsgi_admin.conf",
-            :order  => params[:template_order],
-          })
-        }
       end
     end
 
@@ -126,45 +106,22 @@ describe 'keystone::federation::shibboleth' do
         let (:params) { default_params }
 
         it { is_expected.to contain_apache__mod('shib2') }
-        it { is_expected.to contain_concat__fragment('configure_shibboleth_on_port_5000').with({
-          :target => "10-keystone_wsgi_main.conf",
+        it { is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2') }
+        it { is_expected.to contain_keystone_config('auth/saml2').with_ensure('absent') }
+        it { is_expected.to contain_concat__fragment('configure_shibboleth_keystone').with({
+          :target => "10-keystone_wsgi.conf",
           :order  => params[:template_order],
         })}
       end
-      context 'with overrides' do
-        let (:params) { default_params.merge({
-          :admin_port => true,
-          :template_order => 332
-        }) }
-
-        it { is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2') }
-        it { is_expected.to contain_keystone_config('auth/saml2').with_ensure('absent') }
-        it {
-          is_expected.to contain_concat__fragment('configure_shibboleth_on_port_35357').with({
-            :target => "10-keystone_wsgi_admin.conf",
-            :order  => params[:template_order],
-          })
-        }
-      end
-
     end
 
     context 'without repo or package' do
       context 'with defaults' do
         let (:params) { default_params }
         it { is_expected.to_not contain_apache__mod('shib2') }
-        it { is_expected.to_not contain_concat__fragment('configure_shibboleth_on_port_5000') }
-      end
-
-      context 'with overrides' do
-        let (:params) { default_params.merge({
-          :admin_port => true,
-          :template_order => 332
-        }) }
-
         it { is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2') }
         it { is_expected.to contain_keystone_config('auth/saml2').with_ensure('absent') }
-        it { is_expected.to_not contain_concat__fragment('configure_shibboleth_on_port_35357') }
+        it { is_expected.to_not contain_concat__fragment('configure_shibboleth_keystone') }
       end
     end
   end
@@ -174,8 +131,8 @@ describe 'keystone::federation::shibboleth' do
       let (:params) { default_params }
 
       it { is_expected.to contain_apache__mod('shib2') }
-      it { is_expected.to contain_concat__fragment('configure_shibboleth_on_port_5000').with({
-         :target => "10-keystone_wsgi_main.conf",
+      it { is_expected.to contain_concat__fragment('configure_shibboleth_keystone').with({
+         :target => "10-keystone_wsgi.conf",
          :order  => params[:template_order],
        })}
 

@@ -1,0 +1,64 @@
+---
+prelude: >
+    This release puppet-keystone no longer deploys keystone with separated
+    ports (admin and public as they were called in v2.0). By default keystone
+    will only listen to port 5000, you need to make sure all your services are
+    configured to use the correct port to talk to keystone.
+features:
+  - |
+    Added new parameter keystone::federation::openidc::keystone_url that can be
+    used to set the keystone url for federation, if not provided it will use
+    keystone::public_endpoint.
+upgrade:
+  - |
+    Keystone is now deployed with only port 5000, you can change this with
+    keystone::wsgi::apache::api_port, you need to make sure all your services are
+    configured to talk to keystone on this port. If you want to keep backward
+    compatibility with port 35357 you should pass an array to api_port with
+    both port 35357 and 5000.
+  - |
+    The providers has been updated to read DEFAULT/public_port which defaults
+    to 5000 and use that port to talk to Keystone when managing resources.
+    You need to make sure that keystone::public_port and keystone::wsgi::apache::api_port
+    is set to the same value if you are deploying keystone with Apache WSGI.
+  - |
+    keystone::federation::mellon is now added to Keystone WSGI for port 5000 by
+    default and admin_port and main_port parameters does not do anything and is
+    deprecated.
+  - |
+    keystone::federation::shibboleth is now added to Keystone WSGI for port 5000
+    by default and admin_port and main_port parameters does not do anything and is
+    deprecated.
+  - |
+    keystone::federation::openidc is now added to Keystone WSGI for port 5000
+    by default and admin_port and main_port parameters does not do anything and is
+    deprecated.
+  - |
+    keystone::federation::openidc::keystone_url parameter has been added to give the
+    keystone endpoint, if it's not provided keystone::public_endpoint will be used.
+    We recommend that you set this since keystone::public_endpoint might be deprecated
+    in a future release.
+deprecations:
+  - |
+    As of the removal of port 35357 the following parameters are deprecated
+    in the keystone::wsgi::apache class and has no effect:
+
+      - ``servername_admin`` please use ``servername``
+      - ``public_port`` and ``admin_port`` please use ``api_port``
+      - ``admin_bind_host`` please use ``bind_host``
+      - ``public_path`` and ``admin_path`` please use ``path``
+      - ``ssl_cert_admin`` and ``ssl_key_admin`` please use ``ssl_cert`` and ``ssl_key``
+      - ``wsgi_admin_script_source`` and ``wsgi_public_script_source`` please use ``wsgi_script_source``
+      - ``custom_wsgi_process_options_main`` and ``custom_wsgi_process_options_admin`` please use ``custom_wsgi_process_options``
+  - |
+    keystone::federation::mellon::admin_port and main_port is deprecated and has no effect
+    and will be removed in a future release.
+  - |
+    keystone::federation::shibboleth::admin_port and main_port is deprecated and has no effect
+    and will be removed in a future release.
+  - |
+    keystone::federation::openidc::admin_port and main_port is deprecated and has no effect
+    and will be removed in a future release.
+  - |
+    keystone::federation::openidc_httpd_configuration is deprecated and will be removed in
+    a future release.

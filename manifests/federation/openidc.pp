@@ -39,16 +39,6 @@
 #  (optional) Value to be used to obtain the entity ID of the Identity
 #  Provider from the environment.
 #
-# [*admin_port*]
-#  A boolean value to ensure that you want to configure openidc Federation
-#  using Keystone VirtualHost on port 35357.
-#  (Optional) Defaults to false.
-#
-# [*main_port*]
-#  A boolean value to ensure that you want to configure openidc Federation
-#  using Keystone VirtualHost on port 5000.
-#  (Optional) Defaults to true.
-#
 # [*template_order*]
 #  This number indicates the order for the concat::fragment that will apply
 #  the shibboleth configuration to Keystone VirtualHost. The value should
@@ -64,11 +54,20 @@
 #   accepts latest or specific versions.
 #   Defaults to present.
 #
-# [*keystone_public_url*]
-#   (optional) URL to keystone public endpoint.
+# [*keystone_url*]
+#   (optional) URL to keystone endpoint.
 #
-# [*keystone_admin_url*]
-#    (optional) URL to keystone admin endpoint.
+# === DEPRECATED
+#
+# [*admin_port*]
+#  A boolean value to ensure that you want to configure openidc Federation
+#  using Keystone VirtualHost on port 35357.
+#  (Optional) Defaults to undef.
+#
+# [*main_port*]
+#  A boolean value to ensure that you want to configure openidc Federation
+#  using Keystone VirtualHost on port 5000.
+#  (Optional) Defaults to undef.
 #
 class keystone::federation::openidc (
   $methods,
@@ -79,20 +78,30 @@ class keystone::federation::openidc (
   $openidc_crypto_passphrase   = 'openstack',
   $openidc_response_type       = 'id_token',
   $remote_id_attribute         = undef,
-  $admin_port                  = false,
-  $main_port                   = true,
   $template_order              = 331,
   $package_ensure              = present,
-  $keystone_public_url         = undef,
-  $keystone_admin_url          = undef,
+  $keystone_url                = undef,
+  # DEPRECATED
+  $admin_port                  = undef,
+  $main_port                   = undef,
 ) {
 
   include ::apache
   include ::keystone::deps
   include ::keystone::params
 
-  $_keystone_public_url = pick($keystone_public_url, $::keystone::public_endpoint)
-  $_keystone_admin_url = pick($keystone_admin_url, $::keystone::admin_endpoint)
+  # TODO(tobias-urdin): Make keystone_url required when keystone::public_endpoint is removed.
+  # Dont forget to change the keystone_url_real variable in the templates/openidc.conf.rb file.
+  # The fail statement below can also be removed since keystone_url will be a required parameter.
+  $keystone_url_real = pick($keystone_url, $::keystone::public_endpoint)
+
+  if $keystone_url_real == undef or is_service_default($keystone_url_real) {
+    fail('You must set either keystone_url or keystone::public_endpoint')
+  }
+
+  if $admin_port or $main_port {
+    warning('keystone::federation::openidc::admin_port and main_port are deprecated and have no effect')
+  }
 
   # Note: if puppet-apache modify these values, this needs to be updated
   if $template_order <= 330 or $template_order >= 999 {
@@ -107,16 +116,9 @@ class keystone::federation::openidc (
     fail('Methods should contain openid as one of the auth methods.')
   }
 
-  validate_legacy(Boolean, 'validate_bool', $admin_port)
-  validate_legacy(Boolean, 'validate_bool', $main_port)
-
-  if( !$admin_port and !$main_port){
-    fail('No VirtualHost port to configure, please choose at least one.')
-  }
-
   keystone_config {
     'auth/methods': value  => join(any2array($methods),',');
-    'auth/openid':   ensure => absent;
+    'auth/openid':  ensure => absent;
   }
 
   if $remote_id_attribute {
@@ -130,15 +132,9 @@ class keystone::federation::openidc (
     tag    => 'keystone-support-package',
   })
 
-  if $admin_port and $_keystone_admin_url {
-    keystone::federation::openidc_httpd_configuration{ 'admin':
-      keystone_endpoint => $_keystone_admin_url,
-    }
-  }
-
-  if $main_port and $_keystone_public_url {
-    keystone::federation::openidc_httpd_configuration{ 'main':
-      keystone_endpoint => $_keystone_public_url,
-    }
+  concat::fragment { 'configure_openidc_keystone':
+    target  => "${keystone::wsgi::apache::priority}-keystone_wsgi.conf",
+    content => template('keystone/openidc.conf.erb'),
+    order   => $template_order,
   }
 }

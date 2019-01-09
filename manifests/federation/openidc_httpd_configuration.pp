@@ -1,4 +1,6 @@
-# == define: keystone::federation::openidc_httpd_configuration  [70/1473]
+# == define: keystone::federation::openidc_httpd_configuration
+#
+# DEPRECATED!
 #
 # == Parameters
 #
@@ -10,9 +12,6 @@
 define keystone::federation::openidc_httpd_configuration (
   $keystone_endpoint = undef
 ) {
-  concat::fragment { "configure_openidc_on_${title}":
-    target  => "${keystone::wsgi::apache::priority}-keystone_wsgi_${title}.conf",
-    content => template('keystone/openidc.conf.erb'),
-    order   => $keystone::federation::openidc::template_order,
-  }
+
+  warning('keystone::federation::openidc_httpd_configuration is deprecated')
 }
