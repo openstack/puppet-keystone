@@ -17,10 +17,22 @@ upgrade:
     compatibility with port 35357 you should pass an array to api_port with
     both port 35357 and 5000.
   - |
+    Now that keystone::wsgi::apache::admin_bind_host is deprecated and has no effect
+    if you are deploying separated networks that was used by specifying admin_bind_host
+    and bind_host you must now merge the value set in admin_bind_host and set it together
+    with the value bind_host parameter. The default value for parameter bind_host has not
+    changed and is still undef which will the Keystone vhost listen to 0.0.0.0
+  - |
     The providers has been updated to read DEFAULT/public_port which defaults
     to 5000 and use that port to talk to Keystone when managing resources.
-    You need to make sure that keystone::public_port and keystone::wsgi::apache::api_port
-    is set to the same value if you are deploying keystone with Apache WSGI.
+    You need to make sure that keystone::public_port is set to *one* port that
+    Keystone is listening to that is configured with keystone::wsgi::apache::api_port
+    if you are deploying Keystone with Apache WSGI.
+  - |
+    If you are setting keystone::admin_bind_host and/or keystone::public_bind_host you
+    need to make sure they are properly set to networks which both have access to the port
+    specified in the new param keystone::wsgi::apache::api_port which is what Apache should
+    listen to and to the port configured with keystone::public_port that is used by providers.
   - |
     keystone::federation::mellon is now added to Keystone WSGI for port 5000 by
     default and admin_port and main_port parameters does not do anything and is
