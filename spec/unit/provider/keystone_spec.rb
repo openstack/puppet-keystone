@@ -157,73 +157,73 @@ id="the_user_id"
     end
   end
 
-  describe '#get_admin_endpoint' do
+  describe '#get_public_endpoint' do
     it 'should return nothing if there is no keystone config file' do
-      expect(klass.get_admin_endpoint).to be_nil
+      expect(klass.get_public_endpoint).to be_nil
     end
 
-    it 'should use the admin_endpoint from keystone config file with no trailing slash' do
-      mock = {'DEFAULT' => {'admin_endpoint' => 'https://keystone.example.com/'}}
+    it 'should use the public_endpoint from keystone config file with no trailing slash' do
+      mock = {'DEFAULT' => {'public_endpoint' => 'https://keystone.example.com/'}}
       File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)
       mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.get_admin_endpoint).to eq('https://keystone.example.com')
+      expect(klass.get_public_endpoint).to eq('https://keystone.example.com')
     end
 
-    it 'should use the specified bind_host in the admin endpoint' do
-      mock = {'DEFAULT' => {'admin_bind_host' => '192.168.56.210', 'public_port' => '5001' }}
+    it 'should use the specified bind_host in the public endpoint' do
+      mock = {'DEFAULT' => {'public_bind_host' => '192.168.56.210', 'public_port' => '5001' }}
       File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)
       mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.get_admin_endpoint).to eq('http://192.168.56.210:5001')
+      expect(klass.get_public_endpoint).to eq('http://192.168.56.210:5001')
     end
 
-    it 'should use localhost in the admin endpoint if bind_host is 0.0.0.0' do
-      mock = {'DEFAULT' => { 'admin_bind_host' => '0.0.0.0', 'public_port' => '5001' }}
+    it 'should use localhost in the public endpoint if bind_host is 0.0.0.0' do
+      mock = {'DEFAULT' => { 'public_bind_host' => '0.0.0.0', 'public_port' => '5001' }}
       File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)
       mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.get_admin_endpoint).to eq('http://127.0.0.1:5001')
+      expect(klass.get_public_endpoint).to eq('http://127.0.0.1:5001')
     end
 
-    it 'should use [::1] in the admin endpoint if bind_host is ::0' do
-      mock = {'DEFAULT' => { 'admin_bind_host' => '::0', 'public_port' => '5001' }}
+    it 'should use [::1] in the public endpoint if bind_host is ::0' do
+      mock = {'DEFAULT' => { 'public_bind_host' => '::0', 'public_port' => '5001' }}
       File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)
       mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.get_admin_endpoint).to eq('http://[::1]:5001')
+      expect(klass.get_public_endpoint).to eq('http://[::1]:5001')
     end
 
-    it 'should use [2620:52:0:23a9::25] in the admin endpoint if bind_host is 2620:52:0:23a9::25' do
-      mock = {'DEFAULT' => { 'admin_bind_host' => '2620:52:0:23a9::25', 'public_port' => '5001' }}
+    it 'should use [2620:52:0:23a9::25] in the public endpoint if bind_host is 2620:52:0:23a9::25' do
+      mock = {'DEFAULT' => { 'public_bind_host' => '2620:52:0:23a9::25', 'public_port' => '5001' }}
       File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)
       mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.get_admin_endpoint).to eq('http://[2620:52:0:23a9::25]:5001')
+      expect(klass.get_public_endpoint).to eq('http://[2620:52:0:23a9::25]:5001')
     end
 
-    it 'should use localhost in the admin endpoint if bind_host is unspecified' do
+    it 'should use localhost in the public endpoint if bind_host is unspecified' do
       mock = {'DEFAULT' => { 'public_port' => '5001' }}
       File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)
       mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.get_admin_endpoint).to eq('http://127.0.0.1:5001')
+      expect(klass.get_public_endpoint).to eq('http://127.0.0.1:5001')
     end
 
     it 'should use https if ssl is enabled' do
-      mock = {'DEFAULT' => {'admin_bind_host' => '192.168.56.210', 'public_port' => '5001' }, 'ssl' => {'enable' => 'True'}}
+      mock = {'DEFAULT' => {'public_bind_host' => '192.168.56.210', 'public_port' => '5001' }, 'ssl' => {'enable' => 'True'}}
       File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)
       mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.get_admin_endpoint).to eq('https://192.168.56.210:5001')
+      expect(klass.get_public_endpoint).to eq('https://192.168.56.210:5001')
     end
 
     it 'should use http if ssl is disabled' do
-      mock = {'DEFAULT' => {'admin_bind_host' => '192.168.56.210', 'public_port' => '5001' }, 'ssl' => {'enable' => 'False'}}
+      mock = {'DEFAULT' => {'public_bind_host' => '192.168.56.210', 'public_port' => '5001' }, 'ssl' => {'enable' => 'False'}}
       File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)
       mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.get_admin_endpoint).to eq('http://192.168.56.210:5001')
+      expect(klass.get_public_endpoint).to eq('http://192.168.56.210:5001')
     end
   end
 
@@ -251,10 +251,10 @@ id="the_user_id"
       expect(klass.get_auth_url).to eq('http://127.0.0.1:5001')
     end
 
-    it 'should use admin_endpoint when nothing else is available' do
+    it 'should use public_endpoint when nothing else is available' do
       ENV.clear
       mock = 'http://127.0.0.1:5001'
-      klass.expects(:admin_endpoint).returns(mock)
+      klass.expects(:public_endpoint).returns(mock)
       expect(klass.get_auth_url).to eq('http://127.0.0.1:5001')
     end
   end
@@ -270,10 +270,10 @@ id="the_user_id"
       expect(klass.get_service_url).to eq('http://127.0.0.1:5001/v3')
     end
 
-    it 'should use admin_endpoint with the API version number' do
+    it 'should use public_endpoint with the API version number' do
       ENV.clear
       mock = 'http://127.0.0.1:5001'
-      klass.expects(:admin_endpoint).twice.returns(mock)
+      klass.expects(:public_endpoint).twice.returns(mock)
       expect(klass.get_service_url).to eq('http://127.0.0.1:5001/v3')
     end
   end

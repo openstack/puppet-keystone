@@ -13,8 +13,8 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
 
   @@default_domain_id = nil
 
-  def self.admin_endpoint
-    @admin_endpoint ||= get_admin_endpoint
+  def self.public_endpoint
+    @public_endpoint ||= get_public_endpoint
   end
 
   def self.admin_token
@@ -169,14 +169,14 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
     raise e unless e.message =~ /No user with a name or ID/
   end
 
-  def self.get_admin_endpoint
+  def self.get_public_endpoint
     endpoint = nil
     if keystone_file
-      if url = get_section('DEFAULT', 'admin_endpoint')
+      if url = get_section('DEFAULT', 'public_endpoint')
         endpoint = url.chomp('/')
       else
         public_port = get_section('DEFAULT', 'public_port') || '5000'
-        host = clean_host(get_section('DEFAULT', 'admin_bind_host'))
+        host = clean_host(get_section('DEFAULT', 'public_bind_host'))
         protocol = ssl? ? 'https' : 'http'
         endpoint = "#{protocol}://#{host}:#{public_port}"
       end
@@ -194,7 +194,7 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
       auth_url = ENV['OS_AUTH_URL'].dup
     elsif auth_url = get_os_vars_from_rcfile(rc_filename)['OS_AUTH_URL']
     else
-      auth_url = admin_endpoint
+      auth_url = public_endpoint
     end
     return auth_url
   end
@@ -210,8 +210,8 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
     service_url = nil
     if ENV['OS_URL']
       service_url = ENV['OS_URL'].dup
-    elsif admin_endpoint
-      service_url = admin_endpoint
+    elsif public_endpoint
+      service_url = public_endpoint
       service_url << "/v#{@credentials.version}"
     end
     return service_url

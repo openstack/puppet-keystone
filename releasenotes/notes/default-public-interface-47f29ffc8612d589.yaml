@@ -1,0 +1,6 @@
+---
+other:
+  - |
+    The default interface for the keystone providers is to use the "public"
+    interface. This was changed from the "admin" one, since v3 doesn't require
+    it, and the keystone team even discourages using it.
