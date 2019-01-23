@@ -30,7 +30,6 @@ describe 'keystone' do
       'catalog_type'                       => 'sql',
       'catalog_driver'                     => false,
       'token_provider'                     => 'fernet',
-      'token_driver'                       => 'sql',
       'password_hash_algorithm'            => '<SERVICE DEFAULT>',
       'password_hash_rounds'               => '<SERVICE DEFAULT>',
       'revoke_driver'                      => 'sql',
@@ -75,7 +74,6 @@ describe 'keystone' do
       'admin_password'                     => 'admin_openstack_password',
       'catalog_type'                       => 'template',
       'token_provider'                     => 'uuid',
-      'token_driver'                       => 'kvs',
       'password_hash_algorithm'            => 'pbkdf2_sha512',
       'password_hash_rounds'               => '29000',
       'revoke_driver'                      => 'kvs',
@@ -178,10 +176,6 @@ describe 'keystone' do
     it { is_expected.to contain_keystone_config('token/provider').with_value(
       param_hash['token_provider']
     ) }
-
-    it 'should contain correct token driver' do
-      is_expected.to contain_keystone_config('token/driver').with_value(param_hash['token_driver'])
-    end
 
     it 'should contain correct revoke driver' do
       is_expected.to contain_keystone_config('revoke/driver').with_value(param_hash['revoke_driver'])
@@ -420,7 +414,6 @@ describe 'keystone' do
     let :params do
       {
         'admin_token'                  => 'service_token',
-        'token_driver'                 => 'memcache',
         'cache_backend'                => 'dogpile.cache.memcached',
         'cache_backend_argument'       => ['url:SERVER1:12211'],
         'cache_memcache_servers'       => 'SERVER1:11211,SERVER2:11211',
@@ -444,24 +437,12 @@ describe 'keystone' do
     it { is_expected.to contain_keystone_config('cache/memcache_pool_maxsize').with_value('1000') }
     it { is_expected.to contain_keystone_config('cache/memcache_pool_unused_timeout').with_value('60') }
     it { is_expected.to contain_keystone_config('cache/memcache_servers').with_value('SERVER1:11211,SERVER2:11211') }
-    it {
-      if facts[:os_package_type] == 'debian'
-        pkg = 'python3-memcache'
-      else
-        pkg = 'python-memcache'
-      end
-      is_expected.to contain_package('python-memcache').with(
-        :name   => pkg,
-        :ensure => 'present'
-      )
-    }
   end
 
   describe 'configure cache memcache servers if set' do
     let :params do
       {
         'admin_token'                          => 'service_token',
-        'token_driver'                         => 'noop',
         'cache_backend'                        => 'dogpile.cache.memcached',
         'cache_backend_argument'               => ['url:SERVER3:12211'],
         'cache_memcache_servers'               => [ 'SERVER1:11211', 'SERVER2:11211' ],
@@ -489,14 +470,12 @@ describe 'keystone' do
     it { is_expected.to contain_keystone_config('cache/memcache_pool_connection_get_timeout').with_value('30') }
     it { is_expected.to contain_keystone_config('cache/memcache_servers').with_value('SERVER1:11211,SERVER2:11211') }
     it { is_expected.to contain_oslo__cache('keystone_config').with_manage_backend_package(false) }
-    it { is_expected.not_to contain_package('python-memcache') }
   end
 
   describe 'configure cache enabled if set' do
     let :params do
       {
         'admin_token'                          => 'service_token',
-        'token_driver'                         => 'memcache',
         'cache_backend'                        => 'dogpile.cache.memcached',
         'cache_backend_argument'               => ['url:SERVER3:12211'],
         'cache_enabled'                        => true,
@@ -523,10 +502,6 @@ describe 'keystone' do
     it { is_expected.to contain_keystone_config('cache/memcache_pool_unused_timeout').with_value('60') }
     it { is_expected.to contain_keystone_config('cache/memcache_pool_connection_get_timeout').with_value('30') }
     it { is_expected.to contain_keystone_config('cache/memcache_servers').with_value('SERVER1:11211,SERVER2:11211') }
-    it { is_expected.to contain_package('python-memcache').with(
-      :name   => 'python-memcache',
-      :ensure => 'present'
-    ) }
   end
 
   describe 'configure memcache servers with a string' do

@@ -51,10 +51,6 @@
 #   Defaults to 'fernet'
 #   Supports fernet or uuid.
 #
-# [*token_driver*]
-#   (optional) Driver to use for managing tokens.
-#   Defaults to 'sql'
-#
 # [*token_expiration*]
 #   (optional) Amount of time a token should remain valid (seconds).
 #   Defaults to 3600 (1 hour).
@@ -560,6 +556,10 @@
 #   created unless enable_pki_setup is set to True.
 #   Defaults to undef
 #
+# [*token_driver*]
+#   (optional) Driver to use for managing tokens.
+#   Defaults to undef
+#
 # == Dependencies
 #  None
 #
@@ -603,7 +603,6 @@ class keystone(
   $catalog_driver                       = false,
   $catalog_template_file                = '/etc/keystone/default_catalog.templates',
   $token_provider                       = 'fernet',
-  $token_driver                         = 'sql',
   $token_expiration                     = 3600,
   $password_hash_algorithm              = $::os_service_default,
   $password_hash_rounds                 = $::os_service_default,
@@ -692,6 +691,7 @@ class keystone(
   $public_workers                       = $::os_workers,
   $paste_config                         = undef,
   $cache_dir                            = undef,
+  $token_driver                         = undef,
 ) inherits keystone::params {
 
   include ::keystone::deps
@@ -705,6 +705,10 @@ class keystone(
 
   if $cache_dir {
     warning('keystone::cache_dir is deprecated, has no effect and will be removed in a later release')
+  }
+
+  if $token_driver {
+    warning('keystone::token_driver is deprecated, has no effect and will be removed in a later release')
   }
 
   if ! $catalog_driver {
@@ -776,17 +780,7 @@ admin_token will be removed in a later release")
     'DEFAULT/admin_endpoint': value => $admin_endpoint;
   }
 
-  # requirements for memcache token driver
-  if ($token_driver =~ /memcache/ ) {
-    ensure_packages('python-memcache', {
-      ensure => present,
-      name   => $::keystone::params::python_memcache_package_name,
-      tag    => ['openstack'],
-    })
-  }
-
   keystone_config {
-    'token/driver':     value => $token_driver;
     'token/expiration': value => $token_expiration;
   }
 

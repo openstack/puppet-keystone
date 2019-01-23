@@ -1,0 +1,14 @@
+---
+deprecations:
+  - |
+    The keystone::token_driver is now deprecated, has no effect and will
+    be removed in a future release.
+upgrade:
+  - |
+    The keystone::token_driver parameter which has had no effect that past
+    couple of releases and is now deprecated. This parameter if it was set
+    to memcache would install the appropriate python-memcache package.
+    Now that this is removed you need to ensure keystone::manage_backend_package
+    is set properly if you have caching enabled since that manages that package
+    now. The default value for manage_backend_package is true so if you don't
+    set it explicitly to false there is no change required on your part.
