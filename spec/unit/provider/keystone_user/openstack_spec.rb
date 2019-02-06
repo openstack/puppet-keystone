@@ -172,6 +172,35 @@ ac43ec53d5a74a0b9f51523ae41a29f0
       expect(password).to eq('pass_one')
     end
 
+    it 'checks the password with some projects disabled' do
+      mock_creds = Puppet::Provider::Openstack::CredentialsV3.new
+      mock_creds.auth_url   = 'http://127.0.0.1:5000'
+      mock_creds.password   = 'pass_one'
+      mock_creds.username   = 'user_one'
+      mock_creds.user_id    = 'project1_id'
+      mock_creds.project_id = 'project-id-2'
+      Puppet::Provider::Openstack::CredentialsV3.expects(:new).returns(mock_creds)
+
+      described_class.expects(:openstack)
+        .with('project', 'list', '--quiet', '--format', 'csv',
+              ['--user', 'user1_id', '--long'])
+        .returns('"ID","Name","Domain ID","Description","Enabled"
+"project-id-1","domain_one","domain1_id","Domain One",False
+"project-id-2","domain_one","domain1_id","Domain One",True
+"project-id-3","domain_one","domain1_id","Domain One",False
+')
+      Puppet::Provider::Openstack.expects(:openstack)
+        .with('token', 'issue', ['--format', 'value'])
+        .returns('2015-05-14T04:06:05Z
+e664a386befa4a30878dcef20e79f167
+8dce2ae9ecd34c199d2877bf319a3d06
+ac43ec53d5a74a0b9f51523ae41a29f0
+')
+      provider.expects(:id).times(2).returns('user1_id')
+      password = provider.password
+      expect(password).to eq('pass_one')
+    end
+
     it 'fails the password check' do
       described_class.expects(:openstack)
         .with('project', 'list', '--quiet', '--format', 'csv',

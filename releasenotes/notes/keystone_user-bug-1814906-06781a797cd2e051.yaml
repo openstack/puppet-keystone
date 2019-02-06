@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    Fixed a bug where the keystone_user resource would test the password with
+    a disabled project causing it to think the password was changed when it
+    actually wasn't.
