@@ -121,11 +121,17 @@ Puppet::Type.type(:keystone_user).provide(
       # will know we are doing v3password auth - otherwise, it is not used.  The
       # user_id uniquely identifies the user including domain.
       credentials.username = resource[:name]
+
       # Need to specify a project id to get a project scoped token.  List
-      # all of the projects for the user, and use the id from the first one.
+      # all of the projects for the user, and use the id for the first one
+      # that is enabled then fallback to domain id only.
       projects = self.class.request('project', 'list', ['--user', id, '--long'])
-      if projects && projects[0] && projects[0][:id]
-        credentials.project_id = projects[0][:id]
+      first_project = nil
+      if projects && projects.respond_to?(:each)
+        first_project = projects.detect { |p| p && p[:id] && p[:enabled] == 'True' }
+      end
+      if not first_project.nil?
+        credentials.project_id = first_project[:id]
       else
         # last chance - try a domain scoped token
         credentials.domain_id = domain_id
