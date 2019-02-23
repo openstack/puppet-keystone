@@ -45,7 +45,7 @@ class keystone::db::mysql(
 
   include ::keystone::deps
 
-  validate_string($password)
+  validate_legacy(String, 'validate_string', $password)
 
   ::openstacklib::db::mysql { 'keystone':
     user          => $user,

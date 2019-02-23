@@ -496,7 +496,8 @@ and \"${domain_dir_enabled}\" for identity/domain_config_dir"
   if(bool2num($domain_enabled) == 0) {
     fail($err_msg)
   }
-  validate_re($domain_dir_enabled, '^/.+', $err_msg)
+
+  validate_legacy(Pattern[/^\/.+/], 'validate_re', $domain_dir_enabled, [$err_msg])
 
   if (!defined(File[$domain_dir_enabled])) {
     ensure_resource('file', $domain_dir_enabled, {

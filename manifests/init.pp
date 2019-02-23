@@ -712,7 +712,7 @@ class keystone(
   }
 
   if ! $catalog_driver {
-    validate_re($catalog_type, 'template|sql')
+    validate_legacy(Enum['template', 'sql'], 'validate_re', $catalog_type)
   }
 
   if ($admin_endpoint and 'v2.0' in $admin_endpoint) {
@@ -963,7 +963,7 @@ running as a standalone service, or httpd for being run by a httpd server")
 
   # Fernet tokens support
   if $enable_fernet_setup {
-    validate_string($fernet_key_repository)
+    validate_legacy(String, 'validate_string', $fernet_key_repository)
     ensure_resource('file', $fernet_key_repository, {
       ensure    => 'directory',
       owner     => $keystone_user,
@@ -973,7 +973,7 @@ running as a standalone service, or httpd for being run by a httpd server")
     })
 
   if $fernet_keys {
-      validate_hash($fernet_keys)
+      validate_legacy(Hash, 'validate_hash', $fernet_keys)
       create_resources('file', $fernet_keys, {
           'owner'     => $keystone_user,
           'group'     => $keystone_group,
@@ -999,7 +999,7 @@ running as a standalone service, or httpd for being run by a httpd server")
 
   # Credential support
   if $enable_credential_setup {
-    validate_string($credential_key_repository)
+    validate_legacy(String, 'validate_string', $credential_key_repository)
     ensure_resource('file', $credential_key_repository, {
       ensure    => 'directory',
       owner     => $keystone_user,
@@ -1009,7 +1009,7 @@ running as a standalone service, or httpd for being run by a httpd server")
     })
 
     if $credential_keys {
-      validate_hash($credential_keys)
+      validate_legacy(Hash, 'validate_hash', $credential_keys)
       create_resources('file', $credential_keys, {
           'owner'     => $keystone_user,
           'group'     => $keystone_group,
@@ -1094,7 +1094,8 @@ running as a standalone service, or httpd for being run by a httpd server")
   }
 
   if $using_domain_config {
-    validate_absolute_path($domain_config_directory)
+    validate_legacy(Stdlib::Absolutepath, 'validate_absolute_path', $domain_config_directory)
+
     # Better than ensure resource.  We don't want to conflict with any
     # user definition even if they don't match exactly our parameters.
     # The error catching mechanism in the provider will remind them if

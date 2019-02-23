@@ -283,11 +283,11 @@ define keystone::resource::authtoken(
   }
 
   if !is_service_default($include_service_catalog) {
-    validate_bool($include_service_catalog)
+    validate_legacy(Boolean, 'validate_bool', $include_service_catalog)
   }
 
   if !is_service_default($memcache_use_advanced_pool) {
-    validate_bool($memcache_use_advanced_pool)
+    validate_legacy(Boolean, 'validate_bool', $memcache_use_advanced_pool)
   }
 
   if! ($memcache_security_strategy in [$::os_service_default,'MAC','ENCRYPT']) {
@@ -299,7 +299,7 @@ define keystone::resource::authtoken(
   }
 
   if !is_service_default($delay_auth_decision) {
-    validate_bool($delay_auth_decision)
+    validate_legacy(Boolean, 'validate_bool', $delay_auth_decision)
   }
 
   if !is_service_default($memcached_servers) and !empty($memcached_servers){

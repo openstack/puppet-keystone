@@ -97,7 +97,7 @@ describe 'keystone::resource::service_identity' do
         required_params.merge(:ensure => 'badvalue')
       end
 
-      it { is_expected.to raise_error Puppet::Error, /Valid values for ensure parameter are present or absent/ }
+      it { should raise_error(Puppet::Error) }
     end
 
     context 'when explicitly setting an region' do
@@ -135,7 +135,8 @@ describe 'keystone::resource::service_identity' do
         required_params.delete(:service_type)
         required_params
       end
-      it_raises 'a Puppet::Error', /When configuring a service, you need to set the service_type parameter/
+
+      it { should raise_error(Puppet::Error) }
     end
 
     context 'when trying to create an endpoint without url' do
@@ -143,7 +144,8 @@ describe 'keystone::resource::service_identity' do
         required_params.delete(:public_url)
         required_params
       end
-      it_raises 'a Puppet::Error', /When configuring an endpoint, you need to set the _url parameters/
+
+      it { should raise_error(Puppet::Error) }
     end
 
     context 'with user domain' do

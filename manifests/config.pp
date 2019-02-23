@@ -33,7 +33,8 @@ class keystone::config (
 
   include ::keystone::deps
 
-  validate_hash($keystone_config)
+  validate_legacy(Hash, 'validate_hash', $keystone_config)
+
   create_resources('keystone_config', $keystone_config)
 
   if $keystone_paste_ini {
