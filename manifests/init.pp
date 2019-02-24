@@ -4,21 +4,21 @@
 # == Parameters
 #
 # [*package_ensure*]
-#   (optional) Desired ensure state of packages.
+#   (Optional) Desired ensure state of packages.
 #   accepts latest or specific versions.
 #   Defaults to present.
 #
 # [*client_package_ensure*]
-#   (optional) Desired ensure state of the client package.
+#   (Optional) Desired ensure state of the client package.
 #   accepts latest or specific versions.
 #   Defaults to present.
 #
 # [*public_port*]
-#   (optional) Port that keystone binds to.
+#   (Optional) Port that keystone binds to.
 #   Defaults to '5000'
 #
 # [*admin_port*]
-#   (optional) Port that can be used for admin tasks.
+#   (Optional) Port that can be used for admin tasks.
 #   Defaults to '35357'
 #
 # [*admin_token*]
@@ -34,41 +34,41 @@
 #   Required.
 #
 # [*catalog_type*]
-#   (optional) Type of catalog that keystone uses to store endpoints,services.
+#   (Optional) Type of catalog that keystone uses to store endpoints,services.
 #   Defaults to sql. (Also accepts template)
 #
 # [*catalog_driver*]
-#   (optional) Catalog driver used by Keystone to store endpoints and services.
+#   (Optional) Catalog driver used by Keystone to store endpoints and services.
 #   Setting this value will override and ignore catalog_type.
 #   Defaults to false.
 #
 # [*catalog_template_file*]
-#   (optional) Path to the catalog used if catalog_type equals 'template'.
+#   (Optional) Path to the catalog used if catalog_type equals 'template'.
 #   Defaults to '/etc/keystone/default_catalog.templates'
 #
 # [*token_provider*]
-#   (optional) Format keystone uses for tokens.
+#   (Optional) Format keystone uses for tokens.
 #   Defaults to 'fernet'
 #   Supports fernet or uuid.
 #
 # [*token_expiration*]
-#   (optional) Amount of time a token should remain valid (seconds).
+#   (Optional) Amount of time a token should remain valid (seconds).
 #   Defaults to 3600 (1 hour).
 #
 # [*password_hash_algorithm*]
-#   (optional) The password hash algorithm to use.
+#   (Optional) The password hash algorithm to use.
 #   Defaults to $::os_service_default
 #
 # [*password_hash_rounds*]
-#   (optional) The amount of rounds to do on the hash.
+#   (Optional) The amount of rounds to do on the hash.
 #   Defaults to $::os_service_default
 #
 # [*revoke_driver*]
-#   (optional) Driver for token revocation.
+#   (Optional) Driver for token revocation.
 #   Defaults to $::os_service_default
 #
 # [*revoke_by_id*]
-#   (optional) Revoke token by token identifier.
+#   (Optional) Revoke token by token identifier.
 #   Setting revoke_by_id to true enables various forms of enumerating tokens.
 #   These enumerations are processed to determine the list of tokens to revoke.
 #   Only disable if you are switching to using the Revoke extension with a backend
@@ -76,23 +76,23 @@
 #   Defaults to true.
 #
 # [*cache_backend*]
-#   (optional) Dogpile.cache backend module. It is recommended that Memcache with pooling
+#   (Optional) Dogpile.cache backend module. It is recommended that Memcache with pooling
 #   (keystone.cache.memcache_pool) or Redis (dogpile.cache.redis) be used in production.
 #   This has no effect unless cache_enabled is true and cache_memcache_servers is set.
 #   Defaults to $::os_service_default
 #
 # [*cache_backend_argument*]
-#   (optional) List of arguments in format of argname:value supplied to the backend module.
+#   (Optional) List of arguments in format of argname:value supplied to the backend module.
 #   Specify this option once per argument to be passed to the dogpile.cache backend.
 #   This has no effect unless cache_backend and cache_enabled is set.
 #   Default to $::os_service_default
 #
 # [*cache_enabled*]
-#   (optional) Setting this boolean will enable the caching backend for Keystone.
+#   (Optional) Setting this boolean will enable the caching backend for Keystone.
 #   Defaults to $::os_service_default
 #
 # [*cache_memcache_servers*]
-#   (optional) List of memcache servers to be used with the caching backend to
+#   (Optional) List of memcache servers to be used with the caching backend to
 #   configure cache/memcache_servers. This has no effect unless cache_backend
 #   is set and cache_enabled is true.
 #   Specified as a comma separated string of 'server:port,server:port' or an
@@ -100,7 +100,7 @@
 #   Default to $::os_service_default
 #
 # [*debug_cache_backend*]
-#   (optional) Extra debugging from the cache backend (cache keys, get/set/delete calls).
+#   (Optional) Extra debugging from the cache backend (cache keys, get/set/delete calls).
 #   Default to $::os_service_default
 #
 # [*cache_config_prefix*]
@@ -124,7 +124,7 @@
 #   Defaults to $::os_service_default
 #
 # [*token_caching*]
-#   (optional) Toggle for token system caching. This has no effect unless
+#   (Optional) Toggle for token system caching. This has no effect unless
 #   cache_backend, cache_enabled and cache_memcache_servers is set.
 #   Default to $::os_service_default
 #
@@ -133,50 +133,50 @@
 #   Defaults to true.
 #
 # [*enabled*]
-#  (optional) If the keystone services should be enabled.
+#   (Optional) If the keystone services should be enabled.
 #   Default to true.
 #
 # [*database_connection*]
-#   (optional) Url used to connect to database.
+#   (Optional) Url used to connect to database.
 #   Defaults to undef.
 #
 # [*database_idle_timeout*]
-#   (optional) Timeout when db connections should be reaped.
+#   (Optional) Timeout when db connections should be reaped.
 #   Defaults to undef.
 #
 # [*database_max_retries*]
-#   (optional) Maximum number of database connection retries during startup.
+#   (Optional) Maximum number of database connection retries during startup.
 #   Setting -1 implies an infinite retry count.
 #   (Defaults to undef)
 #
 # [*database_retry_interval*]
-#   (optional) Interval between retries of opening a database connection.
+#   (Optional) Interval between retries of opening a database connection.
 #   (Defaults to undef)
 #
 # [*database_min_pool_size*]
-#   (optional) Minimum number of SQL connections to keep open in a pool.
+#   (Optional) Minimum number of SQL connections to keep open in a pool.
 #   Defaults to: undef
 #
 # [*database_max_pool_size*]
-#   (optional) Maximum number of SQL connections to keep open in a pool.
+#   (Optional) Maximum number of SQL connections to keep open in a pool.
 #   Defaults to: undef
 #
 # [*database_max_overflow*]
-#   (optional) If set, use this value for max_overflow with sqlalchemy.
+#   (Optional) If set, use this value for max_overflow with sqlalchemy.
 #   Defaults to: undef
 #
 # [*default_transport_url*]
-#    (optional) A URL representing the messaging driver to use and its full
-#    configuration. Transport URLs take the form:
-#      transport://user:pass@host1:port[,hostN:portN]/virtual_host
-#    Defaults to $::os_service_default
+#   (Optional) A URL representing the messaging driver to use and its full
+#   configuration. Transport URLs take the form:
+#     transport://user:pass@host1:port[,hostN:portN]/virtual_host
+#   Defaults to $::os_service_default
 #
 # [*rabbit_ha_queues*]
 #   (Optional) Use HA queues in RabbitMQ.
 #   Defaults to $::os_service_default
 #
 # [*rabbit_heartbeat_timeout_threshold*]
-#   (optional) Number of seconds after which the RabbitMQ broker is considered
+#   (Optional) Number of seconds after which the RabbitMQ broker is considered
 #   down if the heartbeat keepalive fails.  Any value >0 enables heartbeats.
 #   Heartbeating helps to ensure the TCP connection to RabbitMQ isn't silently
 #   closed, resulting in missed or lost messages from the queue.
@@ -184,30 +184,30 @@
 #   Defaults to $::os_service_default
 #
 # [*rabbit_heartbeat_rate*]
-#   (optional) How often during the rabbit_heartbeat_timeout_threshold period to
+#   (Optional) How often during the rabbit_heartbeat_timeout_threshold period to
 #   check the heartbeat on RabbitMQ connection.  (i.e. rabbit_heartbeat_rate=2
 #   when rabbit_heartbeat_timeout_threshold=60, the heartbeat will be checked
 #   every 30 seconds.
 #   Defaults to $::os_service_default
 #
 # [*rabbit_use_ssl*]
-#   (optional) Connect over SSL for RabbitMQ
+#   (Optional) Connect over SSL for RabbitMQ
 #   Defaults to $::os_serice_default
 #
 # [*kombu_ssl_ca_certs*]
-#   (optional) SSL certification authority file (valid only if SSL enabled).
+#   (Optional) SSL certification authority file (valid only if SSL enabled).
 #   Defaults to $::os_service_default
 #
 # [*kombu_ssl_certfile*]
-#   (optional) SSL cert file (valid only if SSL enabled).
+#   (Optional) SSL cert file (valid only if SSL enabled).
 #   Defaults to $::os_service_default
 #
 # [*kombu_ssl_keyfile*]
-#   (optional) SSL key file (valid only if SSL enabled).
+#   (Optional) SSL key file (valid only if SSL enabled).
 #   Defaults to $::os_service_default
 #
 # [*kombu_ssl_version*]
-#   (optional) SSL version to use (valid only if SSL enabled).
+#   (Optional) SSL version to use (valid only if SSL enabled).
 #   Valid values are TLSv1, SSLv23 and SSLv3. SSLv2 may be
 #   available on some distributions.
 #   Defaults to $::os_service_default
@@ -224,13 +224,13 @@
 #   Defaults to $::os_service_default
 #
 # [*kombu_compression*]
-#   (optional) Possible values are: gzip, bz2. If not set compression will not
+#   (Optional) Possible values are: gzip, bz2. If not set compression will not
 #   be used. This option may notbe available in future versions. EXPERIMENTAL.
 #   (string value)
 #   Defaults to $::os_service_default
 #
 # [*notification_transport_url*]
-#   (optional) A URL representing the messaging driver to use for notifications
+#   (Optional) A URL representing the messaging driver to use for notifications
 #   and its full configuration. Transport URLs take the form:
 #     transport://user:pass@host1:port[,hostN:portN]/virtual_host
 #   Defaults to $::os_service_default
@@ -240,7 +240,7 @@
 #   Defaults to $::os_service_default
 #
 # [*notification_topics*]
-#   (optional) AMQP topics to publish to when using the RPC notification driver.
+#   (Optional) AMQP topics to publish to when using the RPC notification driver.
 #   (list value)
 #   Default to $::os_service_default
 #
@@ -249,33 +249,33 @@
 #   Default to undef
 #
 # [*control_exchange*]
-#   (optional) AMQP exchange to connect to if using RabbitMQ
+#   (Optional) AMQP exchange to connect to if using RabbitMQ
 #   (string value)
 #   Default to $::os_service_default
 #
 # [*rpc_response_timeout*]
-#  (Optional) Seconds to wait for a response from a call.
-#  Defaults to $::os_service_default
+#   (Optional) Seconds to wait for a response from a call.
+#   Defaults to $::os_service_default
 #
 # [*public_bind_host*]
-#   (optional) The IP address of the public network interface to listen on
+#   (Optional) The IP address of the public network interface to listen on
 #   Default to '0.0.0.0'.
 #
 # [*admin_bind_host*]
-#   (optional) The IP address of the public network interface to listen on
+#   (Optional) The IP address of the public network interface to listen on
 #   Default to '0.0.0.0'.
 #
 # [*log_dir*]
-#   (optional) Directory where logs should be stored
+#   (Optional) Directory where logs should be stored
 #   If set to $::os_service_default, it will not log to any directory
 #   Defaults to undef.
 #
 # [*log_file*]
-#   (optional) Where to log
+#   (Optional) Where to log
 #   Defaults to undef.
 #
 # [*public_endpoint*]
-#   (optional) The base public endpoint URL for keystone that are
+#   (Optional) The base public endpoint URL for keystone that are
 #   advertised to clients (NOTE: this does NOT affect how
 #   keystone listens for connections) (string value)
 #   If set to false, no public_endpoint will be defined in keystone.conf.
@@ -283,7 +283,7 @@
 #   Defaults to $::os_service_default
 #
 # [*admin_endpoint*]
-#   (optional) The base admin endpoint URL for keystone that are
+#   (Optional) The base admin endpoint URL for keystone that are
 #   advertised to clients (NOTE: this does NOT affect how keystone listens
 #   for connections) (string value)
 #   If set to false, no admin_endpoint will be defined in keystone.conf.
@@ -291,53 +291,53 @@
 #   Defaults to $::os_service_default
 #
 # [*enable_ssl*]
-#   (optional) Toggle for SSL support on the keystone eventlet servers.
+#   (Optional) Toggle for SSL support on the keystone eventlet servers.
 #   (boolean value)
 #   Defaults to false
 #
 # [*ssl_certfile*]
-#   (optional) Path of the certfile for SSL. (string value)
+#   (Optional) Path of the certfile for SSL. (string value)
 #   Defaults to '/etc/keystone/ssl/certs/keystone.pem'
 #
 # [*ssl_keyfile*]
-#   (optional) Path of the keyfile for SSL. (string value)
+#   (Optional) Path of the keyfile for SSL. (string value)
 #   Defaults to '/etc/keystone/ssl/private/keystonekey.pem'
 #
 # [*ssl_ca_certs*]
-#   (optional) Path of the ca cert file for SSL. (string value)
+#   (Optional) Path of the ca cert file for SSL. (string value)
 #   Defaults to '/etc/keystone/ssl/certs/ca.pem'
 #
 # [*ssl_ca_key*]
-#   (optional) Path of the CA key file for SSL (string value)
+#   (Optional) Path of the CA key file for SSL (string value)
 #   Defaults to '/etc/keystone/ssl/private/cakey.pem'
 #
 # [*ssl_cert_subject*]
-#   (optional) SSL Certificate Subject (auto generated certificate)
+#   (Optional) SSL Certificate Subject (auto generated certificate)
 #   (string value)
 #   Defaults to '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost'
 #
 # [*validate_service*]
-#   (optional) Whether to validate keystone connections after
+#   (Optional) Whether to validate keystone connections after
 #   the service is started.
 #   Defaults to false
 #
 # [*validate_insecure*]
-#   (optional) Whether to validate keystone connections
+#   (Optional) Whether to validate keystone connections
 #   using the --insecure option with keystone client.
 #   Defaults to false
 #
 # [*validate_cacert*]
-#   (optional) Whether to validate keystone connections
+#   (Optional) Whether to validate keystone connections
 #   using the specified argument with the --os-cacert option
 #   with keystone client.
 #   Defaults to undef
 #
 # [*validate_auth_url*]
-#   (optional) The url to validate keystone against
+#   (Optional) The url to validate keystone against
 #   Defaults to undef
 #
 # [*service_name*]
-#   (optional) Name of the service that will be providing the
+#   (Optional) Name of the service that will be providing the
 #   server functionality of keystone.  For example, the default
 #   is just 'keystone', which means keystone will be run as a
 #   standalone eventlet service, and will able to be managed
@@ -358,17 +358,17 @@
 #   NOTE: validate_service only applies if the default value is used.
 #
 # [*max_token_size*]
-#   (optional) maximum allowable Keystone token size
+#   (Optional) maximum allowable Keystone token size
 #   Defaults to $::os_service_default
 #
 # [*admin_workers*]
-#   (optional) The number of worker processes to serve the admin eventlet application.
+#   (Optional) The number of worker processes to serve the admin eventlet application.
 #   This option is deprecated along with eventlet and will be removed in M.
 #   This setting has no affect when using WSGI.
 #   Defaults to $::os_workers
 #
 # [*public_workers*]
-#   (optional) The number of worker processes to serve the public eventlet application.
+#   (Optional) The number of worker processes to serve the public eventlet application.
 #   This option is deprecated along with eventlet and will be removed in M.
 #   This setting has no affect when using WSGI.
 #   Defaults to $::os_workers
@@ -444,15 +444,12 @@
 #
 # [*enable_bootstrap*]
 #   (Optional) Enable keystone bootstrapping.
-#   Per upstream Keystone Mitaka commit 7b7fea7a3fe7677981fbf9bac5121bc15601163
-#   keystone no longer creates the default domain during the db_sync. This
-#   domain is used as the domain for any users created using the legacy v2.0
-#   API. This option to true will automatically bootstrap the default domain
+#   This option to true will automatically bootstrap the default domain
 #   user by running 'keystone-manage bootstrap'.
 #   Defaults to true
-
+#
 # [*default_domain*]
-#   (optional) When Keystone v3 support is enabled, v2 clients will need
+#   (Optional) When Keystone v3 support is enabled, v2 clients will need
 #   to have a domain assigned for certain operations.  For example,
 #   doing a user create operation must have a domain associated with it.
 #   This is the domain which will be used if a domain is needed and not
@@ -462,33 +459,33 @@
 #   Defaults to undef (will use built-in Keystone default)
 #
 # [*member_role_id*]
-#   (optional) # Similar to the member_role_name option, this represents the
+#   (Optional) Similar to the member_role_name option, this represents the
 #   default role ID used to associate users with their default projects in the
 #   v2 API. This will be used as the explicit role where one is not specified
 #   by the v2 API.
 #   Defaults to $::os_service_default
 #
 # [*member_role_name*]
-#   (optional) # This is the role name used in combination with the
+#   (Optional) # This is the role name used in combination with the
 #   member_role_id option; see that option for more detail.
 #   Defaults to $::os_service_default
 #
 # [*memcache_dead_retry*]
-#   (optional) Number of seconds memcached server is considered dead before it
+#   (Optional) Number of seconds memcached server is considered dead before it
 #   is tried again. This is used for the cache memcache_dead_retry and the
 #   memcache dead_retry values.
 #   Defaults to $::os_service_default
 #
 # [*memcache_socket_timeout*]
-#   (optional) Timeout in seconds for every call to a server.
+#   (Optional) Timeout in seconds for every call to a server.
 #   Defaults to $::os_service_default
 #
 # [*memcache_pool_maxsize*]
-#   (optional) Max total number of open connections to every memcached server.
+#   (Optional) Max total number of open connections to every memcached server.
 #   Defaults to $::os_service_default
 #
 # [*memcache_pool_unused_timeout*]
-#   (optional) Number of seconds a connection to memcached is held unused in
+#   (Optional) Number of seconds a connection to memcached is held unused in
 #   the pool before it is closed.
 #   Defaults to $::os_service_default
 #
@@ -506,27 +503,27 @@
 #   Defaults to $::os_service_default.
 #
 # [*using_domain_config*]
-#   (optional) Eases the use of the keystone_domain_config resource type.
+#   (Optional) Eases the use of the keystone_domain_config resource type.
 #   It ensures that a directory for holding the domain configuration is present
 #   and the associated configuration in keystone.conf is set up right.
 #   Defaults to false
 #
 # [*domain_config_directory*]
-#   (optional) Specify a domain configuration directory.
+#   (Optional) Specify a domain configuration directory.
 #   For this to work the using_domain_config must be set to true.  Raise an
 #   error if it's not the case.
 #   Defaults to '/etc/keystone/domains'
 #
 # [*keystone_user*]
-#   (optional) Specify the keystone system user to be used with keystone-manage.
+#   (Optional) Specify the keystone system user to be used with keystone-manage.
 #   Defaults to $::keystone::params::keystone_user
 #
 # [*keystone_group*]
-#   (optional) Specify the keystone system group to be used with keystone-manage.
+#   (Optional) Specify the keystone system group to be used with keystone-manage.
 #   Defaults to $::keystone::params::keystone_group
 #
 # [*manage_policyrcd*]
-#   (optional) Whether to manage the policy-rc.d on debian based systems to
+#   (Optional) Whether to manage the policy-rc.d on debian based systems to
 #   prevent keystone eventlet and apache from auto-starting on package install.
 #   Defaults to false
 #
@@ -536,28 +533,28 @@
 #   Defaults to $::os_service_default.
 #
 # [*purge_config*]
-#   (optional) Whether to set only the specified config options
+#   (Optional) Whether to set only the specified config options
 #   in the keystone config.
 #   Defaults to false.
 #
 # [*amqp_durable_queues*]
-#   (optional) Whether to use durable queues in AMQP.
+#   (Optional) Whether to use durable queues in AMQP.
 #   Defaults to $::os_service_default.
 #
 # === DEPRECATED PARAMETERS
 #
 # [*paste_config*]
-#   (optional) Name of the paste configuration file that defines the
+#   (Optional) Name of the paste configuration file that defines the
 #   available pipelines. (string value)
 #   Defaults to undef
 #
 # [*cache_dir*]
-#   (optional) Directory created when token_provider is pki. This folder is not
+#   (Optional) Directory created when token_provider is pki. This folder is not
 #   created unless enable_pki_setup is set to True.
 #   Defaults to undef
 #
 # [*token_driver*]
-#   (optional) Driver to use for managing tokens.
+#   (Optional) Driver to use for managing tokens.
 #   Defaults to undef
 #
 # == Dependencies
