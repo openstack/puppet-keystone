@@ -252,7 +252,8 @@ describe 'keystone::ldap_backend' do
       file {'/etc/keystone/keystone.conf': ensure => present }
       EOM
       end
-      it_raises 'a Puppet::Error', /You should add/
+
+      it { should raise_error(Puppet::Error) }
     end
 
     context 'Missing identity/domain_config_dir' do
@@ -262,7 +263,8 @@ describe 'keystone::ldap_backend' do
       file {'/etc/keystone/keystone.conf': ensure => present }
       EOM
       end
-      it_raises 'a Puppet::Error', /You should add/
+
+      it { should raise_error(Puppet::Error) }
     end
 
   end

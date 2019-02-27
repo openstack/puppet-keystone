@@ -133,7 +133,8 @@ define keystone::resource::service_identity(
 
   include ::keystone::deps
 
-  validate_re($ensure, ['^present$', '^absent$'], 'Valid values for ensure parameter are present or absent')
+  validate_legacy(Enum['present', 'absent'], 'validate_re', $ensure,
+    [['^present$', '^absent$'], 'Valid values for ensure parameter are present or absent'])
 
   if $service_name == undef {
     $service_name_real = $auth_name

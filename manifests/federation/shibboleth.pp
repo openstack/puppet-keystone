@@ -86,7 +86,7 @@ Apache + Shibboleth SP setups, where a REMOTE_USER env variable is always set, e
     fail('Methods should contain saml2 as one of the auth methods.')
   }
 
-  validate_bool($suppress_warning)
+  validate_legacy(Boolean, 'validate_bool', $suppress_warning)
 
   keystone_config {
     'auth/methods': value  => join(any2array($methods),',');

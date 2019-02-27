@@ -66,8 +66,8 @@ class keystone::db (
   $database_retry_interval_real = pick($::keystone::database_retry_interval, $database_retry_interval)
   $database_max_overflow_real = pick($::keystone::database_max_overflow, $database_max_overflow)
 
-  validate_re($database_connection_real,
-    '^(sqlite|mysql(\+pymysql)?|postgresql):\/\/(\S+:\S+@\S+\/\S+)?')
+  validate_legacy(Oslo::Dbconn, 'validate_re', $database_connection_real,
+    ['^(sqlite|mysql(\+pymysql)?|postgresql):\/\/(\S+:\S+@\S+\/\S+)?'])
 
   oslo::db { 'keystone_config':
     db_max_retries => $database_db_max_retries,

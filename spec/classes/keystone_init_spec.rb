@@ -354,7 +354,7 @@ describe 'keystone' do
           :catalog_type => 'invalid' }
       end
 
-      it_raises "a Puppet::Error", /validate_re\(\): "invalid" does not match "template|sql"/
+      it { should raise_error(Puppet::Error) }
     end
 
     describe 'when configuring catalog driver' do
@@ -1070,10 +1070,8 @@ describe 'keystone' do
           'domain_config_directory' => 'this/is/not/an/absolute/path'
         })
       end
-      it 'should raise an error' do
-        expect { should contain_file('/etc/keystone/domains') }
-          .to raise_error(Puppet::Error, %r(this/is/not/an/absolute/path" is not))
-      end
+
+      it { should raise_error(Puppet::Error) }
     end
     describe 'when setting domain directory and not using domain config' do
       let :params do
