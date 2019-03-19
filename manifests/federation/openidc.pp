@@ -35,8 +35,41 @@
 #  (Optional) String value.
 #  Defaults to 'id_token'
 #
+# [*openidc_cache_type*]
+#  (Optional) mod_auth_openidc cache type.  Can be any cache type
+#  supported by mod_auth_openidc (shm, file, memcache, redis).
+#  Defaults to undef.
+#
+# [*openidc_cache_shm_max*]
+#  (Optional) The maximum number of name/value pair entries that can
+#  be cached when using the 'shm' cache type. Defaults to undef.
+#
+# [*openidc_cache_shm_entry_size*]
+#  (Optional) The maximum size for a single shm cache entry in bytes
+#  with a minimum of 8464 bytes. Defaults to undef.
+#
+# [*openidc_cache_dir*]
+#  (Optional) # Directory that holds cache files; must be writable
+#  for the Apache process/user. Defaults to undef.
+#
+# [*openidc_cache_clean_interval*]
+#  (Optional) # Cache file clean interval in seconds (only triggered
+#  on writes). Defaults to undef.
+#
+# [*memcached_servers*]
+#  (Optional) A list of memcache servers. Defaults to undef.
+#
+# [*redis_server*]
+#  (Optional) Specifies the Redis server used for caching as
+#  <hostname>[:<port>]. Defaults to undef.
+#
+# [*redis_password*]
+#  (Optional) Password to be used if the Redis server requires
+#  authentication. When not specified, no authentication is
+#  performed. Defaults to undef.
+#
 # [*remote_id_attribute*]
-#  (optional) Value to be used to obtain the entity ID of the Identity
+#  (Optional) Value to be used to obtain the entity ID of the Identity
 #  Provider from the environment.
 #
 # [*template_order*]
@@ -50,7 +83,7 @@
 #  (Optional) Defaults to 331.
 #
 # [*package_ensure*]
-#   (optional) Desired ensure state of packages.
+#   (Optional) Desired ensure state of packages.
 #   accepts latest or specific versions.
 #   Defaults to present.
 #
@@ -75,15 +108,23 @@ class keystone::federation::openidc (
   $openidc_provider_metadata_url,
   $openidc_client_id,
   $openidc_client_secret,
-  $openidc_crypto_passphrase   = 'openstack',
-  $openidc_response_type       = 'id_token',
-  $remote_id_attribute         = undef,
-  $template_order              = 331,
-  $package_ensure              = present,
-  $keystone_url                = undef,
+  $openidc_crypto_passphrase    = 'openstack',
+  $openidc_response_type        = 'id_token',
+  $openidc_cache_type           = undef,
+  $openidc_cache_shm_max        = undef,
+  $openidc_cache_shm_entry_size = undef,
+  $openidc_cache_dir            = undef,
+  $openidc_cache_clean_interval = undef,
+  $memcached_servers            = undef,
+  $redis_server                 = undef,
+  $redis_password               = undef,
+  $remote_id_attribute          = undef,
+  $template_order               = 331,
+  $package_ensure               = present,
+  $keystone_url                 = undef,
   # DEPRECATED
-  $admin_port                  = undef,
-  $main_port                   = undef,
+  $admin_port                   = undef,
+  $main_port                    = undef,
 ) {
 
   include ::apache
@@ -102,6 +143,8 @@ class keystone::federation::openidc (
   if $admin_port or $main_port {
     warning('keystone::federation::openidc::admin_port and main_port are deprecated and have no effect')
   }
+
+  $memcached_servers_real = join(any2array($memcached_servers), ' ')
 
   # Note: if puppet-apache modify these values, this needs to be updated
   if $template_order <= 330 or $template_order >= 999 {

@@ -7,6 +7,31 @@
   OIDCClientSecret "<%= scope['keystone::federation::openidc::openidc_client_secret']-%>"
   OIDCCryptoPassphrase "<%= scope['keystone::federation::openidc::openidc_crypto_passphrase']-%>"
 
+<%- if scope['::keystone::federation::openidc::openidc_cache_type'] != nil -%>
+  OIDCCacheType <%= scope['::keystone::federation::openidc::openidc_cache_type'] %>
+<%- end -%>
+<%- if scope['::keystone::federation::openidc::openidc_cache_shm_max'] != nil -%>
+  OIDCCacheShmMax scope['::keystone::federation::openidc::openidc_cache_shm_max'] %>
+<%- end -%>
+<%- if scope['::keystone::federation::openidc::openidc_cache_shm_entry_size'] != nil -%>
+  OIDCCacheShmEntrySize scope['::keystone::federation::openidc::openidc_cache_shm_entry_size'] %>
+<%- end -%>
+<%- if scope['::keystone::federation::openidc::openidc_cache_dir'] != nil -%>
+  OIDCCacheDir scope['::keystone::federation::openidc::openidc_cache_dir'] %>
+<%- end -%>
+<%- if scope['::keystone::federation::openidc::openidc_cache_clean_interval'] != nil -%>
+  OIDCCacheFileCleanInterval scope['::keystone::federation::openidc::openidc_cache_clean_interval'] %>
+<%- end -%>
+<%- if scope['::keystone::federation::openidc::memcached_servers_real'] -%>
+  OIDCMemCacheServers "<%= scope['::keystone::federation::openidc::_memcached_servers'] %>"
+<%- end -%>
+<%- if scope['::keystone::federation::openidc::redis_server'] != nil -%>
+  OIDCRedisCacheServer scope['::keystone::federation::openidc::redis_server'] %>
+<%- end -%>
+<%- if scope['::keystone::federation::openidc::redis_password'] != nil -%>
+  OIDCRedisCachecPassword scope['::keystone::federation::openidc::redis_password'] %>
+<%- end -%>
+
   # The following directives are required to support openidc from the command
   # line
   <Location ~ "/v3/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::openidc::idp_name']-%>/protocols/openid/auth">
