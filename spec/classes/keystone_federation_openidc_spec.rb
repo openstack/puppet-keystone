@@ -48,6 +48,11 @@ describe 'keystone::federation::openidc' do
       params.merge!(:template_port => 999)
       it_raises 'a Puppet:Error', /The template order should be greater than 330 and less than 999./
     end
+
+    before do
+      params.merge!(:openidc_enable_oauth => true)
+      it_raises 'a Puppet:Error', /You must set openidc_introspection_endpoint when enabling oauth support/
+    end
   end
 
   on_supported_os({
@@ -87,7 +92,23 @@ describe 'keystone::federation::openidc' do
         expect(content).to match('OIDCProviderMetadataURL "https://accounts.google.com/.well-known/openid-configuration"')
         expect(content).to match('OIDCClientID "openid_client_id"')
         expect(content).to match('OIDCClientSecret "openid_client_secret"')
-        expect(content).to match('OS-FEDERATION/identity_providers/myidp/protocols/openid/auth')
+      end
+    end
+
+    context 'with oauth enabled' do
+      before do
+        params.merge!({
+          :openidc_enable_oauth => true,
+          :openidc_introspection_endpoint => 'http://example.com',
+        })
+      end
+
+      it 'should contain oauth config' do
+        content = get_param('concat::fragment', 'configure_openidc_keystone', 'content')
+        expect(content).to match('OIDCOAuthClientID "openid_client_id"')
+        expect(content).to match('OIDCOAuthClientSecret "openid_client_secret"')
+        expect(content).to match('OIDCOAuthIntrospectionEndpoint "http://example.com"')
+        expect(content).to match('/v3/OS-FEDERATION/identity_providers/myidp/protocols/openid/auth')
       end
     end
 

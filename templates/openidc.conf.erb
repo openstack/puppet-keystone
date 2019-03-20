@@ -32,13 +32,6 @@
   OIDCRedisCachecPassword scope['::keystone::federation::openidc::redis_password'] %>
 <%- end -%>
 
-  # The following directives are required to support openidc from the command
-  # line
-  <Location ~ "/v3/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::openidc::idp_name']-%>/protocols/openid/auth">
-      AuthType oauth20
-      Require valid-user
-  </Location>
-
   # The following directives are necessary to support websso from Horizon
   # (Per https://docs.openstack.org/keystone/pike/advanced-topics/federation/websso.html)
   OIDCRedirectURI "<%= @keystone_url_real -%>/v3/auth/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::openidc::idp_name']-%>/protocols/openid/websso"
@@ -53,3 +46,14 @@
       AuthType "openid-connect"
       Require valid-user
   </LocationMatch>
+
+<%- if scope['::keystone::federation::openidc::openidc_enable_oauth'] -%>
+  OIDCOAuthClientID "<%= scope['keystone::federation::openidc::openidc_client_id']-%>"
+  OIDCOAuthClientSecret "<%= scope['keystone::federation::openidc::openidc_client_secret']-%>"
+  OIDCOAuthIntrospectionEndpoint "<%= scope['keystone::federation::openidc::openidc_introspection_endpoint']-%>"
+
+  <Location ~ "/v3/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::openidc::idp_name']-%>/protocols/openid/auth">
+      AuthType oauth20
+      Require valid-user
+  </Location>
+<%- end -%>

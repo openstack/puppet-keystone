@@ -49,12 +49,18 @@
 #  with a minimum of 8464 bytes. Defaults to undef.
 #
 # [*openidc_cache_dir*]
-#  (Optional) # Directory that holds cache files; must be writable
+#  (Optional) Directory that holds cache files; must be writable
 #  for the Apache process/user. Defaults to undef.
 #
 # [*openidc_cache_clean_interval*]
-#  (Optional) # Cache file clean interval in seconds (only triggered
+#  (Optional) Cache file clean interval in seconds (only triggered
 #  on writes). Defaults to undef.
+#
+# [*openidc_enable_oauth*]
+#  (Optional) Set to true to enable oauthsupport.
+#
+# [*openidc_introspection_endpoint*]
+#  (Required if oauth is enabled) Oauth introspection endpoint url.
 #
 # [*memcached_servers*]
 #  (Optional) A list of memcache servers. Defaults to undef.
@@ -108,23 +114,25 @@ class keystone::federation::openidc (
   $openidc_provider_metadata_url,
   $openidc_client_id,
   $openidc_client_secret,
-  $openidc_crypto_passphrase    = 'openstack',
-  $openidc_response_type        = 'id_token',
-  $openidc_cache_type           = undef,
-  $openidc_cache_shm_max        = undef,
-  $openidc_cache_shm_entry_size = undef,
-  $openidc_cache_dir            = undef,
-  $openidc_cache_clean_interval = undef,
-  $memcached_servers            = undef,
-  $redis_server                 = undef,
-  $redis_password               = undef,
-  $remote_id_attribute          = undef,
-  $template_order               = 331,
-  $package_ensure               = present,
-  $keystone_url                 = undef,
+  $openidc_crypto_passphrase      = 'openstack',
+  $openidc_response_type          = 'id_token',
+  $openidc_cache_type             = undef,
+  $openidc_cache_shm_max          = undef,
+  $openidc_cache_shm_entry_size   = undef,
+  $openidc_cache_dir              = undef,
+  $openidc_cache_clean_interval   = undef,
+  $openidc_enable_oauth           = false,
+  $openidc_introspection_endpoint = undef,
+  $memcached_servers              = undef,
+  $redis_server                   = undef,
+  $redis_password                 = undef,
+  $remote_id_attribute            = undef,
+  $template_order                 = 331,
+  $package_ensure                 = present,
+  $keystone_url                   = undef,
   # DEPRECATED
-  $admin_port                   = undef,
-  $main_port                    = undef,
+  $admin_port                     = undef,
+  $main_port                      = undef,
 ) {
 
   include ::apache
@@ -142,6 +150,10 @@ class keystone::federation::openidc (
 
   if $admin_port or $main_port {
     warning('keystone::federation::openidc::admin_port and main_port are deprecated and have no effect')
+  }
+
+  if $openidc_enable_oauth and !$openidc_introspection_endpoint {
+    fail('You must set openidc_introspection_endpoint when enabling oauth support')
   }
 
   $memcached_servers_real = join(any2array($memcached_servers), ' ')
