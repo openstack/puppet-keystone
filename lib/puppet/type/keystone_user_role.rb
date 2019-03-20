@@ -95,8 +95,11 @@ Puppet::Type.newtype(:keystone_user_role) do
         r[:ensure] == :present
     end
     rv = [self[:user_domain]]
-    rv << self[:project_domain] if parameter_set?(:project_domain)
-    rv << self[:domain]         if parameter_set?(:domain)
+    if parameter_set?(:domain)
+      rv << self[:domain]
+    else
+      rv << self[:project_domain]
+    end
     # Only used to display the deprecation warning.
     rv << default_domain.name   unless default_domain.nil?
     rv
@@ -113,7 +116,6 @@ Puppet::Type.newtype(:keystone_user_role) do
     domain = user
     user_domain = Regexp.new(/(?:[^:@]|:[^:@])+/)
     project = user_domain
-    unset = ->(_) { PuppetX::Keystone::CompositeNamevar::Unset }
     [
       [
         # fully qualified user with fully qualified project
@@ -127,14 +129,11 @@ Puppet::Type.newtype(:keystone_user_role) do
       ],
       # fully qualified user with domain
       [
-        /^(#{user})::(#{user_domain})@::(#{domain})($)/,
+        /^(#{user})::(#{user_domain})@::(#{domain})$/,
         [
           [:user],
           [:user_domain],
-          [:domain],
-          # Don't want to have project_domain set to default, while
-          # not used.
-          [:project_domain, unset]
+          [:domain]
         ]
       ],
       # fully qualified user with project
@@ -157,11 +156,10 @@ Puppet::Type.newtype(:keystone_user_role) do
       ],
       # user with domain
       [
-        /^(#{user})@::(#{domain})($)/,
+        /^(#{user})@::(#{domain})$/,
         [
           [:user],
-          [:domain],
-          [:project_domain, unset]
+          [:domain]
         ]
       ],
       # user with project
