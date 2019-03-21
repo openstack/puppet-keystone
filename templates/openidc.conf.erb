@@ -23,10 +23,10 @@
   OIDCCacheFileCleanInterval scope['::keystone::federation::openidc::openidc_cache_clean_interval'] %>
 <%- end -%>
 <%- if scope['::keystone::federation::openidc::memcached_servers_real'] -%>
-  OIDCMemCacheServers "<%= scope['::keystone::federation::openidc::_memcached_servers'] %>"
+  OIDCMemCacheServers "<%= scope['::keystone::federation::openidc::memcached_servers_real'] %>"
 <%- end -%>
 <%- if scope['::keystone::federation::openidc::redis_server'] != nil -%>
-  OIDCRedisCacheServer scope['::keystone::federation::openidc::redis_server'] %>
+  OIDCRedisCacheServer "<%= scope['::keystone::federation::openidc::redis_server'] %>"
 <%- end -%>
 <%- if scope['::keystone::federation::openidc::redis_password'] != nil -%>
   OIDCRedisCachecPassword scope['::keystone::federation::openidc::redis_password'] %>

@@ -2,6 +2,10 @@ require 'spec_helper'
 
 describe 'keystone::federation::openidc' do
 
+  def get_param(type, title, param)
+    catalogue.resource(type, title).send(:parameters)[param.to_sym]
+  end
+
   let(:pre_condition) do
     <<-EOS
     class { 'keystone':
@@ -65,6 +69,8 @@ describe 'keystone::federation::openidc' do
       end
     end
 
+    it { is_expected.to contain_package(platform_parameters[:openidc_package_name]) }
+
     context 'with only required parameters' do
       it 'should have basic params for openidc in Keystone configuration' do
         is_expected.to contain_keystone_config('auth/methods').with_value('password, token, openid')
@@ -75,6 +81,14 @@ describe 'keystone::federation::openidc' do
         :target => "10-keystone_wsgi.conf",
         :order  => params[:template_order],
       })}
+
+      it 'should contain expected config' do
+        content = get_param('concat::fragment', 'configure_openidc_keystone', 'content')
+        expect(content).to match('OIDCProviderMetadataURL "https://accounts.google.com/.well-known/openid-configuration"')
+        expect(content).to match('OIDCClientID "openid_client_id"')
+        expect(content).to match('OIDCClientSecret "openid_client_secret"')
+        expect(content).to match('OS-FEDERATION/identity_providers/myidp/protocols/openid/auth')
+      end
     end
 
     context 'with remote id attribute' do
@@ -90,6 +104,30 @@ describe 'keystone::federation::openidc' do
 
     end
 
-    it { is_expected.to contain_package(platform_parameters[:openidc_package_name]) }
+    context 'with memcached_servers attribute' do
+      before do
+        params.merge!({
+          :memcached_servers => ['127.0.0.1:11211', '127.0.0.2:11211'],
+        })
+      end
+
+      it 'should contain memcache servers' do
+        content = get_param('concat::fragment', 'configure_openidc_keystone', 'content')
+        expect(content).to match('OIDCMemCacheServers "127.0.0.1:11211 127.0.0.2:11211"')
+      end
+    end
+
+    context 'with redis_server attribute' do
+      before do
+        params.merge!({
+          :redis_server => '127.0.0.1',
+        })
+      end
+
+      it 'should contain redis server' do
+        content = get_param('concat::fragment', 'configure_openidc_keystone', 'content')
+        expect(content).to match('OIDCRedisCacheServer "127.0.0.1"')
+      end
+    end
   end
 end
