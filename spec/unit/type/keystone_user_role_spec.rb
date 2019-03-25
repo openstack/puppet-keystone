@@ -40,7 +40,7 @@ describe Puppet::Type.type(:keystone_user_role) do
         :user           => user,
         :user_domain    => 'user_domain',
         :project        => PuppetX::Keystone::CompositeNamevar::Unset,
-        :project_domain => PuppetX::Keystone::CompositeNamevar::Unset,
+        :project_domain => 'Default',
         :domain         => 'domain'
     end
 
@@ -67,7 +67,7 @@ describe Puppet::Type.type(:keystone_user_role) do
         :user           => user,
         :user_domain    => 'Default',
         :project        => PuppetX::Keystone::CompositeNamevar::Unset,
-        :project_domain => PuppetX::Keystone::CompositeNamevar::Unset,
+        :project_domain => 'Default',
         :domain         => 'domain'
     end
 
