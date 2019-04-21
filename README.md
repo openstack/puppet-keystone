@@ -333,4 +333,4 @@ Release Notes
 Repository
 ----------
 
-* https://git.openstack.org/cgit/openstack/puppet-keystone
+* https://opendev.org/openstack/puppet-keystone
