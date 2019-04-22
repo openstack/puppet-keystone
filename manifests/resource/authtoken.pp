@@ -196,6 +196,16 @@
 #  (Optional) Whether to install the python-memcache package.
 #  Defaults to false.
 #
+# [*service_token_roles*]
+#  (Optional) A choice of roles that must be present in a service token.
+#  Service tokens are allowed to request that an expired token
+#  can be used and so this check should tightly control that
+#  only actual services should be sending this token. Roles
+#  here are applied as an ANY check so any role in this list
+#  must be present. For backwards compatibility reasons this
+#  currently only affects the allow_expired check. (list value)
+#  Defaults to $::os_service_default.
+#
 # [*service_token_roles_required*]
 #  (optional) backwards compatibility to ensure that the service tokens are
 #  compared against a list of possible roles for validity
@@ -259,6 +269,7 @@ define keystone::resource::authtoken(
   $region_name                    = $::os_service_default,
   $token_cache_time               = $::os_service_default,
   $manage_memcache_package        = false,
+  $service_token_roles            = $::os_service_default,
   $service_token_roles_required   = $::os_service_default,
   # DEPRECATED PARAMETERS
   $auth_uri                       = undef,
@@ -350,6 +361,7 @@ define keystone::resource::authtoken(
     'keystone_authtoken/project_name'                   => {'value' => $project_name},
     'keystone_authtoken/project_domain_name'            => {'value' => $project_domain_name},
     'keystone_authtoken/insecure'                       => {'value' => $insecure},
+    'keystone_authtoken/service_token_roles'            => {'value' => $service_token_roles},
     'keystone_authtoken/service_token_roles_required'   => {'value' => $service_token_roles_required},
   }
   create_resources($name, $keystonemiddleware_options)
