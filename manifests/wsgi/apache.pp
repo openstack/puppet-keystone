@@ -328,4 +328,23 @@ please use custom_wsgi_process_options')
     error_log_pipe              => $error_log_pipe,
     error_log_syslog            => $error_log_syslog,
   }
+
+  # Workaround to empty Keystone vhost that is provided & activated by default with running
+  # Canonical packaging (called 'keystone'). This will make sure upgrading the package is
+  # possible, see https://bugs.launchpad.net/ubuntu/+source/keystone/+bug/1737697
+  if ($::operatingsystem == 'Ubuntu') {
+    ensure_resource('file', '/etc/apache2/sites-available/keystone.conf', {
+      'ensure'  => 'file',
+      'content' => '',
+    })
+    ensure_resource('file', '/etc/apache2/sites-enabled/keystone.conf', {
+      'ensure'  => 'file',
+      'content' => '',
+    })
+
+    Package<| tag == 'keystone-package' |>
+      -> File<| title == '/etc/apache2/sites-available/keystone.conf' |>
+      -> File<| title == '/etc/apache2/sites-enabled/keystone.conf'|>
+      ~> Anchor['keystone::install::end']
+  }
 }

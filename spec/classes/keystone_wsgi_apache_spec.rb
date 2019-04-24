@@ -178,6 +178,18 @@ describe 'keystone::wsgi::apache' do
     end
   end
 
+  shared_examples 'keystone::wsgi::apache on Ubuntu' do
+    context 'with default parameters' do
+      it {
+        is_expected.to contain_file('/etc/apache2/sites-available/keystone.conf').with(
+          :ensure  => 'file',
+          :content => '')
+        is_expected.to contain_file('/etc/apache2/sites-enabled/keystone.conf').with(
+          :ensure  => 'file',
+          :content => '')
+      }
+    end
+  end
   on_supported_os({
     :supported_os => OSDefaults.get_supported_os
   }).each do |os,facts|
@@ -208,6 +220,9 @@ describe 'keystone::wsgi::apache' do
       end
 
       it_behaves_like 'keystone::wsgi::apache'
+      if facts[:operatingsystem] == 'Ubuntu'
+        it_behaves_like 'keystone::wsgi::apache on Ubuntu'
+      end
     end
   end
 end
