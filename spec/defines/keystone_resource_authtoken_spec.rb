@@ -45,6 +45,7 @@ describe 'keystone::resource::authtoken' do
         is_expected.to contain_keystone_config('keystone_authtoken/memcache_use_advanced_pool').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('keystone_authtoken/memcached_servers').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('keystone_authtoken/region_name').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/service_token_roles').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('keystone_authtoken/service_token_roles_required').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('keystone_authtoken/token_cache_time').with_value('<SERVICE DEFAULT>')
       end
@@ -75,6 +76,7 @@ describe 'keystone::resource::authtoken' do
           :include_service_catalog      => false,
           :keyfile                      => 'somekey.key',
           :region_name                  => 'MyRegion',
+          :service_token_roles          => 'service',
           :service_token_roles_required => false,
           :token_cache_time             => '20',
         })
@@ -107,6 +109,7 @@ describe 'keystone::resource::authtoken' do
         is_expected.to contain_keystone_config('keystone_authtoken/memcache_use_advanced_pool').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('keystone_authtoken/memcached_servers').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('keystone_authtoken/region_name').with_value(params[:region_name])
+        is_expected.to contain_keystone_config('keystone_authtoken/service_token_roles').with_value(params[:service_token_roles])
         is_expected.to contain_keystone_config('keystone_authtoken/service_token_roles_required').with_value(params[:service_token_roles_required])
         is_expected.to contain_keystone_config('keystone_authtoken/token_cache_time').with_value(params[:token_cache_time])
       end

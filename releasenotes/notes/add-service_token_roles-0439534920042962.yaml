@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Add support to configure `[keystone_authtoken]/service_token_roles` with
+    `$service_token_roles` in the `keystone::resource::authtoken` resource.
