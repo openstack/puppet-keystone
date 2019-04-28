@@ -169,7 +169,7 @@ describe 'keystone' do
     end
 
     it 'should contain correct mysql config' do
-      is_expected.to contain_keystone_config('database/idle_timeout').with_value(param_hash['database_idle_timeout'])
+      is_expected.to contain_keystone_config('database/connection_recycle_time').with_value(param_hash['database_idle_timeout'])
       is_expected.to contain_keystone_config('database/connection').with_value(param_hash['database_connection']).with_secret(true)
     end
 
