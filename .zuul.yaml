@@ -19,9 +19,8 @@
       TripleO standalone Job running Identity specific Tempest tests.
     vars:
       featureset_override:
-        run_tempest: true
-        tempest_whitelist:
+        run_tempest: false
+        tempest_test_whitelist:
           - 'identity'
           - 'keystone-tempest-plugin'
-        tempest_plugins:
-          - 'python-keystone-tests-tempest'
+        use_os_tempest: true
