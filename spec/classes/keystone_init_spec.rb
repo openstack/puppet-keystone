@@ -46,8 +46,6 @@ describe 'keystone' do
       'ssl_cert_subject'                   => '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
       'enabled'                            => true,
       'manage_service'                     => true,
-      'database_connection'                => 'sqlite:////var/lib/keystone/keystone.db',
-      'database_idle_timeout'              => '200',
       'default_transport_url'              => '<SERVICE DEFAULT>',
       'notification_transport_url'         => '<SERVICE DEFAULT>',
       'rabbit_heartbeat_timeout_threshold' => '<SERVICE DEFAULT>',
@@ -88,8 +86,6 @@ describe 'keystone' do
       'ssl_cert_subject'                   => '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
       'enabled'                            => false,
       'manage_service'                     => true,
-      'database_connection'                => 'mysql://a:b@c/d',
-      'database_idle_timeout'              => '300',
       'default_transport_url'              => 'rabbit://user:pass@host:1234/virt',
       'notification_transport_url'         => 'rabbit://user:pass@host:1234/virt',
       'rabbit_heartbeat_timeout_threshold' => '60',
@@ -169,8 +165,7 @@ describe 'keystone' do
     end
 
     it 'should contain correct mysql config' do
-      is_expected.to contain_keystone_config('database/connection_recycle_time').with_value(param_hash['database_idle_timeout'])
-      is_expected.to contain_keystone_config('database/connection').with_value(param_hash['database_connection']).with_secret(true)
+      is_expected.to contain_class('keystone::db')
     end
 
     it { is_expected.to contain_keystone_config('token/provider').with_value(
