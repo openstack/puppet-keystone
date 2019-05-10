@@ -133,68 +133,6 @@
 #   (Optional) apache::vhost wsgi_chunked_request parameter.
 #   Defaults to undef
 #
-## DEPRECATED PARAMS
-#
-# [*servername_admin*]
-#   (Optional) The servername for the admin virtualhost.
-#   Defaults to undef
-#
-# [*public_port*]
-#   (Optional) The public port.
-#   Defaults to undef
-#
-# [*admin_port*]
-#   (Optional) The admin port.
-#   Defaults to undef
-#
-# [*admin_bind_host*]
-#   (Optional) The host/ip address Apache will listen on for admin API connections.
-#   Defaults to undef
-#
-# [*public_path*]
-#   (Optional) The prefix for the public endpoint.
-#   Defaults to undef
-#
-# [*admin_path*]
-#   (Optional) The prefix for the admin endpoint.
-#   Defaults to undef
-#
-# [*ssl_cert_admin*]
-#   (Optional) Path to SSL certificate for the admin endpoint.
-#   Default to undef
-#
-# [*ssl_key_admin*]
-#   (Optional) Path to SSL key for the admin endpoint.
-#   Default to undef
-#
-# [*wsgi_admin_script_source*]
-#   (Optional) Wsgi script source for the admin endpoint. If set to undef
-#   $::keystone::params::keystone_wsgi_admin_script_path is used. This source
-#   is copied to the apache cgi-bin path as keystone-admin.
-#   Defaults to undef
-#
-# [*wsgi_public_script_source*]
-#   (Optional) Wsgi script source for the public endpoint. If set to undef
-#   $::keystone::params::keystone_wsgi_public_script_path is used. This source
-#   is copied to the apache cgi-bin path as keystone-main.
-#   Defaults to undef
-#
-# [*custom_wsgi_process_options_main*]
-#   (Optional) gives you the oportunity to add custom process options or to
-#   overwrite the default options for the WSGI main process.
-#   For example to use a virtual python environment for the WSGI process
-#   you could set it to:
-#   { python-path => '/my/python/virtualenv' }
-#   Defaults to undef
-#
-# [*custom_wsgi_process_options_admin*]
-#   (Optional) gives you the oportunity to add custom process options or to
-#   overwrite the default options for the WSGI admin process.
-#   eg. to use a virtual python environment for the WSGI process
-#   you could set it to:
-#   { python-path => '/my/python/virtualenv' }
-#   Defaults to undef
-#
 class keystone::wsgi::apache (
   $servername                        = $::fqdn,
   $bind_host                         = undef,
@@ -225,46 +163,9 @@ class keystone::wsgi::apache (
   $headers                           = undef,
   $vhost_custom_fragment             = undef,
   $custom_wsgi_process_options       = {},
-  ## DEPRECATED PARAMS
-  $servername_admin                  = undef,
-  $public_port                       = undef,
-  $admin_port                        = undef,
-  $admin_bind_host                   = undef,
-  $public_path                       = undef,
-  $admin_path                        = undef,
-  $ssl_cert_admin                    = undef,
-  $ssl_key_admin                     = undef,
-  $wsgi_admin_script_source          = undef,
-  $wsgi_public_script_source         = undef,
-  $custom_wsgi_process_options_main  = undef,
-  $custom_wsgi_process_options_admin = undef,
 ) inherits ::keystone::params {
 
   include ::keystone::deps
-
-  # TODO(tobias-urdin): Remove all deprecated parameters and this warnings in Train release.
-  if $servername_admin {
-    warning('keystone::wsgi::apache::servername_admin has no effect, please use servername')
-  }
-  if $public_port or $admin_port {
-    warning('keystone::wsgi::apache::public_port and admin_port has no effect, please use api_port')
-  }
-  if $admin_bind_host {
-    warning('keystone::wsgi::apache::admin_bind_host has no effect, please use bind_host')
-  }
-  if $public_path or $admin_path {
-    warning('keystone::wsgi::apache::public_path and admin_path has no effect, please use path')
-  }
-  if $ssl_cert_admin or $ssl_key_admin {
-    warning('keystone::wsgi::apache::ssl_cert_admin and ssl_key_admin has no effect, please use ssl_cert and ssl_key')
-  }
-  if $wsgi_admin_script_source or $wsgi_public_script_source {
-    warning('keystone::wsgi::apache::wsgi_admin_script_source and wsgi_public_script_source has no effect, please use wsgi_script_source')
-  }
-  if $custom_wsgi_process_options_main or $custom_wsgi_process_options_admin {
-    warning('keystone::wsgi::apache::custom_wsgi_process_options_main and custom_wsgi_process_options_admin has no effect, \
-please use custom_wsgi_process_options')
-  }
 
   # TODO(tobias-urdin): This dependency chaining can be moved to keystone::deps
   # when we have cleaned up some old eventlet code and users are forced to use

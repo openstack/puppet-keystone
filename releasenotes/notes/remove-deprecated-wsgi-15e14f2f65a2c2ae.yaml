@@ -1,0 +1,13 @@
+---
+upgrade:
+  - |
+    The deprecated parameters in keystone::wsgi::apache is removed, see below
+    for what parameters you should use instead.
+
+      - Removed ``servername_admin`` please use ``servername``
+      - Removed ``public_port`` and ``admin_port`` please use ``api_port``
+      - Removed ``admin_bind_host`` please use ``bind_host``
+      - Removed ``public_path`` and ``admin_path`` please use ``path``
+      - Removed ``ssl_cert_admin`` and ``ssl_key_admin`` please use ``ssl_cert`` and ``ssl_key``
+      - Removed ``wsgi_admin_script_source`` and ``wsgi_public_script_source`` please use ``wsgi_script_source``
+      - Removed ``custom_wsgi_process_options_main`` and ``custom_wsgi_process_options_admin`` please use ``custom_wsgi_process_options``
