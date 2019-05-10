@@ -2,6 +2,9 @@
 #
 # == Parameters
 #
+# [*keystone_url*]
+#  (Required) URL to keystone endpoint.
+#
 # [*methods*]
 #  A list of methods used for authentication separated by comma or an array.
 #  The allowed values are: 'external', 'password', 'token', 'oauth1', 'saml2',
@@ -89,26 +92,12 @@
 #  (Optional) Defaults to 331.
 #
 # [*package_ensure*]
-#   (Optional) Desired ensure state of packages.
-#   accepts latest or specific versions.
-#   Defaults to present.
-#
-# [*keystone_url*]
-#   (optional) URL to keystone endpoint.
-#
-# === DEPRECATED
-#
-# [*admin_port*]
-#  A boolean value to ensure that you want to configure openidc Federation
-#  using Keystone VirtualHost on port 35357.
-#  (Optional) Defaults to undef.
-#
-# [*main_port*]
-#  A boolean value to ensure that you want to configure openidc Federation
-#  using Keystone VirtualHost on port 5000.
-#  (Optional) Defaults to undef.
+#  (Optional) Desired ensure state of packages.
+#  accepts latest or specific versions.
+#  Defaults to present.
 #
 class keystone::federation::openidc (
+  $keystone_url,
   $methods,
   $idp_name,
   $openidc_provider_metadata_url,
@@ -129,28 +118,11 @@ class keystone::federation::openidc (
   $remote_id_attribute            = undef,
   $template_order                 = 331,
   $package_ensure                 = present,
-  $keystone_url                   = undef,
-  # DEPRECATED
-  $admin_port                     = undef,
-  $main_port                      = undef,
 ) {
 
   include ::apache
   include ::keystone::deps
   include ::keystone::params
-
-  # TODO(tobias-urdin): Make keystone_url required when keystone::public_endpoint is removed.
-  # Dont forget to change the keystone_url_real variable in the templates/openidc.conf.rb file.
-  # The fail statement below can also be removed since keystone_url will be a required parameter.
-  $keystone_url_real = pick($keystone_url, $::keystone::public_endpoint)
-
-  if $keystone_url_real == undef or is_service_default($keystone_url_real) {
-    fail('You must set either keystone_url or keystone::public_endpoint')
-  }
-
-  if $admin_port or $main_port {
-    warning('keystone::federation::openidc::admin_port and main_port are deprecated and have no effect')
-  }
 
   if $openidc_enable_oauth and !$openidc_introspection_endpoint {
     fail('You must set openidc_introspection_endpoint when enabling oauth support')
