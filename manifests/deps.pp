@@ -32,12 +32,6 @@ class keystone::deps {
   # before dbsync starts
   Oslo::Db<||> -> Anchor['keystone::dbsync::begin']
 
-  # TODO(tobias-urdin): Remove this when keystone_paste_ini is removed.
-  # paste-api.ini config should occur in the config block also.
-  Anchor['keystone::config::begin']
-  -> Keystone_paste_ini<||>
-  ~> Anchor['keystone::config::end']
-
   # policy config should occur in the config block also.
   Anchor['keystone::config::begin']
   -> Openstacklib::Policy::Base<||>

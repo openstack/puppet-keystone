@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    The deprecated resources keystone_paste_ini, keystone::config::keystone_paste_config,
+    keystone::disable_admin_token_auth, keystone::disable_v2_api and keystone::paste_config
+    is removed.

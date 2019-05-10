@@ -528,8 +528,7 @@
 #   Defaults to false
 #
 # [*enable_proxy_headers_parsing*]
-#   (Optional) Enable paste middleware to handle SSL requests through
-#   HTTPProxyToWSGI middleware.
+#   (Optional) Enable oslo middleware to parse proxy headers.
 #   Defaults to $::os_service_default.
 #
 # [*purge_config*]
@@ -542,11 +541,6 @@
 #   Defaults to $::os_service_default.
 #
 # === DEPRECATED PARAMETERS
-#
-# [*paste_config*]
-#   (Optional) Name of the paste configuration file that defines the
-#   available pipelines. (string value)
-#   Defaults to undef
 #
 # [*cache_dir*]
 #   (Optional) Directory created when token_provider is pki. This folder is not
@@ -686,7 +680,6 @@ class keystone(
   # DEPRECATED PARAMETERS
   $admin_workers                        = $::os_workers,
   $public_workers                       = $::os_workers,
-  $paste_config                         = undef,
   $cache_dir                            = undef,
   $token_driver                         = undef,
 ) inherits keystone::params {
@@ -694,11 +687,6 @@ class keystone(
   include ::keystone::deps
   include ::keystone::logging
   include ::keystone::policy
-
-  # TODO(tobias-urdin): Remove when paste_config is removed.
-  if $paste_config {
-    warning('keystone::paste_config is deprecated, has no effect and will be removed in a later release')
-  }
 
   if $cache_dir {
     warning('keystone::cache_dir is deprecated, has no effect and will be removed in a later release')
