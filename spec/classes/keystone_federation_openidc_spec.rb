@@ -10,8 +10,6 @@ describe 'keystone::federation::openidc' do
     <<-EOS
     class { 'keystone':
       admin_token => 'service_token',
-      public_endpoint => 'http://os.example.com:5000',
-      admin_endpoint => 'http://os.example.com:35357',
     }
 
     include keystone::wsgi::apache
@@ -19,7 +17,8 @@ describe 'keystone::federation::openidc' do
   end
 
   let :params do
-    { :methods => 'password, token, openid',
+    { :keystone_url => 'http://localhost:5000',
+      :methods => 'password, token, openid',
       :idp_name => 'myidp',
       :openidc_provider_metadata_url => 'https://accounts.google.com/.well-known/openid-configuration',
       :openidc_client_id => 'openid_client_id',

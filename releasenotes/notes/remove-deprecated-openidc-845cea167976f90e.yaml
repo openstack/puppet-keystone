@@ -1,0 +1,8 @@
+---
+upgrade:
+  - |
+    The deprecated parameters main_port and admin_port in keystone::federation::openidc
+    is now removed.
+  - |
+    The keystone::federation::openidc::keystone_url parameter is now mandatory and does
+    not fallback on the keystone::public_endpoint value.
