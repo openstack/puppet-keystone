@@ -2,6 +2,9 @@ require 'spec_helper'
 
 describe 'keystone::client' do
   shared_examples 'keystone::client' do
+
+    it { is_expected.to contain_class('keystone::deps') }
+
     context 'with default parameters' do
       it { should contain_package('python-keystoneclient').with(
         :ensure => 'present',
