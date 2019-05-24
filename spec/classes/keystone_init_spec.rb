@@ -411,7 +411,7 @@ describe 'keystone' do
         'admin_token'                  => 'service_token',
         'cache_backend'                => 'dogpile.cache.memcached',
         'cache_backend_argument'       => ['url:SERVER1:12211'],
-        'cache_memcache_servers'       => 'SERVER1:11211,SERVER2:11211',
+        'cache_memcache_servers'       => 'SERVER1:11211,SERVER2:11211,[fd12:3456:789a:1::1]:11211',
         'memcache_dead_retry'          => '60',
         'memcache_socket_timeout'      => '2',
         'memcache_pool_maxsize'        => '1000',
@@ -431,7 +431,7 @@ describe 'keystone' do
     it { is_expected.to contain_keystone_config('cache/memcache_socket_timeout').with_value('2') }
     it { is_expected.to contain_keystone_config('cache/memcache_pool_maxsize').with_value('1000') }
     it { is_expected.to contain_keystone_config('cache/memcache_pool_unused_timeout').with_value('60') }
-    it { is_expected.to contain_keystone_config('cache/memcache_servers').with_value('SERVER1:11211,SERVER2:11211') }
+    it { is_expected.to contain_keystone_config('cache/memcache_servers').with_value('SERVER1:11211,SERVER2:11211,inet6:[fd12:3456:789a:1::1]:11211') }
   end
 
   describe 'configure cache memcache servers if set' do
@@ -440,7 +440,7 @@ describe 'keystone' do
         'admin_token'                          => 'service_token',
         'cache_backend'                        => 'dogpile.cache.memcached',
         'cache_backend_argument'               => ['url:SERVER3:12211'],
-        'cache_memcache_servers'               => [ 'SERVER1:11211', 'SERVER2:11211' ],
+        'cache_memcache_servers'               => [ 'SERVER1:11211', 'SERVER2:11211', '[fd12:3456:789a:1::1]:11211' ],
         'memcache_dead_retry'                  => '60',
         'memcache_socket_timeout'              => '2',
         'memcache_pool_maxsize'                => '1000',
@@ -463,7 +463,7 @@ describe 'keystone' do
     it { is_expected.to contain_keystone_config('cache/memcache_pool_maxsize').with_value('1000') }
     it { is_expected.to contain_keystone_config('cache/memcache_pool_unused_timeout').with_value('60') }
     it { is_expected.to contain_keystone_config('cache/memcache_pool_connection_get_timeout').with_value('30') }
-    it { is_expected.to contain_keystone_config('cache/memcache_servers').with_value('SERVER1:11211,SERVER2:11211') }
+    it { is_expected.to contain_keystone_config('cache/memcache_servers').with_value('SERVER1:11211,SERVER2:11211,inet6:[fd12:3456:789a:1::1]:11211') }
     it { is_expected.to contain_oslo__cache('keystone_config').with_manage_backend_package(false) }
   end
 
@@ -474,7 +474,7 @@ describe 'keystone' do
         'cache_backend'                        => 'dogpile.cache.memcached',
         'cache_backend_argument'               => ['url:SERVER3:12211'],
         'cache_enabled'                        => true,
-        'cache_memcache_servers'               => [ 'SERVER1:11211', 'SERVER2:11211' ],
+        'cache_memcache_servers'               => [ 'SERVER1:11211', 'SERVER2:11211', '[fd12:3456:789a:1::1]:11211' ],
         'memcache_dead_retry'                  => '60',
         'memcache_socket_timeout'              => '2',
         'memcache_pool_maxsize'                => '1000',
@@ -496,17 +496,17 @@ describe 'keystone' do
     it { is_expected.to contain_keystone_config('cache/memcache_pool_maxsize').with_value('1000') }
     it { is_expected.to contain_keystone_config('cache/memcache_pool_unused_timeout').with_value('60') }
     it { is_expected.to contain_keystone_config('cache/memcache_pool_connection_get_timeout').with_value('30') }
-    it { is_expected.to contain_keystone_config('cache/memcache_servers').with_value('SERVER1:11211,SERVER2:11211') }
+    it { is_expected.to contain_keystone_config('cache/memcache_servers').with_value('SERVER1:11211,SERVER2:11211,inet6:[fd12:3456:789a:1::1]:11211') }
   end
 
   describe 'configure memcache servers with a string' do
     let :params do
       default_params.merge({
-        'cache_memcache_servers' => 'SERVER1:11211,SERVER2:11211'
+        'cache_memcache_servers' => 'SERVER1:11211,SERVER2:11211,[fd12:3456:789a:1::1]:11211'
       })
     end
 
-    it { is_expected.to contain_keystone_config('cache/memcache_servers').with_value('SERVER1:11211,SERVER2:11211') }
+    it { is_expected.to contain_keystone_config('cache/memcache_servers').with_value('SERVER1:11211,SERVER2:11211,inet6:[fd12:3456:789a:1::1]:11211') }
   end
 
   describe 'do not configure memcache servers when not set' do

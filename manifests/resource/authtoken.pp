@@ -314,7 +314,7 @@ define keystone::resource::authtoken(
   }
 
   if !is_service_default($memcached_servers) and !empty($memcached_servers){
-    $memcached_servers_real = join(any2array($memcached_servers), ',')
+    $memcached_servers_real = join(any2array(inet6_prefix($memcached_servers)), ',')
     if $manage_memcache_package {
       ensure_packages('python-memcache', {
         ensure => present,

@@ -162,6 +162,17 @@ describe 'keystone::resource::authtoken' do
       end
     end
 
+    context 'when specifying IPv6 memcached_servers params' do
+      before do
+        params.merge! ({
+          :memcached_servers              => '[fd12:3456:789a:1::1]:11211',
+      })
+      end
+      it 'configures memcache severs with inet6: prefix in keystone authtoken' do
+        is_expected.to contain_keystone_config('keystone_authtoken/memcached_servers').with_value('inet6:[fd12:3456:789a:1::1]:11211')
+      end
+    end
+
     context 'memcache_security_strategy with invalid value' do
       before do
         params.merge!({ :memcache_security_strategy => 'mystrategy', })

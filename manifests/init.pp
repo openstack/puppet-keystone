@@ -810,6 +810,12 @@ admin_token will be removed in a later release")
     'token/caching':                      value => $token_caching;
   }
 
+  if is_string($cache_memcache_servers) {
+    $cache_memcache_servers_real = split($cache_memcache_servers, ',')
+  } else {
+    $cache_memcache_servers_real = $cache_memcache_servers
+  }
+
   oslo::cache { 'keystone_config':
     config_prefix                        => $cache_config_prefix,
     expiration_time                      => $cache_expiration_time,
@@ -818,7 +824,7 @@ admin_token will be removed in a later release")
     proxies                              => $cache_proxies,
     enabled                              => $cache_enabled,
     debug_cache_backend                  => $debug_cache_backend,
-    memcache_servers                     => $cache_memcache_servers,
+    memcache_servers                     => $cache_memcache_servers_real,
     memcache_dead_retry                  => $memcache_dead_retry,
     memcache_socket_timeout              => $memcache_socket_timeout,
     memcache_pool_maxsize                => $memcache_pool_maxsize,
