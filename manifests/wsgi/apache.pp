@@ -238,14 +238,9 @@ class keystone::wsgi::apache (
       'ensure'  => 'file',
       'content' => '',
     })
-    ensure_resource('file', '/etc/apache2/sites-enabled/keystone.conf', {
-      'ensure'  => 'file',
-      'content' => '',
-    })
 
     Package<| tag == 'keystone-package' |>
       -> File<| title == '/etc/apache2/sites-available/keystone.conf' |>
-      -> File<| title == '/etc/apache2/sites-enabled/keystone.conf'|>
       ~> Anchor['keystone::install::end']
   }
 }

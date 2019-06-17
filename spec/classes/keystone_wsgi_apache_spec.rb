@@ -184,9 +184,6 @@ describe 'keystone::wsgi::apache' do
         is_expected.to contain_file('/etc/apache2/sites-available/keystone.conf').with(
           :ensure  => 'file',
           :content => '')
-        is_expected.to contain_file('/etc/apache2/sites-enabled/keystone.conf').with(
-          :ensure  => 'file',
-          :content => '')
       }
     end
   end
