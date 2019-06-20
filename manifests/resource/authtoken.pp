@@ -352,5 +352,6 @@ define keystone::resource::authtoken(
     'keystone_authtoken/service_token_roles'            => {'value' => $service_token_roles},
     'keystone_authtoken/service_token_roles_required'   => {'value' => $service_token_roles_required},
   }
+
   create_resources($name, $keystonemiddleware_options)
 }

@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    New resource, keystone::resource::service_user, is available to configure
+    Keystone authentication parameters to use service token feature.
