@@ -532,6 +532,10 @@
 #   HTTPProxyToWSGI middleware.
 #   Defaults to $::os_service_default.
 #
+# [*max_request_body_size*]
+#   (Optional) Set max request body size
+#   Defaults to $::os_service_default.
+#
 # [*purge_config*]
 #   (Optional) Whether to set only the specified config options
 #   in the keystone config.
@@ -681,6 +685,7 @@ class keystone(
   $keystone_group                       = $::keystone::params::keystone_group,
   $manage_policyrcd                     = false,
   $enable_proxy_headers_parsing         = $::os_service_default,
+  $max_request_body_size                = $::os_service_default,
   $purge_config                         = false,
   $amqp_durable_queues                  = $::os_service_default,
   # DEPRECATED PARAMETERS
@@ -841,6 +846,7 @@ admin_token will be removed in a later release")
 
   oslo::middleware { 'keystone_config':
     enable_proxy_headers_parsing => $enable_proxy_headers_parsing,
+    max_request_body_size        => $max_request_body_size,
   }
 
   # configure based on the catalog backend
