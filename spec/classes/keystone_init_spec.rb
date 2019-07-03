@@ -413,7 +413,7 @@ describe 'keystone' do
         'cache_backend_argument'       => ['url:SERVER1:12211'],
         'cache_memcache_servers'       => 'SERVER1:11211,SERVER2:11211,[fd12:3456:789a:1::1]:11211',
         'memcache_dead_retry'          => '60',
-        'memcache_socket_timeout'      => '2',
+        'memcache_socket_timeout'      => '2.0',
         'memcache_pool_maxsize'        => '1000',
         'memcache_pool_unused_timeout' => '60',
       }
@@ -424,11 +424,11 @@ describe 'keystone' do
     it { is_expected.to contain_keystone_config('cache/backend').with_value('dogpile.cache.memcached') }
     it { is_expected.to contain_keystone_config('cache/backend_argument').with_value('url:SERVER1:12211') }
     it { is_expected.to contain_keystone_config('memcache/dead_retry').with_value('60') }
-    it { is_expected.to contain_keystone_config('memcache/socket_timeout').with_value('2') }
+    it { is_expected.to contain_keystone_config('memcache/socket_timeout').with_value('2.0') }
     it { is_expected.to contain_keystone_config('memcache/pool_maxsize').with_value('1000') }
     it { is_expected.to contain_keystone_config('memcache/pool_unused_timeout').with_value('60') }
     it { is_expected.to contain_keystone_config('cache/memcache_dead_retry').with_value('60') }
-    it { is_expected.to contain_keystone_config('cache/memcache_socket_timeout').with_value('2') }
+    it { is_expected.to contain_keystone_config('cache/memcache_socket_timeout').with_value('2.0') }
     it { is_expected.to contain_keystone_config('cache/memcache_pool_maxsize').with_value('1000') }
     it { is_expected.to contain_keystone_config('cache/memcache_pool_unused_timeout').with_value('60') }
     it { is_expected.to contain_keystone_config('cache/memcache_servers').with_value('SERVER1:11211,SERVER2:11211,inet6:[fd12:3456:789a:1::1]:11211') }
@@ -442,7 +442,7 @@ describe 'keystone' do
         'cache_backend_argument'               => ['url:SERVER3:12211'],
         'cache_memcache_servers'               => [ 'SERVER1:11211', 'SERVER2:11211', '[fd12:3456:789a:1::1]:11211' ],
         'memcache_dead_retry'                  => '60',
-        'memcache_socket_timeout'              => '2',
+        'memcache_socket_timeout'              => '2.0',
         'memcache_pool_maxsize'                => '1000',
         'memcache_pool_unused_timeout'         => '60',
         'memcache_pool_connection_get_timeout' => '30',
@@ -455,11 +455,11 @@ describe 'keystone' do
     it { is_expected.to contain_keystone_config('cache/backend').with_value('dogpile.cache.memcached') }
     it { is_expected.to contain_keystone_config('cache/backend_argument').with_value('url:SERVER3:12211') }
     it { is_expected.to contain_keystone_config('memcache/dead_retry').with_value('60') }
-    it { is_expected.to contain_keystone_config('memcache/socket_timeout').with_value('2') }
+    it { is_expected.to contain_keystone_config('memcache/socket_timeout').with_value('2.0') }
     it { is_expected.to contain_keystone_config('memcache/pool_maxsize').with_value('1000') }
     it { is_expected.to contain_keystone_config('memcache/pool_unused_timeout').with_value('60') }
     it { is_expected.to contain_keystone_config('cache/memcache_dead_retry').with_value('60') }
-    it { is_expected.to contain_keystone_config('cache/memcache_socket_timeout').with_value('2') }
+    it { is_expected.to contain_keystone_config('cache/memcache_socket_timeout').with_value('2.0') }
     it { is_expected.to contain_keystone_config('cache/memcache_pool_maxsize').with_value('1000') }
     it { is_expected.to contain_keystone_config('cache/memcache_pool_unused_timeout').with_value('60') }
     it { is_expected.to contain_keystone_config('cache/memcache_pool_connection_get_timeout').with_value('30') }
@@ -476,7 +476,7 @@ describe 'keystone' do
         'cache_enabled'                        => true,
         'cache_memcache_servers'               => [ 'SERVER1:11211', 'SERVER2:11211', '[fd12:3456:789a:1::1]:11211' ],
         'memcache_dead_retry'                  => '60',
-        'memcache_socket_timeout'              => '2',
+        'memcache_socket_timeout'              => '2.0',
         'memcache_pool_maxsize'                => '1000',
         'memcache_pool_unused_timeout'         => '60',
         'memcache_pool_connection_get_timeout' => '30',
@@ -488,11 +488,11 @@ describe 'keystone' do
     it { is_expected.to contain_keystone_config('cache/backend').with_value('dogpile.cache.memcached') }
     it { is_expected.to contain_keystone_config('cache/backend_argument').with_value('url:SERVER3:12211') }
     it { is_expected.to contain_keystone_config('memcache/dead_retry').with_value('60') }
-    it { is_expected.to contain_keystone_config('memcache/socket_timeout').with_value('2') }
+    it { is_expected.to contain_keystone_config('memcache/socket_timeout').with_value('2.0') }
     it { is_expected.to contain_keystone_config('memcache/pool_maxsize').with_value('1000') }
     it { is_expected.to contain_keystone_config('memcache/pool_unused_timeout').with_value('60') }
     it { is_expected.to contain_keystone_config('cache/memcache_dead_retry').with_value('60') }
-    it { is_expected.to contain_keystone_config('cache/memcache_socket_timeout').with_value('2') }
+    it { is_expected.to contain_keystone_config('cache/memcache_socket_timeout').with_value('2.0') }
     it { is_expected.to contain_keystone_config('cache/memcache_pool_maxsize').with_value('1000') }
     it { is_expected.to contain_keystone_config('cache/memcache_pool_unused_timeout').with_value('60') }
     it { is_expected.to contain_keystone_config('cache/memcache_pool_connection_get_timeout').with_value('30') }
