@@ -570,6 +570,10 @@
 #   HTTPProxyToWSGI middleware.
 #   Defaults to $::os_service_default.
 #
+# [*max_request_body_size*]
+#   (Optional) Set max request body size
+#   Defaults to $::os_service_default.
+#
 # [*purge_config*]
 #   (optional) Whether to set only the specified config options
 #   in the keystone config.
@@ -744,6 +748,7 @@ class keystone(
   $keystone_group                       = $::keystone::params::keystone_group,
   $manage_policyrcd                     = false,
   $enable_proxy_headers_parsing         = $::os_service_default,
+  $max_request_body_size                = $::os_service_default,
   $purge_config                         = false,
   # DEPRECATED PARAMETERS
   $admin_workers                        = $::os_workers,
@@ -927,6 +932,7 @@ We have enabled caching as a backwards compatibility that will be removed in the
 
   oslo::middleware { 'keystone_config':
     enable_proxy_headers_parsing => $enable_proxy_headers_parsing,
+    max_request_body_size        => $max_request_body_size,
   }
 
   # configure based on the catalog backend
