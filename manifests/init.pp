@@ -478,6 +478,7 @@
 #
 # [*memcache_socket_timeout*]
 #   (Optional) Timeout in seconds for every call to a server.
+#   (floating point value)
 #   Defaults to $::os_service_default
 #
 # [*memcache_pool_maxsize*]
