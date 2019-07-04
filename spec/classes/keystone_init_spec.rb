@@ -666,7 +666,9 @@ describe 'keystone' do
       default_params.merge({:max_request_body_size => '1146880' })
     end
 
-    it { is_expected.to contain_keystone_config('oslo_middleware/max_request_body_size').with_value('1146880') }
+    it { is_expected.to contain_oslo__middleware('keystone_config').with(
+      :max_request_body_size => '1146880',
+    )}
   end
 
   describe 'setting sql policy driver' do
