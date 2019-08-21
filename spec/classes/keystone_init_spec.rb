@@ -50,6 +50,7 @@ describe 'keystone' do
       'notification_transport_url'         => '<SERVICE DEFAULT>',
       'rabbit_heartbeat_timeout_threshold' => '<SERVICE DEFAULT>',
       'rabbit_heartbeat_rate'              => '<SERVICE DEFAULT>',
+      'rabbit_heartbeat_in_pthread'        => '<SERVICE DEFAULT>',
       'amqp_durable_queues'                => '<SERVICE DEFAULT>',
       'admin_workers'                      => 20,
       'public_workers'                     => 20,
@@ -90,6 +91,7 @@ describe 'keystone' do
       'notification_transport_url'         => 'rabbit://user:pass@host:1234/virt',
       'rabbit_heartbeat_timeout_threshold' => '60',
       'rabbit_heartbeat_rate'              => '10',
+      'rabbit_heartbeat_in_pthread'        => true,
       'rabbit_ha_queues'                   => true,
       'amqp_durable_queues'                => true,
       'default_domain'                     => 'other_domain',
@@ -208,6 +210,7 @@ describe 'keystone' do
     it 'should contain correct rabbit heartbeat configuration' do
       is_expected.to contain_keystone_config('oslo_messaging_rabbit/heartbeat_timeout_threshold').with_value(param_hash['rabbit_heartbeat_timeout_threshold'])
       is_expected.to contain_keystone_config('oslo_messaging_rabbit/heartbeat_rate').with_value(param_hash['rabbit_heartbeat_rate'])
+      is_expected.to contain_keystone_config('oslo_messaging_rabbit/heartbeat_in_pthread').with_value(param_hash['rabbit_heartbeat_in_pthread'])
       is_expected.to contain_keystone_config('oslo_messaging_rabbit/amqp_durable_queues').with_value(param_hash['amqp_durable_queues'])
     end
 
