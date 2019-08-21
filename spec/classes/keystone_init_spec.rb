@@ -149,10 +149,6 @@ describe 'keystone' do
 
     it 'should contain correct config' do
       [
-       'public_bind_host',
-       'admin_bind_host',
-       'public_port',
-       'admin_port',
        'member_role_id',
        'member_role_name',
       ].each do |config|
@@ -215,7 +211,16 @@ describe 'keystone' do
       is_expected.to contain_keystone_config('DEFAULT/max_token_size').with_value('<SERVICE DEFAULT>')
     end
 
-    it 'should ensure proper setting of admin_workers and public_workers' do
+    it 'should contain correct eventlet server config' do
+      [
+       'public_bind_host',
+       'admin_bind_host',
+       'public_port',
+       'admin_port',
+      ].each do |config|
+        is_expected.to contain_keystone_config("eventlet_server/#{config}").with_value(param_hash[config])
+      end
+
       if param_hash['admin_workers']
         is_expected.to contain_keystone_config('eventlet_server/admin_workers').with_value(param_hash['admin_workers'])
       else
