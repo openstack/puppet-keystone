@@ -768,10 +768,6 @@ admin_token will be removed in a later release")
 
   keystone_config {
     'DEFAULT/admin_token':      value => $admin_token, secret => true;
-    'DEFAULT/public_bind_host': value => $public_bind_host;
-    'DEFAULT/admin_bind_host':  value => $admin_bind_host;
-    'DEFAULT/public_port':      value => $public_port;
-    'DEFAULT/admin_port':       value => $admin_port;
     'DEFAULT/member_role_id':   value => $member_role_id;
     'DEFAULT/member_role_name': value => $member_role_name;
   }
@@ -906,8 +902,12 @@ admin_token will be removed in a later release")
   }
 
   keystone_config {
-    'eventlet_server/admin_workers':  value => $admin_workers;
-    'eventlet_server/public_workers': value => $public_workers;
+    'eventlet_server/public_bind_host': value => $public_bind_host;
+    'eventlet_server/admin_bind_host':  value => $admin_bind_host;
+    'eventlet_server/public_port':      value => $public_port;
+    'eventlet_server/admin_port':       value => $admin_port;
+    'eventlet_server/admin_workers':    value => $admin_workers;
+    'eventlet_server/public_workers':   value => $public_workers;
   }
 
   if $manage_service {
