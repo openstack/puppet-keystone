@@ -1,0 +1,17 @@
+---
+deprecations:
+  - |
+    keystone::admin_bind_host and keystone::admin_port are deprecated and
+    ignored as the correspoding options in keystone were already deprecated.
+  - |
+    Now keystone::admin_endpoint does not affect keystone configuration,
+    as the corresponding parameter in keystone was already removed.
+  - |
+    keystone::public_bind_host and keystone::public_port are deprecated.
+    They still works as valid hieradata to generate endpoint information
+    used in keystone resource creation, but will be ignored in future.
+    Use keystone::public_endpoint instead, which will be necessory option
+    in the future to define public endpoint.
+  - |
+    keystone::admin_workers and keystone::public_workers are deprecated,
+    and now are ignored.
