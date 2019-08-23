@@ -24,9 +24,7 @@ describe 'keystone' do
       'package_ensure'                     => 'present',
       'client_package_ensure'              => 'present',
       'public_bind_host'                   => '0.0.0.0',
-      'admin_bind_host'                    => '0.0.0.0',
       'public_port'                        => '5000',
-      'admin_port'                         => '35357',
       'catalog_type'                       => 'sql',
       'catalog_driver'                     => false,
       'token_provider'                     => 'fernet',
@@ -52,8 +50,6 @@ describe 'keystone' do
       'rabbit_heartbeat_rate'              => '<SERVICE DEFAULT>',
       'rabbit_heartbeat_in_pthread'        => '<SERVICE DEFAULT>',
       'amqp_durable_queues'                => '<SERVICE DEFAULT>',
-      'admin_workers'                      => 20,
-      'public_workers'                     => 20,
       'member_role_id'                     => '<SERVICE DEFAULT>',
       'member_role_name'                   => '<SERVICE DEFAULT>',
       'sync_db'                            => true,
@@ -66,9 +62,7 @@ describe 'keystone' do
       'package_ensure'                     => 'latest',
       'client_package_ensure'              => 'latest',
       'public_bind_host'                   => '0.0.0.0',
-      'admin_bind_host'                    => '0.0.0.0',
       'public_port'                        => '5001',
-      'admin_port'                         => '35358',
       'admin_token'                        => 'service_token_override',
       'admin_password'                     => 'admin_openstack_password',
       'catalog_type'                       => 'template',
@@ -78,7 +72,6 @@ describe 'keystone' do
       'revoke_driver'                      => 'kvs',
       'revoke_by_id'                       => false,
       'public_endpoint'                    => 'https://localhost:5000/v2.0/',
-      'admin_endpoint'                     => 'https://localhost:5000/v2.0/',
       'enable_ssl'                         => true,
       'ssl_certfile'                       => '/etc/keystone/ssl/certs/keystone.pem',
       'ssl_keyfile'                        => '/etc/keystone/ssl/private/keystonekey.pem',
@@ -186,12 +179,7 @@ describe 'keystone' do
       is_expected.to contain_keystone_config('token/revoke_by_id').with_value(param_hash['revoke_by_id'])
     end
 
-    it 'should ensure proper setting of admin_endpoint and public_endpoint' do
-      if param_hash['admin_endpoint']
-        is_expected.to contain_keystone_config('DEFAULT/admin_endpoint').with_value(param_hash['admin_endpoint'])
-      else
-        is_expected.to contain_keystone_config('DEFAULT/admin_endpoint').with_value('<SERVICE DEFAULT>')
-      end
+    it 'should ensure proper setting of public_endpoint' do
       if param_hash['public_endpoint']
         is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value(param_hash['public_endpoint'])
       else
@@ -217,23 +205,11 @@ describe 'keystone' do
     it 'should contain correct eventlet server config' do
       [
        'public_bind_host',
-       'admin_bind_host',
        'public_port',
-       'admin_port',
       ].each do |config|
         is_expected.to contain_keystone_config("eventlet_server/#{config}").with_value(param_hash[config])
       end
 
-      if param_hash['admin_workers']
-        is_expected.to contain_keystone_config('eventlet_server/admin_workers').with_value(param_hash['admin_workers'])
-      else
-        is_expected.to contain_keystone_config('eventlet_server/admin_workers').with_value('2')
-      end
-      if param_hash['public_workers']
-        is_expected.to contain_keystone_config('eventlet_server/public_workers').with_value(param_hash['public_workers'])
-      else
-        is_expected.to contain_keystone_config('eventlet_server/public_workers').with_value('2')
-      end
     end
 
     it 'should ensure rabbit_ha_queues' do
@@ -544,7 +520,6 @@ describe 'keystone' do
         'admin_token'     => 'service_token',
         'enable_ssl'      => true,
         'public_endpoint' => 'https://localhost:5000/v2.0/',
-        'admin_endpoint'  => 'https://localhost:5000/v2.0/',
       }
     end
     it {is_expected.to contain_keystone_config('ssl/enable').with_value(true)}
@@ -554,7 +529,6 @@ describe 'keystone' do
     it {is_expected.to contain_keystone_config('ssl/ca_key').with_value('/etc/keystone/ssl/private/cakey.pem')}
     it {is_expected.to contain_keystone_config('ssl/cert_subject').with_value('/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost')}
     it {is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value('https://localhost:5000/v2.0/')}
-    it {is_expected.to contain_keystone_config('DEFAULT/admin_endpoint').with_value('https://localhost:5000/v2.0/')}
   end
   describe 'when disabling SSL' do
     let :params do
@@ -565,7 +539,6 @@ describe 'keystone' do
     end
     it {is_expected.to contain_keystone_config('ssl/enable').with_value(false)}
     it {is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value('<SERVICE DEFAULT>')}
-    it {is_expected.to contain_keystone_config('DEFAULT/admin_endpoint').with_value('<SERVICE DEFAULT>')}
   end
   describe 'not setting notification settings by default' do
     let :params do
@@ -717,7 +690,6 @@ describe 'keystone' do
       }
     end
 
-    it { is_expected.to contain_keystone_config('DEFAULT/admin_endpoint').with_value('http://some.host:5000') }
     it { is_expected.to contain_class('keystone::service').with(
       'validate'       => true,
       'admin_endpoint' => 'http://some.host:5000/v2.0'

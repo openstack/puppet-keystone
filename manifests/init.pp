@@ -13,14 +13,6 @@
 #   accepts latest or specific versions.
 #   Defaults to present.
 #
-# [*public_port*]
-#   (Optional) Port that keystone binds to.
-#   Defaults to '5000'
-#
-# [*admin_port*]
-#   (Optional) Port that can be used for admin tasks.
-#   Defaults to '35357'
-#
 # [*admin_token*]
 #   Admin token that can be used to authenticate as a keystone
 #   admin. This is not the password for the admin user
@@ -267,14 +259,6 @@
 #   (Optional) Seconds to wait for a response from a call.
 #   Defaults to $::os_service_default
 #
-# [*public_bind_host*]
-#   (Optional) The IP address of the public network interface to listen on
-#   Default to '0.0.0.0'.
-#
-# [*admin_bind_host*]
-#   (Optional) The IP address of the public network interface to listen on
-#   Default to '0.0.0.0'.
-#
 # [*log_dir*]
 #   (Optional) Directory where logs should be stored
 #   If set to $::os_service_default, it will not log to any directory
@@ -284,19 +268,19 @@
 #   (Optional) Where to log
 #   Defaults to undef.
 #
-# [*public_endpoint*]
-#   (Optional) The base public endpoint URL for keystone that are
-#   advertised to clients (NOTE: this does NOT affect how
-#   keystone listens for connections) (string value)
-#   If set to false, no public_endpoint will be defined in keystone.conf.
-#   Sample value: 'http://localhost:5000/'
-#   Defaults to $::os_service_default
-#
 # [*admin_endpoint*]
 #   (Optional) The base admin endpoint URL for keystone that are
 #   advertised to clients (NOTE: this does NOT affect how keystone listens
 #   for connections) (string value)
 #   If set to false, no admin_endpoint will be defined in keystone.conf.
+#   Sample value: 'http://localhost:5000/'
+#   Defaults to $::os_service_default
+#
+# [*public_endpoint*]
+#   (Optional) The base public endpoint URL for keystone that are
+#   advertised to clients (NOTE: this does NOT affect how
+#   keystone listens for connections) (string value)
+#   If set to false, no public_endpoint will be defined in keystone.conf.
 #   Sample value: 'http://localhost:5000/'
 #   Defaults to $::os_service_default
 #
@@ -370,18 +354,6 @@
 # [*max_token_size*]
 #   (Optional) maximum allowable Keystone token size
 #   Defaults to $::os_service_default
-#
-# [*admin_workers*]
-#   (Optional) The number of worker processes to serve the admin eventlet application.
-#   This option is deprecated along with eventlet and will be removed in M.
-#   This setting has no affect when using WSGI.
-#   Defaults to $::os_workers
-#
-# [*public_workers*]
-#   (Optional) The number of worker processes to serve the public eventlet application.
-#   This option is deprecated along with eventlet and will be removed in M.
-#   This setting has no affect when using WSGI.
-#   Defaults to $::os_workers
 #
 # [*sync_db*]
 #   (Optional) Run db sync on the node.
@@ -557,6 +529,34 @@
 #
 # === DEPRECATED PARAMETERS
 #
+# [*admin_bind_host*]
+#   (Optional) The IP address of the public network interface to listen on
+#   Default to '0.0.0.0'.
+#
+# [*public_bind_host*]
+#   (Optional) The IP address of the public network interface to listen on
+#   Default to '0.0.0.0'.
+#
+# [*admin_port*]
+#   (Optional) Port that can be used for admin tasks.
+#   Defaults to '35357'
+#
+# [*public_port*]
+#   (Optional) Port that keystone binds to.
+#   Defaults to '5000'
+#
+# [*admin_workers*]
+#   (Optional) The number of worker processes to serve the admin eventlet application.
+#   This option is deprecated along with eventlet and will be removed in M.
+#   This setting has no affect when using WSGI.
+#   Defaults to undef
+#
+# [*public_workers*]
+#   (Optional) The number of worker processes to serve the public eventlet application.
+#   This option is deprecated along with eventlet and will be removed in M.
+#   This setting has no affect when using WSGI.
+#   Defaults to undef
+#
 # [*cache_dir*]
 #   (Optional) Directory created when token_provider is pki. This folder is not
 #   created unless enable_pki_setup is set to True.
@@ -599,10 +599,6 @@ class keystone(
   $admin_password                       = undef,
   $package_ensure                       = 'present',
   $client_package_ensure                = 'present',
-  $public_bind_host                     = '0.0.0.0',
-  $admin_bind_host                      = '0.0.0.0',
-  $public_port                          = '5000',
-  $admin_port                           = '35357',
   $log_dir                              = undef,
   $log_file                             = undef,
   $catalog_type                         = 'sql',
@@ -614,8 +610,8 @@ class keystone(
   $password_hash_rounds                 = $::os_service_default,
   $revoke_driver                        = $::os_service_default,
   $revoke_by_id                         = true,
-  $public_endpoint                      = $::os_service_default,
   $admin_endpoint                       = $::os_service_default,
+  $public_endpoint                      = $::os_service_default,
   $enable_ssl                           = false,
   $ssl_certfile                         = '/etc/keystone/ssl/certs/keystone.pem',
   $ssl_keyfile                          = '/etc/keystone/ssl/private/keystonekey.pem',
@@ -695,8 +691,12 @@ class keystone(
   $purge_config                         = false,
   $amqp_durable_queues                  = $::os_service_default,
   # DEPRECATED PARAMETERS
-  $admin_workers                        = $::os_workers,
-  $public_workers                       = $::os_workers,
+  $admin_bind_host                      = undef,
+  $public_bind_host                     = undef,
+  $admin_port                           = undef,
+  $public_port                          = undef,
+  $admin_workers                        = undef,
+  $public_workers                       = undef,
   $cache_dir                            = undef,
   $token_driver                         = undef,
 ) inherits keystone::params {
@@ -713,16 +713,46 @@ class keystone(
     warning('keystone::token_driver is deprecated, has no effect and will be removed in a later release')
   }
 
+  if $admin_bind_host {
+    warning('keystone::admin_bond_host is deprecated, has not effect and will be removed in a later relase')
+  }
+
+  if $admin_port {
+    warning('keystone::admin_port is deprecated, has not effect and will be removed in a later relase')
+  }
+
+  if $admin_workers {
+    warning('keystone::admin_workers is deprecated, has no effect and will be removed in a later release')
+  }
+
+  if $public_workers {
+    warning('keystone::public_workers is deprecated, has no effect and will be removed in a later release')
+  }
+
   if ! $catalog_driver {
     validate_legacy(Enum['template', 'sql'], 'validate_re', $catalog_type)
   }
 
-  if ($admin_endpoint and 'v2.0' in $admin_endpoint) {
-    warning('Version string /v2.0/ should not be included in keystone::admin_endpoint')
+  if ! $public_endpoint {
+    warning('keystone::public_endpoint is not set will be required in a later release')
   }
 
   if ($public_endpoint and 'v2.0' in $public_endpoint) {
     warning('Version string /v2.0/ should not be included in keystone::public_endpoint')
+  }
+
+  if $public_bind_host {
+    warning('keystone::public_bind_host is deprecated, and will have no effect and be removed in a later release.')
+    $public_bind_host_real = $public_bind_host
+  } else {
+    $public_bind_host_real = '0.0.0.0'
+  }
+
+  if $public_port {
+    warning('keystone::public_port is deprecated, and will have no effect and be removed in a later release')
+    $public_port_real = $public_port
+  } else {
+    $public_port_real = '5000'
   }
 
   if $admin_password == undef {
@@ -775,7 +805,6 @@ admin_token will be removed in a later release")
   # Endpoint configuration
   keystone_config {
     'DEFAULT/public_endpoint': value => $public_endpoint;
-    'DEFAULT/admin_endpoint': value => $admin_endpoint;
   }
 
   keystone_config {
@@ -902,12 +931,8 @@ admin_token will be removed in a later release")
   }
 
   keystone_config {
-    'eventlet_server/public_bind_host': value => $public_bind_host;
-    'eventlet_server/admin_bind_host':  value => $admin_bind_host;
-    'eventlet_server/public_port':      value => $public_port;
-    'eventlet_server/admin_port':       value => $admin_port;
-    'eventlet_server/admin_workers':    value => $admin_workers;
-    'eventlet_server/public_workers':   value => $public_workers;
+    'eventlet_server/public_bind_host': value => $public_bind_host_real;
+    'eventlet_server/public_port':      value => $public_port_real;
   }
 
   if $manage_service {
