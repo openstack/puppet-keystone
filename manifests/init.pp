@@ -530,16 +530,16 @@
 # === DEPRECATED PARAMETERS
 #
 # [*admin_bind_host*]
-#   (Optional) The IP address of the public network interface to listen on
-#   Default to '0.0.0.0'.
+#   (Optional) The IP address of the public network interface to listen on.
+#   Default to undef
 #
 # [*public_bind_host*]
-#   (Optional) The IP address of the public network interface to listen on
-#   Default to '0.0.0.0'.
+#   (Optional) The IP address of the public network interface to listen on.
+#   Default to '0.0.0.0'
 #
 # [*admin_port*]
 #   (Optional) Port that can be used for admin tasks.
-#   Defaults to '35357'
+#   Defaults to undef
 #
 # [*public_port*]
 #   (Optional) Port that keystone binds to.
