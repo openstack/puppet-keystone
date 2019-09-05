@@ -23,11 +23,11 @@
         },
         {
             "name": "openstack/openstacklib",
-            "version_requirement": ">=15.2.0 <16.0.0"
+            "version_requirement": ">=15.3.0 <16.0.0"
         },
         {
             "name": "openstack/oslo",
-            "version_requirement": ">=15.2.0 <16.0.0"
+            "version_requirement": ">=15.3.0 <16.0.0"
         }
     ],
     "description": "Installs and configures OpenStack Keystone (Identity).",
@@ -69,5 +69,5 @@
     ],
     "source": "git://github.com/openstack/puppet-keystone.git",
     "summary": "Puppet module for OpenStack Keystone",
-    "version": "15.2.0"
+    "version": "15.3.0"
 }
