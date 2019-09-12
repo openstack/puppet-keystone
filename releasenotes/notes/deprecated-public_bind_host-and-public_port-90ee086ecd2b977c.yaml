@@ -1,0 +1,10 @@
+---
+deprecations:
+  - |
+    keystone::public_bind_host and keystone::public_port are now fully
+    deprecated, and don't affect the correspoiding parameters under eventlet
+    section.
+    These parameters are currently used to generate public_host only if
+    keystone::public_endpoint is not set. However, users should use
+    public_endpoint instead because this generation will be removed in
+    a future release.

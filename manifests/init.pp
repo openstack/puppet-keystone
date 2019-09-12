@@ -282,7 +282,7 @@
 #   keystone listens for connections) (string value)
 #   If set to false, no public_endpoint will be defined in keystone.conf.
 #   Sample value: 'http://localhost:5000/'
-#   Defaults to $::os_service_default
+#   Defaults to undef
 #
 # [*enable_ssl*]
 #   (Optional) Toggle for SSL support on the keystone eventlet servers.
@@ -611,7 +611,7 @@ class keystone(
   $revoke_driver                        = $::os_service_default,
   $revoke_by_id                         = true,
   $admin_endpoint                       = $::os_service_default,
-  $public_endpoint                      = $::os_service_default,
+  $public_endpoint                      = undef,
   $enable_ssl                           = false,
   $ssl_certfile                         = '/etc/keystone/ssl/certs/keystone.pem',
   $ssl_keyfile                          = '/etc/keystone/ssl/private/keystonekey.pem',
@@ -733,19 +733,21 @@ class keystone(
     validate_legacy(Enum['template', 'sql'], 'validate_re', $catalog_type)
   }
 
-  if ! $public_endpoint {
-    warning('keystone::public_endpoint is not set will be required in a later release')
-  }
-
-  if ($public_endpoint and 'v2.0' in $public_endpoint) {
-    warning('Version string /v2.0/ should not be included in keystone::public_endpoint')
-  }
-
   if $public_bind_host {
     warning('keystone::public_bind_host is deprecated, and will have no effect and be removed in a later release.')
-    $public_bind_host_real = $public_bind_host
+    case $public_bind_host {
+      '0.0.0.0': {
+        $public_host = '127.0.0.1'
+      }
+      '::0': {
+        $public_host = '[::1]'
+      }
+      default: {
+        $public_host = normalize_ip_for_uri($public_bind_host)
+      }
+    }
   } else {
-    $public_bind_host_real = '0.0.0.0'
+    $public_host = '127.0.0.1'
   }
 
   if $public_port {
@@ -753,6 +755,22 @@ class keystone(
     $public_port_real = $public_port
   } else {
     $public_port_real = '5000'
+  }
+
+  if ! $public_endpoint {
+    warning('keystone::public_endpoint is not set, but will be required in a later release')
+
+    if $enable_ssl {
+      $public_protocol = 'https'
+    } else {
+      $public_protocol = 'http'
+    }
+    $public_endpoint_real = "${public_protocol}://${public_host}:${$public_port_real}"
+  } else {
+    if ('v2.0' in $public_endpoint) {
+      warning('Version string /v2.0/ should not be included in keystone::public_endpoint')
+    }
+    $public_endpoint_real = $public_endpoint
   }
 
   if $admin_password == undef {
@@ -804,7 +822,7 @@ admin_token will be removed in a later release")
 
   # Endpoint configuration
   keystone_config {
-    'DEFAULT/public_endpoint': value => $public_endpoint;
+    'DEFAULT/public_endpoint': value => $public_endpoint_real;
   }
 
   keystone_config {
@@ -928,11 +946,6 @@ admin_token will be removed in a later release")
     heartbeat_rate              => $rabbit_heartbeat_rate,
     heartbeat_in_pthread        => $rabbit_heartbeat_in_pthread,
     amqp_durable_queues         => $amqp_durable_queues,
-  }
-
-  keystone_config {
-    'eventlet_server/public_bind_host': value => $public_bind_host_real;
-    'eventlet_server/public_port':      value => $public_port_real;
   }
 
   if $manage_service {
