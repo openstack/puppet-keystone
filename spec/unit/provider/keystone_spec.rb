@@ -260,13 +260,13 @@ id="the_user_id"
   end
 
   describe '#get_service_url when retrieving the security token' do
-    it 'should return nothing when OS_URL is not defined in environment' do
+    it 'should return nothing when OS_ENDPOINT is not defined in environment' do
       ENV.clear
       expect(klass.get_service_url).to be_nil
     end
 
-    it 'should return the OS_URL from the environment' do
-      ENV['OS_URL'] = 'http://127.0.0.1:5001/v3'
+    it 'should return the OS_ENDPOINT from the environment' do
+      ENV['OS_ENDPOINT'] = 'http://127.0.0.1:5001/v3'
       expect(klass.get_service_url).to eq('http://127.0.0.1:5001/v3')
     end
 
