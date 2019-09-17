@@ -38,8 +38,8 @@ describe Puppet::Type.type(:keystone_user_role).provider(:openstack) do
       before(:each) do
 
         described_class.expects(:openstack)
-          .with('role', 'list', '--quiet', '--format', 'csv',
-                ['--project', 'project1_id', '--user', 'user1_id'])
+          .with('role assignment', 'list', '--quiet', '--format', 'csv',
+                ['--names', '--project', 'project1_id', '--user', 'user1_id'])
           .returns('"ID","Name","Project","User"
 "role1_id","role1","project1","user1"
 "role2_id","role2","project1","user1"
@@ -124,8 +124,8 @@ id="project1_id"
 id="user1_id"
 ')
         described_class.expects(:openstack)
-          .with('role', 'list', '--quiet', '--format', 'csv',
-                ['--project', 'project1_id', '--user', 'user1_id'])
+          .with('role assignment', 'list', '--quiet', '--format', 'csv',
+                ['--names', '--project', 'project1_id', '--user', 'user1_id'])
           .returns('"ID","Name","Project","User"
 ')
         provider.destroy
@@ -136,8 +136,8 @@ id="user1_id"
     describe '#exists' do
       subject(:response) do
         described_class.expects(:openstack)
-          .with('role', 'list', '--quiet', '--format', 'csv',
-                ['--project', 'project1_id', '--user', 'user1_id'])
+          .with('role assignment', 'list', '--quiet', '--format', 'csv',
+                ['--names', '--project', 'project1_id', '--user', 'user1_id'])
           .returns('"ID","Name","Project","User"
 "role1_id","role1","project1","user1"
 "role2_id","role2","project1","user1"

@@ -45,14 +45,14 @@ Puppet::Type.type(:keystone_user_role).provide(
   end
 
   def exists?
-    roles_db = self.class.request('role', 'list', properties)
+    roles_db = self.class.request('role assignment', 'list', ['--names'] + properties)
     @property_hash[:name] = resource[:name]
     if roles_db.empty?
       @property_hash[:ensure] = :absent
     else
       @property_hash[:ensure] = :present
       @property_hash[:roles]  = roles_db.collect do |role|
-        role[:name]
+        role[:role]
       end
     end
     return @property_hash[:ensure] == :present

@@ -105,7 +105,7 @@ describe 'keystone server running with Apache/WSGI as Service Provider with Shib
         end
       end
       it 'should find admin role' do
-        shell("openstack #{auth_creds} --os-auth-url http://127.0.0.1:5000/v3 --os-identity-api-version 3 role list") do |r|
+        shell("openstack #{auth_creds} --os-auth-url http://127.0.0.1:5000/v3 --os-identity-api-version 3 role assignment list --names") do |r|
           expect(r.stdout).to match(/admin/)
           expect(r.stderr).to be_empty
         end
