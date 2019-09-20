@@ -208,7 +208,10 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
 
   def self.get_service_url
     service_url = nil
-    if ENV['OS_URL']
+    if ENV['OS_ENDPOINT']
+      service_url = ENV['OS_ENDPOINT'].dup
+    # Compatibility with pre-4.0.0 openstackclient
+    elsif ENV['OS_URL']
       service_url = ENV['OS_URL'].dup
     elsif public_endpoint
       service_url = public_endpoint
@@ -238,10 +241,16 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
 
   def self.request_by_service_token(service, action, error, properties=nil, options={})
     properties ||= []
-    @credentials.token = admin_token
-    @credentials.url   = service_url
+    @credentials.token    = admin_token
+    @credentials.endpoint = service_url
     raise error unless @credentials.service_token_set?
-    Puppet::Provider::Openstack.request(service, action, properties, @credentials, options)
+    begin
+      Puppet::Provider::Openstack.request(service, action, properties, @credentials, options)
+    rescue Puppet::ExecutionFailure, Puppet::Error::OpenstackUnauthorizedError
+      # openstackclient < 4.0.0 does not support --os-endpoint and requires --os-url
+      @credentials.url = service_url
+      Puppet::Provider::Openstack.request(service, action, properties, @credentials, options)
+    end
   end
 
   def self.service_url
