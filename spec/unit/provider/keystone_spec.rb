@@ -62,37 +62,6 @@ id="newid"
     end
   end
 
-  describe '#ssl?' do
-    it 'should be false if there is no keystone file' do
-      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(false)
-      expect(klass.ssl?).to be_falsey
-    end
-
-    it 'should be false if ssl is not configured in keystone file' do
-      mock = {}
-      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
-      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
-      mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.ssl?).to be_falsey
-    end
-
-    it 'should be false if ssl is configured and disable in keystone file' do
-      mock = {'ssl' => {'enable' => 'False'}}
-      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
-      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
-      mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.ssl?).to be_falsey
-    end
-
-    it 'should be true if ssl is configured and enabled in keystone file' do
-      mock = {'ssl' => {'enable' => 'True'}}
-      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
-      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
-      mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.ssl?).to be_truthy
-    end
-  end
-
   describe '#fetch_project' do
     let(:set_env) do
       ENV['OS_USERNAME']     = 'test'
@@ -162,68 +131,28 @@ id="the_user_id"
       expect(klass.get_public_endpoint).to be_nil
     end
 
+    it 'should return nothing if the keystone config file does not have a DEFAULT section' do
+      mock = {}
+      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
+      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
+      mock.expects(:read).with('/etc/keystone/keystone.conf')
+      expect(klass.get_public_endpoint).to be_nil
+    end
+
+    it 'should fail if the keystone config file does not contain public endpoint' do
+      mock = {'DEFAULT' => {}}
+      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
+      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
+      mock.expects(:read).with('/etc/keystone/keystone.conf')
+      expect(klass.get_public_endpoint).to be_nil
+    end
+
     it 'should use the public_endpoint from keystone config file with no trailing slash' do
       mock = {'DEFAULT' => {'public_endpoint' => 'https://keystone.example.com/'}}
       File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
       Puppet::Util::IniConfig::File.expects(:new).returns(mock)
       mock.expects(:read).with('/etc/keystone/keystone.conf')
       expect(klass.get_public_endpoint).to eq('https://keystone.example.com')
-    end
-
-    it 'should use the specified bind_host in the public endpoint' do
-      mock = {'eventlet_server' => {'public_bind_host' => '192.168.56.210', 'public_port' => '5001' }}
-      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
-      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
-      mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.get_public_endpoint).to eq('http://192.168.56.210:5001')
-    end
-
-    it 'should use localhost in the public endpoint if bind_host is 0.0.0.0' do
-      mock = {'eventlet_server' => { 'public_bind_host' => '0.0.0.0', 'public_port' => '5001' }}
-      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
-      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
-      mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.get_public_endpoint).to eq('http://127.0.0.1:5001')
-    end
-
-    it 'should use [::1] in the public endpoint if bind_host is ::0' do
-      mock = {'eventlet_server' => { 'public_bind_host' => '::0', 'public_port' => '5001' }}
-      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
-      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
-      mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.get_public_endpoint).to eq('http://[::1]:5001')
-    end
-
-    it 'should use [2620:52:0:23a9::25] in the public endpoint if bind_host is 2620:52:0:23a9::25' do
-      mock = {'eventlet_server' => { 'public_bind_host' => '2620:52:0:23a9::25', 'public_port' => '5001' }}
-      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
-      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
-      mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.get_public_endpoint).to eq('http://[2620:52:0:23a9::25]:5001')
-    end
-
-    it 'should use localhost in the public endpoint if bind_host is unspecified' do
-      mock = {'eventlet_server' => { 'public_port' => '5001' }}
-      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
-      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
-      mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.get_public_endpoint).to eq('http://127.0.0.1:5001')
-    end
-
-    it 'should use https if ssl is enabled' do
-      mock = {'eventlet_server' => {'public_bind_host' => '192.168.56.210', 'public_port' => '5001' }, 'ssl' => {'enable' => 'True'}}
-      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
-      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
-      mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.get_public_endpoint).to eq('https://192.168.56.210:5001')
-    end
-
-    it 'should use http if ssl is disabled' do
-      mock = {'eventlet_server' => {'public_bind_host' => '192.168.56.210', 'public_port' => '5001' }, 'ssl' => {'enable' => 'False'}}
-      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
-      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
-      mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.get_public_endpoint).to eq('http://192.168.56.210:5001')
     end
   end
 
