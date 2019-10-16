@@ -212,6 +212,11 @@
 #  true/false
 #  Defaults to $::os_service_default.
 #
+# [*interface*]
+#  (Optional) Interface to use for the Identity API endpoint. Valid values are
+#  "public", "internal" or "admin".
+#  Defaults to $::os_service_default.
+#
 # DEPRECATED PARAMETERS
 #
 # [*check_revocations_for_cached*]
@@ -267,6 +272,7 @@ define keystone::resource::authtoken(
   $manage_memcache_package        = false,
   $service_token_roles            = $::os_service_default,
   $service_token_roles_required   = $::os_service_default,
+  $interface                      = $::os_service_default,
   # DEPRECATED PARAMETERS
   $check_revocations_for_cached   = undef,
   $hash_algorithms                = undef,
@@ -351,6 +357,7 @@ define keystone::resource::authtoken(
     'keystone_authtoken/insecure'                       => {'value' => $insecure},
     'keystone_authtoken/service_token_roles'            => {'value' => $service_token_roles},
     'keystone_authtoken/service_token_roles_required'   => {'value' => $service_token_roles_required},
+    'keystone_authtoken/interface'                      => {'value' => $interface},
   }
 
   create_resources($name, $keystonemiddleware_options)

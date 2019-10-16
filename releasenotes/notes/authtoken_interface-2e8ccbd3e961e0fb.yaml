@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    Adds interface parameter to keystone::resource::authtoken allow services
+    to configure the interface to use for the Identity API endpoint. Valid
+    values are "public", "internal" or "admin".
