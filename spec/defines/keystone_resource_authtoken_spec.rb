@@ -48,6 +48,7 @@ describe 'keystone::resource::authtoken' do
         is_expected.to contain_keystone_config('keystone_authtoken/service_token_roles').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('keystone_authtoken/service_token_roles_required').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('keystone_authtoken/token_cache_time').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/interface').with_value('<SERVICE DEFAULT>')
       end
     end
 
@@ -79,6 +80,7 @@ describe 'keystone::resource::authtoken' do
           :service_token_roles          => 'service',
           :service_token_roles_required => false,
           :token_cache_time             => '20',
+          :interface                    => 'internal',
         })
       end
       it 'override keystone authtoken parameters' do
@@ -115,6 +117,7 @@ describe 'keystone::resource::authtoken' do
         is_expected.to contain_keystone_config('keystone_authtoken/service_token_roles').with_value(params[:service_token_roles])
         is_expected.to contain_keystone_config('keystone_authtoken/service_token_roles_required').with_value(params[:service_token_roles_required])
         is_expected.to contain_keystone_config('keystone_authtoken/token_cache_time').with_value(params[:token_cache_time])
+        is_expected.to contain_keystone_config('keystone_authtoken/interface').with_value(params[:interface])
       end
     end
 
