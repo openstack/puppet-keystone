@@ -310,26 +310,6 @@
 #   (string value)
 #   Defaults to '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost'
 #
-# [*validate_service*]
-#   (Optional) Whether to validate keystone connections after
-#   the service is started.
-#   Defaults to false
-#
-# [*validate_insecure*]
-#   (Optional) Whether to validate keystone connections
-#   using the --insecure option with keystone client.
-#   Defaults to false
-#
-# [*validate_cacert*]
-#   (Optional) Whether to validate keystone connections
-#   using the specified argument with the --os-cacert option
-#   with keystone client.
-#   Defaults to undef
-#
-# [*validate_auth_url*]
-#   (Optional) The url to validate keystone against
-#   Defaults to undef
-#
 # [*service_name*]
 #   (Optional) Name of the service that will be providing the
 #   server functionality of keystone.  For example, the default
@@ -349,7 +329,6 @@
 #   one called keystone-admin (as per the new Debian package
 #   which uses UWSGI instead of Apache).
 #   Defaults to '$::keystone::params::service_name'
-#   NOTE: validate_service only applies if the default value is used.
 #
 # [*max_token_size*]
 #   (Optional) maximum allowable Keystone token size
@@ -566,6 +545,26 @@
 #   (Optional) Driver to use for managing tokens.
 #   Defaults to undef
 #
+# [*validate_service*]
+#   (Optional) Whether to validate keystone connections after
+#   the service is started.
+#   Defaults to undef
+#
+# [*validate_insecure*]
+#   (Optional) Whether to validate keystone connections
+#   using the --insecure option with keystone client.
+#   Defaults to undef
+#
+# [*validate_cacert*]
+#   (Optional) Whether to validate keystone connections
+#   using the specified argument with the --os-cacert option
+#   with keystone client.
+#   Defaults to undef
+#
+# [*validate_auth_url*]
+#   (Optional) The url to validate keystone against
+#   Defaults to undef
+#
 # == Dependencies
 #  None
 #
@@ -655,10 +654,6 @@ class keystone(
   $notification_format                  = $::os_service_default,
   $control_exchange                     = $::os_service_default,
   $rpc_response_timeout                 = $::os_service_default,
-  $validate_service                     = false,
-  $validate_insecure                    = false,
-  $validate_auth_url                    = false,
-  $validate_cacert                      = undef,
   $service_name                         = $::keystone::params::service_name,
   $max_token_size                       = $::os_service_default,
   $sync_db                              = true,
@@ -699,6 +694,10 @@ class keystone(
   $public_workers                       = undef,
   $cache_dir                            = undef,
   $token_driver                         = undef,
+  $validate_service                     = undef,
+  $validate_insecure                    = undef,
+  $validate_auth_url                    = undef,
+  $validate_cacert                      = undef,
 ) inherits keystone::params {
 
   include ::keystone::deps
@@ -961,35 +960,15 @@ admin_token will be removed in a later release")
   case $service_name {
     $::keystone::params::service_name, 'keystone-public-keystone-admin' : {
       $service_name_real = $::keystone::params::service_name
-      if $validate_service {
-        if $validate_auth_url {
-          $v_auth_url = $validate_auth_url
-        } else {
-          $v_auth_url = $admin_endpoint
-        }
 
-        class { '::keystone::service':
-          ensure         => $service_ensure,
-          service_name   => $service_name,
-          enable         => $enabled,
-          hasstatus      => true,
-          hasrestart     => true,
-          validate       => true,
-          admin_endpoint => $v_auth_url,
-          admin_token    => $admin_token,
-          insecure       => $validate_insecure,
-          cacert         => $validate_cacert,
-        }
-      } else {
-        class { '::keystone::service':
-          ensure       => $service_ensure,
-          service_name => $service_name,
-          enable       => $enabled,
-          hasstatus    => true,
-          hasrestart   => true,
-          validate     => false,
-        }
+      class { '::keystone::service':
+        ensure       => $service_ensure,
+        service_name => $service_name,
+        enable       => $enabled,
+        hasstatus    => true,
+        hasrestart   => true,
       }
+
       if $service_name == $::keystone::params::service_name {
         warning("Keystone under Eventlet has been deprecated during the Kilo cycle. \
 Support for deploying under eventlet will be dropped as of the M-release of OpenStack.")
