@@ -126,44 +126,13 @@ id="the_user_id"
     end
   end
 
-  describe '#get_public_endpoint' do
-    it 'should return nothing if there is no keystone config file' do
-      expect(klass.get_public_endpoint).to be_nil
-    end
-
-    it 'should return nothing if the keystone config file does not have a DEFAULT section' do
-      mock = {}
-      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
-      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
-      mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.get_public_endpoint).to be_nil
-    end
-
-    it 'should fail if the keystone config file does not contain public endpoint' do
-      mock = {'DEFAULT' => {}}
-      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
-      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
-      mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.get_public_endpoint).to be_nil
-    end
-
-    it 'should use the public_endpoint from keystone config file with no trailing slash' do
-      mock = {'DEFAULT' => {'public_endpoint' => 'https://keystone.example.com/'}}
-      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
-      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
-      mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.get_public_endpoint).to eq('https://keystone.example.com')
-    end
-  end
-
   describe '#get_auth_url' do
-    it 'should return nothing when OS_AUTH_URL is no defined in either the environment or the openrc file and there is no keystone configuration file' do
+    it 'should raise when OS_AUTH_URL is no defined in either the environment or the openrc file and there is no keystone puppet config file' do
       home = ENV['HOME']
       ENV.clear
       File.expects(:exists?).with("#{home}/openrc").returns(false)
       File.expects(:exists?).with('/root/openrc').returns(false)
-      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(false)
-      expect(klass.get_auth_url).to be_nil
+      expect { klass.get_auth_url }.to raise_error(Puppet::Error, "File: /etc/keystone/puppet.conf does not contain all required configuration keys. Cannot authenticate to Keystone.")
     end
 
     it 'should return the OS_AUTH_URL from the environment' do
@@ -180,30 +149,11 @@ id="the_user_id"
       expect(klass.get_auth_url).to eq('http://127.0.0.1:5001')
     end
 
-    it 'should use public_endpoint when nothing else is available' do
+    it 'should use auth_endpoint when nothing else is available' do
       ENV.clear
       mock = 'http://127.0.0.1:5001'
-      klass.expects(:public_endpoint).returns(mock)
+      klass.expects(:auth_endpoint).returns(mock)
       expect(klass.get_auth_url).to eq('http://127.0.0.1:5001')
-    end
-  end
-
-  describe '#get_service_url when retrieving the security token' do
-    it 'should return nothing when OS_ENDPOINT is not defined in environment' do
-      ENV.clear
-      expect(klass.get_service_url).to be_nil
-    end
-
-    it 'should return the OS_ENDPOINT from the environment' do
-      ENV['OS_ENDPOINT'] = 'http://127.0.0.1:5001/v3'
-      expect(klass.get_service_url).to eq('http://127.0.0.1:5001/v3')
-    end
-
-    it 'should use public_endpoint with the API version number' do
-      ENV.clear
-      mock = 'http://127.0.0.1:5001'
-      klass.expects(:public_endpoint).twice.returns(mock)
-      expect(klass.get_service_url).to eq('http://127.0.0.1:5001/v3')
     end
   end
 
@@ -245,37 +195,6 @@ id="other_domain_id"
         .with('domain', 'show', '--format', 'shell', 'Unknown Domain')
         .returns('')
       expect(klass.set_domain_for_name('name', 'Unknown Domain')).to eq('name')
-    end
-  end
-
-  describe 'when retrieving the security token' do
-    it 'should return nothing if there is no keystone config file' do
-      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(false)
-      expect(klass.get_admin_token).to be_nil
-    end
-
-    it 'should return nothing if the keystone config file does not have a DEFAULT section' do
-      mock = {}
-      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
-      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
-      mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.get_admin_token).to be_nil
-    end
-
-    it 'should fail if the keystone config file does not contain an admin token' do
-      mock = {'DEFAULT' => {'not_a_token' => 'foo'}}
-      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
-      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
-      mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.get_admin_token).to be_nil
-    end
-
-    it 'should parse the admin token if it is in the config file' do
-      mock = {'DEFAULT' => {'admin_token' => 'foo'}}
-      File.expects(:exists?).with("/etc/keystone/keystone.conf").returns(true)
-      Puppet::Util::IniConfig::File.expects(:new).returns(mock)
-      mock.expects(:read).with('/etc/keystone/keystone.conf')
-      expect(klass.get_admin_token).to eq('foo')
     end
   end
 

@@ -21,7 +21,6 @@ describe 'keystone server running with Apache/WSGI as Identity Provider' do
         internal_url        => 'http://127.0.0.1:1234',
       }
       # v3 admin
-      # we don't use ::keystone::roles::admin but still create resources manually:
       keystone_domain { 'admin_domain':
         ensure      => present,
         enabled     => true,

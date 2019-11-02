@@ -13,18 +13,6 @@
 #   accepts latest or specific versions.
 #   Defaults to present.
 #
-# [*admin_token*]
-#   Admin token that can be used to authenticate as a keystone
-#   admin. This is not the password for the admin user
-#   in the Keystone database. This is a token that bypasses authentication.
-#   The admin_token has been deprecated by the Keystone service and this
-#   will be deprecated in a future changeset. Required.
-#
-# [*admin_password*]
-#   Keystone password for the admin user. This is not the admin_token.
-#   This is the password that the admin user signs into keystone with.
-#   Required.
-#
 # [*catalog_type*]
 #   (Optional) Type of catalog that keystone uses to store endpoints,services.
 #   Defaults to sql. (Also accepts template)
@@ -403,12 +391,6 @@
 #   Otherwise Puppet will manage keys with File resource.
 #   Defaults to false
 #
-# [*enable_bootstrap*]
-#   (Optional) Enable keystone bootstrapping.
-#   This option to true will automatically bootstrap the default domain
-#   user by running 'keystone-manage bootstrap'.
-#   Defaults to true
-#
 # [*default_domain*]
 #   (Optional) When Keystone v3 support is enabled, v2 clients will need
 #   to have a domain assigned for certain operations.  For example,
@@ -565,25 +547,22 @@
 #   (Optional) The url to validate keystone against
 #   Defaults to undef
 #
-# == Dependencies
-#  None
+# [*admin_token*]
+#   Admin token that can be used to authenticate as a keystone
+#   admin. This is not the password for the admin user
+#   in the Keystone database. This is a token that bypasses authentication.
+#   Defaults to undef
 #
-# == Examples
+# [*admin_password*]
+#   Keystone password for the admin user. This is not the admin_token.
+#   This is the password that the admin user signs into keystone with.
+#   Defaults to undef
 #
-#   class { 'keystone':
-#     admin_token => 'my_special_token',
-#   }
-#
-#   OR
-#
-#   class { 'keystone':
-#      ...
-#      service_name => 'httpd',
-#      ...
-#   }
-#   class { 'keystone::wsgi::apache':
-#      ...
-#   }
+# [*enable_bootstrap*]
+#   (Optional) Enable keystone bootstrapping.
+#   This option to true will automatically bootstrap the default domain
+#   user by running 'keystone-manage bootstrap'.
+#   Defaults to undef
 #
 # == Authors
 #
@@ -594,8 +573,6 @@
 # Copyright 2012 Puppetlabs Inc, unless otherwise noted.
 #
 class keystone(
-  $admin_token,
-  $admin_password                       = undef,
   $package_ensure                       = 'present',
   $client_package_ensure                = 'present',
   $log_dir                              = undef,
@@ -668,7 +645,6 @@ class keystone(
   $default_domain                       = undef,
   $member_role_id                       = $::os_service_default,
   $member_role_name                     = $::os_service_default,
-  $enable_bootstrap                     = true,
   $memcache_dead_retry                  = $::os_service_default,
   $memcache_socket_timeout              = $::os_service_default,
   $memcache_pool_maxsize                = $::os_service_default,
@@ -698,6 +674,9 @@ class keystone(
   $validate_insecure                    = undef,
   $validate_auth_url                    = undef,
   $validate_cacert                      = undef,
+  $admin_token                          = undef,
+  $admin_password                       = undef,
+  $enable_bootstrap                     = undef,
 ) inherits keystone::params {
 
   include keystone::deps
@@ -772,14 +751,6 @@ class keystone(
     $public_endpoint_real = $public_endpoint
   }
 
-  if $admin_password == undef {
-    warning("admin_password is required, please set admin_password to a value != admin_token. \
-admin_token will be removed in a later release")
-    $admin_password_real = $admin_token
-  } else {
-    $admin_password_real = $admin_password
-  }
-
   if $manage_policyrcd {
     # openstacklib policy_rcd only affects debian based systems.
     Policy_rcd <| title == 'keystone' |> -> Package['keystone']
@@ -813,8 +784,12 @@ admin_token will be removed in a later release")
     purge  => $purge_config,
   }
 
+  # TODO(tobias-urdin): Remove this when admin_token is removed.
   keystone_config {
-    'DEFAULT/admin_token':      value => $admin_token, secret => true;
+    'DEFAULT/admin_token': ensure => 'absent', secret => true;
+  }
+
+  keystone_config {
     'DEFAULT/member_role_id':   value => $member_role_id;
     'DEFAULT/member_role_name': value => $member_role_name;
   }
@@ -1103,21 +1078,6 @@ running as a standalone service, or httpd for being run by a httpd server")
   }
   if $domain_config_directory != '/etc/keystone/domains' and !$using_domain_config {
     fail('You must activate domain configuration using "using_domain_config" parameter to keystone class.')
-  }
-
-  if $enable_bootstrap {
-    # this requires the database to be up and running and configured
-    # and is only run once, so we don't need to notify the service
-    exec { 'keystone-manage bootstrap':
-      command     => 'keystone-manage bootstrap',
-      environment => "OS_BOOTSTRAP_PASSWORD=${admin_password_real}",
-      user        => $keystone_user,
-      path        => '/usr/bin',
-      refreshonly => true,
-      notify      => Anchor['keystone::service::begin'],
-      subscribe   => Anchor['keystone::dbsync::end'],
-      tag         => 'keystone-exec',
-    }
   }
 
   if $using_domain_config {

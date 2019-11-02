@@ -1,7 +1,6 @@
 class { 'keystone':
   debug               => true,
   database_connection => 'mysql://keystone:keystone@127.0.0.1/keystone',
-  admin_token         => 'admin_token',
   enabled             => true,
   # helper for using domains
   using_domain_config => true
@@ -9,19 +8,13 @@ class { 'keystone':
 
 # Ensure this matches what is in LDAP or keystone will try to recreate
 # the admin user
-class { 'keystone::roles::admin':
-  email                  => 'test@example.com',
-  password               => 'ChangeMe',
-  admin_user_domain      => 'domain_1',
-  admin_project_domain   => 'domain_1',
-  service_project_domain => 'domain_1',
+class { 'keystone::bootstrap':
+  password => 'ChangeMe',
 }
 
-# Waiting to have keystone::roles::admin being a define instead of a
-# class to make the admin for domain_2.
 keystone_domain { 'domain_2': ensure => present }
 
-keystone::ldap_backend { 'domain_1':
+keystone::ldap_backend { 'Default':
   url                          => 'ldap://ldap.example.com:389',
   user                         => 'uid=bind,cn=users,cn=accounts,dc=example,dc=com',
   password                     => 'SecretPass',

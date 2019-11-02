@@ -28,17 +28,13 @@ class { 'keystone':
   debug               => true,
   database_connection => 'mysql://keystone_admin:keystone@127.0.0.1/keystone',
   catalog_type        => 'sql',
-  admin_token         => 'admin_token',
   enabled             => true,
 }
 class { 'keystone::cron::token_flush': }
-class { 'keystone::roles::admin':
-  email    => 'test@puppetlabs.com',
-  password => 'ChangeMe',
-}
-class { 'keystone::endpoint':
-  public_url => "https://${::fqdn}:443/main/",
-  admin_url  => "https://${::fqdn}:443/admin/",
+class { 'keystone::bootstrap':
+  password   => 'ChangeMe',
+  public_url => "https://${::fqdn}:443/main",
+  admin_url  => "https://${::fqdn}:443/admin",
 }
 
 keystone_config { 'ssl/enable': ensure  => absent }

@@ -19,8 +19,6 @@ describe 'keystone' do
   end
 
   default_params = {
-      'admin_token'                        => 'service_token',
-      'admin_password'                     => 'special_password',
       'package_ensure'                     => 'present',
       'client_package_ensure'              => 'present',
       'public_bind_host'                   => '0.0.0.0',
@@ -63,8 +61,6 @@ describe 'keystone' do
       'client_package_ensure'              => 'latest',
       'public_bind_host'                   => '0.0.0.0',
       'public_port'                        => '5001',
-      'admin_token'                        => 'service_token_override',
-      'admin_password'                     => 'admin_openstack_password',
       'catalog_type'                       => 'template',
       'token_provider'                     => 'uuid',
       'password_hash_algorithm'            => 'pbkdf2_sha512',
@@ -125,17 +121,6 @@ describe 'keystone' do
       end
     end
 
-    it 'should bootstrap $enable_bootstrap is true' do
-      if param_hash['enable_bootstrap']
-        is_expected.to contain_exec('keystone-manage bootstrap').with(
-          :command     => 'keystone-manage bootstrap',
-          :environment => 'OS_BOOTSTRAP_PASSWORD=service_password',
-          :user        => param_hash['keystone_user'],
-          :refreshonly => true
-        )
-      end
-    end
-
     it 'passes purge to resource' do
       is_expected.to contain_resources('keystone_config').with({
         :purge => false
@@ -149,10 +134,6 @@ describe 'keystone' do
       ].each do |config|
         is_expected.to contain_keystone_config("DEFAULT/#{config}").with_value(param_hash[config])
       end
-    end
-
-    it 'should contain correct admin_token config' do
-      is_expected.to contain_keystone_config('DEFAULT/admin_token').with_value(param_hash['admin_token']).with_secret(true)
     end
 
     it 'should contain correct mysql config' do
@@ -288,7 +269,6 @@ describe 'keystone' do
     describe 'when ipv6 loopback is set' do
       let :params do
         {
-          :admin_token      => 'service_token',
           :public_bind_host => '::0'
         }
       end
@@ -298,7 +278,6 @@ describe 'keystone' do
     describe 'when ipv4 address is set' do
       let :params do
         {
-          :admin_token      => 'service_token',
           :public_bind_host => '192.168.0.1',
           :public_port      => '15000'
         }
@@ -309,7 +288,6 @@ describe 'keystone' do
     describe 'when unenclosed ipv6 address is set' do
       let :params do
         {
-          :admin_token      => 'service_token',
           :public_bind_host => '2001:db8::1'
         }
       end
@@ -319,7 +297,6 @@ describe 'keystone' do
     describe 'when enclosed ipv6 address is set' do
       let :params do
         {
-          :admin_token      => 'service_token',
           :public_bind_host => '[2001:db8::1]'
         }
       end
@@ -335,8 +312,7 @@ describe 'keystone' do
 
   describe 'with disabled service managing' do
     let :params do
-      { :admin_token    => 'service_token',
-        :manage_service => false,
+      { :manage_service => false,
         :enabled        => false }
     end
 
@@ -354,7 +330,6 @@ describe 'keystone' do
     describe 'when configuring as UUID' do
       let :params do
         {
-          'admin_token'    => 'service_token',
           'token_provider' => 'keystone.token.providers.uuid.Provider'
         }
       end
@@ -362,8 +337,7 @@ describe 'keystone' do
 
     describe 'with invalid catalog_type' do
       let :params do
-        { :admin_token  => 'service_token',
-          :catalog_type => 'invalid' }
+        { :catalog_type => 'invalid' }
       end
 
       it { should raise_error(Puppet::Error) }
@@ -371,8 +345,7 @@ describe 'keystone' do
 
     describe 'when configuring catalog driver' do
       let :params do
-        { :admin_token    => 'service_token',
-          :catalog_driver => 'alien' }
+        { :catalog_driver => 'alien' }
       end
 
       it { is_expected.to contain_keystone_config('catalog/driver').with_value(params[:catalog_driver]) }
@@ -382,7 +355,6 @@ describe 'keystone' do
   describe 'when configuring token expiration' do
     let :params do
       {
-        'admin_token'      => 'service_token',
         'token_expiration' => '42',
       }
     end
@@ -392,9 +364,7 @@ describe 'keystone' do
 
   describe 'when not configuring token expiration' do
     let :params do
-      {
-        'admin_token' => 'service_token',
-      }
+      {}
     end
 
     it { is_expected.to contain_keystone_config("token/expiration").with_value('3600') }
@@ -403,29 +373,16 @@ describe 'keystone' do
   describe 'when sync_db is set to false' do
     let :params do
       {
-        'admin_token' => 'service_token',
-        'sync_db'     => false,
+        'sync_db' => false,
       }
     end
 
     it { is_expected.not_to contain_exec('keystone-manage db_sync') }
   end
 
-  describe 'when enable_bootstrap is set to false' do
-    let :params do
-      {
-        'admin_token'      => 'service_token',
-        'enable_bootstrap' => false,
-      }
-    end
-
-    it { is_expected.not_to contain_exec('keystone-manage bootstrap') }
-  end
-
   describe 'configure memcache servers if set' do
     let :params do
       {
-        'admin_token'                  => 'service_token',
         'cache_backend'                => 'dogpile.cache.memcached',
         'cache_backend_argument'       => ['url:SERVER1:12211'],
         'cache_memcache_servers'       => 'SERVER1:11211,SERVER2:11211,[fd12:3456:789a:1::1]:11211',
@@ -454,7 +411,6 @@ describe 'keystone' do
   describe 'configure cache memcache servers if set' do
     let :params do
       {
-        'admin_token'                          => 'service_token',
         'cache_backend'                        => 'dogpile.cache.memcached',
         'cache_backend_argument'               => ['url:SERVER3:12211'],
         'cache_memcache_servers'               => [ 'SERVER1:11211', 'SERVER2:11211', '[fd12:3456:789a:1::1]:11211' ],
@@ -487,7 +443,6 @@ describe 'keystone' do
   describe 'configure cache enabled if set' do
     let :params do
       {
-        'admin_token'                          => 'service_token',
         'cache_backend'                        => 'dogpile.cache.memcached',
         'cache_backend_argument'               => ['url:SERVER3:12211'],
         'cache_enabled'                        => true,
@@ -550,7 +505,6 @@ describe 'keystone' do
   describe 'when enabling SSL' do
     let :params do
       {
-        'admin_token'     => 'service_token',
         'enable_ssl'      => true,
         'public_endpoint' => 'https://localhost:5000',
       }
@@ -567,8 +521,7 @@ describe 'keystone' do
   describe 'when disabling SSL' do
     let :params do
       {
-        'admin_token' => 'service_token',
-        'enable_ssl'  => false,
+        'enable_ssl'=> false,
       }
     end
     it {is_expected.to contain_keystone_config('ssl/enable').with_value(false)}
@@ -706,7 +659,6 @@ describe 'keystone' do
   describe 'setting default template catalog' do
     let :params do
       {
-        :admin_token  => 'service_token',
         :catalog_type => 'template'
       }
     end
@@ -718,7 +670,6 @@ describe 'keystone' do
   describe 'setting another template catalog' do
     let :params do
       {
-        :admin_token           => 'service_token',
         :catalog_type          => 'template',
         :catalog_template_file => '/some/template_file'
       }

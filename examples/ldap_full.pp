@@ -3,8 +3,7 @@
 
 # Ensure this matches what is in LDAP or keystone will try to recreate
 # the admin user
-class { 'keystone::roles::admin':
-  email    => 'test@example.com',
+class { 'keystone::bootstrap':
   password => 'ChangeMe',
 }
 

@@ -1,8 +1,3 @@
-# Example using v3 domain configuration.  This setup a directory where
-# the domain configurations will be and adjust the keystone.
-# For the rest of the configuration check v3_basic.pp.
-#
-
 Exec { logoutput => 'on_failure' }
 
 class { 'mysql::server': }
@@ -12,18 +7,14 @@ class { 'keystone::db::mysql':
 class { 'keystone':
   debug               => true,
   database_connection => 'mysql://keystone:keystone@192.168.1.1/keystone',
-  admin_token         => 'admin_token',
   enabled             => true,
   # The domain configuration setup at keystone level
   using_domain_config => true,
 }
-class { 'keystone::roles::admin':
-  email    => 'test@example.tld',
-  password => 'a_big_secret',
-}
-class { 'keystone::endpoint':
-  public_url => 'http://192.168.1.1:5000/',
-  admin_url  => 'http://192.168.1.1:5000/',
+class { 'keystone::bootstrap':
+  password   => 'a_big_secret',
+  public_url => 'http://192.168.1.1:5000',
+  admin_url  => 'http://192.168.1.1:5000',
 }
 
 # Creates the /etc/keystone/domains/keystone.my_domain.conf file and

@@ -1,0 +1,19 @@
+---
+features:
+  - |
+    Added keystone::bootstrap class.
+upgrade:
+  - |
+    Now that the keystone::endpoint and keystone::roles::admin classes is deprecated
+    and has no effect deployments must define the new keystone::bootstrap class with
+    the proper data that was earlier passed to those classes. Please go through the
+    parameters in keystone::bootstrap carefully and define the class.
+  - |
+    If you are using a multi-domain setup where you previously relied on keystone::endpoint
+    and/or keystone::roles::admin to create your domains and domain scoped admin accounts
+    the keystone::bootstrap does not do this and you need to ensure this is managed in your
+    deployment using the keystone provider resources.
+deprecations:
+  - |
+    The keystone::endpoint and keystone::roles::admin classes is now deprecated
+    and has no effect. Please read the upgrade notes carefully!

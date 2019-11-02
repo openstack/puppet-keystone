@@ -13,12 +13,60 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
 
   @@default_domain_id = nil
 
-  def self.public_endpoint
-    @public_endpoint ||= get_public_endpoint
+  def self.conf_filename
+    '/etc/keystone/puppet.conf'
   end
 
-  def self.admin_token
-    @admin_token ||= get_admin_token
+  def self.keystone_puppet_conf
+    return @keystone_puppet_conf if @keystone_puppet_conf
+    @keystone_puppet_conf = Puppet::Util::IniConfig::File.new
+    @keystone_puppet_conf.read(conf_filename)
+    @keystone_puppet_conf
+  end
+
+  def self.get_keystone_puppet_credentials
+    auth_keys = ['auth_url', 'project_name', 'username',
+                 'password']
+    conf = keystone_puppet_conf
+    if conf and conf['keystone_authtoken'] and
+        auth_keys.all?{|k| !conf['keystone_authtoken'][k].nil?}
+      creds = Hash[ auth_keys.map \
+                   { |k| [k, conf['keystone_authtoken'][k].strip] } ]
+      if conf['project_domain_name']
+        creds['project_domain_name'] = conf['project_domain_name']
+      else
+        creds['project_domain_name'] = 'Default'
+      end
+      if conf['user_domain_name']
+        creds['user_domain_name'] = conf['user_domain_name']
+      else
+        creds['user_domain_name'] = 'Default'
+      end
+      if conf['keystone_authtoken']['region_name']
+        creds['region_name'] = conf['keystone_authtoken']['region_name']
+      end
+      return creds
+    else
+      raise(Puppet::Error, "File: #{conf_filename} does not contain all " +
+            "required configuration keys. Cannot authenticate to Keystone.")
+    end
+  end
+
+  def self.keystone_puppet_credentials
+    @keystone_puppet_credentials ||= get_keystone_puppet_credentials
+  end
+
+  def keystone_puppet_credentials
+    self.class.keystone_puppet_credentials
+  end
+
+  def self.get_auth_endpoint
+    q = keystone_puppet_credentials
+    "#{q['auth_url']}"
+  end
+
+  def self.auth_endpoint
+    @auth_endpoint ||= get_auth_endpoint
   end
 
   def self.default_domain_from_ini_file
@@ -152,48 +200,15 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
     raise e unless e.message =~ /No user with a name or ID/
   end
 
-  def self.get_public_endpoint
-    endpoint = nil
-    if url = get_section('DEFAULT', 'public_endpoint')
-      endpoint = url.chomp('/')
-    end
-    return endpoint
-  end
-
-  def self.get_admin_token
-    get_section('DEFAULT', 'admin_token')
-  end
-
   def self.get_auth_url
     auth_url = nil
     if ENV['OS_AUTH_URL']
       auth_url = ENV['OS_AUTH_URL'].dup
     elsif auth_url = get_os_vars_from_rcfile(rc_filename)['OS_AUTH_URL']
     else
-      auth_url = public_endpoint
+      auth_url = auth_endpoint
     end
     return auth_url
-  end
-
-  def self.get_section(group, name)
-    if keystone_file && keystone_file[group] && keystone_file[group][name]
-      return keystone_file[group][name].strip
-    end
-    return nil
-  end
-
-  def self.get_service_url
-    service_url = nil
-    if ENV['OS_ENDPOINT']
-      service_url = ENV['OS_ENDPOINT'].dup
-    # Compatibility with pre-4.0.0 openstackclient
-    elsif ENV['OS_URL']
-      service_url = ENV['OS_URL'].dup
-    elsif public_endpoint
-      service_url = public_endpoint
-      service_url << "/v#{@credentials.version}"
-    end
-    return service_url
   end
 
   def self.ini_filename
@@ -212,25 +227,30 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
   def self.request(service, action, properties=nil, options={})
     super
   rescue Puppet::Error::OpenstackAuthInputError, Puppet::Error::OpenstackUnauthorizedError => error
-    request_by_service_token(service, action, error, properties, options=options)
+    keystone_request(service, action, error, properties)
   end
 
-  def self.request_by_service_token(service, action, error, properties=nil, options={})
+  def self.keystone_request(service, action, error, properties=nil)
     properties ||= []
-    @credentials.token    = admin_token
-    @credentials.endpoint = service_url
-    raise error unless @credentials.service_token_set?
+    @credentials.username = keystone_puppet_credentials['username']
+    @credentials.password = keystone_puppet_credentials['password']
+    @credentials.project_name = keystone_puppet_credentials['project_name']
+    @credentials.auth_url = auth_endpoint
+    if keystone_puppet_credentials['region_name']
+      @credentials.region_name = keystone_puppet_credentials['region_name']
+    end
+    if @credentials.version == '3'
+      @credentials.user_domain_name = keystone_puppet_credentials['user_domain_name']
+      @credentials.project_domain_name = keystone_puppet_credentials['project_domain_name']
+    end
+    raise error unless @credentials.set?
     begin
-      Puppet::Provider::Openstack.request(service, action, properties, @credentials, options)
+      Puppet::Provider::Openstack.request(service, action, properties, @credentials)
     rescue Puppet::ExecutionFailure, Puppet::Error::OpenstackUnauthorizedError
       # openstackclient < 4.0.0 does not support --os-endpoint and requires --os-url
-      @credentials.url = service_url
-      Puppet::Provider::Openstack.request(service, action, properties, @credentials, options)
+      @credentials.url = auth_endpoint
+      Puppet::Provider::Openstack.request(service, action, properties, @credentials)
     end
-  end
-
-  def self.service_url
-    @service_url ||= get_service_url
   end
 
   def self.set_domain_for_name(name, domain_name)
