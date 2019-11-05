@@ -1,0 +1,9 @@
+---
+deprecations:
+  - |
+    The service validation in keystone::service is deprecated so the following
+    parameters in keystone::service has no effect anymore, validate, admin_token,
+    admin_endpoint, retries, delay, insecure, cacert.
+  - |
+    The service validation in ::keystone is deprecated so the following parameters
+    has no effect validate_service, validate_insecure, validate_auth_url and validate_cacert.

@@ -9,28 +9,30 @@
 # === Parameters
 #
 # [*ensure*]
-#   (optional) The desired state of the keystone service
+#   (Optional) The desired state of the keystone service
 #   Defaults to undef
 #
 # [*service_name*]
-#   (optional) The name of the keystone service
+#   (Optional) The name of the keystone service
 #   Defaults to $::keystone::params::service_name
 #
 # [*enable*]
-#   (optional) Whether to enable the keystone service
+#   (Optional) Whether to enable the keystone service
 #   Defaults to true
 #
 # [*hasstatus*]
-#   (optional) Whether the keystone service has status
+#   (Optional) Whether the keystone service has status
 #   Defaults to true
 #
 # [*hasrestart*]
-#   (optional) Whether the keystone service has restart
+#   (Optional) Whether the keystone service has restart
 #   Defaults to true
+#
+## DEPRECATED PARAMS
 #
 # [*validate*]
 #   (optional) Whether to validate the service is working after any service refreshes
-#   Defaults to false
+#   Defaults to undef
 #
 # [*admin_token*]
 #   (optional) The admin token to use for validation
@@ -38,20 +40,20 @@
 #
 # [*admin_endpoint*]
 #   (optional) The admin endpont to use for validation
-#   Defaults to 'http://localhost:5000/v2.0'
+#   Defaults to undef
 #
 # [*retries*]
 #   (optional) Number of times to retry validation
-#   Defaults to 10
+#   Defaults to undef
 #
 # [*delay*]
 #   (optional) Number of seconds between validation attempts
-#   Defaults to 2
+#   Defaults to undef
 #
 # [*insecure*]
 #   (optional) Whether to validate keystone connections
 #   using the --insecure option with keystone client.
-#   Defaults to false
+#   Defaults to undef
 #
 # [*cacert*]
 #   (optional) Whether to validate keystone connections
@@ -59,25 +61,25 @@
 #   with keystone client.
 #   Defaults to undef
 #
-class keystone::service(
+class keystone::service (
   $ensure         = undef,
   $service_name   = $::keystone::params::service_name,
   $enable         = true,
   $hasstatus      = true,
   $hasrestart     = true,
-  $validate       = false,
+  ## DEPRECATED PARAMS
+  $validate       = undef,
   $admin_token    = undef,
-  $admin_endpoint = 'http://localhost:5000/v2.0',
-  $retries        = 10,
-  $delay          = 2,
-  $insecure       = false,
+  $admin_endpoint = undef,
+  $retries        = undef,
+  $delay          = undef,
+  $insecure       = undef,
   $cacert         = undef,
-) {
+) inherits keystone::params {
 
   include ::keystone::deps
-  include ::keystone::params
 
-  if ($service_name == 'keystone-public-keystone-admin'){
+  if $service_name == 'keystone-public-keystone-admin' {
     service { 'keystone-public':
       ensure     => $ensure,
       name       => 'keystone-public',
@@ -86,6 +88,7 @@ class keystone::service(
       hasrestart => $hasrestart,
       tag        => 'keystone-service',
     }
+
     service { 'keystone-admin':
       ensure     => $ensure,
       name       => 'keystone-admin',
@@ -102,33 +105,6 @@ class keystone::service(
       hasstatus  => $hasstatus,
       hasrestart => $hasrestart,
       tag        => 'keystone-service',
-    }
-  }
-
-  if $insecure {
-    $insecure_s = '--insecure'
-  } else {
-    $insecure_s = ''
-  }
-
-  if $cacert {
-    $cacert_s = "--os-cacert ${cacert}"
-  } else {
-    $cacert_s = ''
-  }
-
-  if $validate and $admin_token and $admin_endpoint {
-    $cmd = "openstack --os-auth-url ${admin_endpoint} --os-token ${admin_token} ${insecure_s} ${cacert_s} user list"
-    $catch = 'name'
-    exec { 'validate_keystone_connection':
-      path        => '/usr/bin:/bin:/usr/sbin:/sbin',
-      provider    => shell,
-      command     => $cmd,
-      subscribe   => Service['keystone'],
-      refreshonly => true,
-      tries       => $retries,
-      try_sleep   => $delay,
-      notify      => Anchor['keystone::service::end'],
     }
   }
 }
