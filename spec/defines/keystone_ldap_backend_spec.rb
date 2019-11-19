@@ -37,9 +37,6 @@ describe 'keystone::ldap_backend' do
           :user_enabled_invert                  => 'False',
           :user_attribute_ignore                => '',
           :user_default_project_id_attribute    => 'defaultProject',
-          :user_allow_create                    => 'False',
-          :user_allow_update                    => 'False',
-          :user_allow_delete                    => 'False',
           :user_pass_attribute                  => 'krbPassword',
           :user_enabled_emulation               => 'True',
           :user_enabled_emulation_dn            => 'cn=openstack-enabled,cn=groups,cn=accounts,dc=example,dc=com',
@@ -80,9 +77,6 @@ describe 'keystone::ldap_backend' do
           :group_members_are_ids                => 'True',
           :group_desc_attribute                 => 'description',
           :group_attribute_ignore               => '',
-          :group_allow_create                   => 'False',
-          :group_allow_update                   => 'False',
-          :group_allow_delete                   => 'False',
           :group_additional_attribute_mapping   => '',
           :group_ad_nesting                     => 'True',
           :chase_referrals                      => 'False',
@@ -127,9 +121,6 @@ describe 'keystone::ldap_backend' do
         is_expected.to contain_keystone_domain_config('Default::ldap/user_attribute_ignore').with_value('')
         is_expected.to contain_keystone_domain_config('Default::ldap/user_default_project_id_attribute').with_value('defaultProject')
         is_expected.to contain_keystone_domain_config('Default::ldap/user_tree_dn').with_value('cn=users,dc=example,dc=com')
-        is_expected.to contain_keystone_domain_config('Default::ldap/user_allow_create').with_value('False')
-        is_expected.to contain_keystone_domain_config('Default::ldap/user_allow_update').with_value('False')
-        is_expected.to contain_keystone_domain_config('Default::ldap/user_allow_delete').with_value('False')
         is_expected.to contain_keystone_domain_config('Default::ldap/user_pass_attribute').with_value('krbPassword')
         is_expected.to contain_keystone_domain_config('Default::ldap/user_enabled_emulation').with_value('True')
         is_expected.to contain_keystone_domain_config('Default::ldap/user_enabled_emulation_dn').with_value('cn=openstack-enabled,cn=groups,cn=accounts,dc=example,dc=com')
@@ -176,9 +167,6 @@ describe 'keystone::ldap_backend' do
         is_expected.to contain_keystone_domain_config('Default::ldap/group_desc_attribute').with_value('description')
         is_expected.to contain_keystone_domain_config('Default::ldap/group_name_attribute').with_value('cn')
         is_expected.to contain_keystone_domain_config('Default::ldap/group_attribute_ignore').with_value('')
-        is_expected.to contain_keystone_domain_config('Default::ldap/group_allow_create').with_value('False')
-        is_expected.to contain_keystone_domain_config('Default::ldap/group_allow_update').with_value('False')
-        is_expected.to contain_keystone_domain_config('Default::ldap/group_allow_delete').with_value('False')
         is_expected.to contain_keystone_domain_config('Default::ldap/group_additional_attribute_mapping').with_value('')
         is_expected.to contain_keystone_domain_config('Default::ldap/group_ad_nesting').with_value('True')
 

@@ -1,0 +1,6 @@
+---
+deprecations:
+  - |
+    The user_allow_create, user_allow_update, user_allow_delete, group_allow_create,
+    group_allow_update and group_allow_delete parameters in keystone::ldap_backend
+    is deprecated, has no effect and will be removed in a later release.

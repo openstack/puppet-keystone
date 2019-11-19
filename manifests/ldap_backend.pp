@@ -95,18 +95,6 @@
 #   LDAP attribute mapped to default_project_id for users. (string value)
 #   Defaults to 'undef'
 #
-# [*user_allow_create*]
-#   Allow user creation in LDAP backend. (boolean value)
-#   Defaults to 'undef'
-#
-# [*user_allow_update*]
-#   Allow user updates in LDAP backend. (boolean value)
-#   Defaults to 'undef'
-#
-# [*user_allow_delete*]
-#   Allow user deletion in LDAP backend. (boolean value)
-#   Defaults to 'undef'
-#
 # [*user_pass_attribute*]
 #   LDAP attribute mapped to password. (string value)
 #   Defaults to 'undef'
@@ -283,18 +271,6 @@
 #   List of attributes stripped off the group on update. (list value)
 #   Defaults to 'undef'
 #
-# [*group_allow_create*]
-#   Allow group creation in LDAP backend. (boolean value)
-#   Defaults to 'undef'
-#
-# [*group_allow_update*]
-#   Allow group update in LDAP backend. (boolean value)
-#   Defaults to 'undef'
-#
-# [*group_allow_delete*]
-#   Allow group deletion in LDAP backend. (boolean value)
-#   Defaults to 'undef'
-#
 # [*group_additional_attribute_mapping*]
 #   Additional attribute mappings for groups. Attribute mapping
 #   format is <ldap_attr>:<user_attr>, where ldap_attr is the
@@ -393,6 +369,30 @@
 #
 # === DEPRECATED group/name
 #
+# [*user_allow_create*]
+#   Allow user creation in LDAP backend. (boolean value)
+#   Defaults to 'undef'
+#
+# [*user_allow_update*]
+#   Allow user updates in LDAP backend. (boolean value)
+#   Defaults to 'undef'
+#
+# [*user_allow_delete*]
+#   Allow user deletion in LDAP backend. (boolean value)
+#   Defaults to 'undef'
+#
+# [*group_allow_create*]
+#   Allow group creation in LDAP backend. (boolean value)
+#   Defaults to 'undef'
+#
+# [*group_allow_update*]
+#   Allow group update in LDAP backend. (boolean value)
+#   Defaults to 'undef'
+#
+# [*group_allow_delete*]
+#   Allow group deletion in LDAP backend. (boolean value)
+#   Defaults to 'undef'
+#
 # == Dependencies
 # == Examples
 define keystone::ldap_backend(
@@ -415,9 +415,6 @@ define keystone::ldap_backend(
   $user_enabled_invert                  = undef,
   $user_attribute_ignore                = undef,
   $user_default_project_id_attribute    = undef,
-  $user_allow_create                    = undef,
-  $user_allow_update                    = undef,
-  $user_allow_delete                    = undef,
   $user_pass_attribute                  = undef,
   $user_enabled_emulation               = undef,
   $user_enabled_emulation_dn            = undef,
@@ -458,9 +455,6 @@ define keystone::ldap_backend(
   $group_members_are_ids                = undef,
   $group_desc_attribute                 = undef,
   $group_attribute_ignore               = undef,
-  $group_allow_create                   = undef,
-  $group_allow_update                   = undef,
-  $group_allow_delete                   = undef,
   $group_additional_attribute_mapping   = undef,
   $group_ad_nesting                     = undef,
   $chase_referrals                      = undef,
@@ -483,6 +477,13 @@ define keystone::ldap_backend(
   $package_ensure                       = present,
   $manage_packages                      = true,
   $create_domain_entry                  = false,
+  # DEPRECATED PARAMETERS
+  $user_allow_create                    = undef,
+  $user_allow_update                    = undef,
+  $user_allow_delete                    = undef,
+  $group_allow_create                   = undef,
+  $group_allow_update                   = undef,
+  $group_allow_delete                   = undef,
 ) {
 
   include ::keystone::deps
@@ -492,6 +493,30 @@ define keystone::ldap_backend(
   $err_msg = "You should add \"using_domain_config => true\" parameter to your Keystone class, \
 got \"${domain_enabled}\" for identity/domain_specific_drivers_enabled \
 and \"${domain_dir_enabled}\" for identity/domain_config_dir"
+
+  if $user_allow_create {
+    warning('keystone::user_allow_create is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $user_allow_update {
+    warning('keystone::user_allow_update is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $user_allow_delete {
+    warning('keystone::user_allow_delete is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $group_allow_create {
+    warning('keystone::group_allow_create is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $group_allow_update {
+    warning('keystone::group_allow_update is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $group_allow_delete {
+    warning('keystone::group_allow_delete is deprecated, has no effect and will be removed in a later release.')
+  }
 
   if(bool2num($domain_enabled) == 0) {
     fail($err_msg)
@@ -541,9 +566,6 @@ and \"${domain_dir_enabled}\" for identity/domain_config_dir"
     "${domain}::ldap/user_enabled_invert":                  value => $user_enabled_invert;
     "${domain}::ldap/user_attribute_ignore":                value => $user_attribute_ignore;
     "${domain}::ldap/user_default_project_id_attribute":    value => $user_default_project_id_attribute;
-    "${domain}::ldap/user_allow_create":                    value => $user_allow_create;
-    "${domain}::ldap/user_allow_update":                    value => $user_allow_update;
-    "${domain}::ldap/user_allow_delete":                    value => $user_allow_delete;
     "${domain}::ldap/user_pass_attribute":                  value => $user_pass_attribute;
     "${domain}::ldap/user_enabled_emulation":               value => $user_enabled_emulation;
     "${domain}::ldap/user_enabled_emulation_dn":            value => $user_enabled_emulation_dn;
@@ -584,9 +606,6 @@ and \"${domain_dir_enabled}\" for identity/domain_config_dir"
     "${domain}::ldap/group_members_are_ids":                value => $group_members_are_ids;
     "${domain}::ldap/group_desc_attribute":                 value => $group_desc_attribute;
     "${domain}::ldap/group_attribute_ignore":               value => $group_attribute_ignore;
-    "${domain}::ldap/group_allow_create":                   value => $group_allow_create;
-    "${domain}::ldap/group_allow_update":                   value => $group_allow_update;
-    "${domain}::ldap/group_allow_delete":                   value => $group_allow_delete;
     "${domain}::ldap/group_additional_attribute_mapping":   value => $group_additional_attribute_mapping;
     "${domain}::ldap/group_ad_nesting":                     value => $group_ad_nesting;
     "${domain}::ldap/chase_referrals":                      value => $chase_referrals;

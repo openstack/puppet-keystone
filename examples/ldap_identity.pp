@@ -22,7 +22,4 @@ class { '::keystone:ldap':
   user_id_attribute   => 'uid',
   user_name_attribute => 'uid',
   user_mail_attribute => 'mail',
-  user_allow_create   => 'False',
-  user_allow_update   => 'False',
-  user_allow_delete   => 'False'
 }
