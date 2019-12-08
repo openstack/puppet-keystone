@@ -77,7 +77,7 @@ class keystone::service (
   $cacert         = undef,
 ) inherits keystone::params {
 
-  include ::keystone::deps
+  include keystone::deps
 
   if $service_name == 'keystone-public-keystone-admin' {
     service { 'keystone-public':

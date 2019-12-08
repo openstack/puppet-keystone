@@ -3,7 +3,7 @@ require 'spec_helper'
 describe 'keystone::wsgi::apache' do
 
   let :pre_condition do
-    "class { '::keystone':
+    "class { 'keystone':
        admin_token  => 'dummy',
        service_name => 'httpd',
        enable_ssl   => true,

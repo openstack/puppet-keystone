@@ -62,7 +62,7 @@ class keystone::db (
   $database_idle_timeout            = undef,
 ) {
 
-  include ::keystone::deps
+  include keystone::deps
 
   if $database_idle_timeout {
     warning('The database_idle_timeout parameter is deprecated. Please use \

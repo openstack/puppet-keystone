@@ -245,7 +245,7 @@ describe 'keystone' do
     end
 
     let :pre_condition do
-      'include ::keystone::wsgi::apache'
+      'include keystone::wsgi::apache'
     end
 
     it_configures 'core keystone examples', httpd_params
@@ -267,7 +267,7 @@ describe 'keystone' do
     end
 
     let :pre_condition do
-      'include ::keystone::wsgi::apache'
+      'include keystone::wsgi::apache'
     end
 
     it_configures 'core keystone examples', httpd_params
@@ -961,7 +961,7 @@ describe 'keystone' do
     end
     describe 'with default domain and wsgi service is managed and enabled' do
       let :pre_condition do
-        'include ::apache'
+        'include apache'
       end
       let :params do
         default_params.merge({

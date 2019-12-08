@@ -6,10 +6,10 @@ describe 'keystone server running with Apache/WSGI as Service Provider with Shib
 
     it 'should work with no errors' do
       pp= <<-EOS
-      include ::openstack_integration
-      include ::openstack_integration::repos
-      include ::openstack_integration::mysql
-      include ::openstack_integration::keystone
+      include openstack_integration
+      include openstack_integration::repos
+      include openstack_integration::mysql
+      include openstack_integration::keystone
 
       ::keystone::resource::service_identity { 'beaker-ci':
         service_type        => 'beaker',
@@ -66,7 +66,7 @@ describe 'keystone server running with Apache/WSGI as Service Provider with Shib
         user_domain         => 'service_domain',
         project_domain      => 'service_domain',
       }
-      class { '::keystone::federation::shibboleth':
+      class { 'keystone::federation::shibboleth':
         methods => 'password, token, oauth1, saml2',
       }
       EOS

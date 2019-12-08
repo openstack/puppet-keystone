@@ -84,8 +84,8 @@ define keystone::resource::service_user(
   $region_name             = $::os_service_default,
 ) {
 
-  include ::keystone::params
-  include ::keystone::deps
+  include keystone::params
+  include keystone::deps
 
   $service_user_options = {
     'service_user/auth_type'               => {'value' => $auth_type},

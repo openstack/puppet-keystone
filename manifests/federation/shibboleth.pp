@@ -65,8 +65,8 @@ class keystone::federation::shibboleth(
   $main_port        = undef,
 ) {
 
-  include ::apache
-  include ::keystone::deps
+  include apache
+  include keystone::deps
 
   if $admin_port or $main_port {
     warning('keystone::federation::shibboleth::admin_port and main_port are deprecated and have no effect')
@@ -101,7 +101,7 @@ Apache + Shibboleth SP setups, where a REMOTE_USER env variable is always set, e
         path => '/usr/lib64/shibboleth/mod_shib_24.so'
       }
     } else {
-      class { '::apache::mod::shib': }
+      class { 'apache::mod::shib': }
     }
 
     concat::fragment { 'configure_shibboleth_keystone':

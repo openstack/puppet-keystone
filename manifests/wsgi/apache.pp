@@ -165,7 +165,7 @@ class keystone::wsgi::apache (
   $custom_wsgi_process_options       = {},
 ) inherits ::keystone::params {
 
-  include ::keystone::deps
+  include keystone::deps
 
   # TODO(tobias-urdin): This dependency chaining can be moved to keystone::deps
   # when we have cleaned up some old eventlet code and users are forced to use

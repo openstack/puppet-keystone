@@ -17,7 +17,7 @@ class keystone::federation (
   $trusted_dashboards  = undef,
   $remote_id_attribute = undef,
 ) {
-  include ::keystone::deps
+  include keystone::deps
 
   keystone_config {
     'federation/trusted_dashboard': value  => any2array($trusted_dashboards);

@@ -120,9 +120,9 @@ class keystone::federation::openidc (
   $package_ensure                 = present,
 ) {
 
-  include ::apache
-  include ::keystone::deps
-  include ::keystone::params
+  include apache
+  include keystone::deps
+  include keystone::params
 
   if $openidc_enable_oauth and !$openidc_introspection_endpoint {
     fail('You must set openidc_introspection_endpoint when enabling oauth support')

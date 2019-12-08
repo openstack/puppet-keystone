@@ -97,8 +97,8 @@ class keystone::federation::identity_provider(
   $package_ensure                = present,
 ) {
 
-  include ::keystone::deps
-  include ::keystone::params
+  include keystone::deps
+  include keystone::params
 
   if $::keystone::service_name != 'httpd' {
     fail ('Keystone need to be running under Apache for Federation work.')

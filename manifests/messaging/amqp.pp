@@ -47,7 +47,7 @@ class keystone::messaging::amqp(
   $amqp_sasl_mechanisms                 = $::os_service_default,
 ) {
 
-  include ::keystone::deps
+  include keystone::deps
 
   oslo::messaging::amqp { 'keystone_config':
     pre_settled            => $amqp_pre_settled,

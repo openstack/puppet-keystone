@@ -131,7 +131,7 @@ define keystone::resource::service_identity(
   $default_domain        = undef,
 ) {
 
-  include ::keystone::deps
+  include keystone::deps
 
   validate_legacy(Enum['present', 'absent'], 'validate_re', $ensure,
     [['^present$', '^absent$'], 'Valid values for ensure parameter are present or absent'])

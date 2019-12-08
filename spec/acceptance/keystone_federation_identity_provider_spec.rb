@@ -6,10 +6,10 @@ describe 'keystone server running with Apache/WSGI as Identity Provider' do
 
     it 'should work with no errors' do
       pp= <<-EOS
-      include ::openstack_integration
-      include ::openstack_integration::repos
-      include ::openstack_integration::mysql
-      include ::openstack_integration::keystone
+      include openstack_integration
+      include openstack_integration::repos
+      include openstack_integration::mysql
+      include openstack_integration::keystone
 
       ::keystone::resource::service_identity { 'beaker-ci':
         service_type        => 'beaker',
@@ -66,7 +66,7 @@ describe 'keystone server running with Apache/WSGI as Identity Provider' do
         user_domain         => 'service_domain',
         project_domain      => 'service_domain',
       }
-      class { '::keystone::federation::identity_provider':
+      class { 'keystone::federation::identity_provider':
         idp_entity_id     => 'http://127.0.0.1:5000/v3/OS-FEDERATION/saml2/idp',
         idp_sso_endpoint  => 'http://127.0.0.1:5000/v3/OS-FEDERATION/saml2/sso',
         idp_metadata_path => '/etc/keystone/saml2_idp_metadata.xml',

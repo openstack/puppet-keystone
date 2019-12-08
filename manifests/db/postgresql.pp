@@ -42,7 +42,7 @@ class keystone::db::postgresql(
   $privileges = 'ALL',
 ) {
 
-  include ::keystone::deps
+  include keystone::deps
 
   ::openstacklib::db::postgresql { 'keystone':
     password_hash => postgresql_password($user, $password),

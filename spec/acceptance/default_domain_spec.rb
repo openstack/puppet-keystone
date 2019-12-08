@@ -3,7 +3,7 @@ require 'spec_helper_acceptance'
 describe 'basic keystone server with changed domain id' do
   after(:context) do
     clean_up_manifest = <<-EOM
-      include ::openstack_integration::keystone
+      include openstack_integration::keystone
 
       keystone_config { 'identity/default_domain_id': ensure => absent}
     EOM
@@ -13,11 +13,11 @@ describe 'basic keystone server with changed domain id' do
   context 'new domain id' do
     let(:pp) do
       <<-EOM
-      include ::openstack_integration
-      include ::openstack_integration::repos
-      include ::openstack_integration::mysql
+      include openstack_integration
+      include openstack_integration::repos
+      include openstack_integration::mysql
 
-      class { '::openstack_integration::keystone':
+      class { 'openstack_integration::keystone':
         default_domain => 'my_default_domain',
       }
 

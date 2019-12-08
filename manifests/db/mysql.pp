@@ -43,7 +43,7 @@ class keystone::db::mysql(
   $allowed_hosts = undef
 ) {
 
-  include ::keystone::deps
+  include keystone::deps
 
   validate_legacy(String, 'validate_string', $password)
 

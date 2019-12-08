@@ -70,9 +70,9 @@ class keystone::federation::mellon (
   $main_port          = undef,
 ) {
 
-  include ::apache
-  include ::keystone::deps
-  include ::keystone::params
+  include apache
+  include keystone::deps
+  include keystone::params
 
   if ($trusted_dashboards) {
     warning("keystone::federation::mellon::trusted_dashboards is deprecated \

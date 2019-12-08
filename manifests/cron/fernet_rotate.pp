@@ -58,7 +58,7 @@ class keystone::cron::fernet_rotate (
   $user        = 'keystone',
 ) {
 
-  include ::keystone::deps
+  include keystone::deps
 
   if $maxdelay == 0 {
     $sleep = ''

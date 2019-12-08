@@ -134,7 +134,7 @@ class keystone::logging(
   $watch_log_file                = $::os_service_default,
 ) {
 
-  include ::keystone::deps
+  include keystone::deps
 
   oslo::log { 'keystone_config':
     debug                         => $debug,

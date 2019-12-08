@@ -19,7 +19,7 @@ class keystone::db::sync(
   $keystone_user = $::keystone::params::keystone_user,
 ) inherits keystone::params {
 
-  include ::keystone::deps
+  include keystone::deps
 
   exec { 'keystone-manage db_sync':
     command     => "keystone-manage ${extra_params} db_sync",

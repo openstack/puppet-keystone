@@ -486,7 +486,7 @@ define keystone::ldap_backend(
   $group_allow_delete                   = undef,
 ) {
 
-  include ::keystone::deps
+  include keystone::deps
 
   $domain_enabled = getparam(Keystone_config['identity/domain_specific_drivers_enabled'], 'value')
   $domain_dir_enabled = getparam(Keystone_config['identity/domain_config_dir'], 'value')

@@ -1,4 +1,4 @@
-class { '::keystone':
+class { 'keystone':
   debug               => true,
   database_connection => 'mysql://keystone:keystone@127.0.0.1/keystone',
   admin_token         => 'admin_token',
@@ -9,7 +9,7 @@ class { '::keystone':
 
 # Ensure this matches what is in LDAP or keystone will try to recreate
 # the admin user
-class { '::keystone::roles::admin':
+class { 'keystone::roles::admin':
   email                  => 'test@example.com',
   password               => 'ChangeMe',
   admin_user_domain      => 'domain_1',

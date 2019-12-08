@@ -2,7 +2,7 @@
 # This class contains the platform differences for keystone
 #
 class keystone::params {
-  include ::openstacklib::defaults
+  include openstacklib::defaults
   $pyvers = $::openstacklib::defaults::pyvers
 
   $client_package_name = "python${pyvers}-keystoneclient"

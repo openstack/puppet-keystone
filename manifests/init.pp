@@ -700,9 +700,9 @@ class keystone(
   $validate_cacert                      = undef,
 ) inherits keystone::params {
 
-  include ::keystone::deps
-  include ::keystone::logging
-  include ::keystone::policy
+  include keystone::deps
+  include keystone::logging
+  include keystone::policy
 
   if $cache_dir {
     warning('keystone::cache_dir is deprecated, has no effect and will be removed in a later release')
@@ -793,8 +793,8 @@ admin_token will be removed in a later release")
     ensure_resource('policy_rcd', $policy_services, { ensure => present, 'set_code' => '101' })
   }
 
-  include ::keystone::db
-  include ::keystone::params
+  include keystone::db
+  include keystone::params
 
   package { 'keystone':
     ensure => $package_ensure,
@@ -804,7 +804,7 @@ admin_token will be removed in a later release")
   if $client_package_ensure == 'present' {
     include '::keystone::client'
   } else {
-    class { '::keystone::client':
+    class { 'keystone::client':
       ensure => $client_package_ensure,
     }
   }
@@ -961,7 +961,7 @@ admin_token will be removed in a later release")
     $::keystone::params::service_name, 'keystone-public-keystone-admin' : {
       $service_name_real = $::keystone::params::service_name
 
-      class { '::keystone::service':
+      class { 'keystone::service':
         ensure       => $service_ensure,
         service_name => $service_name,
         enable       => $enabled,
@@ -975,7 +975,7 @@ Support for deploying under eventlet will be dropped as of the M-release of Open
       }
     }
     'httpd': {
-      include ::apache::params
+      include apache::params
       $service_name_real = $::apache::params::service_name
     }
     default: {
@@ -985,7 +985,7 @@ running as a standalone service, or httpd for being run by a httpd server")
   }
 
   if $sync_db {
-    include ::keystone::db::sync
+    include keystone::db::sync
   }
 
   # Fernet tokens support

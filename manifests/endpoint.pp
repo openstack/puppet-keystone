@@ -62,7 +62,7 @@ class keystone::endpoint (
   $version           = '',
 ) {
 
-  include ::keystone::deps
+  include keystone::deps
 
   if $version == 'unset' {
     warning('keystone::endpoint::version parameter is deprecated and will be removed in a future release.')

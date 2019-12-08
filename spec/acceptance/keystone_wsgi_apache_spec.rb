@@ -6,10 +6,10 @@ describe 'keystone server running with Apache/WSGI with resources' do
 
     it 'should work with no errors' do
       pp= <<-EOS
-      include ::openstack_integration
-      include ::openstack_integration::repos
-      include ::openstack_integration::mysql
-      include ::openstack_integration::keystone
+      include openstack_integration
+      include openstack_integration::repos
+      include openstack_integration::mysql
+      include openstack_integration::keystone
 
       ::keystone::resource::service_identity { 'beaker-ci':
         service_type        => 'beaker',
@@ -318,7 +318,7 @@ EOC
       context 'manifest' do
         let(:pp) do
       <<-EOM
-      class { '::openstack_integration::keystone':
+      class { 'openstack_integration::keystone':
         default_domain      => 'default_domain',
         using_domain_config => true,
       }

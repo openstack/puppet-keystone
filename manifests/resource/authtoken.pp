@@ -278,8 +278,8 @@ define keystone::resource::authtoken(
   $hash_algorithms                = undef,
 ) {
 
-  include ::keystone::params
-  include ::keystone::deps
+  include keystone::params
+  include keystone::deps
 
   if $check_revocations_for_cached {
     warning('keystone::resource::authtoken::check_revocations_for_cached is deprecated and will be removed')

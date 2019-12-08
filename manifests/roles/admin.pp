@@ -95,7 +95,7 @@ class keystone::roles::admin(
   $target_admin_domain    = undef,
 ) {
 
-  include ::keystone::deps
+  include keystone::deps
 
   if $password != $keystone::admin_password_real {
     warning('the main class is setting the admin password differently from this\

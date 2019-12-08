@@ -24,7 +24,7 @@ class keystone::config (
   $keystone_config = {},
 ) {
 
-  include ::keystone::deps
+  include keystone::deps
 
   validate_legacy(Hash, 'validate_hash', $keystone_config)
 

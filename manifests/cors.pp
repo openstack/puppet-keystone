@@ -45,7 +45,7 @@ class keystone::cors (
   $allow_headers     = $::os_service_default,
 ) {
 
-  include ::keystone::deps
+  include keystone::deps
 
   oslo::cors { 'keystone_config':
     allowed_origin    => $allowed_origin,

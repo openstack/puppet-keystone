@@ -28,8 +28,8 @@ class keystone::policy (
   $policy_path = '/etc/keystone/policy.json',
 ) {
 
-  include ::keystone::deps
-  include ::keystone::params
+  include keystone::deps
+  include keystone::params
 
   validate_legacy(Hash, 'validate_hash', $policies)
 

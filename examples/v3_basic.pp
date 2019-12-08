@@ -22,17 +22,17 @@
 Exec { logoutput => 'on_failure' }
 
 
-class { '::mysql::server': }
-class { '::keystone::db::mysql':
+class { 'mysql::server': }
+class { 'keystone::db::mysql':
   password => 'keystone',
 }
-class { '::keystone':
+class { 'keystone':
   debug               => true,
   database_connection => 'mysql://keystone:keystone@127.0.0.1/keystone',
   admin_token         => 'admin_token',
   enabled             => true,
 }
-class { '::keystone::roles::admin':
+class { 'keystone::roles::admin':
   email               => 'test@example.tld',
   password            => 'a_big_secret',
   admin               => 'admin', # username
@@ -40,7 +40,7 @@ class { '::keystone::roles::admin':
   admin_user_domain   => 'admin', # domain for user
   admin_tenant_domain => 'admin', # domain for project
 }
-class { '::keystone::endpoint':
+class { 'keystone::endpoint':
   public_url => 'http://127.0.0.1:5000/',
   admin_url  => 'http://127.0.0.1:5000/',
 }

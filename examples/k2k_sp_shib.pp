@@ -36,12 +36,12 @@ yumrepo { 'shibboleth':
 Yumrepo['shibboleth'] -> Class['::keystone::federation::shibboleth']
 # Yumrepo end
 
-class { '::mysql::server': }
-class { '::keystone::db::mysql':
+class { 'mysql::server': }
+class { 'keystone::db::mysql':
   password => 'keystone',
 }
 
-class { '::keystone':
+class { 'keystone':
   debug               => true,
   database_connection => 'mysql://keystone:keystone@127.0.0.1/keystone',
   catalog_type        => 'sql',
@@ -49,23 +49,23 @@ class { '::keystone':
   enabled             => false,
 }
 
-class { '::keystone::roles::admin':
+class { 'keystone::roles::admin':
   email    => 'test@puppetlabs.com',
   password => 'ChangeMe',
 }
 
-class { '::keystone::endpoint':
+class { 'keystone::endpoint':
   public_url => "https://${::fqdn}:5000/",
   admin_url  => "https://${::fqdn}:5000/",
 }
 
 keystone_config { 'ssl/enable': value => true }
 
-include ::apache
-class { '::keystone::wsgi::apache':
+include apache
+class { 'keystone::wsgi::apache':
   ssl => true
 }
 
-class { '::keystone::federation::shibboleth':
+class { 'keystone::federation::shibboleth':
   methods => 'password, token, oauth1, saml2',
 }

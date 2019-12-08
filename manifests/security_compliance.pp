@@ -68,7 +68,7 @@ class keystone::security_compliance(
   $unique_last_password_count         = $::os_service_default,
 ) {
 
-  include ::keystone::deps
+  include keystone::deps
 
   keystone_config {
     'security_compliance/change_password_upon_first_use':     value => $change_password_upon_first_use;

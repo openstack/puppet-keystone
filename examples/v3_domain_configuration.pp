@@ -5,11 +5,11 @@
 
 Exec { logoutput => 'on_failure' }
 
-class { '::mysql::server': }
-class { '::keystone::db::mysql':
+class { 'mysql::server': }
+class { 'keystone::db::mysql':
   password => 'keystone',
 }
-class { '::keystone':
+class { 'keystone':
   debug               => true,
   database_connection => 'mysql://keystone:keystone@192.168.1.1/keystone',
   admin_token         => 'admin_token',
@@ -17,11 +17,11 @@ class { '::keystone':
   # The domain configuration setup at keystone level
   using_domain_config => true,
 }
-class { '::keystone::roles::admin':
+class { 'keystone::roles::admin':
   email    => 'test@example.tld',
   password => 'a_big_secret',
 }
-class { '::keystone::endpoint':
+class { 'keystone::endpoint':
   public_url => 'http://192.168.1.1:5000/',
   admin_url  => 'http://192.168.1.1:5000/',
 }
