@@ -18,7 +18,6 @@
 require 'spec_helper'
 
 describe 'keystone::resource::service_identity' do
-
   let (:title) { 'neutron' }
 
   let :required_params do
@@ -29,8 +28,7 @@ describe 'keystone::resource::service_identity' do
       :public_url   => 'http://7.7.7.7:9696' }
   end
 
-  shared_examples 'keystone::resource::service_identity examples' do
-
+  shared_examples 'keystone::resource::service_identity' do
     context 'with only required parameters' do
       let :params do
         required_params
@@ -89,7 +87,6 @@ describe 'keystone::resource::service_identity' do
         :admin_url    => 'http://192.168.0.1:9696',
         :region       => 'RegionOne',
       )}
-
     end
 
     context 'with bad ensure parameter value' do
@@ -97,7 +94,7 @@ describe 'keystone::resource::service_identity' do
         required_params.merge(:ensure => 'badvalue')
       end
 
-      it { should raise_error(Puppet::Error) }
+      it { is_expected.to raise_error(Puppet::Error) }
     end
 
     context 'when explicitly setting an region' do
@@ -136,7 +133,7 @@ describe 'keystone::resource::service_identity' do
         required_params
       end
 
-      it { should raise_error(Puppet::Error) }
+      it { is_expected.to raise_error(Puppet::Error) }
     end
 
     context 'when trying to create an endpoint without url' do
@@ -145,16 +142,18 @@ describe 'keystone::resource::service_identity' do
         required_params
       end
 
-      it { should raise_error(Puppet::Error) }
+      it { is_expected.to raise_error(Puppet::Error) }
     end
 
     context 'with user domain' do
       let :params do
         required_params.merge({:user_domain => 'userdomain'})
       end
+
       it { is_expected.to contain_keystone_domain('userdomain').with(
         :ensure   => 'present',
       )}
+
       it { is_expected.to contain_keystone_user(title).with(
         :ensure   => 'present',
         :password => 'secrete',
@@ -164,6 +163,7 @@ describe 'keystone::resource::service_identity' do
       it { is_expected.to contain_keystone_role('admin').with(
         :ensure => 'present',
       )}
+
       it { is_expected.to contain_keystone_user_role("#{title}@services").with(
         :ensure => 'present',
         :roles  => ['admin'],
@@ -177,56 +177,58 @@ describe 'keystone::resource::service_identity' do
           :project_domain => 'projdomain',
         })
       end
+
       it { is_expected.to contain_keystone_user(title).with(
         :ensure   => 'present',
         :password => 'secrete',
         :email    => 'neutron@localhost',
         :domain   => 'userdomain',
       )}
+
       it { is_expected.to contain_keystone_domain('userdomain').with(
         :ensure   => 'present',
       )}
+
       it { is_expected.to contain_keystone_user_role("#{title}@services").with(
         :ensure => 'present',
         :roles  => ['admin'],
       )}
     end
+
     context 'with default domain only' do
       let :params do
         required_params.merge({
           :default_domain => 'defaultdomain',
         })
       end
+
       it { is_expected.to contain_keystone_user(title).with(
         :ensure   => 'present',
         :password => 'secrete',
         :email    => 'neutron@localhost',
         :domain   => 'defaultdomain',
       )}
+
       it { is_expected.to contain_keystone_domain('defaultdomain').with(
         :ensure   => 'present',
       )}
+
       it { is_expected.to contain_keystone_user_role("#{title}@services").with(
         :ensure => 'present',
         :roles  => ['admin'],
       )}
     end
-
   end
 
-  context 'on a Debian osfamily' do
-    let :facts do
-      @default_facts.merge({ :osfamily => "Debian" })
+  on_supported_os({
+    :supported_os => OSDefaults.get_supported_os
+  }).each do |os,facts|
+    context "on #{os}" do
+      let (:facts) do
+        facts.merge!(OSDefaults.get_facts())
+      end
+
+      it_behaves_like 'keystone::resource::service_identity'
     end
-
-    include_examples 'keystone::resource::service_identity examples'
-  end
-
-  context 'on a RedHat osfamily' do
-    let :facts do
-      @default_facts.merge({ :osfamily => 'RedHat' })
-    end
-
-    include_examples 'keystone::resource::service_identity examples'
   end
 end
