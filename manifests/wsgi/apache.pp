@@ -32,7 +32,7 @@
 #
 # [*workers*]
 #   (Optional) Number of WSGI workers to spawn.
-#   Defaults to $::os_workers
+#   Defaults to $::os_workers_keystone
 #
 # [*ssl_cert*]
 #   (Optional) Path to SSL certificate
@@ -139,7 +139,7 @@ class keystone::wsgi::apache (
   $api_port                          = 5000,
   $path                              = '/',
   $ssl                               = true,
-  $workers                           = $::os_workers,
+  $workers                           = $::os_workers_keystone,
   $ssl_cert                          = undef,
   $ssl_key                           = undef,
   $ssl_chain                         = undef,
