@@ -30,7 +30,7 @@ describe 'keystone::federation::identity_provider' do
       :idp_contact_type              => 'other' }
   end
 
-  shared_examples_for 'keystone federation identity provider' do
+  shared_examples 'keystone federation identity provider' do
 
     it { is_expected.to contain_class('keystone::params') }
 

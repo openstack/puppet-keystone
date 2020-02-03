@@ -1,4 +1,4 @@
-# == class: keystone::federation::shibboleth
+# == Class: keystone::federation::shibboleth
 #
 # == Parameters
 #

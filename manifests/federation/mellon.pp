@@ -1,4 +1,4 @@
-# == class: keystone::federation::mellon
+# == Class: keystone::federation::mellon
 #
 # == Parameters
 #

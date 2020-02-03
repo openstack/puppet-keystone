@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'keystone::security_compliance' do
-  shared_examples_for 'keystone security_compliance' do
+  shared_examples 'keystone security_compliance' do
     it 'should configure security compliance defaults' do
       is_expected.to contain_keystone_config('security_compliance/change_password_upon_first_use').with_value('<SERVICE DEFAULT>')
       is_expected.to contain_keystone_config('security_compliance/disable_user_account_days_inactive').with_value('<SERVICE DEFAULT>')
@@ -43,14 +43,14 @@ describe 'keystone::security_compliance' do
   end
 
   on_supported_os({
-    :supported_os   => OSDefaults.get_supported_os
+    :supported_os => OSDefaults.get_supported_os
   }).each do |os,facts|
     context "on #{os}" do
       let (:facts) do
         facts.merge!(OSDefaults.get_facts())
       end
 
-      it_configures 'keystone security_compliance'
+      it_behaves_like 'keystone security_compliance'
     end
   end
 end

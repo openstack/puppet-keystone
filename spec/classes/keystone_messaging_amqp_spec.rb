@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe 'keystone::messaging::amqp' do
 
-  shared_examples_for 'keystone messaging amqp' do
+  shared_examples 'keystone messaging amqp' do
     it { is_expected.to contain_class('keystone::messaging::amqp').with(
       'amqp_pre_settled'            => ['<SERVICE DEFAULT>'],
       'amqp_idle_timeout'           => '<SERVICE DEFAULT>',
@@ -53,14 +53,14 @@ describe 'keystone::messaging::amqp' do
   end
 
   on_supported_os({
-    :supported_os   => OSDefaults.get_supported_os
+    :supported_os => OSDefaults.get_supported_os
   }).each do |os,facts|
     context "on #{os}" do
       let (:facts) do
         facts.merge!(OSDefaults.get_facts())
       end
 
-      it_configures 'keystone messaging amqp'
+      it_behaves_like 'keystone messaging amqp'
     end
   end
 

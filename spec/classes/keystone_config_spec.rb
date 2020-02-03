@@ -9,7 +9,7 @@ describe 'keystone::config' do
   }
   end
 
-  shared_examples_for 'keystone_config' do
+  shared_examples 'keystone_config' do
     let :params do
       { :keystone_config => config_hash }
     end
@@ -24,14 +24,14 @@ describe 'keystone::config' do
   end
 
   on_supported_os({
-    :supported_os   => OSDefaults.get_supported_os
+    :supported_os => OSDefaults.get_supported_os
   }).each do |os,facts|
     context "on #{os}" do
       let (:facts) do
         facts.merge!(OSDefaults.get_facts())
       end
 
-      it_configures 'keystone_config'
+      it_behaves_like 'keystone_config'
     end
   end
 end

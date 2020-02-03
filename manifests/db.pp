@@ -1,4 +1,4 @@
-# class: keystone::db
+# Class: keystone::db
 #
 #  Configure the Keystone database
 #

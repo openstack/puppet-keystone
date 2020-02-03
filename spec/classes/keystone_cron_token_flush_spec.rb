@@ -1,105 +1,67 @@
 require 'spec_helper'
 
 describe 'keystone::cron::token_flush' do
-
-  let :facts do
-    @default_facts.merge({ :osfamily => 'Debian' })
-  end
-
   let :params do
-    { :ensure      => 'present',
-      :minute      => 1,
-      :hour        => '*',
-      :monthday    => '*',
-      :month       => '*',
-      :weekday     => '*',
-      :maxdelay    => 0,
-      :destination => '/var/log/keystone/keystone-tokenflush.log' }
+    {}
   end
 
-  describe 'with default parameters' do
-    it 'configures a cron' do
-      is_expected.to contain_cron('keystone-manage token_flush').with(
-        :ensure      => params[:ensure],
-        :command     => "keystone-manage token_flush >>#{params[:destination]} 2>&1",
-        :environment => 'PATH=/bin:/usr/bin:/usr/sbin SHELL=/bin/sh',
-        :user        => 'keystone',
-        :minute      => params[:minute],
-        :hour        => params[:hour],
-        :monthday    => params[:monthday],
-        :month       => params[:month],
-        :weekday     => params[:weekday],
-        :require     => 'Anchor[keystone::install::end]',
-      )
-    end
-  end
+  shared_examples 'keystone::cron::token_flush' do
+    context 'with default parameters' do
+      it { is_expected.to contain_class('keystone::deps') }
 
-  describe 'when specifying a maxdelay param' do
-    before :each do
-      params.merge!(
-        :maxdelay => 600
-      )
-    end
-
-    it 'configures a cron with delay' do
-      is_expected.to contain_cron('keystone-manage token_flush').with(
-        :ensure      => params[:ensure],
-        :command     => "sleep `expr ${RANDOM} \\% #{params[:maxdelay]}`; keystone-manage token_flush >>#{params[:destination]} 2>&1",
-        :environment => 'PATH=/bin:/usr/bin:/usr/sbin SHELL=/bin/sh',
-        :user        => 'keystone',
-        :minute      => params[:minute],
-        :hour        => params[:hour],
-        :monthday    => params[:monthday],
-        :month       => params[:month],
-        :weekday     => params[:weekday],
-        :require     => 'Anchor[keystone::install::end]',
-      )
-    end
-  end
-
-  describe 'when specifying a user param' do
-    let :params do
-      {
-        :user => 'keystonecustom'
-      }
-    end
-
-    it 'configures a cron with delay' do
-      is_expected.to contain_cron('keystone-manage token_flush').with(
+      it { is_expected.to contain_cron('keystone-manage token_flush').with(
         :ensure      => 'present',
         :command     => 'keystone-manage token_flush >>/var/log/keystone/keystone-tokenflush.log 2>&1',
         :environment => 'PATH=/bin:/usr/bin:/usr/sbin SHELL=/bin/sh',
-        :user        => 'keystonecustom',
+        :user        => 'keystone',
         :minute      => 1,
         :hour        => '*',
         :monthday    => '*',
         :month       => '*',
         :weekday     => '*',
         :require     => 'Anchor[keystone::install::end]',
-      )
-    end
-  end
-
-  describe 'when disabling cron job' do
-    before :each do
-      params.merge!(
-        :ensure => 'absent'
-      )
+      )}
     end
 
-    it 'configures a cron with delay' do
-      is_expected.to contain_cron('keystone-manage token_flush').with(
+    context 'with overriden params' do
+      before do
+        params.merge!( :ensure      => 'absent',
+                       :minute      => 13,
+                       :hour        => 23,
+                       :monthday    => 3,
+                       :month       => 4,
+                       :weekday     => 2,
+                       :maxdelay    => 600,
+                       :destination => '/tmp/tokenflush.log',
+                       :user        => 'nobody' )
+      end
+
+      it { is_expected.to contain_class('keystone::deps') }
+
+      it { is_expected.to contain_cron('keystone-manage token_flush').with(
         :ensure      => params[:ensure],
-        :command     => "keystone-manage token_flush >>#{params[:destination]} 2>&1",
+        :command     => "sleep `expr ${RANDOM} \\% #{params[:maxdelay]}`; keystone-manage token_flush >>#{params[:destination]} 2>&1",
         :environment => 'PATH=/bin:/usr/bin:/usr/sbin SHELL=/bin/sh',
-        :user        => 'keystone',
+        :user        => params[:user],
         :minute      => params[:minute],
         :hour        => params[:hour],
         :monthday    => params[:monthday],
         :month       => params[:month],
         :weekday     => params[:weekday],
         :require     => 'Anchor[keystone::install::end]',
-      )
+      )}
+    end
+  end
+
+  on_supported_os({
+    :supported_os => OSDefaults.get_supported_os
+  }).each do |os,facts|
+    context "on #{os}" do
+      let (:facts) do
+        facts.merge!(OSDefaults.get_facts({}))
+      end
+
+      it_behaves_like 'keystone::cron::token_flush'
     end
   end
 end

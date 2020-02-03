@@ -93,7 +93,7 @@ describe 'keystone' do
 
   httpd_params = {'service_name' => 'httpd'}.merge(default_params)
 
-  shared_examples_for 'core keystone examples' do |param_hash|
+  shared_examples 'core keystone examples' do |param_hash|
     it { is_expected.to contain_class('keystone::logging') }
     it { is_expected.to contain_class('keystone::params') }
     it { is_expected.to contain_class('keystone::policy') }
@@ -205,7 +205,7 @@ describe 'keystone' do
         param_hash
       end
 
-      it_configures 'core keystone examples', param_hash
+      it_behaves_like 'core keystone examples', param_hash
 
       it { is_expected.to contain_service('keystone').with(
         'ensure'     => (param_hash['manage_service'] && param_hash['enabled']) ? 'running' : 'stopped',
@@ -220,7 +220,7 @@ describe 'keystone' do
     end
   end
 
-  shared_examples_for "when using default class parameters for httpd on Debian" do
+  shared_examples "when using default class parameters for httpd on Debian" do
     let :params do
       httpd_params
     end
@@ -229,7 +229,7 @@ describe 'keystone' do
       'include keystone::wsgi::apache'
     end
 
-    it_configures 'core keystone examples', httpd_params
+    it_behaves_like 'core keystone examples', httpd_params
 
     it do
       expect {
@@ -242,7 +242,7 @@ describe 'keystone' do
     ) }
   end
 
-  shared_examples_for "when using default class parameters for httpd on RedHat" do
+  shared_examples "when using default class parameters for httpd on RedHat" do
     let :params do
       httpd_params
     end
@@ -251,7 +251,7 @@ describe 'keystone' do
       'include keystone::wsgi::apache'
     end
 
-    it_configures 'core keystone examples', httpd_params
+    it_behaves_like 'core keystone examples', httpd_params
 
     it do
       expect {
@@ -898,7 +898,7 @@ describe 'keystone' do
     )}
   end
 
-  shared_examples_for "when configuring default domain" do
+  shared_examples "when configuring default domain" do
     describe 'with default domain and eventlet service is managed and enabled' do
       let :params do
         default_params.merge({
@@ -951,8 +951,8 @@ describe 'keystone' do
       }
     end
 
-    it_configures 'when using default class parameters for httpd on RedHat'
-    it_configures 'when configuring default domain'
+    it_behaves_like 'when using default class parameters for httpd on RedHat'
+    it_behaves_like 'when configuring default domain'
   end
 
   context 'on Debian platforms' do
@@ -972,8 +972,8 @@ describe 'keystone' do
       }
     end
 
-    it_configures 'when using default class parameters for httpd on Debian'
-    it_configures 'when configuring default domain'
+    it_behaves_like 'when using default class parameters for httpd on Debian'
+    it_behaves_like 'when configuring default domain'
   end
 
   describe "when configuring using_domain_config" do

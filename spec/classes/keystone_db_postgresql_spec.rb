@@ -1,10 +1,11 @@
 require 'spec_helper'
 
 describe 'keystone::db::postgresql' do
-
-  shared_examples_for 'keystone::db::postgresql' do
+  shared_examples 'keystone::db::postgresql' do
     let :req_params do
-      { :password => 'pw' }
+      {
+        :password => 'pw',
+      }
     end
 
     let :pre_condition do
@@ -25,7 +26,7 @@ describe 'keystone::db::postgresql' do
   end
 
   on_supported_os({
-    :supported_os   => OSDefaults.get_supported_os
+    :supported_os => OSDefaults.get_supported_os
   }).each do |os,facts|
     context "on #{os}" do
       let (:facts) do
@@ -35,8 +36,7 @@ describe 'keystone::db::postgresql' do
         }))
       end
 
-      it_configures 'keystone::db::postgresql'
+      it_behaves_like 'keystone::db::postgresql'
     end
   end
-
 end

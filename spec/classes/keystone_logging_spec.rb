@@ -34,7 +34,7 @@ describe 'keystone::logging' do
     }
   end
 
-  shared_examples_for 'keystone-logging' do
+  shared_examples 'keystone-logging' do
 
     context 'with basic logging options and default settings' do
       it_behaves_like  'basic default logging settings'
@@ -85,7 +85,7 @@ describe 'keystone::logging' do
     end
   end
 
-  shared_examples_for 'logging params set' do
+  shared_examples 'logging params set' do
     it 'enables logging params' do
       is_expected.to contain_oslo__log('keystone_config').with(
         :logging_context_format_string =>
@@ -107,7 +107,7 @@ describe 'keystone::logging' do
     end
   end
 
-  shared_examples_for 'logging params unset' do
+  shared_examples 'logging params unset' do
    [ :logging_context_format_string, :logging_default_format_string,
      :logging_debug_format_suffix, :logging_exception_prefix,
      :log_config_append, :publish_errors,
@@ -119,7 +119,7 @@ describe 'keystone::logging' do
   end
 
   on_supported_os({
-    :supported_os   => OSDefaults.get_supported_os
+    :supported_os => OSDefaults.get_supported_os
   }).each do |os,facts|
     context "on #{os}" do
       let (:facts) do

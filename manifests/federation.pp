@@ -1,22 +1,24 @@
-# == class: keystone::federation
+# == Class: keystone::federation
 #
 # == Parameters
 #
 # [*trusted_dashboards*]
-#   (optional) URL list of trusted horizon servers.
+#   (Optional) URL list of trusted horizon servers.
 #   This setting ensures that keystone only sends token data back to trusted
 #   servers. This is performed as a precaution, specifically to prevent man-in-
 #   the-middle (MITM) attacks.
 #   Defaults to undef
 #
 # [*remote_id_attribute*]
-#   (optional) Value to be used to obtain the entity ID of the Identity
+#   (Optional) Value to be used to obtain the entity ID of the Identity
 #   Provider from the environment.
+#   Defaults to undef
 #
 class keystone::federation (
   $trusted_dashboards  = undef,
   $remote_id_attribute = undef,
 ) {
+
   include keystone::deps
 
   keystone_config {

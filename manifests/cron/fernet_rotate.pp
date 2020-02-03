@@ -19,43 +19,49 @@
 #
 # === Parameters
 #
-#  [*ensure*]
-#    (optional) Defaults to present.
-#    Valid values are present, absent.
+# [*ensure*]
+#   (Optional) Valid values are present, absent.
+#   Defaults to 'present'
 #
-#  [*minute*]
-#    (optional) Defaults to '1'.
+# [*minute*]
+#   (Optional) Minute.
+#   Defaults to '1'
 #
-#  [*hour*]
-#    (optional) Defaults to '0'.
+# [*hour*]
+#   (Optional) Hour.
+#   Defaults to '0'
 #
-#  [*monthday*]
-#    (optional) Defaults to '*'.
+# [*monthday*]
+#   (Optional) Day of month.
+#   Defaults to '*'
 #
-#  [*month*]
-#    (optional) Defaults to '*'.
+# [*month*]
+#   (Optional) Month.
+#   Defaults to '*'.
 #
-#  [*weekday*]
-#    (optional) Defaults to '*'.
+# [*weekday*]
+#   (Optional) Day of week.
+#   Defaults to '*'
 #
-#  [*maxdelay*]
-#    (optional) Seconds. Defaults to 0. Should be a positive integer.
-#    Induces a random delay before running the cronjob to avoid running all
-#    cron jobs at the same time on all hosts this job is configured.
+# [*maxdelay*]
+#   (Optional) Max random delay, should be a positive integer.
+#   Induces a random delay before running the cronjob to avoid running all
+#   cron jobs at the same time on all hosts this job is configured.
+#   Defaults to 0
 #
-#  [*user*]
-#    (optional) Defaults to 'keystone'.
-#    Allow to run the crontab on behalf any user.
+# [*user*]
+#   (Optional) Allow to run the crontab on behalf any user.
+#   Defaults to 'keystone'
 #
 class keystone::cron::fernet_rotate (
-  $ensure      = present,
-  $minute      = 1,
-  $hour        = 0,
-  $monthday    = '*',
-  $month       = '*',
-  $weekday     = '*',
-  $maxdelay    = 0,
-  $user        = 'keystone',
+  $ensure   = present,
+  $minute   = 1,
+  $hour     = 0,
+  $monthday = '*',
+  $month    = '*',
+  $weekday  = '*',
+  $maxdelay = 0,
+  $user     = 'keystone',
 ) {
 
   include keystone::deps

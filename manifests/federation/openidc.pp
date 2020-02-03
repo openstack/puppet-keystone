@@ -1,4 +1,4 @@
-# == class: keystone::federation::openidc [70/1473]
+# == Class: keystone::federation::openidc
 #
 # == Parameters
 #

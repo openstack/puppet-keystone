@@ -1,8 +1,8 @@
-# == class: keystone::ldap
+# == Class: keystone::ldap
 #
 # Implements ldap configuration for keystone.
 #
-# === parameters:
+# === Parameters:
 #
 # [*url*]
 #   URL for connecting to the LDAP server. (string value)
@@ -354,8 +354,6 @@
 #   LDAP support packages.
 #   Defaults to true.
 #
-# == Dependencies
-# == Examples
 # == Authors
 #
 #   Dan Bode dan@puppetlabs.com

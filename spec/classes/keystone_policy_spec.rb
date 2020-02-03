@@ -1,8 +1,7 @@
 require 'spec_helper'
 
 describe 'keystone::policy' do
-
-  shared_examples_for 'keystone policies' do
+  shared_examples 'keystone::policy' do
     let :params do
       {
         :policy_path => '/etc/keystone/policy.json',
@@ -29,14 +28,14 @@ describe 'keystone::policy' do
   end
 
   on_supported_os({
-    :supported_os   => OSDefaults.get_supported_os
+    :supported_os => OSDefaults.get_supported_os
   }).each do |os,facts|
     context "on #{os}" do
       let (:facts) do
         facts.merge!(OSDefaults.get_facts())
       end
 
-      it_configures 'keystone policies'
+      it_behaves_like 'keystone::policy'
     end
   end
 end

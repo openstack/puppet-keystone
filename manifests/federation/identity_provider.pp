@@ -1,4 +1,4 @@
-# == class: keystone::federation::identity_provider
+# == Class: keystone::federation::identity_provider
 #
 # == Parameters
 #

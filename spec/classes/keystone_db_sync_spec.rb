@@ -1,9 +1,7 @@
 require 'spec_helper'
 
 describe 'keystone::db::sync' do
-
-  shared_examples_for 'keystone-dbsync' do
-
+  shared_examples 'keystone::db::sync' do
     describe 'with only required params' do
       it {
         is_expected.to contain_exec('keystone-manage db_sync').with(
@@ -51,15 +49,14 @@ describe 'keystone::db::sync' do
   end
 
   on_supported_os({
-    :supported_os   => OSDefaults.get_supported_os
+    :supported_os => OSDefaults.get_supported_os
   }).each do |os,facts|
     context "on #{os}" do
       let (:facts) do
         facts.merge!(OSDefaults.get_facts())
       end
 
-      it_configures 'keystone-dbsync'
+      it_behaves_like 'keystone::db::sync'
     end
   end
-
 end
