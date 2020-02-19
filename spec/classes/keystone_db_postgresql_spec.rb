@@ -31,8 +31,8 @@ describe 'keystone::db::postgresql' do
     context "on #{os}" do
       let (:facts) do
         facts.merge(OSDefaults.get_facts({
-          :os_workers     => 8,
-          :concat_basedir => '/var/lib/puppet/concat'
+          :os_workers_keystone => 8,
+          :concat_basedir      => '/var/lib/puppet/concat'
         }))
       end
 

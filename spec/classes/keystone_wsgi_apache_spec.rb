@@ -22,7 +22,7 @@ describe 'keystone::wsgi::apache' do
         :bind_host                   => nil,
         :bind_port                   => 5000,
         :group                       => 'keystone',
-        :workers                     => facts[:os_workers],
+        :workers                     => facts[:os_workers_keystone],
         :threads                     => 1,
         :user                        => 'keystone',
         :priority                    => '10',
@@ -193,9 +193,9 @@ describe 'keystone::wsgi::apache' do
     context "on #{os}" do
       let (:facts) do
         facts.merge!(OSDefaults.get_facts({
-          :os_workers     => 8,
-          :concat_basedir => '/var/lib/puppet/concat',
-          :fqdn           => 'some.host.tld',
+          :os_workers_keystone => 8,
+          :concat_basedir      => '/var/lib/puppet/concat',
+          :fqdn                => 'some.host.tld',
         }))
       end
 
