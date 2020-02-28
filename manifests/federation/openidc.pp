@@ -59,6 +59,10 @@
 #  (Optional) Cache file clean interval in seconds (only triggered
 #  on writes). Defaults to undef.
 #
+# [*openidc_claim_delimiter*]
+#  (Optional) The delimiter to use when setting multi-valued claims.
+#  Defaults to undef.
+#
 # [*openidc_enable_oauth*]
 #  (Optional) Set to true to enable oauthsupport.
 #
@@ -110,6 +114,7 @@ class keystone::federation::openidc (
   $openidc_cache_shm_entry_size   = undef,
   $openidc_cache_dir              = undef,
   $openidc_cache_clean_interval   = undef,
+  $openidc_claim_delimiter        = undef,
   $openidc_enable_oauth           = false,
   $openidc_introspection_endpoint = undef,
   $memcached_servers              = undef,

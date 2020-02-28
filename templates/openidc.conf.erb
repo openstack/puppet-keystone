@@ -31,6 +31,9 @@
 <%- if scope['::keystone::federation::openidc::redis_password'] != nil -%>
   OIDCRedisCachecPassword scope['::keystone::federation::openidc::redis_password'] %>
 <%- end -%>
+<%- if scope['::keystone::federation::openidc::openidc_claim_delimiter'] != nil -%>
+  OIDCClaimDelimiter "<%= scope['::keystone::federation::openidc::openidc_claim_delimiter'] %>"
+<%- end -%>
 
   # The following directives are necessary to support websso from Horizon
   # (Per https://docs.openstack.org/keystone/pike/advanced-topics/federation/websso.html)
