@@ -51,9 +51,13 @@
   </LocationMatch>
 
 <%- if scope['::keystone::federation::openidc::openidc_enable_oauth'] -%>
+  <%- if scope['keystone::federation::openidc::openidc_verify_method'] == 'introspection' -%>
   OIDCOAuthClientID "<%= scope['keystone::federation::openidc::openidc_client_id']-%>"
   OIDCOAuthClientSecret "<%= scope['keystone::federation::openidc::openidc_client_secret']-%>"
   OIDCOAuthIntrospectionEndpoint "<%= scope['keystone::federation::openidc::openidc_introspection_endpoint']-%>"
+  <%- elsif scope['keystone::federation::openidc::openidc_verify_method'] == 'jwks' -%>
+  OIDCOAuthVerifyJwksUri "<%= scope['keystone::federation::openidc::openidc_verify_jwks_uri']-%>"
+  <%- end -%>
 
   <Location ~ "/v3/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::openidc::idp_name']-%>/protocols/openid/auth">
       AuthType oauth20
