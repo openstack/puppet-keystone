@@ -94,7 +94,7 @@ describe 'keystone::federation::openidc' do
       end
     end
 
-    context 'with oauth enabled' do
+    context 'with oauth and introspection enabled' do
       before do
         params.merge!({
           :openidc_enable_oauth => true,
@@ -102,11 +102,27 @@ describe 'keystone::federation::openidc' do
         })
       end
 
-      it 'should contain oauth config' do
+      it 'should contain oauth and introspection config' do
         content = get_param('concat::fragment', 'configure_openidc_keystone', 'content')
         expect(content).to match('OIDCOAuthClientID "openid_client_id"')
         expect(content).to match('OIDCOAuthClientSecret "openid_client_secret"')
         expect(content).to match('OIDCOAuthIntrospectionEndpoint "http://example.com"')
+        expect(content).to match('/v3/OS-FEDERATION/identity_providers/myidp/protocols/openid/auth')
+      end
+    end
+
+    context 'with oauth and jwks enabled' do
+      before do
+        params.merge!({
+          :openidc_enable_oauth => true,
+          :openidc_verify_method => 'jwks',
+          :openidc_verify_jwks_uri => 'http://example.com',
+        })
+      end
+
+      it 'should contain oauth and jwks config' do
+        content = get_param('concat::fragment', 'configure_openidc_keystone', 'content')
+        expect(content).to match('OIDCOAuthVerifyJwksUri "http://example.com"')
         expect(content).to match('/v3/OS-FEDERATION/identity_providers/myidp/protocols/openid/auth')
       end
     end

@@ -65,9 +65,23 @@
 #
 # [*openidc_enable_oauth*]
 #  (Optional) Set to true to enable oauthsupport.
+#  Defaults to false.
 #
 # [*openidc_introspection_endpoint*]
-#  (Required if oauth is enabled) Oauth introspection endpoint url.
+#  (Required if oauth is enabled and configured for introspection)
+#  OAuth introspection endpoint url.
+#  Defaults to undef.
+#
+# [*openidc_verify_jwks_uri*]
+#  (Required if oauth is enabled and configured for JWKS based validation)
+#  The JWKS URL on which the Identity Provider
+#  publishes the keys used to sign its JWT access tokens.
+#  Defaults to undef.
+#
+# [*openidc_verify_method*]
+#  (Optional) The method used to verify OAuth tokens.
+#  Must be one of introspection or jwks
+#  Defaults to introspection
 #
 # [*memcached_servers*]
 #  (Optional) A list of memcache servers. Defaults to undef.
@@ -84,6 +98,7 @@
 # [*remote_id_attribute*]
 #  (Optional) Value to be used to obtain the entity ID of the Identity
 #  Provider from the environment.
+#  Defaults to undef.
 #
 # [*template_order*]
 #  This number indicates the order for the concat::fragment that will apply
@@ -117,6 +132,8 @@ class keystone::federation::openidc (
   $openidc_claim_delimiter        = undef,
   $openidc_enable_oauth           = false,
   $openidc_introspection_endpoint = undef,
+  $openidc_verify_jwks_uri        = undef,
+  $openidc_verify_method          = 'introspection',
   $memcached_servers              = undef,
   $redis_server                   = undef,
   $redis_password                 = undef,
@@ -129,8 +146,21 @@ class keystone::federation::openidc (
   include ::keystone::deps
   include ::keystone::params
 
-  if $openidc_enable_oauth and !$openidc_introspection_endpoint {
-    fail('You must set openidc_introspection_endpoint when enabling oauth support')
+  if !($openidc_verify_method in ['introspection', 'jwks']) {
+    fail('Unsupported token verification method.' +
+        '  Must be one of "introspection" or "jwks"')
+  }
+
+  if ($openidc_verify_method == 'introspection') {
+    if $openidc_enable_oauth and !$openidc_introspection_endpoint {
+      fail('You must set openidc_introspection_endpoint when enabling oauth support' +
+          ' and introspection.')
+    }
+  } elsif ($openidc_verify_method == 'jwks') {
+    if $openidc_enable_oauth and !$openidc_verify_jwks_uri {
+      fail('You must set openidc_verify_jwks_uri when enabling oauth support' +
+          ' and local signature verification using a JWKS URL')
+    }
   }
 
   $memcached_servers_real = join(any2array($memcached_servers), ' ')
