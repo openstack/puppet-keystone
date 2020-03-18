@@ -118,123 +118,6 @@
 #   API attribute. (list value)
 #   Defaults to 'undef'
 #
-# [*project_tree_dn*]
-#   Search base for projects (string value)
-#   Defaults to 'undef'
-#
-# [*project_filter*]
-#   LDAP search filter for projects. (string value)
-#   Defaults to 'undef'
-#
-# [*project_objectclass*]
-#   LDAP objectclass for projects. (string value)
-#   Defaults to 'undef'
-#
-# [*project_id_attribute*]
-#   LDAP attribute mapped to project id. (string value)
-#   Defaults to 'undef'
-#
-# [*project_member_attribute*]
-#   LDAP attribute mapped to project membership for user. (string value)
-#   Defaults to 'undef'
-#
-# [*project_name_attribute*]
-#   LDAP attribute mapped to project name. (string value)
-#   Defaults to 'undef'
-#
-# [*project_desc_attribute*]
-#   LDAP attribute mapped to project description. (string value)
-#   Defaults to 'undef'
-#
-# [*project_enabled_attribute*]
-#   LDAP attribute mapped to project enabled. (string value)
-#   Defaults to 'undef'
-#
-# [*project_domain_id_attribute*]
-#   LDAP attribute mapped to project domain_id. (string value)
-#   Defaults to 'undef'
-#
-# [*project_attribute_ignore*]
-#   List of attributes stripped off the project on update. (list value)
-#   Defaults to 'undef'
-#
-# [*project_allow_create*]
-#   Allow project creation in LDAP backend. (boolean value)
-#   Defaults to 'undef'
-#
-# [*project_allow_update*]
-#   Allow project update in LDAP backend. (boolean value)
-#   Defaults to 'undef'
-#
-# [*project_allow_delete*]
-#   Allow project deletion in LDAP backend. (boolean value)
-#   Defaults to 'undef'
-#
-# [*project_enabled_emulation*]
-#   If true, Keystone uses an alternative method to determine if
-#   a project is enabled or not by checking if they are a member
-#   of the "project_enabled_emulation_dn" group. (boolean value)
-#   Defaults to 'undef'
-#
-# [*project_enabled_emulation_dn*]
-#   DN of the group entry to hold enabled projects when using
-#   enabled emulation. (string value)
-#   Defaults to 'undef'
-#
-# [*project_additional_attribute_mapping*]
-#   Additional attribute mappings for projects. Attribute
-#   mapping format is <ldap_attr>:<user_attr>, where ldap_attr
-#   is the attribute in the LDAP entry and user_attr is the
-#   Identity API attribute. (list value)
-#   Defaults to 'undef'
-#
-# [*role_tree_dn*]
-#   Search base for roles. (string value)
-#   Defaults to 'undef'
-#
-# [*role_filter*]
-#   LDAP search filter for roles. (string value)
-#   Defaults to 'undef'
-#
-# [*role_objectclass*]
-#   LDAP objectclass for roles. (string value)
-#   Defaults to 'undef'
-#
-# [*role_id_attribute*]
-#   LDAP attribute mapped to role id. (string value)
-#   Defaults to 'undef'
-#
-# [*role_name_attribute*]
-#   LDAP attribute mapped to role name. (string value)
-#   Defaults to 'undef'
-#
-# [*role_member_attribute*]
-#   LDAP attribute mapped to role membership. (string value)
-#   Defaults to 'undef'
-#
-# [*role_attribute_ignore*]
-#   List of attributes stripped off the role on update. (list value)
-#   Defaults to 'undef'
-#
-# [*role_allow_create*]
-#   Allow role creation in LDAP backend. (boolean value)
-#   Defaults to 'undef'
-#
-# [*role_allow_update*]
-#   Allow role update in LDAP backend. (boolean value)
-#   Defaults to 'undef'
-#
-# [*role_allow_delete*]
-#   Allow role deletion in LDAP backend. (boolean value)
-#   Defaults to 'undef'
-#
-# [*role_additional_attribute_mapping*]
-#   Additional attribute mappings for roles. Attribute mapping
-#   format is <ldap_attr>:<user_attr>, where ldap_attr is the
-#   attribute in the LDAP entry and user_attr is the Identity
-#   API attribute. (list value)
-#   Defaults to 'undef'
-#
 # [*group_tree_dn*]
 #   Search base for groups. (string value)
 #   Defaults to 'undef'
@@ -305,15 +188,7 @@
 #
 # [*identity_driver*]
 #   Identity backend driver. (string value)
-#   Defaults to 'ldap'
-#
-# [*credential_driver*]
-#   Credential backend driver. (string value)
-#   Defaults to 'undef'
-#
-# [*assignment_driver*]
-#   Assignment backend driver. (string value)
-#   Defaults to 'undef'
+#   Defaults to 'ldap''
 #
 # [*use_pool*]
 #   Enable LDAP connection pooling. (boolean value)
@@ -369,6 +244,131 @@
 #
 # === DEPRECATED group/name
 #
+# [*assignment_driver*]
+#   Assignment backend driver. (string value)
+#   Defaults to 'undef'
+#
+# [*credential_driver*]
+#   Credential backend driver. (string value)
+#   Defaults to 'undef'
+#
+# [*project_allow_create*]
+#   Allow project creation in LDAP backend. (boolean value)
+#   Defaults to 'undef'
+#
+# [*project_allow_update*]
+#   Allow project update in LDAP backend. (boolean value)
+#   Defaults to 'undef'
+#
+# [*project_allow_delete*]
+#   Allow project deletion in LDAP backend. (boolean value)
+#   Defaults to 'undef'
+#
+# [*project_tree_dn*]
+#   Search base for projects (string value)
+#   Defaults to 'undef'
+#
+# [*project_filter*]
+#   LDAP search filter for projects. (string value)
+#   Defaults to 'undef'
+#
+# [*project_objectclass*]
+#   LDAP objectclass for projects. (string value)
+#   Defaults to 'undef'
+#
+# [*project_id_attribute*]
+#   LDAP attribute mapped to project id. (string value)
+#   Defaults to 'undef'
+#
+# [*project_member_attribute*]
+#   LDAP attribute mapped to project membership for user. (string value)
+#   Defaults to 'undef'
+#
+# [*project_name_attribute*]
+#   LDAP attribute mapped to project name. (string value)
+#   Defaults to 'undef'
+#
+# [*project_desc_attribute*]
+#   LDAP attribute mapped to project description. (string value)
+#   Defaults to 'undef'
+#
+# [*project_enabled_attribute*]
+#   LDAP attribute mapped to project enabled. (string value)
+#   Defaults to 'undef'
+#
+# [*project_domain_id_attribute*]
+#   LDAP attribute mapped to project domain_id. (string value)
+#   Defaults to 'undef'
+#
+# [*project_attribute_ignore*]
+#   List of attributes stripped off the project on update. (list value)
+#   Defaults to 'undef'
+#
+# [*project_enabled_emulation*]
+#   If true, Keystone uses an alternative method to determine if
+#   a project is enabled or not by checking if they are a member
+#   of the "project_enabled_emulation_dn" group. (boolean value)
+#   Defaults to 'undef'
+#
+# [*project_enabled_emulation_dn*]
+#   DN of the group entry to hold enabled projects when using
+#   enabled emulation. (string value)
+#   Defaults to 'undef'
+#
+# [*project_additional_attribute_mapping*]
+#   Additional attribute mappings for projects. Attribute
+#   mapping format is <ldap_attr>:<user_attr>, where ldap_attr
+#   is the attribute in the LDAP entry and user_attr is the
+#   Identity API attribute. (list value)
+#   Defaults to 'undef'
+#
+# [*role_allow_create*]
+#   Allow role creation in LDAP backend. (boolean value)
+#   Defaults to 'undef'
+#
+# [*role_allow_update*]
+#   Allow role update in LDAP backend. (boolean value)
+#   Defaults to 'undef'
+#
+# [*role_allow_delete*]
+#   Allow role deletion in LDAP backend. (boolean value)
+#   Defaults to 'undef'
+#
+# [*role_tree_dn*]
+#   Search base for roles. (string value)
+#   Defaults to 'undef'
+#
+# [*role_filter*]
+#   LDAP search filter for roles. (string value)
+#   Defaults to 'undef'
+#
+# [*role_objectclass*]
+#   LDAP objectclass for roles. (string value)
+#   Defaults to 'undef'
+#
+# [*role_id_attribute*]
+#   LDAP attribute mapped to role id. (string value)
+#   Defaults to 'undef'
+#
+# [*role_name_attribute*]
+#   LDAP attribute mapped to role name. (string value)
+#   Defaults to 'undef'
+#
+# [*role_member_attribute*]
+#   LDAP attribute mapped to role membership. (string value)
+#   Defaults to 'undef'
+#
+# [*role_attribute_ignore*]
+#   List of attributes stripped off the role on update. (list value)
+#   Defaults to 'undef'
+#
+# [*role_additional_attribute_mapping*]
+#   Additional attribute mappings for roles. Attribute mapping
+#   format is <ldap_attr>:<user_attr>, where ldap_attr is the
+#   attribute in the LDAP entry and user_attr is the Identity
+#   API attribute. (list value)
+#   Defaults to 'undef'
+#
 # [*user_allow_create*]
 #   Allow user creation in LDAP backend. (boolean value)
 #   Defaults to 'undef'
@@ -419,33 +419,6 @@ define keystone::ldap_backend(
   $user_enabled_emulation               = undef,
   $user_enabled_emulation_dn            = undef,
   $user_additional_attribute_mapping    = undef,
-  $project_tree_dn                      = undef,
-  $project_filter                       = undef,
-  $project_objectclass                  = undef,
-  $project_id_attribute                 = undef,
-  $project_member_attribute             = undef,
-  $project_desc_attribute               = undef,
-  $project_name_attribute               = undef,
-  $project_enabled_attribute            = undef,
-  $project_domain_id_attribute          = undef,
-  $project_attribute_ignore             = undef,
-  $project_allow_create                 = undef,
-  $project_allow_update                 = undef,
-  $project_allow_delete                 = undef,
-  $project_enabled_emulation            = undef,
-  $project_enabled_emulation_dn         = undef,
-  $project_additional_attribute_mapping = undef,
-  $role_tree_dn                         = undef,
-  $role_filter                          = undef,
-  $role_objectclass                     = undef,
-  $role_id_attribute                    = undef,
-  $role_name_attribute                  = undef,
-  $role_member_attribute                = undef,
-  $role_attribute_ignore                = undef,
-  $role_allow_create                    = undef,
-  $role_allow_update                    = undef,
-  $role_allow_delete                    = undef,
-  $role_additional_attribute_mapping    = undef,
   $group_tree_dn                        = undef,
   $group_filter                         = undef,
   $group_objectclass                    = undef,
@@ -463,8 +436,6 @@ define keystone::ldap_backend(
   $tls_cacertfile                       = undef,
   $tls_req_cert                         = undef,
   $identity_driver                      = 'ldap',
-  $assignment_driver                    = undef,
-  $credential_driver                    = undef,
   $use_pool                             = undef,
   $pool_size                            = undef,
   $pool_retry_max                       = undef,
@@ -478,6 +449,35 @@ define keystone::ldap_backend(
   $manage_packages                      = true,
   $create_domain_entry                  = false,
   # DEPRECATED PARAMETERS
+  $assignment_driver                    = undef,
+  $credential_driver                    = undef,
+  $project_allow_create                 = undef,
+  $project_allow_update                 = undef,
+  $project_allow_delete                 = undef,
+  $project_tree_dn                      = undef,
+  $project_filter                       = undef,
+  $project_objectclass                  = undef,
+  $project_id_attribute                 = undef,
+  $project_member_attribute             = undef,
+  $project_desc_attribute               = undef,
+  $project_name_attribute               = undef,
+  $project_enabled_attribute            = undef,
+  $project_domain_id_attribute          = undef,
+  $project_attribute_ignore             = undef,
+  $project_enabled_emulation            = undef,
+  $project_enabled_emulation_dn         = undef,
+  $project_additional_attribute_mapping = undef,
+  $role_allow_create                    = undef,
+  $role_allow_update                    = undef,
+  $role_allow_delete                    = undef,
+  $role_tree_dn                         = undef,
+  $role_filter                          = undef,
+  $role_objectclass                     = undef,
+  $role_id_attribute                    = undef,
+  $role_name_attribute                  = undef,
+  $role_member_attribute                = undef,
+  $role_attribute_ignore                = undef,
+  $role_additional_attribute_mapping    = undef,
   $user_allow_create                    = undef,
   $user_allow_update                    = undef,
   $user_allow_delete                    = undef,
@@ -493,6 +493,122 @@ define keystone::ldap_backend(
   $err_msg = "You should add \"using_domain_config => true\" parameter to your Keystone class, \
 got \"${domain_enabled}\" for identity/domain_specific_drivers_enabled \
 and \"${domain_dir_enabled}\" for identity/domain_config_dir"
+
+  if $assignment_driver {
+    warning('keystone::assignment_driver is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $credential_driver {
+    warning('keystone::credential_driver is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $project_allow_create {
+    warning('keystone::project_allow_create is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $project_allow_update {
+    warning('keystone::project_allow_update is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $project_allow_delete {
+    warning('keystone::project_allow_delete is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $project_tree_dn {
+    warning('keystone::project_tree_dn is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $project_filter {
+    warning('keystone::project_filter is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $project_objectclass {
+    warning('keystone::project_objectclass is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $project_id_attribute {
+    warning('keystone::project_id_attribute is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $project_member_attribute {
+    warning('keystone::project_member_attribute is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $project_desc_attribute {
+    warning('keystone::project_desc_attribute is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $project_name_attribute {
+    warning('keystone::project_name_attribute is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $project_enabled_attribute {
+    warning('keystone::project_enabled_attribute is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $project_domain_id_attribute {
+    warning('keystone::project_domain_id_attribute is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $project_attribute_ignore {
+    warning('keystone::project_attribute_ignore is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $project_enabled_emulation {
+    warning('keystone::project_enabled_emulation is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $project_enabled_emulation_dn {
+    warning('keystone::project_enabled_emulation_dn is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $project_additional_attribute_mapping {
+    warning('keystone::project_additional_attribute_mapping is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $role_allow_create {
+    warning('keystone::role_allow_create is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $role_allow_update {
+    warning('keystone::role_allow_update is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $role_allow_delete {
+    warning('keystone::role_allow_delete is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $role_tree_dn {
+    warning('keystone::role_tree_dn is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $role_filter {
+    warning('keystone::role_filter is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $role_objectclass {
+    warning('keystone::role_objectclass is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $role_id_attribute {
+    warning('keystone::role_id_attribute is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $role_name_attribute {
+    warning('keystone::role_name_attribute is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $role_member_attribute {
+    warning('keystone::role_member_attribute is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $role_attribute_ignore {
+    warning('keystone::role_attribute_ignore is deprecated, has no effect and will be removed in a later release.')
+  }
+
+  if $role_additional_attribute_mapping {
+    warning('keystone::role_additional_attribute_mapping is deprecated, has no effect and will be removed in a later release.')
+  }
 
   if $user_allow_create {
     warning('keystone::user_allow_create is deprecated, has no effect and will be removed in a later release.')
@@ -570,33 +686,6 @@ and \"${domain_dir_enabled}\" for identity/domain_config_dir"
     "${domain}::ldap/user_enabled_emulation":               value => $user_enabled_emulation;
     "${domain}::ldap/user_enabled_emulation_dn":            value => $user_enabled_emulation_dn;
     "${domain}::ldap/user_additional_attribute_mapping":    value => $user_additional_attribute_mapping;
-    "${domain}::ldap/project_tree_dn":                      value => $project_tree_dn;
-    "${domain}::ldap/project_filter":                       value => $project_filter;
-    "${domain}::ldap/project_objectclass":                  value => $project_objectclass;
-    "${domain}::ldap/project_id_attribute":                 value => $project_id_attribute;
-    "${domain}::ldap/project_member_attribute":             value => $project_member_attribute;
-    "${domain}::ldap/project_desc_attribute":               value => $project_desc_attribute;
-    "${domain}::ldap/project_name_attribute":               value => $project_name_attribute;
-    "${domain}::ldap/project_enabled_attribute":            value => $project_enabled_attribute;
-    "${domain}::ldap/project_attribute_ignore":             value => $project_attribute_ignore;
-    "${domain}::ldap/project_domain_id_attribute":          value => $project_domain_id_attribute;
-    "${domain}::ldap/project_allow_create":                 value => $project_allow_create;
-    "${domain}::ldap/project_allow_update":                 value => $project_allow_update;
-    "${domain}::ldap/project_allow_delete":                 value => $project_allow_delete;
-    "${domain}::ldap/project_enabled_emulation":            value => $project_enabled_emulation;
-    "${domain}::ldap/project_enabled_emulation_dn":         value => $project_enabled_emulation_dn;
-    "${domain}::ldap/project_additional_attribute_mapping": value => $project_additional_attribute_mapping;
-    "${domain}::ldap/role_tree_dn":                         value => $role_tree_dn;
-    "${domain}::ldap/role_filter":                          value => $role_filter;
-    "${domain}::ldap/role_objectclass":                     value => $role_objectclass;
-    "${domain}::ldap/role_id_attribute":                    value => $role_id_attribute;
-    "${domain}::ldap/role_name_attribute":                  value => $role_name_attribute;
-    "${domain}::ldap/role_member_attribute":                value => $role_member_attribute;
-    "${domain}::ldap/role_attribute_ignore":                value => $role_attribute_ignore;
-    "${domain}::ldap/role_allow_create":                    value => $role_allow_create;
-    "${domain}::ldap/role_allow_update":                    value => $role_allow_update;
-    "${domain}::ldap/role_allow_delete":                    value => $role_allow_delete;
-    "${domain}::ldap/role_additional_attribute_mapping":    value => $role_additional_attribute_mapping;
     "${domain}::ldap/group_tree_dn":                        value => $group_tree_dn;
     "${domain}::ldap/group_filter":                         value => $group_filter;
     "${domain}::ldap/group_objectclass":                    value => $group_objectclass;
@@ -623,8 +712,6 @@ and \"${domain_dir_enabled}\" for identity/domain_config_dir"
     "${domain}::ldap/auth_pool_size":                       value => $auth_pool_size;
     "${domain}::ldap/auth_pool_connection_lifetime":        value => $auth_pool_connection_lifetime;
     "${domain}::identity/driver":                           value => $identity_driver;
-    "${domain}::credential/driver":                         value => $credential_driver;
-    "${domain}::assignment/driver":                         value => $assignment_driver;
   }
 
   if $create_domain_entry {
