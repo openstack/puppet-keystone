@@ -353,17 +353,8 @@ EOC
           it_behaves_like 'a_valid_configuration', <<-EOC
 
 [ldap]
-use_pool=False
-pool_retry_delay=0.1
 url=ldap://foo
-auth_pool_size=100
-auth_pool_connection_lifetime=60
 user=cn=foo,dc=example,dc=com
-pool_connection_timeout=-1
-use_auth_pool=False
-pool_connection_lifetime=600
-pool_size=10
-pool_retry_max=3
 EOC
         end
 
@@ -371,17 +362,8 @@ EOC
           it_behaves_like 'a_valid_configuration', <<-EOC
 
 [ldap]
-pool_retry_delay=0.1
 url=ldap://bar
 user=cn=bar,dc=test,dc=com
-use_pool=False
-pool_retry_max=3
-pool_size=10
-auth_pool_size=100
-auth_pool_connection_lifetime=60
-use_auth_pool=False
-pool_connection_lifetime=600
-pool_connection_timeout=-1
 EOC
         end
       end
