@@ -317,40 +317,40 @@
 #
 # [*use_pool*]
 #   Enable LDAP connection pooling. (boolean value)
-#   Defaults to false
+#   Defaults to 'undef'
 #
 # [*pool_size*]
 #   Connection pool size. (integer value)
-#   Defaults to '10'
+#   Defaults to 'undef'
 #
 # [*pool_retry_max*]
 #   Maximum count of reconnect trials. (integer value)
-#   Defaults to '3'
+#   Defaults to 'undef'
 #
 # [*pool_retry_delay*]
 #   Time span in seconds to wait between two reconnect trials. (floating point value)
-#   Defaults to '0.1'
+#   Defaults to 'undef'
 #
 # [*pool_connection_timeout*]
 #   Connector timeout in seconds. Value -1 indicates indefinite wait for response. (integer value)
-#   Defaults to '-1'
+#   Defaults to 'undef'
 #
 # [*pool_connection_lifetime*]
 #   Connection lifetime in seconds. (integer value)
-#   Defaults to '600'
+#   Defaults to 'undef'
 #
 # [*use_auth_pool*]
 #   Enable LDAP connection pooling for end user authentication.
 #   If use_pool is disabled, then this setting is meaningless and is not used at all. (boolean value)
-#   Defaults to false
+#   Defaults to 'undef'
 #
 # [*auth_pool_size*]
 #   End user auth connection pool size. (integer value)
-#   Defaults to '100'
+#   Defaults to 'undef'
 #
 # [*auth_pool_connection_lifetime*]
 #   End user auth connection lifetime in seconds. (integer value)
-#   Defaults to '60'
+#   Defaults to 'undef'
 #
 # [*package_ensure*]
 #   (optional) Desired ensure state of packages.
@@ -465,15 +465,15 @@ define keystone::ldap_backend(
   $identity_driver                      = 'ldap',
   $assignment_driver                    = undef,
   $credential_driver                    = undef,
-  $use_pool                             = false,
-  $pool_size                            = 10,
-  $pool_retry_max                       = 3,
-  $pool_retry_delay                     = 0.1,
-  $pool_connection_timeout              = -1,
-  $pool_connection_lifetime             = 600,
-  $use_auth_pool                        = false,
-  $auth_pool_size                       = 100,
-  $auth_pool_connection_lifetime        = 60,
+  $use_pool                             = undef,
+  $pool_size                            = undef,
+  $pool_retry_max                       = undef,
+  $pool_retry_delay                     = undef,
+  $pool_connection_timeout              = undef,
+  $pool_connection_lifetime             = undef,
+  $use_auth_pool                        = undef,
+  $auth_pool_size                       = undef,
+  $auth_pool_connection_lifetime        = undef,
   $package_ensure                       = present,
   $manage_packages                      = true,
   $create_domain_entry                  = false,
