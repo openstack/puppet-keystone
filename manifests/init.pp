@@ -133,10 +133,6 @@
 #   (Optional) Interval between retries of opening a database connection.
 #   (Defaults to undef)
 #
-# [*database_min_pool_size*]
-#   (Optional) Minimum number of SQL connections to keep open in a pool.
-#   Defaults to: undef
-#
 # [*database_max_pool_size*]
 #   (Optional) Maximum number of SQL connections to keep open in a pool.
 #   Defaults to: undef
@@ -564,6 +560,10 @@
 #   user by running 'keystone-manage bootstrap'.
 #   Defaults to undef
 #
+# [*database_min_pool_size*]
+#   (Optional) Minimum number of SQL connections to keep open in a pool.
+#   Defaults to: undef
+#
 # == Authors
 #
 #   Dan Bode dan@puppetlabs.com
@@ -609,7 +609,6 @@ class keystone(
   $database_idle_timeout                = undef,
   $database_max_retries                 = undef,
   $database_retry_interval              = undef,
-  $database_min_pool_size               = undef,
   $database_max_pool_size               = undef,
   $database_max_overflow                = undef,
   $rabbit_heartbeat_timeout_threshold   = $::os_service_default,
@@ -677,6 +676,7 @@ class keystone(
   $admin_token                          = undef,
   $admin_password                       = undef,
   $enable_bootstrap                     = undef,
+  $database_min_pool_size               = undef,
 ) inherits keystone::params {
 
   include keystone::deps
