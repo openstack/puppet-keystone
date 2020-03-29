@@ -1,0 +1,26 @@
+---
+features:
+  - |
+    The  new ``keystone::cache`` class was introduced to manage configurations
+    for caching in keystone.
+deprecations:
+  - |
+    The following parameters for managing cache are now deprecated because of
+    the introduction of ``keystone::cache`` to manage cache configuration.
+    The parameters in ``keystone::cache`` class instead.
+
+    - ``keystone::cache_backend``
+    - ``keystone::cache_backend_argument``
+    - ``keystone::enabled``
+    - ``keystone::memcache_servers``
+    - ``keystone::debug_cache_backend``
+    - ``keystone::cache_config_prefix``
+    - ``keystone::cache_expiration_time``
+    - ``keystone::cache_proxies``
+    - ``keystone::token_caching``
+    - ``keystone::memcache_dead_retry``
+    - ``keystone::memcache_socket_timeout``
+    - ``keystone::memcache_pool_maxsize``
+    - ``keystone::memcache_pool_unused_timeout``
+    - ``keystone::memcache_pool_connection_get_timeout``
+    - ``keystone::manage_backend_package``

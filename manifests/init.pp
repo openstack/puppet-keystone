@@ -55,59 +55,6 @@
 #   other than KVS, which stores events in memory.
 #   Defaults to true.
 #
-# [*cache_backend*]
-#   (Optional) Dogpile.cache backend module. It is recommended that Memcache with pooling
-#   (keystone.cache.memcache_pool) or Redis (dogpile.cache.redis) be used in production.
-#   This has no effect unless cache_enabled is true and cache_memcache_servers is set.
-#   Defaults to $::os_service_default
-#
-# [*cache_backend_argument*]
-#   (Optional) List of arguments in format of argname:value supplied to the backend module.
-#   Specify this option once per argument to be passed to the dogpile.cache backend.
-#   This has no effect unless cache_backend and cache_enabled is set.
-#   Default to $::os_service_default
-#
-# [*cache_enabled*]
-#   (Optional) Setting this boolean will enable the caching backend for Keystone.
-#   Defaults to $::os_service_default
-#
-# [*cache_memcache_servers*]
-#   (Optional) List of memcache servers to be used with the caching backend to
-#   configure cache/memcache_servers. This has no effect unless cache_backend
-#   is set and cache_enabled is true.
-#   Specified as a comma separated string of 'server:port,server:port' or an
-#   array of servers ['server:port', 'server:port'].
-#   Default to $::os_service_default
-#
-# [*debug_cache_backend*]
-#   (Optional) Extra debugging from the cache backend (cache keys, get/set/delete calls).
-#   Default to $::os_service_default
-#
-# [*cache_config_prefix*]
-#   (Optional) Prefix for building the configuration dictionary for
-#   the cache region. This should not need to be changed unless there
-#   is another dogpile.cache region with the same configuration name.
-#   (string value)
-#   Defaults to $::os_service_default
-#
-# [*cache_expiration_time*]
-#   (Optional) Default TTL, in seconds, for any cached item in the
-#   dogpile.cache region. This applies to any cached method that
-#   doesn't have an explicit cache expiration time defined for it.
-#   (integer value)
-#   Defaults to $::os_service_default
-#
-# [*cache_proxies*]
-#   (Optional) Proxy classes to import that will affect the way the
-#   dogpile.cache backend functions. See the dogpile.cache documentation on
-#   changing-backend-behavior. (list value)
-#   Defaults to $::os_service_default
-#
-# [*token_caching*]
-#   (Optional) Toggle for token system caching. This has no effect unless
-#   cache_backend, cache_enabled and cache_memcache_servers is set.
-#   Default to $::os_service_default
-#
 # [*manage_service*]
 #   (Optional) If Puppet should manage service startup / shutdown.
 #   Defaults to true.
@@ -409,35 +356,6 @@
 #   member_role_id option; see that option for more detail.
 #   Defaults to $::os_service_default
 #
-# [*memcache_dead_retry*]
-#   (Optional) Number of seconds memcached server is considered dead before it
-#   is tried again. This is used for the cache memcache_dead_retry and the
-#   memcache dead_retry values.
-#   Defaults to $::os_service_default
-#
-# [*memcache_socket_timeout*]
-#   (Optional) Timeout in seconds for every call to a server.
-#   (floating point value)
-#   Defaults to $::os_service_default
-#
-# [*memcache_pool_maxsize*]
-#   (Optional) Max total number of open connections to every memcached server.
-#   Defaults to $::os_service_default
-#
-# [*memcache_pool_unused_timeout*]
-#   (Optional) Number of seconds a connection to memcached is held unused in
-#   the pool before it is closed.
-#   Defaults to $::os_service_default
-#
-# [*memcache_pool_connection_get_timeout*]
-#   (Optional) Number of seconds that an operation will wait to get a memcache
-#   client connection. (integer value)
-#   Defaults to $::os_service_default
-#
-# [*manage_backend_package*]
-#   (Optional) (Optional) Whether to install the backend package for the cache.
-#   Defaults to true
-#
 # [*policy_driver*]
 #   Policy backend driver. (string value)
 #   Defaults to $::os_service_default.
@@ -564,6 +482,88 @@
 #   (Optional) Minimum number of SQL connections to keep open in a pool.
 #   Defaults to: undef
 #
+# [*cache_backend*]
+#   (Optional) Dogpile.cache backend module. It is recommended that Memcache with pooling
+#   (keystone.cache.memcache_pool) or Redis (dogpile.cache.redis) be used in production.
+#   This has no effect unless cache_enabled is true and cache_memcache_servers is set.
+#   Defaults to undef
+#
+# [*cache_backend_argument*]
+#   (Optional) List of arguments in format of argname:value supplied to the backend module.
+#   Specify this option once per argument to be passed to the dogpile.cache backend.
+#   This has no effect unless cache_backend and cache_enabled is set.
+#   Default to undef
+#
+# [*cache_enabled*]
+#   (Optional) Setting this boolean will enable the caching backend for Keystone.
+#   Defaults to undef
+#
+# [*cache_memcache_servers*]
+#   (Optional) List of memcache servers to be used with the caching backend to
+#   configure cache/memcache_servers. This has no effect unless cache_backend
+#   is set and cache_enabled is true.
+#   Specified as a comma separated string of 'server:port,server:port' or an
+#   array of servers ['server:port', 'server:port'].
+#   Default to undef
+#
+# [*debug_cache_backend*]
+#   (Optional) Extra debugging from the cache backend (cache keys, get/set/delete calls).
+#   Default to undef
+#
+# [*cache_config_prefix*]
+#   (Optional) Prefix for building the configuration dictionary for
+#   the cache region. This should not need to be changed unless there
+#   is another dogpile.cache region with the same configuration name.
+#   (string value)
+#   Defaults to undef
+#
+# [*cache_expiration_time*]
+#   (Optional) Default TTL, in seconds, for any cached item in the
+#   dogpile.cache region. This applies to any cached method that
+#   doesn't have an explicit cache expiration time defined for it.
+#   (integer value)
+#   Defaults to undef
+#
+# [*cache_proxies*]
+#   (Optional) Proxy classes to import that will affect the way the
+#   dogpile.cache backend functions. See the dogpile.cache documentation on
+#   changing-backend-behavior. (list value)
+#   Defaults to undef
+#
+# [*token_caching*]
+#   (Optional) Toggle for token system caching. This has no effect unless
+#   cache_backend, cache_enabled and cache_memcache_servers is set.
+#   Default to undef
+#
+# [*memcache_dead_retry*]
+#   (Optional) Number of seconds memcached server is considered dead before it
+#   is tried again. This is used for the cache memcache_dead_retry and the
+#   memcache dead_retry values.
+#   Defaults to undef
+#
+# [*memcache_socket_timeout*]
+#   (Optional) Timeout in seconds for every call to a server.
+#   (floating point value)
+#   Defaults to undef
+#
+# [*memcache_pool_maxsize*]
+#   (Optional) Max total number of open connections to every memcached server.
+#   Defaults to undef
+#
+# [*memcache_pool_unused_timeout*]
+#   (Optional) Number of seconds a connection to memcached is held unused in
+#   the pool before it is closed.
+#   Defaults to undef
+#
+# [*memcache_pool_connection_get_timeout*]
+#   (Optional) Number of seconds that an operation will wait to get a memcache
+#   client connection. (integer value)
+#   Defaults to undef
+#
+# [*manage_backend_package*]
+#   (Optional) (Optional) Whether to install the backend package for the cache.
+#   Defaults to undef
+#
 # == Authors
 #
 #   Dan Bode dan@puppetlabs.com
@@ -595,15 +595,6 @@ class keystone(
   $ssl_ca_key                           = '/etc/keystone/ssl/private/cakey.pem',
   $ssl_cert_subject                     = '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
   $manage_service                       = true,
-  $cache_backend                        = $::os_service_default,
-  $cache_backend_argument               = $::os_service_default,
-  $cache_enabled                        = $::os_service_default,
-  $cache_memcache_servers               = $::os_service_default,
-  $debug_cache_backend                  = $::os_service_default,
-  $cache_config_prefix                  = $::os_service_default,
-  $cache_expiration_time                = $::os_service_default,
-  $cache_proxies                        = $::os_service_default,
-  $token_caching                        = $::os_service_default,
   $enabled                              = true,
   $database_connection                  = undef,
   $database_idle_timeout                = undef,
@@ -644,12 +635,6 @@ class keystone(
   $default_domain                       = undef,
   $member_role_id                       = $::os_service_default,
   $member_role_name                     = $::os_service_default,
-  $memcache_dead_retry                  = $::os_service_default,
-  $memcache_socket_timeout              = $::os_service_default,
-  $memcache_pool_maxsize                = $::os_service_default,
-  $memcache_pool_unused_timeout         = $::os_service_default,
-  $memcache_pool_connection_get_timeout = $::os_service_default,
-  $manage_backend_package               = true,
   $policy_driver                        = $::os_service_default,
   $using_domain_config                  = false,
   $domain_config_directory              = '/etc/keystone/domains',
@@ -677,11 +662,27 @@ class keystone(
   $admin_password                       = undef,
   $enable_bootstrap                     = undef,
   $database_min_pool_size               = undef,
+  $cache_backend                        = undef,
+  $cache_backend_argument               = undef,
+  $cache_enabled                        = undef,
+  $cache_memcache_servers               = undef,
+  $debug_cache_backend                  = undef,
+  $cache_config_prefix                  = undef,
+  $cache_expiration_time                = undef,
+  $cache_proxies                        = undef,
+  $token_caching                        = undef,
+  $memcache_dead_retry                  = undef,
+  $memcache_socket_timeout              = undef,
+  $memcache_pool_maxsize                = undef,
+  $memcache_pool_unused_timeout         = undef,
+  $memcache_pool_connection_get_timeout = undef,
+  $manage_backend_package               = undef,
 ) inherits keystone::params {
 
   include keystone::deps
   include keystone::logging
   include keystone::policy
+  include keystone::cache
 
   if $cache_dir {
     warning('keystone::cache_dir is deprecated, has no effect and will be removed in a later release')
@@ -830,41 +831,6 @@ class keystone(
     keystone_config {
       'ssl/enable':              value  => false;
     }
-  }
-
-  if !is_service_default($cache_memcache_servers) {
-    Service<| title == 'memcached' |> -> Anchor['keystone::service::begin']
-  }
-
-  keystone_config {
-    'memcache/dead_retry':                value => $memcache_dead_retry;
-    'memcache/pool_maxsize':              value => $memcache_pool_maxsize;
-    'memcache/pool_unused_timeout':       value => $memcache_pool_unused_timeout;
-    'memcache/socket_timeout':            value => $memcache_socket_timeout;
-    'token/caching':                      value => $token_caching;
-  }
-
-  if is_string($cache_memcache_servers) {
-    $cache_memcache_servers_real = split($cache_memcache_servers, ',')
-  } else {
-    $cache_memcache_servers_real = $cache_memcache_servers
-  }
-
-  oslo::cache { 'keystone_config':
-    config_prefix                        => $cache_config_prefix,
-    expiration_time                      => $cache_expiration_time,
-    backend                              => $cache_backend,
-    backend_argument                     => $cache_backend_argument,
-    proxies                              => $cache_proxies,
-    enabled                              => $cache_enabled,
-    debug_cache_backend                  => $debug_cache_backend,
-    memcache_servers                     => $cache_memcache_servers_real,
-    memcache_dead_retry                  => $memcache_dead_retry,
-    memcache_socket_timeout              => $memcache_socket_timeout,
-    memcache_pool_maxsize                => $memcache_pool_maxsize,
-    memcache_pool_unused_timeout         => $memcache_pool_unused_timeout,
-    memcache_pool_connection_get_timeout => $memcache_pool_connection_get_timeout,
-    manage_backend_package               => $manage_backend_package,
   }
 
   oslo::middleware { 'keystone_config':
