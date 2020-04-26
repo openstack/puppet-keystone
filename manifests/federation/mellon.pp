@@ -38,15 +38,6 @@
 #
 # === DEPRECATED
 #
-# [*trusted_dashboards*]
-#   (optional) URL list of trusted horizon servers.
-#   This setting ensures that keystone only sends token data back to trusted
-#   servers. This is performed as a precaution, specifically to prevent man-in-
-#   the-middle (MITM) attacks.
-#   It is recommended to use the keystone::federation class to set the
-#   trusted_dashboards configuration instead of this parameter.
-#   Defaults to undef
-#
 # [*admin_port*]
 #  A boolean value to ensure that you want to configure K2K Federation
 #  using Keystone VirtualHost on port 35357.
@@ -65,7 +56,6 @@ class keystone::federation::mellon (
   $package_ensure     = present,
   $enable_websso      = false,
   # DEPRECATED
-  $trusted_dashboards = undef,
   $admin_port         = undef,
   $main_port          = undef,
 ) {
@@ -73,11 +63,6 @@ class keystone::federation::mellon (
   include apache
   include keystone::deps
   include keystone::params
-
-  if ($trusted_dashboards) {
-    warning("keystone::federation::mellon::trusted_dashboards is deprecated \
-in Stein and will be removed in future releases")
-  }
 
   if $admin_port or $main_port {
     warning('keystone::federation::mellon::admin_port and main_port are deprecated and have no effect')
@@ -105,11 +90,6 @@ Apache + Mellon SP setups, where a REMOTE_USER env variable is always set, even 
   }
 
   if($enable_websso){
-    if($trusted_dashboards){
-      keystone_config {
-        'federation/trusted_dashboard': value => join(any2array($trusted_dashboards),',');
-      }
-    }
     keystone_config {
       'mapped/remote_id_attribute': value => 'MELLON_IDP';
     }

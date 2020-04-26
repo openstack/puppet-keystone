@@ -58,10 +58,6 @@ describe 'keystone::federation::mellon' do
       before do
         params.merge!({
           :enable_websso => true,
-          :trusted_dashboards => [
-            'http://acme.horizon.com/auth/websso/',
-            'http://beta.horizon.com/auth/websso/',
-          ],
         })
       end
 
@@ -72,7 +68,6 @@ describe 'keystone::federation::mellon' do
 
       it 'should have parameters for websso in Keystone configuration' do
         is_expected.to contain_keystone_config('mapped/remote_id_attribute').with_value('MELLON_IDP')
-        is_expected.to contain_keystone_config('federation/trusted_dashboard').with_value('http://acme.horizon.com/auth/websso/,http://beta.horizon.com/auth/websso/')
       end
 
       it { is_expected.to contain_concat__fragment('configure_mellon_keystone').with({
