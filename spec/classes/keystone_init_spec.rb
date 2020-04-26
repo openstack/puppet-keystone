@@ -478,7 +478,7 @@ describe 'keystone' do
       })
     end
 
-    it { is_expected.to contain_keystone_config('oslo_messaging_notifications/driver').with_value('keystone.openstack.common.notifier.rpc_notifier') }
+    it { is_expected.to contain_keystone_config('oslo_messaging_notifications/driver').with_value(['keystone.openstack.common.notifier.rpc_notifier']) }
     it { is_expected.to contain_keystone_config('oslo_messaging_notifications/topics').with_value('notifications') }
     it { is_expected.to contain_keystone_config('DEFAULT/notification_format').with_value('cadf') }
     it { is_expected.to contain_keystone_config('DEFAULT/control_exchange').with_value('keystone') }
