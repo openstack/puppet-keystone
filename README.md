@@ -15,7 +15,7 @@ keystone
 3. [Setup - The basics of getting started with keystone](#setup)
 4. [Implementation - An under-the-hood peek at what the module is doing](#implementation)
 5. [Limitations - OS compatibility, etc.](#limitations)
-6. [Beaker-Rspec - Beaker-rspec tests for the project](#beaker-rpsec)
+6. [Beaker-Rspec - Beaker-rspec tests for the project](#beaker-rspec)
 7. [Development - Guide for contributing to the module](#development)
 8. [Contributors - Those with commits](#contributors)
 9. [Release Notes - Release notes for the project](#release-notes)
