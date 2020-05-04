@@ -52,8 +52,8 @@ module PuppetX
           defaultto('<SERVICE DEFAULT>')
         end
 
-        autorequire(:package) do
-          'keystone'
+        autorequire(:anchor) do
+          ['keystone::install::end']
         end
       end
     end
