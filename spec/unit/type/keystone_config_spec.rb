@@ -1,16 +1,3 @@
-require 'spec_helper'
-# this hack is required for now to ensure that the path is set up correctly
-# to retrieve the parent provider
-$LOAD_PATH.push(
-  File.join(
-    File.dirname(__FILE__),
-    '..',
-    '..',
-    'fixtures',
-    'modules',
-    'inifile',
-    'lib')
-)
 require 'puppet'
 require 'puppet/type/keystone_config'
 
@@ -66,12 +53,12 @@ describe 'Puppet::Type.type(:keystone_config)' do
 
   it 'should autorequire the package that install the file' do
     catalog = Puppet::Resource::Catalog.new
-    package = Puppet::Type.type(:package).new(:name => 'keystone')
-    catalog.add_resource package, @keystone_config
+    anchor = Puppet::Type.type(:anchor).new(:name => 'keystone::install::end')
+    catalog.add_resource anchor, @keystone_config
     dependency = @keystone_config.autorequire
     expect(dependency.size).to eq(1)
     expect(dependency[0].target).to eq(@keystone_config)
-    expect(dependency[0].source).to eq(package)
+    expect(dependency[0].source).to eq(anchor)
   end
 
 end
