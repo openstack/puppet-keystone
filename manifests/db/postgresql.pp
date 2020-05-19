@@ -45,11 +45,11 @@ class keystone::db::postgresql(
   include keystone::deps
 
   ::openstacklib::db::postgresql { 'keystone':
-    password_hash => postgresql_password($user, $password),
-    dbname        => $dbname,
-    user          => $user,
-    encoding      => $encoding,
-    privileges    => $privileges,
+    password   => $password,
+    dbname     => $dbname,
+    user       => $user,
+    encoding   => $encoding,
+    privileges => $privileges,
   }
 
   Anchor['keystone::db::begin']
