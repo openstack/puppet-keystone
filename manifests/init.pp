@@ -211,7 +211,8 @@
 #   (Optional) The base public endpoint URL for keystone that are
 #   advertised to clients (NOTE: this does NOT affect how
 #   keystone listens for connections) (string value)
-#   If set to false, no public_endpoint will be defined in keystone.conf.
+#   If set to false, public_endpoint will be set from public_bind_host and
+#   public_port, or default to http://127.0.0.1:5000
 #   Sample value: 'http://localhost:5000/'
 #   Defaults to undef
 #
