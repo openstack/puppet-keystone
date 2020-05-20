@@ -8,18 +8,18 @@ describe 'keystone::db::mysql' do
   shared_examples 'keystone::db::mysql' do
     context 'with required params' do
       before do
-        params.merge!( :password => 'keystone_default_password' )
+        params.merge!( :password => 'keystonepass' )
       end
 
       it { is_expected.to contain_class('keystone::deps') }
 
       it { is_expected.to contain_openstacklib__db__mysql('keystone').with(
-        :user          => 'keystone',
-        :password_hash => '*B552157B14BCEDDCEAA06767A012F31BDAA9CE3D',
-        :dbname        => 'keystone',
-        :host          => '127.0.0.1',
-        :charset       => 'utf8',
-        :collate       => 'utf8_general_ci',
+        :user     => 'keystone',
+        :password => 'keystonepass',
+        :dbname   => 'keystone',
+        :host     => '127.0.0.1',
+        :charset  => 'utf8',
+        :collate  => 'utf8_general_ci',
       )}
     end
 
@@ -38,7 +38,7 @@ describe 'keystone::db::mysql' do
 
       it { is_expected.to contain_openstacklib__db__mysql('keystone').with(
         :user          => 'keystoneuser',
-        :password_hash => '*706BFA85E15D0C1D8467D0D81D784F6A04CE4ABB',
+        :password      => 'keystonepass',
         :dbname        => 'keystonedb',
         :host          => '1.2.3.4',
         :charset       => 'latin2',

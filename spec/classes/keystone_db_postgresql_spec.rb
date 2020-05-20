@@ -4,7 +4,7 @@ describe 'keystone::db::postgresql' do
   shared_examples 'keystone::db::postgresql' do
     let :req_params do
       {
-        :password => 'pw',
+        :password => 'keystonepass',
       }
     end
 
@@ -17,9 +17,12 @@ describe 'keystone::db::postgresql' do
         req_params
       end
 
-      it { is_expected.to contain_postgresql__server__db('keystone').with(
-        :user     => 'keystone',
-        :password => 'md5c530c33636c58ae83ca933f39319273e'
+      it { is_expected.to contain_openstacklib__db__postgresql('keystone').with(
+        :user       => 'keystone',
+        :password   => 'keystonepass',
+        :dbname     => 'keystone',
+        :encoding   => nil,
+        :privileges => 'ALL',
       )}
     end
 

@@ -18,10 +18,6 @@
             "version_requirement": ">=8.4.0 <11.0.0"
         },
         {
-            "name": "puppetlabs/mysql",
-            "version_requirement": ">=6.0.0 <11.0.0"
-        },
-        {
             "name": "openstack/openstacklib",
             "version_requirement": ">=17.0.0 <18.0.0"
         },
