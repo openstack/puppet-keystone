@@ -1,0 +1,5 @@
+---
+deprecations:
+  - |
+    The use of keystone-public-keystone-admin for the keystone service name is
+    deprecated, please use simply keystone instead.
