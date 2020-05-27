@@ -23,7 +23,7 @@ class keystone::params {
       $package_name                 = 'openstack-keystone'
       $service_name                 = 'openstack-keystone'
       $keystone_wsgi_script_path    = '/var/www/cgi-bin/keystone'
-      $python_memcache_package_name = 'python-memcached'
+      $python_memcache_package_name = "python${pyvers}-memcached"
       $mellon_package_name          = 'mod_auth_mellon'
       $openidc_package_name         = 'mod_auth_openidc'
     }

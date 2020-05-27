@@ -1,0 +1,5 @@
+---
+fixes:
+  - |
+    Fixed a bug where the keystone::resource::authtoken resource would not
+    install the proper python memcache bindings when using python3.
