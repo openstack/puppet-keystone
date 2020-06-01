@@ -246,20 +246,19 @@
 #   (Optional) Name of the service that will be providing the
 #   server functionality of keystone.  For example, the default
 #   is just 'keystone', which means keystone will be run as a
-#   standalone eventlet service, and will able to be managed
-#   separately by the operating system's service manager.  For
-#   example, you will be able to use
-#   service openstack-keystone restart
-#   to restart the service.
+#   standalone service, and will able to be managed separately
+#   by the operating system's service manager. For example,
+#   under Red Hat based systems, you will be able to use:
+#   systemctl restart openstack-keystone
+#   to restart the service. Under Debian, which uses uwsgi
+#   (as opposed to eventlet), the service name is simply
+#   keystone, so this will work:
+#   systemctl restart keystone
 #   If the value is 'httpd', this means keystone will be a web
 #   service, and you must use another class to configure that
-#   web service.  For example, after calling class {'keystone'...}
+#   web service.  After calling class {'keystone'...}
 #   use class { 'keystone::wsgi::apache'...} to make keystone be
 #   a web app using apache mod_wsgi.
-#   If the value is 'keystone-public-keystone-admin', then the
-#   module will use 2 services, one called keystone-public, and
-#   one called keystone-admin (as per the new Debian package
-#   which uses UWSGI instead of Apache).
 #   Defaults to '$::keystone::params::service_name'
 #
 # [*max_token_size*]
@@ -899,6 +898,12 @@ class keystone(
     warning('Execution of db_sync does not depend on $enabled anymore. Please use sync_db instead.')
   }
 
+  if ($service_name == 'keystone-public-keystone-admin') {
+    warning('The value keystone-public-keystone-admin for the Keystone service name is deprecated. \
+Use keystone instead')
+  }
+
+
   case $service_name {
     $::keystone::params::service_name, 'keystone-public-keystone-admin' : {
       $service_name_real = $::keystone::params::service_name
@@ -911,7 +916,9 @@ class keystone(
         hasrestart   => true,
       }
 
-      if $service_name == $::keystone::params::service_name {
+      # Note: Debian uses uwsgi if using keystone service, which isn't deprecated
+      # and therefore, no warning should be displayed.
+      if $service_name == $::keystone::params::service_name and $::os_package_type != 'debian'{
         warning("Keystone under Eventlet has been deprecated during the Kilo cycle. \
 Support for deploying under eventlet will be dropped as of the M-release of OpenStack.")
       }
