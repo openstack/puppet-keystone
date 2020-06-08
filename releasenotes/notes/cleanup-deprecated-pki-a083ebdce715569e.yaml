@@ -1,0 +1,8 @@
+---
+upgrade:
+  - |
+    The following deprecated options for PKI token have been removed.
+
+    - ``keystone::cache_dir``
+    - ``keystone::resource::authtoken::hash_algorithms``
+    - ``keystone::resource::authtoken::check_revocations_for_cached``
