@@ -433,11 +433,6 @@
 #   This setting has no affect when using WSGI.
 #   Defaults to undef
 #
-# [*cache_dir*]
-#   (Optional) Directory created when token_provider is pki. This folder is not
-#   created unless enable_pki_setup is set to True.
-#   Defaults to undef
-#
 # [*token_driver*]
 #   (Optional) Driver to use for managing tokens.
 #   Defaults to undef
@@ -653,7 +648,6 @@ class keystone(
   $public_port                          = undef,
   $admin_workers                        = undef,
   $public_workers                       = undef,
-  $cache_dir                            = undef,
   $token_driver                         = undef,
   $validate_service                     = undef,
   $validate_insecure                    = undef,
@@ -684,10 +678,6 @@ class keystone(
   include keystone::logging
   include keystone::policy
   include keystone::cache
-
-  if $cache_dir {
-    warning('keystone::cache_dir is deprecated, has no effect and will be removed in a later release')
-  }
 
   if $token_driver {
     warning('keystone::token_driver is deprecated, has no effect and will be removed in a later release')
