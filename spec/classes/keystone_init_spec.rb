@@ -733,6 +733,7 @@ describe 'keystone' do
       'mode'      => '0600',
       'replace'   => true,
       'subscribe' => 'Anchor[keystone::install::end]',
+      'tag'       => 'keystone-fernet-key',
     )}
     it { is_expected.to contain_file('/etc/keystone/fernet-keys/1').with(
       'content'   => 'GLlnyygEVJP4-H2OMwClXn3sdSQUZsM5F194139Unv8=',
@@ -740,6 +741,7 @@ describe 'keystone' do
       'mode'      => '0600',
       'replace'   => true,
       'subscribe' => 'Anchor[keystone::install::end]',
+      'tag'       => 'keystone-fernet-key',
     )}
   end
 

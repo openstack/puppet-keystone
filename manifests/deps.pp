@@ -79,4 +79,8 @@ class keystone::deps {
   # Otherwise, the run isn't indempotent.
   Package<| tag == 'keystone-package'|> -> File<| title == '/etc/apache2/sites-enabled' |>
   Package<| tag == 'keystone-package'|> -> File<| title == '/etc/apache2/sites-available' |>
+
+  # Bootstrap needs to be executed after fernet keys are created/generated.
+  Exec<| title == 'keystone-manage fernet_setup' |> -> Exec<| title == 'keystone bootstrap' |>
+  File<| tag == 'keystone-fernet-key' |> -> Exec<| title == 'keystone bootstrap' |>
 }

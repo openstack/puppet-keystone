@@ -946,6 +946,7 @@ running as a standalone service, or httpd for being run by a httpd server")
           'mode'      => '0600',
           'replace'   => $fernet_replace_keys,
           'subscribe' => 'Anchor[keystone::install::end]',
+          'tag'       => 'keystone-fernet-key',
         }
       )
     } else {
