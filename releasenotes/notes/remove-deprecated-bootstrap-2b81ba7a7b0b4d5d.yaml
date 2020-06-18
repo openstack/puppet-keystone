@@ -1,0 +1,11 @@
+---
+upgrade:
+  - |
+    The classes keystone::endpoint and keystone::roles::admin is removed, use
+    the new keystone::bootstrap class directly.
+  - |
+    The password parameter in keystone::bootstrap is required and does not
+    default to undef.
+  - |
+    The deprecated parameters admin_token, admin_password and enable_bootstrap
+    in the keystone class is removed.

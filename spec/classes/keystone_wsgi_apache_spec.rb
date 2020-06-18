@@ -4,7 +4,6 @@ describe 'keystone::wsgi::apache' do
 
   let :pre_condition do
     "class { 'keystone':
-       admin_token  => 'dummy',
        service_name => 'httpd',
        enable_ssl   => true,
      }"

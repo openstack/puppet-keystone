@@ -456,23 +456,6 @@
 #   (Optional) The url to validate keystone against
 #   Defaults to undef
 #
-# [*admin_token*]
-#   Admin token that can be used to authenticate as a keystone
-#   admin. This is not the password for the admin user
-#   in the Keystone database. This is a token that bypasses authentication.
-#   Defaults to undef
-#
-# [*admin_password*]
-#   Keystone password for the admin user. This is not the admin_token.
-#   This is the password that the admin user signs into keystone with.
-#   Defaults to undef
-#
-# [*enable_bootstrap*]
-#   (Optional) Enable keystone bootstrapping.
-#   This option to true will automatically bootstrap the default domain
-#   user by running 'keystone-manage bootstrap'.
-#   Defaults to undef
-#
 # [*database_min_pool_size*]
 #   (Optional) Minimum number of SQL connections to keep open in a pool.
 #   Defaults to: undef
@@ -652,9 +635,6 @@ class keystone(
   $validate_insecure                    = undef,
   $validate_auth_url                    = undef,
   $validate_cacert                      = undef,
-  $admin_token                          = undef,
-  $admin_password                       = undef,
-  $enable_bootstrap                     = undef,
   $database_min_pool_size               = undef,
   $cache_backend                        = undef,
   $cache_backend_argument               = undef,
@@ -773,11 +753,6 @@ class keystone(
 
   resources { 'keystone_config':
     purge  => $purge_config,
-  }
-
-  # TODO(tobias-urdin): Remove this when admin_token is removed.
-  keystone_config {
-    'DEFAULT/admin_token': ensure => 'absent', secret => true;
   }
 
   keystone_config {

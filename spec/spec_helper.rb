@@ -26,7 +26,6 @@ def setup_provider_tests
     def self.reset
       @public_endpoint = nil
       @tenant_hash    = nil
-      @admin_token    = nil
       @keystone_file  = nil
       Puppet::Provider::Keystone.class_variable_set('@@default_domain_id', nil)
       @domain_hash = nil

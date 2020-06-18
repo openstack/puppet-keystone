@@ -4,10 +4,7 @@ describe 'keystone::federation' do
 
   let(:pre_condition) do
     <<-EOS
-    class { 'keystone':
-      admin_token => 'service_token',
-      admin_password => 'special_password',
-    }
+    class { 'keystone': }
     EOS
   end
 
