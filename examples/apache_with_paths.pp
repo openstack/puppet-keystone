@@ -30,7 +30,6 @@ class { 'keystone':
   catalog_type        => 'sql',
   enabled             => true,
 }
-class { 'keystone::cron::token_flush': }
 class { 'keystone::bootstrap':
   password   => 'ChangeMe',
   public_url => "https://${::fqdn}:443/main",
