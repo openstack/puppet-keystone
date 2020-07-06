@@ -4,7 +4,6 @@ describe 'keystone::federation::identity_provider' do
 
   let :pre_condition do
         "class { 'keystone':
-          admin_token => 'dummy',
           service_name => 'httpd',
           enable_ssl=> true }"
   end
@@ -37,7 +36,6 @@ describe 'keystone::federation::identity_provider' do
     context 'keystone not running under apache' do
       let :pre_condition do
         "class { 'keystone':
-          admin_token => 'dummy',
           service_name => 'keystone',
           enable_ssl=> true }"
       end

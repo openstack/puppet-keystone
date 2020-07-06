@@ -8,9 +8,7 @@ describe 'keystone::federation::openidc' do
 
   let(:pre_condition) do
     <<-EOS
-    class { 'keystone':
-      admin_token => 'service_token',
-    }
+    class { 'keystone': }
 
     include keystone::wsgi::apache
     EOS
