@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The new ``keystone::cron::trust_flush`` class was added to configure
+    a cron job to purge expired or soft-deleted trusts.
