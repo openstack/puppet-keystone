@@ -1,0 +1,5 @@
+---
+deprecations:
+  - |
+    The ``keystone::cron::token_flush`` class has been deprcated and has no
+    effect.
