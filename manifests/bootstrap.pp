@@ -72,7 +72,7 @@ class keystone::bootstrap (
   $interface            = 'public',
 ) inherits keystone::params {
 
-  include ::keystone::deps
+  include keystone::deps
 
   # TODO(tobias-urdin): Remove compat layer.
   if $password == undef {
