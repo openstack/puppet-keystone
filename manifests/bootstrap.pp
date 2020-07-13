@@ -71,7 +71,7 @@ class keystone::bootstrap (
   $interface            = 'public',
 ) inherits keystone::params {
 
-  include ::keystone::deps
+  include keystone::deps
 
   $internal_url_real = $internal_url ? {
     undef   => $public_url,
