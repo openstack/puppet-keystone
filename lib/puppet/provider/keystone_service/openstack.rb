@@ -95,6 +95,9 @@ Puppet::Type.type(:keystone_service).provide(
   def flush
     options = []
     if @property_flush && !@property_flush.empty?
+      # NOTE(tobias.urdin): Always pass --name to make sure we satisfy the minProperties
+      # for the request to Keystone.
+      options << "--name=#{resource[:name]}"
       options << "--description=#{resource[:description]}" if @property_flush[:description]
       options << "--type=#{resource[:type]}" if @property_flush[:type]
       self.class.request('service', 'set', [@property_hash[:id]] + options) unless options.empty?
