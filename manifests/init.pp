@@ -744,7 +744,7 @@ class keystone(
     tag    => ['openstack', 'keystone-package'],
   }
   if $client_package_ensure == 'present' {
-    include '::keystone::client'
+    include keystone::client
   } else {
     class { 'keystone::client':
       ensure => $client_package_ensure,
