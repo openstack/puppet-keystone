@@ -211,10 +211,7 @@
 #   (Optional) The base public endpoint URL for keystone that are
 #   advertised to clients (NOTE: this does NOT affect how
 #   keystone listens for connections) (string value)
-#   If set to false, public_endpoint will be set from public_bind_host and
-#   public_port, or default to http://127.0.0.1:5000
-#   Sample value: 'http://localhost:5000/'
-#   Defaults to undef
+#   Defaults to $::os_service_default
 #
 # [*enable_ssl*]
 #   (Optional) Toggle for SSL support on the keystone eventlet servers.
@@ -588,7 +585,7 @@ class keystone(
   $revoke_driver                        = $::os_service_default,
   $revoke_by_id                         = true,
   $admin_endpoint                       = $::os_service_default,
-  $public_endpoint                      = undef,
+  $public_endpoint                      = $::os_service_default,
   $enable_ssl                           = false,
   $ssl_certfile                         = '/etc/keystone/ssl/certs/keystone.pem',
   $ssl_keyfile                          = '/etc/keystone/ssl/private/keystonekey.pem',
@@ -714,43 +711,13 @@ class keystone(
   }
 
   if $public_bind_host {
-    warning('keystone::public_bind_host is deprecated, and will have no effect and be removed in a later release.')
-    case $public_bind_host {
-      '0.0.0.0': {
-        $public_host = '127.0.0.1'
-      }
-      '::0': {
-        $public_host = '[::1]'
-      }
-      default: {
-        $public_host = normalize_ip_for_uri($public_bind_host)
-      }
-    }
-  } else {
-    $public_host = '127.0.0.1'
+    warning('keystone::public_bind_host is deprecated. This parameter has no effect and \
+will be removed in a later release.')
   }
 
   if $public_port {
-    warning('keystone::public_port is deprecated, and will have no effect and be removed in a later release')
-    $public_port_real = $public_port
-  } else {
-    $public_port_real = '5000'
-  }
-
-  if ! $public_endpoint {
-    warning('keystone::public_endpoint is not set, but will be required in a later release')
-
-    if $enable_ssl {
-      $public_protocol = 'https'
-    } else {
-      $public_protocol = 'http'
-    }
-    $public_endpoint_real = "${public_protocol}://${public_host}:${$public_port_real}"
-  } else {
-    if ('v2.0' in $public_endpoint) {
-      warning('Version string /v2.0/ should not be included in keystone::public_endpoint')
-    }
-    $public_endpoint_real = $public_endpoint
+    warning('keystone::public_port is deprecated. This parameter has no effect and \
+will be removed in a later release')
   }
 
   if $manage_policyrcd {
@@ -798,7 +765,7 @@ class keystone(
 
   # Endpoint configuration
   keystone_config {
-    'DEFAULT/public_endpoint': value => $public_endpoint_real;
+    'DEFAULT/public_endpoint': value => $public_endpoint;
   }
 
   keystone_config {
