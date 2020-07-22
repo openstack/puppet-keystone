@@ -23,8 +23,6 @@ describe 'keystone' do
       'admin_password'                     => 'special_password',
       'package_ensure'                     => 'present',
       'client_package_ensure'              => 'present',
-      'public_bind_host'                   => '0.0.0.0',
-      'public_port'                        => '5000',
       'catalog_type'                       => 'sql',
       'catalog_driver'                     => false,
       'token_provider'                     => 'fernet',
@@ -71,7 +69,7 @@ describe 'keystone' do
       'password_hash_rounds'               => '29000',
       'revoke_driver'                      => 'kvs',
       'revoke_by_id'                       => false,
-      'public_endpoint'                    => 'https://localhost:5000',
+      'public_endpoint'                    => 'https://localhost:5000/v2.0/',
       'enable_ssl'                         => true,
       'ssl_certfile'                       => '/etc/keystone/ssl/certs/keystone.pem',
       'ssl_keyfile'                        => '/etc/keystone/ssl/private/keystonekey.pem',
@@ -183,7 +181,7 @@ describe 'keystone' do
       if param_hash['public_endpoint']
         is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value(param_hash['public_endpoint'])
       else
-        is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value('http://127.0.0.1:5000')
+        is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value('<SERVICE DEFAULT>')
       end
     end
 
@@ -200,6 +198,19 @@ describe 'keystone' do
 
     it 'should remove max_token_size param by default' do
       is_expected.to contain_keystone_config('DEFAULT/max_token_size').with_value('<SERVICE DEFAULT>')
+    end
+
+    it 'should contain correct eventlet server config' do
+      [
+       'public_bind_host',
+       'public_port',
+      ].each do |config|
+        if param_hash[config]
+          is_expected.to contain_keystone_config("eventlet_server/#{config}").with_value(param_hash[config])
+        else
+          is_expected.to_not contain_keystone_config("eventlet_server/#{config}")
+        end
+      end
     end
 
     it 'should ensure rabbit_ha_queues' do
@@ -282,49 +293,6 @@ describe 'keystone' do
     it { is_expected.to contain_exec('restart_keystone').with(
       'command' => "service #{platform_parameters[:httpd_service_name]} restart",
     ) }
-  end
-
-  describe 'when public_bind_host or public_bind_port are set' do
-    describe 'when ipv6 loopback is set' do
-      let :params do
-        {
-          :admin_token      => 'service_token',
-          :public_bind_host => '::0'
-        }
-      end
-      it { is_expected.to contain_keystone_config("DEFAULT/public_endpoint").with_value('http://[::1]:5000') }
-    end
-
-    describe 'when ipv4 address is set' do
-      let :params do
-        {
-          :admin_token      => 'service_token',
-          :public_bind_host => '192.168.0.1',
-          :public_port      => '15000'
-        }
-      end
-      it { is_expected.to contain_keystone_config("DEFAULT/public_endpoint").with_value('http://192.168.0.1:15000') }
-    end
-
-    describe 'when unenclosed ipv6 address is set' do
-      let :params do
-        {
-          :admin_token      => 'service_token',
-          :public_bind_host => '2001:db8::1'
-        }
-      end
-      it { is_expected.to contain_keystone_config("DEFAULT/public_endpoint").with_value('http://[2001:db8::1]:5000') }
-    end
-
-    describe 'when enclosed ipv6 address is set' do
-      let :params do
-        {
-          :admin_token      => 'service_token',
-          :public_bind_host => '[2001:db8::1]'
-        }
-      end
-      it { is_expected.to contain_keystone_config("DEFAULT/public_endpoint").with_value('http://[2001:db8::1]:5000') }
-    end
   end
 
   describe 'when using invalid service name for keystone' do
@@ -552,7 +520,7 @@ describe 'keystone' do
       {
         'admin_token'     => 'service_token',
         'enable_ssl'      => true,
-        'public_endpoint' => 'https://localhost:5000',
+        'public_endpoint' => 'https://localhost:5000/v2.0/',
       }
     end
     it {is_expected.to contain_keystone_config('ssl/enable').with_value(true)}
@@ -561,9 +529,8 @@ describe 'keystone' do
     it {is_expected.to contain_keystone_config('ssl/ca_certs').with_value('/etc/keystone/ssl/certs/ca.pem')}
     it {is_expected.to contain_keystone_config('ssl/ca_key').with_value('/etc/keystone/ssl/private/cakey.pem')}
     it {is_expected.to contain_keystone_config('ssl/cert_subject').with_value('/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost')}
-    it {is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value('https://localhost:5000')}
+    it {is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value('https://localhost:5000/v2.0/')}
   end
-
   describe 'when disabling SSL' do
     let :params do
       {
@@ -572,9 +539,8 @@ describe 'keystone' do
       }
     end
     it {is_expected.to contain_keystone_config('ssl/enable').with_value(false)}
-    it {is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value('http://127.0.0.1:5000')}
+    it {is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value('<SERVICE DEFAULT>')}
   end
-
   describe 'not setting notification settings by default' do
     let :params do
       default_params
@@ -720,14 +686,14 @@ describe 'keystone' do
       {
         :admin_token       => 'service_token',
         :validate_service  => true,
-        :validate_auth_url => 'http://some.host:5000',
+        :validate_auth_url => 'http://some.host:5000/v2.0',
         :admin_endpoint    => 'http://some.host:5000'
       }
     end
 
     it { is_expected.to contain_class('keystone::service').with(
       'validate'       => true,
-      'admin_endpoint' => 'http://some.host:5000'
+      'admin_endpoint' => 'http://some.host:5000/v2.0'
     )}
   end
 

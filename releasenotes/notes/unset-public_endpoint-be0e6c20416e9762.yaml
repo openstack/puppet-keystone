@@ -1,0 +1,12 @@
+---
+fixes:
+  - |
+    The ``default/public_endpiint`` parameter is no longer set by default
+    because of known issue with different hosts/protocol used for each
+    endpoints (especially for admin endpoint and public endpoint)
+  - |
+    In case public_endpoint can't be used and keystone providers are required,
+    the deprecated ``keystone::public_bind_host`` and ``keystone::public_port``
+    can still be used so that all provider implementations can detect endpoint
+    url from these parameters. These parameters are added to keystone.conf
+    if non-default value is set.
