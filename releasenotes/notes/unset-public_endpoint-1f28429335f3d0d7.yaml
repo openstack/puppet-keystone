@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    The ``default/public_endpiint`` parameter is no longer set by default
+    because of known issue with different hosts/protocol used for each
+    endpoints (especially for admin endpoint and public endpoint)
