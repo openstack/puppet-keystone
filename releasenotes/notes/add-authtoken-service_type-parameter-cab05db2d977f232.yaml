@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    Added the service_type parameter to keystone::resource::authtoken resource.
+    This value should be set to the name or type of the service as it appears
+    in the service catalog. This is used to validate tokens that have
+    restricted access rules.

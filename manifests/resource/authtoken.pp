@@ -212,6 +212,11 @@
 #  true/false
 #  Defaults to $::os_service_default.
 #
+# [*service_type*]
+#  (Optional) The name or type of the service as it appears in the service
+#  catalog. This is used to validate tokens that have restricted access rules.
+#  Defaults to $::os_service_default.
+#
 # [*interface*]
 #  (Optional) Interface to use for the Identity API endpoint. Valid values are
 #  "public", "internal" or "admin".
@@ -253,6 +258,7 @@ define keystone::resource::authtoken(
   $manage_memcache_package        = false,
   $service_token_roles            = $::os_service_default,
   $service_token_roles_required   = $::os_service_default,
+  $service_type                   = $::os_service_default,
   $interface                      = $::os_service_default,
 ) {
 
@@ -327,6 +333,7 @@ define keystone::resource::authtoken(
     'keystone_authtoken/insecure'                       => {'value' => $insecure},
     'keystone_authtoken/service_token_roles'            => {'value' => $service_token_roles},
     'keystone_authtoken/service_token_roles_required'   => {'value' => $service_token_roles_required},
+    'keystone_authtoken/service_type'                   => {'value' => $service_type},
     'keystone_authtoken/interface'                      => {'value' => $interface},
   }
 
