@@ -1,0 +1,6 @@
+---
+deprecations:
+  - |
+    The ``keystone::resource::service_identity::ignore_default_tenant``
+    parameter has been deprecated and will be removed in a future. Actually
+    this parameter has been ineffective for some releases.
