@@ -8,6 +8,7 @@ describe 'keystone server running with Apache/WSGI as Service Provider with Shib
       pp= <<-EOS
       include openstack_integration
       include openstack_integration::repos
+      include openstack_integration::apache
       include openstack_integration::mysql
       include openstack_integration::keystone
 
