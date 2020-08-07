@@ -15,6 +15,7 @@ describe 'basic keystone server with changed domain id' do
       <<-EOM
       include openstack_integration
       include openstack_integration::repos
+      include openstack_integration::apache
       include openstack_integration::mysql
 
       class { 'openstack_integration::keystone':
