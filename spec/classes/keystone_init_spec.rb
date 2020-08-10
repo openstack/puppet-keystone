@@ -164,7 +164,7 @@ describe 'keystone' do
       if param_hash['public_endpoint']
         is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value(param_hash['public_endpoint'])
       else
-        is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value('http://127.0.0.1:5000')
+        is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value('<SERVICE DEFAULT>')
       end
     end
 
@@ -265,45 +265,6 @@ describe 'keystone' do
     ) }
   end
 
-  describe 'when public_bind_host or public_bind_port are set' do
-    describe 'when ipv6 loopback is set' do
-      let :params do
-        {
-          :public_bind_host => '::0'
-        }
-      end
-      it { is_expected.to contain_keystone_config("DEFAULT/public_endpoint").with_value('http://[::1]:5000') }
-    end
-
-    describe 'when ipv4 address is set' do
-      let :params do
-        {
-          :public_bind_host => '192.168.0.1',
-          :public_port      => '15000'
-        }
-      end
-      it { is_expected.to contain_keystone_config("DEFAULT/public_endpoint").with_value('http://192.168.0.1:15000') }
-    end
-
-    describe 'when unenclosed ipv6 address is set' do
-      let :params do
-        {
-          :public_bind_host => '2001:db8::1'
-        }
-      end
-      it { is_expected.to contain_keystone_config("DEFAULT/public_endpoint").with_value('http://[2001:db8::1]:5000') }
-    end
-
-    describe 'when enclosed ipv6 address is set' do
-      let :params do
-        {
-          :public_bind_host => '[2001:db8::1]'
-        }
-      end
-      it { is_expected.to contain_keystone_config("DEFAULT/public_endpoint").with_value('http://[2001:db8::1]:5000') }
-    end
-  end
-
   describe 'when using invalid service name for keystone' do
     let (:params) { {'service_name' => 'foo'}.merge(default_params) }
 
@@ -384,7 +345,6 @@ describe 'keystone' do
     let :params do
       {
         'enable_ssl'      => true,
-        'public_endpoint' => 'https://localhost:5000',
       }
     end
     it {is_expected.to contain_keystone_config('ssl/enable').with_value(true)}
@@ -393,7 +353,6 @@ describe 'keystone' do
     it {is_expected.to contain_keystone_config('ssl/ca_certs').with_value('/etc/keystone/ssl/certs/ca.pem')}
     it {is_expected.to contain_keystone_config('ssl/ca_key').with_value('/etc/keystone/ssl/private/cakey.pem')}
     it {is_expected.to contain_keystone_config('ssl/cert_subject').with_value('/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost')}
-    it {is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value('https://localhost:5000')}
   end
 
   describe 'when disabling SSL' do
@@ -403,7 +362,6 @@ describe 'keystone' do
       }
     end
     it {is_expected.to contain_keystone_config('ssl/enable').with_value(false)}
-    it {is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value('http://127.0.0.1:5000')}
   end
 
   describe 'not setting notification settings by default' do
