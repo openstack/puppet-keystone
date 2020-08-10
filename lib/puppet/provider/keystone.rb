@@ -21,6 +21,23 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
     @admin_token ||= get_admin_token
   end
 
+  def self.clean_host(host)
+    host ||= '127.0.0.1'
+    case host
+    when '0.0.0.0'
+      return '127.0.0.1'
+    when '::0'
+      return '[::1]'
+    else
+      # if ipv6, make sure ip address has brackets - LP#1541512
+      if host.include?(':') and !host.include?(']')
+        return "[" + host + "]"
+      else
+        return host
+      end
+    end
+  end
+
   def self.default_domain_from_ini_file
     default_domain_from_conf = Puppet::Resource.indirection
       .find('Keystone_config/identity/default_domain_id')
@@ -154,8 +171,15 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
 
   def self.get_public_endpoint
     endpoint = nil
-    if url = get_section('DEFAULT', 'public_endpoint')
-      endpoint = url.chomp('/')
+    if keystone_file
+      if url = get_section('DEFAULT', 'public_endpoint')
+        endpoint = url.chomp('/')
+      else
+        public_port = get_section('eventlet_server', 'public_port') || '5000'
+        host = clean_host(get_section('eventlet_server', 'public_bind_host')) || '0.0.0.0'
+        protocol = ssl? ? 'https' : 'http'
+        endpoint = "#{protocol}://#{host}:#{public_port}"
+      end
     end
     return endpoint
   end
@@ -246,6 +270,13 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
     else
       name << "::#{domain_name}"
     end
+  end
+
+  def self.ssl?
+    if keystone_file && keystone_file['ssl'] && keystone_file['ssl']['enable'] && keystone_file['ssl']['enable'].strip.downcase == 'true'
+      return true
+    end
+    return false
   end
 
   # Helper functions to use on the pre-validated enabled field
