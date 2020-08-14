@@ -1,0 +1,5 @@
+---
+upgrade:
+  - |
+    The deprecated parameters validate, admin_token, admin_endpoint, retries,
+    delay, insecure and cacert in keystone::service is removed.
