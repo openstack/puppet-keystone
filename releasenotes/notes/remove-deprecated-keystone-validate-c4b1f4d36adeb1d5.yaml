@@ -1,0 +1,5 @@
+---
+upgrade:
+  - |
+    The deprecated validate_service, validate_insecure, validate_auth_url
+    and validate_cacert parameters in the keystone class is removed.

@@ -433,26 +433,6 @@
 #   (Optional) Driver to use for managing tokens.
 #   Defaults to undef
 #
-# [*validate_service*]
-#   (Optional) Whether to validate keystone connections after
-#   the service is started.
-#   Defaults to undef
-#
-# [*validate_insecure*]
-#   (Optional) Whether to validate keystone connections
-#   using the --insecure option with keystone client.
-#   Defaults to undef
-#
-# [*validate_cacert*]
-#   (Optional) Whether to validate keystone connections
-#   using the specified argument with the --os-cacert option
-#   with keystone client.
-#   Defaults to undef
-#
-# [*validate_auth_url*]
-#   (Optional) The url to validate keystone against
-#   Defaults to undef
-#
 # [*database_min_pool_size*]
 #   (Optional) Minimum number of SQL connections to keep open in a pool.
 #   Defaults to: undef
@@ -546,10 +526,6 @@ class keystone(
   $admin_workers                        = undef,
   $public_workers                       = undef,
   $token_driver                         = undef,
-  $validate_service                     = undef,
-  $validate_insecure                    = undef,
-  $validate_auth_url                    = undef,
-  $validate_cacert                      = undef,
   $database_min_pool_size               = undef,
 ) inherits keystone::params {
 
