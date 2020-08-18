@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    The deprecated cache related parameters in the keystone class is removed and
+    the keystone::cache is no longer included by default.
+    Deployments should explicitly include the keystone::cache class.

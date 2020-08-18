@@ -109,57 +109,39 @@ class keystone::cache(
 
   include keystone::deps
 
-  # Pick old stry hierdata to keep backword compatibility
-  $config_prefix_real       = pick($::keystone::cache_config_prefix, $config_prefix)
-  $expiration_time_real     = pick($::keystone::cache_expiration_time, $expiration_time)
-  $backend_real             = pick($::keystone::cache_backend, $backend)
-  $backend_argument_real    = pick($::keystone::cache_backend_argument, $backend_argument)
-  $proxies_real             = pick($::keystone::cache_proxies, $proxies)
-  $enabled_real             = pick($::keystone::cache_enabled, $enabled)
-  $debug_cache_backend_real = pick($::keystone::debug_cache_backend, $debug_cache_backend)
-  $memcache_servers_real    = pick($::keystone::cache_memcache_servers, $memcache_servers)
-  $memcache_dead_retry_real = pick($::keystone::memcache_dead_retry_real, $memcache_dead_retry)
-  $memcache_socket_timeout_real = pick($::keytstone::memcache_socket_timeout_real, $memcache_socket_timeout)
-  $memcache_pool_maxsize_real = pick($::keystone::memcache_pool_maxsize, $memcache_pool_maxsize)
-  $memcache_pool_unused_timeout_real = pick($::keystone::memcache_pool_unused_timeout, $memcache_pool_unused_timeout)
-  $memcache_pool_connection_get_timeout_real =
-    pick($::keystone::memcache_pool_connection_get_timeout, $memcache_pool_connection_get_timeout)
-  $manage_backend_package_real = pick($::keystone::manage_backend_package_real, $manage_backend_package)
-  $token_caching_real      = pick($::keystone::token_caching, $token_caching)
-
-  if is_string($memcache_servers_real) {
-    $memcache_servers_array = split($memcache_servers_real, ',')
+  if is_string($memcache_servers) {
+    $memcache_servers_array = split($memcache_servers, ',')
   } else {
-    $memcache_servers_array = $memcache_servers_real
+    $memcache_servers_array = $memcache_servers
   }
 
-  if !is_service_default($memcache_servers_real) {
+  if !is_service_default($memcache_servers) {
     Service<| title == 'memcached' |> -> Anchor['keystone::service::begin']
   }
 
   keystone_config {
-    'memcache/dead_retry':          value => $memcache_dead_retry_real;
-    'memcache/pool_maxsize':        value => $memcache_pool_maxsize_real;
-    'memcache/pool_unused_timeout': value => $memcache_pool_unused_timeout_real;
-    'memcache/socket_timeout':      value => $memcache_socket_timeout_real;
-    'token/caching':                value => $token_caching_real;
+    'memcache/dead_retry':          value => $memcache_dead_retry;
+    'memcache/pool_maxsize':        value => $memcache_pool_maxsize;
+    'memcache/pool_unused_timeout': value => $memcache_pool_unused_timeout;
+    'memcache/socket_timeout':      value => $memcache_socket_timeout;
+    'token/caching':                value => $token_caching;
   }
 
   oslo::cache { 'keystone_config':
-    config_prefix                        => $config_prefix_real,
-    expiration_time                      => $expiration_time_real,
-    backend                              => $backend_real,
-    backend_argument                     => $backend_argument_real,
-    proxies                              => $proxies_real,
-    enabled                              => $enabled_real,
-    debug_cache_backend                  => $debug_cache_backend_real,
+    config_prefix                        => $config_prefix,
+    expiration_time                      => $expiration_time,
+    backend                              => $backend,
+    backend_argument                     => $backend_argument,
+    proxies                              => $proxies,
+    enabled                              => $enabled,
+    debug_cache_backend                  => $debug_cache_backend,
     memcache_servers                     => $memcache_servers_array,
-    memcache_dead_retry                  => $memcache_dead_retry_real,
-    memcache_socket_timeout              => $memcache_socket_timeout_real,
-    memcache_pool_maxsize                => $memcache_pool_maxsize_real,
-    memcache_pool_unused_timeout         => $memcache_pool_unused_timeout_real,
-    memcache_pool_connection_get_timeout => $memcache_pool_connection_get_timeout_real,
-    manage_backend_package               => $manage_backend_package_real,
+    memcache_dead_retry                  => $memcache_dead_retry,
+    memcache_socket_timeout              => $memcache_socket_timeout,
+    memcache_pool_maxsize                => $memcache_pool_maxsize,
+    memcache_pool_unused_timeout         => $memcache_pool_unused_timeout,
+    memcache_pool_connection_get_timeout => $memcache_pool_connection_get_timeout,
+    manage_backend_package               => $manage_backend_package,
   }
 
 }
