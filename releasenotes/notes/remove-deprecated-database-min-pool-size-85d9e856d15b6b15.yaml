@@ -1,0 +1,5 @@
+---
+upgrade:
+  - |
+    The deprecated parameter database_min_pool_size is removed in the keystone
+    init class and keystone::db class.

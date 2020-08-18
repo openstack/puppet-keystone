@@ -38,12 +38,6 @@
 #   (Optional) If set, use this value for pool_timeout with SQLAlchemy.
 #   Defaults to $::os_service_default
 #
-# DEPRECATED PARAMETERS
-#
-# [*database_min_pool_size*]
-#   Minimum number of SQL connections to keep open in a pool.
-#   (Optional) Defaults to undef
-#
 class keystone::db (
   $database_db_max_retries          = $::os_service_default,
   $database_connection              = 'sqlite:////var/lib/keystone/keystone.sqlite',
@@ -53,15 +47,9 @@ class keystone::db (
   $database_retry_interval          = $::os_service_default,
   $database_max_overflow            = $::os_service_default,
   $database_pool_timeout            = $::os_service_default,
-  # DEPRECATED PARAMETERS
-  $database_min_pool_size           = undef,
 ) {
 
   include keystone::deps
-
-  if $::keystone::database_min_pool_size or $database_min_pool_size {
-    warning('The database_min_pool_size parameter is deprecated, and will be removed in a future release.')
-  }
 
   # NOTE(spredzy): In order to keep backward compatibility we rely on the pick function
   # to use keystone::<myparam> if keystone::db::<myparam> isn't specified.

@@ -433,10 +433,6 @@
 #   (Optional) Driver to use for managing tokens.
 #   Defaults to undef
 #
-# [*database_min_pool_size*]
-#   (Optional) Minimum number of SQL connections to keep open in a pool.
-#   Defaults to: undef
-#
 # == Authors
 #
 #   Dan Bode dan@puppetlabs.com
@@ -526,7 +522,6 @@ class keystone(
   $admin_workers                        = undef,
   $public_workers                       = undef,
   $token_driver                         = undef,
-  $database_min_pool_size               = undef,
 ) inherits keystone::params {
 
   include keystone::deps
