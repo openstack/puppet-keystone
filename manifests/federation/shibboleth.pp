@@ -37,40 +37,21 @@
 #      require  => Anchor['openstack_extras_redhat']
 #    }
 #
-# === DEPRECATED
-#
-# [*admin_port*]
-#  A boolean value to ensure that you want to configure K2K Federation
-#  using Keystone VirtualHost on port 35357.
-#  (Optional) Defaults to undef
-#
-# [*main_port*]
-#  A boolean value to ensure that you want to configure K2K Federation
-#  using Keystone VirtualHost on port 5000.
-#  (Optional) Defaults to undef
-#
 # == Note about Redhat osfamily
 #    According to puppet-apache we need to enable a new repo, but in puppet-openstack
 #    we won't enable any external third party repo.
 #    http://wiki.aaf.edu.au/tech-info/sp-install-guide.  We provide some helpers but
 #    as the packaging is lacking official support, we cannot guaranty it will work.
 #
-class keystone::federation::shibboleth(
+class keystone::federation::shibboleth (
   $methods,
   $suppress_warning = false,
   $template_order   = 331,
   $yum_repo_name    = 'shibboleth',
-  # DEPRECATED
-  $admin_port       = undef,
-  $main_port        = undef,
 ) {
 
   include apache
   include keystone::deps
-
-  if $admin_port or $main_port {
-    warning('keystone::federation::shibboleth::admin_port and main_port are deprecated and have no effect')
-  }
 
   # Note: if puppet-apache modify these values, this needs to be updated
   if $template_order <= 330 or $template_order >= 999 {

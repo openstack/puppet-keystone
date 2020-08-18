@@ -21,8 +21,6 @@ describe 'keystone' do
   default_params = {
       'package_ensure'                     => 'present',
       'client_package_ensure'              => 'present',
-      'public_bind_host'                   => '0.0.0.0',
-      'public_port'                        => '5000',
       'catalog_type'                       => 'sql',
       'catalog_driver'                     => false,
       'token_provider'                     => 'fernet',
@@ -55,8 +53,6 @@ describe 'keystone' do
   override_params = {
       'package_ensure'                     => 'latest',
       'client_package_ensure'              => 'latest',
-      'public_bind_host'                   => '0.0.0.0',
-      'public_port'                        => '5001',
       'catalog_type'                       => 'template',
       'token_provider'                     => 'uuid',
       'password_hash_algorithm'            => 'pbkdf2_sha512',

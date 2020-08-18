@@ -36,37 +36,18 @@
 #   (optional) Wheater or not to enable Web Single Sign-On (SSO)
 #   Defaults to false
 #
-# === DEPRECATED
-#
-# [*admin_port*]
-#  A boolean value to ensure that you want to configure K2K Federation
-#  using Keystone VirtualHost on port 35357.
-#  (Optional) Defaults to undef.
-#
-# [*main_port*]
-#  A boolean value to ensure that you want to configure K2K Federation
-#  using Keystone VirtualHost on port 5000.
-#  (Optional) Defaults to undef.
-#
 class keystone::federation::mellon (
   $methods,
   $idp_name,
   $protocol_name,
-  $template_order     = 331,
-  $package_ensure     = present,
-  $enable_websso      = false,
-  # DEPRECATED
-  $admin_port         = undef,
-  $main_port          = undef,
+  $template_order = 331,
+  $package_ensure = present,
+  $enable_websso  = false,
 ) {
 
   include apache
   include keystone::deps
   include keystone::params
-
-  if $admin_port or $main_port {
-    warning('keystone::federation::mellon::admin_port and main_port are deprecated and have no effect')
-  }
 
   # Note: if puppet-apache modify these values, this needs to be updated
   if $template_order <= 330 or $template_order >= 999 {

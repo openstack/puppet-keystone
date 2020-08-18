@@ -1,0 +1,9 @@
+---
+upgrade:
+  - |
+    The deprecated parameters admin_bind_host, public_bind_host, admin_port,
+    public_port, admin_workers and public_workers in the keystone init class
+    is removed.
+  - |
+    The deprecated parameters admin_port and main_port in the classes
+    keystone::federation::mellon and keystone::federation::shibboleth is removed.

@@ -399,36 +399,6 @@
 #   (Optional) Whether to use durable queues in AMQP.
 #   Defaults to $::os_service_default.
 #
-# === DEPRECATED PARAMETERS
-#
-# [*admin_bind_host*]
-#   (Optional) The IP address of the public network interface to listen on.
-#   Default to undef
-#
-# [*public_bind_host*]
-#   (Optional) The IP address of the public network interface to listen on.
-#   Default to '0.0.0.0'
-#
-# [*admin_port*]
-#   (Optional) Port that can be used for admin tasks.
-#   Defaults to undef
-#
-# [*public_port*]
-#   (Optional) Port that keystone binds to.
-#   Defaults to '5000'
-#
-# [*admin_workers*]
-#   (Optional) The number of worker processes to serve the admin eventlet application.
-#   This option is deprecated along with eventlet and will be removed in M.
-#   This setting has no affect when using WSGI.
-#   Defaults to undef
-#
-# [*public_workers*]
-#   (Optional) The number of worker processes to serve the public eventlet application.
-#   This option is deprecated along with eventlet and will be removed in M.
-#   This setting has no affect when using WSGI.
-#   Defaults to undef
-#
 # == Authors
 #
 #   Dan Bode dan@puppetlabs.com
@@ -510,47 +480,14 @@ class keystone(
   $max_request_body_size                = $::os_service_default,
   $purge_config                         = false,
   $amqp_durable_queues                  = $::os_service_default,
-  # DEPRECATED PARAMETERS
-  $admin_bind_host                      = undef,
-  $public_bind_host                     = undef,
-  $admin_port                           = undef,
-  $public_port                          = undef,
-  $admin_workers                        = undef,
-  $public_workers                       = undef,
 ) inherits keystone::params {
 
   include keystone::deps
   include keystone::logging
   include keystone::policy
 
-  if $admin_bind_host {
-    warning('keystone::admin_bond_host is deprecated, has not effect and will be removed in a later relase')
-  }
-
-  if $admin_port {
-    warning('keystone::admin_port is deprecated, has not effect and will be removed in a later relase')
-  }
-
-  if $admin_workers {
-    warning('keystone::admin_workers is deprecated, has no effect and will be removed in a later release')
-  }
-
-  if $public_workers {
-    warning('keystone::public_workers is deprecated, has no effect and will be removed in a later release')
-  }
-
   if ! $catalog_driver {
     validate_legacy(Enum['template', 'sql'], 'validate_re', $catalog_type)
-  }
-
-  if $public_bind_host {
-    warning('keystone::public_bind_host is deprecated. This parameter has no effect and \
-will be removed in a later release.')
-  }
-
-  if $public_port {
-    warning('keystone::public_port is deprecated. This parameter has no effect and \
-will be removed in a later release')
   }
 
   if $manage_policyrcd {
