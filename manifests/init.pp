@@ -429,10 +429,6 @@
 #   This setting has no affect when using WSGI.
 #   Defaults to undef
 #
-# [*token_driver*]
-#   (Optional) Driver to use for managing tokens.
-#   Defaults to undef
-#
 # == Authors
 #
 #   Dan Bode dan@puppetlabs.com
@@ -521,16 +517,11 @@ class keystone(
   $public_port                          = undef,
   $admin_workers                        = undef,
   $public_workers                       = undef,
-  $token_driver                         = undef,
 ) inherits keystone::params {
 
   include keystone::deps
   include keystone::logging
   include keystone::policy
-
-  if $token_driver {
-    warning('keystone::token_driver is deprecated, has no effect and will be removed in a later release')
-  }
 
   if $admin_bind_host {
     warning('keystone::admin_bond_host is deprecated, has not effect and will be removed in a later relase')

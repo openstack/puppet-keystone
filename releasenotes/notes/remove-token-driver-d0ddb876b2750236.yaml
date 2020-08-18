@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    The deprecated parameter token_driver in keystone init class is removed.
