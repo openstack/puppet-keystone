@@ -486,6 +486,7 @@ define keystone::ldap_backend(
 ) {
 
   include ::keystone::deps
+  include ::keystone::params
 
   $domain_enabled = getparam(Keystone_config['identity/domain_specific_drivers_enabled'], 'value')
   $domain_dir_enabled = getparam(Keystone_config['identity/domain_config_dir'], 'value')
@@ -512,8 +513,9 @@ and \"${domain_dir_enabled}\" for identity/domain_config_dir"
 
   if $manage_packages {
     ensure_resource('package', 'python-ldappool', {
-      ensure  => $package_ensure,
-      tag => ['openstack', 'keystone-package'],
+      ensure => $package_ensure,
+      name   => $keystone::params::python_ldappool_package_name,
+      tag    => ['openstack', 'keystone-package'],
     })
   }
 

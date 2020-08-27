@@ -44,6 +44,7 @@ describe 'keystone::federation::identity_provider' do
 
       it { is_expected.to contain_package('python-pysaml2').with(
         :ensure => 'present',
+        :name   => platform_params[:python_pysaml2_package_name],
       )}
 
       it {
@@ -123,10 +124,23 @@ describe 'keystone::federation::identity_provider' do
       let (:platform_params) do
         if facts[:osfamily] == 'RedHat'
           keystone_service = 'openstack-keystone'
+          if facts[:operatingsystem] == 'Fedora'
+            python_pysaml2_package_name = 'python3-pysaml2'
+          else
+            if facts[:operatingsystemmajrelease] > '7'
+              python_pysaml2_package_name = 'python3-pysaml2'
+            else
+              python_pysaml2_package_name = 'python-pysaml2'
+            end
+          end
         else
           keystone_service = 'keystone'
+          python_pysaml2_package_name = 'python3-pysaml2'
         end
-        { :keystone_service => keystone_service }
+        {
+          :keystone_service            => keystone_service,
+          :python_pysaml2_package_name => python_pysaml2_package_name
+        }
       end
 
       it_behaves_like 'keystone::federation::identity_provider'

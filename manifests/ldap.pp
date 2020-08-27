@@ -445,13 +445,16 @@ class keystone::ldap(
   $auth_pool_connection_lifetime        = 60,
   $package_ensure                       = present,
   $manage_packages                      = true,
-) {
+) inherits keystone::params {
 
   include ::keystone::deps
 
   if $manage_packages {
-    ensure_resource('package', 'python-ldappool', { ensure => $package_ensure,
-      tag => 'keystone-package' })
+    ensure_resource('package',  'python-ldappool', {
+      ensure => $package_ensure,
+      name   => $keystone::params::python_ldappool_package_name,
+      tag    => 'keystone-package'
+    })
   }
 
   if ($tls_cacertdir != undef) {
