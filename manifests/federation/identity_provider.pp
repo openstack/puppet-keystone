@@ -104,11 +104,16 @@ class keystone::federation::identity_provider(
     fail ('Keystone need to be running under Apache for Federation work.')
   }
 
-  ensure_packages(['xmlsec1','python-pysaml2'], {
-    ensure        => $package_ensure,
-    allow_virtual => true,
-    tag           => 'keystone-support-package',
-  })
+  package{ 'xmlsec1':
+    ensure => $package_ensure,
+    tag    => 'keystone-support-package',
+  }
+
+  package{ 'python-pysaml2':
+    ensure => $package_ensure,
+    name   => $keystone::params::python_pysaml2_package_name,
+    tag    => 'keystone-support-package',
+  }
 
   keystone_config {
     'saml/certfile':                      value => $certfile;

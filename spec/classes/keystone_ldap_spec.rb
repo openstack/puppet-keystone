@@ -83,7 +83,11 @@ describe 'keystone::ldap' do
     end
 
     context 'with parameters' do
-      it { is_expected.to contain_package('python-ldappool') }
+      it {
+        is_expected.to contain_package('python-ldappool').with(
+          :name => platform_params[:python_ldappool_package_name],
+        )
+      }
 
       it {
         is_expected.to contain_keystone_config('ldap/url').with_value('ldap://foo')
@@ -202,6 +206,22 @@ describe 'keystone::ldap' do
         facts.merge!(OSDefaults.get_facts())
       end
 
+      let (:platform_params) do
+        case facts[:osfamily]
+        when 'Debian'
+          { :python_ldappool_package_name => 'python3-ldappool' }
+        when 'RedHat'
+          if facts[:operatingsystem] == 'Fedora'
+            { :python_ldappool_package_name => 'python3-ldappool' }
+          else
+            if facts[:operatingsystemmajrelease] > '7'
+              { :python_ldappool_package_name => 'python3-ldappool' }
+            else
+              { :python_ldappool_package_name => 'python-ldappool' }
+            end
+          end
+        end
+      end
       it_behaves_like 'keystone::ldap'
     end
   end
