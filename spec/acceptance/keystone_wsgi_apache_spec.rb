@@ -314,6 +314,7 @@ EOC
       context 'manifest' do
         let(:pp) do
       <<-EOM
+      include openstack_integration::apache
       class { 'openstack_integration::keystone':
         default_domain      => 'default_domain',
         using_domain_config => true,
