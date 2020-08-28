@@ -448,7 +448,7 @@ class keystone::ldap(
   include keystone::deps
 
   if $manage_packages {
-    ensure_resource('package', 'python-ldappool', { ensure => $package_ensure,
+    ensure_resource('package', 'python{pyvers}-ldappool', { ensure => $package_ensure,
       tag => 'keystone-package' })
   }
 
