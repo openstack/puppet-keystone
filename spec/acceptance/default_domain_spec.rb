@@ -62,22 +62,23 @@ describe 'basic keystone server with changed domain id' do
       it 'should work with no errors and catch deprecation warning' do
         apply_manifest(pp, :catch_failures => true) do |result|
           expect(result.stderr)
-            .to include_regexp([/Puppet::Type::Keystone_tenant::ProviderOpenstack: Support for a resource without the domain.*using 'Default'.*default domain id is '/])
+            .to match(/Puppet::Type::Keystone_tenant::ProviderOpenstack: Support for a resource without the domain.*using 'Default'.*default domain id is '/)
         end
       end
       it 'should be idempotent' do
         apply_manifest(pp, :catch_changes => true) do |result|
           expect(result.stderr)
-            .to include_regexp([/Puppet::Type::Keystone_tenant::ProviderOpenstack: Support for a resource without the domain.*using 'Default'.*default domain id is '/])
+            .to match(/Puppet::Type::Keystone_tenant::ProviderOpenstack: Support for a resource without the domain.*using 'Default'.*default domain id is '/)
         end
       end
     end
     describe 'puppet resources are successful created' do
       it 'for tenant' do
-        shell('puppet resource keystone_tenant') do |result|
+        command('puppet resource keystone_tenant') do |result|
           expect(result.stdout)
-            .to include_regexp([/keystone_tenant { 'project_in_my_default_domain':/,
-                                /keystone_tenant { 'project_in_my_default_domain::other_domain':/])
+            .to match(/keystone_tenant { 'project_in_my_default_domain':/)
+          expect(result.stdout)
+            .to match(/keystone_tenant { 'project_in_my_default_domain::other_domain':/)
         end
       end
     end

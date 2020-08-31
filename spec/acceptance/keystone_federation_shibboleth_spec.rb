@@ -12,10 +12,10 @@ describe 'keystone server running with Apache/WSGI as Service Provider with Shib
       include openstack_integration::mysql
       include openstack_integration::keystone
 
-      ::keystone::resource::service_identity { 'beaker-ci':
-        service_type        => 'beaker',
-        service_description => 'beaker service',
-        service_name        => 'beaker',
+      keystone::resource::service_identity { 'ci':
+        service_type        => 'ci',
+        service_description => 'ci service',
+        service_name        => 'ci',
         password            => 'secret',
         public_url          => 'http://127.0.0.1:1234',
         admin_url           => 'http://127.0.0.1:1234',
@@ -54,10 +54,10 @@ describe 'keystone server running with Apache/WSGI as Service Provider with Shib
       }
       # service user exists only in the service_domain - must
       # use v3 api
-      ::keystone::resource::service_identity { 'beaker-civ3::service_domain':
-        service_type        => 'beakerv3',
-        service_description => 'beakerv3 service',
-        service_name        => 'beakerv3',
+      keystone::resource::service_identity { 'civ3::service_domain':
+        service_type        => 'civ3',
+        service_description => 'civ3 service',
+        service_name        => 'civ3',
         password            => 'secret',
         tenant              => 'servicesv3::service_domain',
         public_url          => 'http://127.0.0.1:1234/v3',
@@ -82,32 +82,32 @@ describe 'keystone server running with Apache/WSGI as Service Provider with Shib
     end
 
     shared_examples_for 'keystone user/tenant/service/role/endpoint resources using v3 API' do |auth_creds|
-      it 'should find beaker user' do
-        shell("openstack #{auth_creds} --os-auth-url http://127.0.0.1:5000/v3 --os-identity-api-version 3 user list") do |r|
-          expect(r.stdout).to match(/beaker/)
+      it 'should find ci user' do
+        command("openstack #{auth_creds} --os-auth-url http://127.0.0.1:5000/v3 --os-identity-api-version 3 user list") do |r|
+          expect(r.stdout).to match(/ci/)
           expect(r.stderr).to be_empty
         end
       end
       it 'should find services tenant' do
-        shell("openstack #{auth_creds} --os-auth-url http://127.0.0.1:5000/v3 --os-identity-api-version 3 project list") do |r|
+        command("openstack #{auth_creds} --os-auth-url http://127.0.0.1:5000/v3 --os-identity-api-version 3 project list") do |r|
           expect(r.stdout).to match(/services/)
           expect(r.stderr).to be_empty
         end
       end
-      it 'should find beaker service' do
-        shell("openstack #{auth_creds} --os-auth-url http://127.0.0.1:5000/v3 --os-identity-api-version 3 service list") do |r|
-          expect(r.stdout).to match(/beaker/)
+      it 'should find ci service' do
+        command("openstack #{auth_creds} --os-auth-url http://127.0.0.1:5000/v3 --os-identity-api-version 3 service list") do |r|
+          expect(r.stdout).to match(/ci/)
           expect(r.stderr).to be_empty
         end
       end
       it 'should find admin role' do
-        shell("openstack #{auth_creds} --os-auth-url http://127.0.0.1:5000/v3 --os-identity-api-version 3 role assignment list --names") do |r|
+        command("openstack #{auth_creds} --os-auth-url http://127.0.0.1:5000/v3 --os-identity-api-version 3 role assignment list --names") do |r|
           expect(r.stdout).to match(/admin/)
           expect(r.stderr).to be_empty
         end
       end
-      it 'should find beaker endpoints' do
-        shell("openstack #{auth_creds} --os-auth-url http://127.0.0.1:5000/v3 --os-identity-api-version 3 endpoint list") do |r|
+      it 'should find ci endpoints' do
+        command("openstack #{auth_creds} --os-auth-url http://127.0.0.1:5000/v3 --os-identity-api-version 3 endpoint list") do |r|
           expect(r.stdout).to match(/1234/)
           expect(r.stderr).to be_empty
         end
@@ -119,7 +119,7 @@ describe 'keystone server running with Apache/WSGI as Service Provider with Shib
     end
     describe "with v2 service with v3 credentials" do
       include_examples 'keystone user/tenant/service/role/endpoint resources using v3 API',
-                       '--os-username beaker-ci --os-password secret --os-project-name services --os-user-domain-name Default --os-project-domain-name Default'
+                       '--os-username ci --os-password secret --os-project-name services --os-user-domain-name Default --os-project-domain-name Default'
     end
     describe 'with v3 admin with v3 credentials' do
       include_examples 'keystone user/tenant/service/role/endpoint resources using v3 API',
@@ -127,7 +127,7 @@ describe 'keystone server running with Apache/WSGI as Service Provider with Shib
     end
     describe "with v3 service with v3 credentials" do
       include_examples 'keystone user/tenant/service/role/endpoint resources using v3 API',
-                       '--os-username beaker-civ3 --os-password secret --os-project-name servicesv3 --os-user-domain-name service_domain --os-project-domain-name service_domain'
+                       '--os-username civ3 --os-password secret --os-project-name servicesv3 --os-user-domain-name service_domain --os-project-domain-name service_domain'
     end
 
   end
