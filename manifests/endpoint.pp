@@ -4,6 +4,10 @@
 #
 # === Parameters
 #
+# [*service_description*]
+#   (optional) The service description for the keystone service.
+#   Defaults to 'OpenStack Identity Service'
+#
 # [*public_url*]
 #   (optional) Public url for keystone endpoint.
 #   Defaults to 'http://127.0.0.1:5000'
@@ -52,14 +56,15 @@
 #  }
 #
 class keystone::endpoint (
-  $public_url        = 'http://127.0.0.1:5000',
-  $internal_url      = undef,
-  $admin_url         = 'http://127.0.0.1:5000',
-  $region            = 'RegionOne',
-  $user_domain       = undef,
-  $project_domain    = undef,
-  $default_domain    = undef,
-  $version           = '',
+  $service_description = 'OpenStack Identity Service',
+  $public_url          = 'http://127.0.0.1:5000',
+  $internal_url        = undef,
+  $admin_url           = 'http://127.0.0.1:5000',
+  $region              = 'RegionOne',
+  $user_domain         = undef,
+  $project_domain      = undef,
+  $default_domain      = undef,
+  $version             = '',
 ) {
 
   include ::keystone::deps
@@ -97,7 +102,7 @@ class keystone::endpoint (
     configure_user      => false,
     configure_user_role => false,
     service_type        => 'identity',
-    service_description => 'OpenStack Identity Service',
+    service_description => $service_description,
     public_url          => $public_url_real,
     admin_url           => $admin_url_real,
     internal_url        => $internal_url_real,

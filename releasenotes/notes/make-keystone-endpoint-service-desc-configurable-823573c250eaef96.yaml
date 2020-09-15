@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    The keystone::endpoint::service_description parameter has been added with
+    the default value of 'OpenStack Identity Service' (moved from hardcoded
+    value to a parameter). This is used when setting the description on the
+    identity service managed by the keystone::endpoint class.
