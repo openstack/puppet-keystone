@@ -1,0 +1,7 @@
+---
+upgrade:
+  - |
+    Since Ussuri release, identity service record is created by bootstrap
+    instead of API call. Since current bootstrap doesn't support service
+    the value has been changed to "" from the previous value,
+    "OpenStack Identity Service", which was implemented in puppet-keystone.

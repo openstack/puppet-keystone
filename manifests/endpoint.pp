@@ -6,6 +6,10 @@
 #
 # === Parameters
 #
+# [*service_description*]
+#   (optional) The service description for the keystone service.
+#   Defaults to undef
+#
 # [*public_url*]
 #   (optional) Public url for keystone endpoint.
 #   Defaults to undef
@@ -52,14 +56,15 @@
 #  }
 #
 class keystone::endpoint (
-  $public_url        = undef,
-  $internal_url      = undef,
-  $admin_url         = undef,
-  $region            = undef,
-  $user_domain       = undef,
-  $project_domain    = undef,
-  $default_domain    = undef,
-  $version           = undef,
+  $service_description = undef,
+  $public_url          = undef,
+  $internal_url        = undef,
+  $admin_url           = undef,
+  $region              = undef,
+  $user_domain         = undef,
+  $project_domain      = undef,
+  $default_domain      = undef,
+  $version             = undef,
 ) {
 
   warning('The keystone::endpoint class has been replaced with keystone::bootstrap class\
