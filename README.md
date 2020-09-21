@@ -15,11 +15,10 @@ keystone
 3. [Setup - The basics of getting started with keystone](#setup)
 4. [Implementation - An under-the-hood peek at what the module is doing](#implementation)
 5. [Limitations - OS compatibility, etc.](#limitations)
-6. [Beaker-Rspec - Beaker-rspec tests for the project](#beaker-rspec)
-7. [Development - Guide for contributing to the module](#development)
-8. [Contributors - Those with commits](#contributors)
-9. [Release Notes - Release notes for the project](#release-notes)
-10. [Repository - The project source code repository](#repository)
+6. [Development - Guide for contributing to the module](#development)
+7. [Contributors - Those with commits](#contributors)
+8. [Release Notes - Release notes for the project](#release-notes)
+9. [Repository - The project source code repository](#repository)
 
 Overview
 --------
@@ -293,18 +292,6 @@ Limitations
 ### Upgrade warning
 
 * If you've setup OpenStack using previous versions of this module you need to be aware that it used UUID as the default for the token_format parameter but now defaults to PKI.  If you're using this module to manage a Grizzly OpenStack deployment that was set up using a development release of the modules or are attempting an upgrade from Folsom then you'll need to make sure you set the token_format to UUID at classification time.
-
-Beaker-Rspec
-------------
-
-This module has beaker-rspec tests
-
-To run:
-
-```shell
-bundle install
-bundle exec rspec spec/acceptance
-```
 
 Development
 -----------
