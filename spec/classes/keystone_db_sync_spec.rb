@@ -3,6 +3,9 @@ require 'spec_helper'
 describe 'keystone::db::sync' do
   shared_examples 'keystone::db::sync' do
     describe 'with only required params' do
+
+      it { is_expected.to contain_class('keystone::deps') }
+
       it {
         is_expected.to contain_exec('keystone-manage db_sync').with(
           :command     => 'keystone-manage  db_sync',
