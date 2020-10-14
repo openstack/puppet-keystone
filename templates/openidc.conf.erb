@@ -22,7 +22,7 @@
 <%- if scope['::keystone::federation::openidc::openidc_cache_clean_interval'] != nil -%>
   OIDCCacheFileCleanInterval scope['::keystone::federation::openidc::openidc_cache_clean_interval'] %>
 <%- end -%>
-<%- if scope['::keystone::federation::openidc::memcached_servers_real'] -%>
+<%- if scope['::keystone::federation::openidc::memcached_servers_real'] != nil -%>
   OIDCMemCacheServers "<%= scope['::keystone::federation::openidc::memcached_servers_real'] %>"
 <%- end -%>
 <%- if scope['::keystone::federation::openidc::redis_server'] != nil -%>
