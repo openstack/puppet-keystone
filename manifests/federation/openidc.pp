@@ -163,7 +163,11 @@ class keystone::federation::openidc (
     }
   }
 
-  $memcached_servers_real = join(any2array($memcached_servers), ' ')
+  if $memcached_servers != undef {
+    $memcached_servers_real = join(any2array($memcached_servers), ' ')
+  } else {
+    $memcached_servers_real = undef
+  }
 
   # Note: if puppet-apache modify these values, this needs to be updated
   if $template_order <= 330 or $template_order >= 999 {
