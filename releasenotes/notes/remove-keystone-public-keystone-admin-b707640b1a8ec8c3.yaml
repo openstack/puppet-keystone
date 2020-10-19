@@ -1,0 +1,5 @@
+---
+upgrade:
+  - |
+    ``keystone-public-keystone-admin`` is no longer supported as a valid
+     service_name. Use ``keystone/openstack-keystone`` or ``httpd`` instead.

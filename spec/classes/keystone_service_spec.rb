@@ -35,58 +35,6 @@ describe 'keystone::service' do
         :hasrestart => false,
       )}
     end
-
-    context 'with service_name set to keystone-public-keystone-admin' do
-      before do
-        params.merge!( :service_name => 'keystone-public-keystone-admin' )
-      end
-
-      it { is_expected.to contain_service('keystone-public').with(
-        :ensure     => nil,
-        :name       => 'keystone-public',
-        :enable     => true,
-        :hasstatus  => true,
-        :hasrestart => true,
-        :tag        => 'keystone-service',
-      )}
-
-      it { is_expected.to contain_service('keystone-admin').with(
-        :ensure     => nil,
-        :name       => 'keystone-admin',
-        :enable     => true,
-        :hasstatus  => true,
-        :hasrestart => true,
-        :tag        => 'keystone-service',
-      )}
-    end
-
-    context 'with overriden parameters and service_name set to keystone-public-keystone-admin' do
-      before do
-        params.merge!(
-          :ensure       => 'present',
-          :service_name => 'keystone-public-keystone-admin',
-          :enable       => false,
-          :hasstatus    => false,
-          :hasrestart   => false
-        )
-      end
-
-      it { is_expected.to contain_service('keystone-public').with(
-        :ensure     => 'present',
-        :name       => 'keystone-public',
-        :enable     => false,
-        :hasstatus  => false,
-        :hasrestart => false,
-      )}
-
-      it { is_expected.to contain_service('keystone-admin').with(
-        :ensure     => 'present',
-        :name       => 'keystone-admin',
-        :enable     => false,
-        :hasstatus  => false,
-        :hasrestart => false,
-      )}
-    end
   end
 
   on_supported_os({

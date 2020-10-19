@@ -631,14 +631,8 @@ class keystone(
     warning('Execution of db_sync does not depend on $enabled anymore. Please use sync_db instead.')
   }
 
-  if ($service_name == 'keystone-public-keystone-admin') {
-    warning('The value keystone-public-keystone-admin for the Keystone service name is deprecated. \
-Use keystone instead')
-  }
-
-
   case $service_name {
-    $::keystone::params::service_name, 'keystone-public-keystone-admin' : {
+    $::keystone::params::service_name: {
       $service_name_real = $::keystone::params::service_name
 
       class { 'keystone::service':
