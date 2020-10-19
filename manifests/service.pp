@@ -34,32 +34,12 @@ class keystone::service (
 
   include keystone::deps
 
-  if $service_name == 'keystone-public-keystone-admin' {
-    service { 'keystone-public':
-      ensure     => $ensure,
-      name       => 'keystone-public',
-      enable     => $enable,
-      hasstatus  => $hasstatus,
-      hasrestart => $hasrestart,
-      tag        => 'keystone-service',
-    }
-
-    service { 'keystone-admin':
-      ensure     => $ensure,
-      name       => 'keystone-admin',
-      enable     => $enable,
-      hasstatus  => $hasstatus,
-      hasrestart => $hasrestart,
-      tag        => 'keystone-service',
-    }
-  } else {
-    service { 'keystone':
-      ensure     => $ensure,
-      name       => $service_name,
-      enable     => $enable,
-      hasstatus  => $hasstatus,
-      hasrestart => $hasrestart,
-      tag        => 'keystone-service',
-    }
+  service { 'keystone':
+    ensure     => $ensure,
+    name       => $service_name,
+    enable     => $enable,
+    hasstatus  => $hasstatus,
+    hasrestart => $hasrestart,
+    tag        => 'keystone-service',
   }
 }
