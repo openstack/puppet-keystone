@@ -50,9 +50,12 @@ To utilize the keystone module's functionality you will need to declare multiple
 **Define a keystone node**
 
 ```puppet
-class { 'keystone':
-  catalog_type        => 'sql',
+class { 'keystone::db':
   database_connection => 'mysql://keystone_admin:super_secret_db_password@openstack-controller.example.com/keystone',
+}
+
+class { 'keystone':
+  catalog_type => 'sql',
 }
 
 class { 'keystone::bootstrap':

@@ -63,31 +63,6 @@
 #   (Optional) If the keystone services should be enabled.
 #   Default to true.
 #
-# [*database_connection*]
-#   (Optional) Url used to connect to database.
-#   Defaults to undef.
-#
-# [*database_idle_timeout*]
-#   (Optional) Timeout when db connections should be reaped.
-#   Defaults to undef.
-#
-# [*database_max_retries*]
-#   (Optional) Maximum number of database connection retries during startup.
-#   Setting -1 implies an infinite retry count.
-#   (Defaults to undef)
-#
-# [*database_retry_interval*]
-#   (Optional) Interval between retries of opening a database connection.
-#   (Defaults to undef)
-#
-# [*database_max_pool_size*]
-#   (Optional) Maximum number of SQL connections to keep open in a pool.
-#   Defaults to: undef
-#
-# [*database_max_overflow*]
-#   (Optional) If set, use this value for max_overflow with sqlalchemy.
-#   Defaults to: undef
-#
 # [*default_transport_url*]
 #   (Optional) A URL representing the messaging driver to use and its full
 #   configuration. Transport URLs take the form:
@@ -399,6 +374,33 @@
 #   (Optional) Whether to use durable queues in AMQP.
 #   Defaults to $::os_service_default.
 #
+# DEPRECATED PARAMETERS
+#
+# [*database_connection*]
+#   (Optional) Url used to connect to database.
+#   Defaults to undef.
+#
+# [*database_idle_timeout*]
+#   (Optional) Timeout when db connections should be reaped.
+#   Defaults to undef.
+#
+# [*database_max_retries*]
+#   (Optional) Maximum number of database connection retries during startup.
+#   Setting -1 implies an infinite retry count.
+#   (Defaults to undef)
+#
+# [*database_retry_interval*]
+#   (Optional) Interval between retries of opening a database connection.
+#   (Defaults to undef)
+#
+# [*database_max_pool_size*]
+#   (Optional) Maximum number of SQL connections to keep open in a pool.
+#   Defaults to: undef
+#
+# [*database_max_overflow*]
+#   (Optional) If set, use this value for max_overflow with sqlalchemy.
+#   Defaults to: undef
+#
 # == Authors
 #
 #   Dan Bode dan@puppetlabs.com
@@ -431,12 +433,6 @@ class keystone(
   $ssl_cert_subject                     = '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
   $manage_service                       = true,
   $enabled                              = true,
-  $database_connection                  = undef,
-  $database_idle_timeout                = undef,
-  $database_max_retries                 = undef,
-  $database_retry_interval              = undef,
-  $database_max_pool_size               = undef,
-  $database_max_overflow                = undef,
   $rabbit_heartbeat_timeout_threshold   = $::os_service_default,
   $rabbit_heartbeat_rate                = $::os_service_default,
   $rabbit_heartbeat_in_pthread          = $::os_service_default,
@@ -480,6 +476,13 @@ class keystone(
   $max_request_body_size                = $::os_service_default,
   $purge_config                         = false,
   $amqp_durable_queues                  = $::os_service_default,
+  # DEPRECATED PARAMETERS
+  $database_connection                  = undef,
+  $database_idle_timeout                = undef,
+  $database_max_retries                 = undef,
+  $database_retry_interval              = undef,
+  $database_max_pool_size               = undef,
+  $database_max_overflow                = undef,
 ) inherits keystone::params {
 
   include keystone::deps
@@ -505,6 +508,37 @@ class keystone(
 
   include keystone::db
   include keystone::params
+
+  if $database_connection != undef {
+    warning('The database_connection parameter is deprecated and will be \
+removed in a future realse. Use keystone::db::database_connection instead')
+  }
+
+  if $database_idle_timeout != undef {
+    warning('The database_idle_timeout parameter is deprecated and will be \
+removed in a future realse. Use keystone::db::database_connection_recycle_time \
+instead')
+  }
+
+  if $database_max_retries!= undef {
+    warning('The database_max_retries parameter is deprecated and will be \
+removed in a future realse. Use keystone::db::database_max_retries instead')
+  }
+
+  if $database_retry_interval != undef {
+    warning('The database_retry_interval parameter is deprecated and will be \
+removed in a future realse. Use keystone::db::database_retry_interval instead')
+  }
+
+  if $database_max_pool_size != undef {
+    warning('The database_max_pool_size parameter is deprecated and will be \
+removed in a future realse. Use keystone::db::database_max_pool_size instead')
+  }
+
+  if $database_max_overflow != undef {
+    warning('The database_max_overflow parameter is deprecated and will be \
+removed in a future realse. Use keystone::db::database_max_overflow instead')
+  }
 
   package { 'keystone':
     ensure => $package_ensure,

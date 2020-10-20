@@ -1,0 +1,12 @@
+---
+deprecations:
+  - |
+    The following options have been deprecated, as those options have been
+    moved to keystone::db class.
+
+    - ``keystone::database_connection``
+    - ``keystone::database_idle_timeout``
+    - ``keystone::database_max_overflow``
+    - ``keystone::database_max_pool_size``
+    - ``keystone::database_max_retries``
+    - ``keystone::database_retry_interval``
