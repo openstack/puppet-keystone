@@ -179,6 +179,46 @@ describe 'keystone::bootstrap' do
       )}
     end
 
+    context 'with bootstrap disabled' do
+      let :params do
+        {
+          :bootstrap => false,
+          :password  => 'secret'
+        }
+      end
+
+      it { is_expected.to contain_class('keystone::deps') }
+
+      it { is_expected.to_not contain_exec('keystone bootstrap') }
+
+      it { is_expected.to_not contain_keystone_role('admin') }
+      it { is_expected.to_not contain_keystone_user('admin') }
+      it { is_expected.to_not contain_keystone_tenant('services') }
+      it { is_expected.to_not contain_keystone_tenant('admin') }
+      it { is_expected.to_not contain_keystone_user_role('admin@admin') }
+      it { is_expected.to_not contain_keystone_service('keystone::identity') }
+      it { is_expected.to_not contain_keystone_endpoint('RegionOne/keystone::identity') }
+
+      it { is_expected.to contain_file('/etc/keystone/puppet.conf').with(
+        :ensure => 'present',
+        :replace => false,
+        :content => '',
+        :owner   => 'root',
+        :group   => 'root',
+        :mode    => '0600',
+        :require => 'Anchor[keystone::install::end]',
+      )}
+
+      it { is_expected.to contain_keystone__resource__authtoken('keystone_puppet_config').with(
+        :username     => 'admin',
+        :password     => 'secret',
+        :auth_url     => 'http://127.0.0.1:5000',
+        :project_name => 'admin',
+        :region_name  => 'RegionOne',
+        :interface    => 'public',
+      )}
+    end
+
     context 'when setting keystone_user param in keystone' do
       let :params do
         {

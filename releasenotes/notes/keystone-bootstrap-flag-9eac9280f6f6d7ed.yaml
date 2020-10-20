@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    The new ``keystone::bootstrap::bootstrap`` parameter has been added, to
+    disable ``keystone-manage bootstrap`` command. This is useful to generate
+    ``/etc/keystone/puppet.conf`` on multiple nodes while running bootstrap
+    command on a single node.
