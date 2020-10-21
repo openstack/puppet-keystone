@@ -4,8 +4,9 @@ describe 'keystone::policy' do
   shared_examples 'keystone::policy' do
     let :params do
       {
-        :policy_path => '/etc/keystone/policy.json',
-        :policies    => {
+        :enforce_scope => false,
+        :policy_path   => '/etc/keystone/policy.json',
+        :policies      => {
           'context_is_admin' => {
             'key'   => 'context_is_admin',
             'value' => 'foo:bar'
@@ -22,7 +23,8 @@ describe 'keystone::policy' do
         :file_group => 'keystone',
       })
       is_expected.to contain_oslo__policy('keystone_config').with(
-        :policy_file => '/etc/keystone/policy.json',
+        :enforce_scope => false,
+        :policy_file   => '/etc/keystone/policy.json',
       )
     end
   end

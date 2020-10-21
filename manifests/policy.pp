@@ -4,6 +4,10 @@
 #
 # === Parameters
 #
+# [*enforce_scope*]
+#  (Optional) Whether or not to enforce scope when evaluating policies.
+#  Defaults to $::os_service_default.
+#
 # [*policies*]
 #   (Optional) Set of policies to configure for keystone
 #   Example :
@@ -24,8 +28,9 @@
 #   Defaults to /etc/keystone/policy.json
 #
 class keystone::policy (
-  $policies    = {},
-  $policy_path = '/etc/keystone/policy.json',
+  $enforce_scope = $::os_service_default,
+  $policies      = {},
+  $policy_path   = '/etc/keystone/policy.json',
 ) {
 
   include keystone::deps
@@ -41,6 +46,9 @@ class keystone::policy (
 
   create_resources('openstacklib::policy::base', $policies)
 
-  oslo::policy { 'keystone_config': policy_file => $policy_path }
+  oslo::policy { 'keystone_config':
+    enforce_scope => $enforce_scope,
+    policy_file   => $policy_path
+  }
 
 }
