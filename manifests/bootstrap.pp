@@ -5,9 +5,7 @@
 # === Parameters
 #
 # [*password*]
-#   (Optional) The password for the user.
-#   WARNING: This parameter will be required in a future release.
-#   Defaults to undef
+#   (Required) The password for the user.
 #
 # [*username*]
 #   (Optional) The username.
