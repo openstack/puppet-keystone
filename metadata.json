@@ -65,7 +65,7 @@
             "version_requirement": ">= 6.0.0 < 7.0.0"
         }
     ],
-    "source": "git://github.com/openstack/puppet-keystone.git",
+    "source": "https://opendev.org/openstack/puppet-keystone.git",
     "summary": "Puppet module for OpenStack Keystone",
     "version": "18.0.0"
 }
