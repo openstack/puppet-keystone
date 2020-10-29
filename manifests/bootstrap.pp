@@ -54,6 +54,10 @@
 #   (Optional) Which interface endpoint should be used.
 #    Defaults to 'public'
 #
+# [*bootstrap*]
+#   (Optional) Whether to run keystone-manage bootstrap command.
+#   Defaults to true
+#
 class keystone::bootstrap (
   $password,
   $username             = 'admin',
@@ -67,6 +71,7 @@ class keystone::bootstrap (
   $internal_url         = undef,
   $region               = 'RegionOne',
   $interface            = 'public',
+  $bootstrap            = true,
 ) inherits keystone::params {
 
   include keystone::deps
@@ -82,70 +87,72 @@ class keystone::bootstrap (
     $keystone_user = $::keystone::params::keystone_user
   }
 
-  # The initial bootstrap that creates all resources required but
-  # only subscribes to notifies from the keystone::dbsync::end anchor
-  # which means this is not guaranteed to execute on each run.
-  exec { 'keystone bootstrap':
-    command     => 'keystone-manage bootstrap',
-    environment => [
-      "OS_BOOTSTRAP_USERNAME=${username}",
-      "OS_BOOTSTRAP_PASSWORD=${password}",
-      "OS_BOOTSTRAP_PROJECT_NAME=${project_name}",
-      "OS_BOOTSTRAP_ROLE_NAME=${role_name}",
-      "OS_BOOTSTRAP_SERVICE_NAME=${service_name}",
-      "OS_BOOTSTRAP_ADMIN_URL=${admin_url}",
-      "OS_BOOTSTRAP_PUBLIC_URL=${public_url}",
-      "OS_BOOTSTRAP_INTERNAL_URL=${internal_url_real}",
-      "OS_BOOTSTRAP_REGION_ID=${region}",
-    ],
-    user        => $keystone_user,
-    path        => '/usr/bin',
-    refreshonly => true,
-    subscribe   => Anchor['keystone::dbsync::end'],
-    notify      => Anchor['keystone::service::begin'],
-    tag         => 'keystone-bootstrap',
+  if $bootstrap {
+    # The initial bootstrap that creates all resources required but
+    # only subscribes to notifies from the keystone::dbsync::end anchor
+    # which means this is not guaranteed to execute on each run.
+    exec { 'keystone bootstrap':
+      command     => 'keystone-manage bootstrap',
+      environment => [
+        "OS_BOOTSTRAP_USERNAME=${username}",
+        "OS_BOOTSTRAP_PASSWORD=${password}",
+        "OS_BOOTSTRAP_PROJECT_NAME=${project_name}",
+        "OS_BOOTSTRAP_ROLE_NAME=${role_name}",
+        "OS_BOOTSTRAP_SERVICE_NAME=${service_name}",
+        "OS_BOOTSTRAP_ADMIN_URL=${admin_url}",
+        "OS_BOOTSTRAP_PUBLIC_URL=${public_url}",
+        "OS_BOOTSTRAP_INTERNAL_URL=${internal_url_real}",
+        "OS_BOOTSTRAP_REGION_ID=${region}",
+      ],
+      user        => $keystone_user,
+      path        => '/usr/bin',
+      refreshonly => true,
+      subscribe   => Anchor['keystone::dbsync::end'],
+      notify      => Anchor['keystone::service::begin'],
+      tag         => 'keystone-bootstrap',
+    }
+
+    # Since the bootstrap is not guaranteed to execute on each run we
+    # use the below resources to make sure the current resources are
+    # correct so if some value was updated we set that.
+
+    ensure_resource('keystone_role', $role_name, {
+      'ensure' => 'present',
+    })
+
+    ensure_resource('keystone_user', $username, {
+      'ensure'   => 'present',
+      'enabled'  => true,
+      'email'    => $email,
+      'password' => $password,
+    })
+
+    ensure_resource('keystone_tenant', $service_project_name, {
+      'ensure'  => 'present',
+      'enabled' => true,
+    })
+
+    ensure_resource('keystone_tenant', $project_name, {
+      'ensure'  => 'present',
+      'enabled' => true,
+    })
+
+    ensure_resource('keystone_user_role', "${username}@${project_name}", {
+      'ensure' => 'present',
+      'roles'  => $role_name,
+    })
+
+    ensure_resource('keystone_service', "${service_name}::identity", {
+      'ensure' => 'present',
+    })
+
+    ensure_resource('keystone_endpoint', "${region}/${service_name}::identity", {
+      'ensure'       => 'present',
+      'public_url'   => $public_url,
+      'admin_url'    => $admin_url,
+      'internal_url' => $internal_url_real,
+    })
   }
-
-  # Since the bootstrap is not guaranteed to execute on each run we
-  # use the below resources to make sure the current resources are
-  # correct so if some value was updated we set that.
-
-  ensure_resource('keystone_role', $role_name, {
-    'ensure' => 'present',
-  })
-
-  ensure_resource('keystone_user', $username, {
-    'ensure'   => 'present',
-    'enabled'  => true,
-    'email'    => $email,
-    'password' => $password,
-  })
-
-  ensure_resource('keystone_tenant', $service_project_name, {
-    'ensure'  => 'present',
-    'enabled' => true,
-  })
-
-  ensure_resource('keystone_tenant', $project_name, {
-    'ensure'  => 'present',
-    'enabled' => true,
-  })
-
-  ensure_resource('keystone_user_role', "${username}@${project_name}", {
-    'ensure' => 'present',
-    'roles'  => $role_name,
-  })
-
-  ensure_resource('keystone_service', "${service_name}::identity", {
-    'ensure' => 'present',
-  })
-
-  ensure_resource('keystone_endpoint', "${region}/${service_name}::identity", {
-    'ensure'       => 'present',
-    'public_url'   => $public_url,
-    'admin_url'    => $admin_url,
-    'internal_url' => $internal_url_real,
-  })
 
   # The below creates and populates the /etc/keystone/puppet.conf file that contains
   # the credentials that can be loaded by providers. Ensure it has the proper owner,
