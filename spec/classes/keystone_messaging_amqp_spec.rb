@@ -10,7 +10,6 @@ describe 'keystone::messaging::amqp' do
       'amqp_ssl_cert_file'          => '<SERVICE DEFAULT>',
       'amqp_ssl_key_file'           => '<SERVICE DEFAULT>',
       'amqp_ssl_key_password'       => '<SERVICE DEFAULT>',
-      'amqp_allow_insecure_clients' => '<SERVICE DEFAULT>',
       'amqp_sasl_mechanisms'        => '<SERVICE DEFAULT>',
     )}
 
@@ -19,7 +18,6 @@ describe 'keystone::messaging::amqp' do
         {
           :amqp_pre_settled            => ['rpc-cast','rpc-reply','notify'],
           :amqp_idle_timeout           => '100',
-          :amqp_allow_insecure_clients => 'yes',
           :amqp_sasl_mechanisms        => 'ANONYMOUS DIGEST-MD5 EXTERNAL PLAIN',
         }
       end
@@ -27,7 +25,6 @@ describe 'keystone::messaging::amqp' do
       it { is_expected.to contain_class('keystone::messaging::amqp').with(
         'amqp_pre_settled'            => ['rpc-cast','rpc-reply','notify'],
         'amqp_idle_timeout'           => '100',
-        'amqp_allow_insecure_clients' => 'yes',
         'amqp_sasl_mechanisms'        => 'ANONYMOUS DIGEST-MD5 EXTERNAL PLAIN',
       )}
     end

@@ -28,13 +28,15 @@
 #   (Optional) Password for decrypting ssl_key_file (if encrypted)
 #   Defaults to $::os_service_default.
 #
-# [*amqp_allow_insecure_clients*]
-#   (Optional) Accept clients using either SSL or plain TCP
-#   Defaults to $::os_service_default.
-#
 # [*amqp_sasl_mechanisms*]
 #   (Optional) Space separated list of acceptable SASL mechanisms
 #   Defaults to $::os_service_default.
+#
+# DEPRECATED PARAMETERS
+#
+# [*amqp_allow_insecure_clients*]
+#   (Optional) Accept clients using either SSL or plain TCP
+#   Defaults to undef.
 #
 class keystone::messaging::amqp(
   $amqp_pre_settled                     = $::os_service_default,
@@ -43,21 +45,26 @@ class keystone::messaging::amqp(
   $amqp_ssl_cert_file                   = $::os_service_default,
   $amqp_ssl_key_file                    = $::os_service_default,
   $amqp_ssl_key_password                = $::os_service_default,
-  $amqp_allow_insecure_clients          = $::os_service_default,
   $amqp_sasl_mechanisms                 = $::os_service_default,
+  # DEPRECATED PARAMETERS
+  $amqp_allow_insecure_clients          = undef,
 ) {
 
   include keystone::deps
 
+  if $amqp_allow_insecure_clients != undef {
+    warning('The amqp_allow_insecure_clients parameter is deprecated and \
+will be removed in a future release.')
+  }
+
   oslo::messaging::amqp { 'keystone_config':
-    pre_settled            => $amqp_pre_settled,
-    idle_timeout           => $amqp_idle_timeout,
-    ssl_ca_file            => $amqp_ssl_ca_file,
-    ssl_cert_file          => $amqp_ssl_cert_file,
-    ssl_key_file           => $amqp_ssl_key_file,
-    ssl_key_password       => $amqp_ssl_key_password,
-    allow_insecure_clients => $amqp_allow_insecure_clients,
-    sasl_mechanisms        => $amqp_sasl_mechanisms,
+    pre_settled      => $amqp_pre_settled,
+    idle_timeout     => $amqp_idle_timeout,
+    ssl_ca_file      => $amqp_ssl_ca_file,
+    ssl_cert_file    => $amqp_ssl_cert_file,
+    ssl_key_file     => $amqp_ssl_key_file,
+    ssl_key_password => $amqp_ssl_key_password,
+    sasl_mechanisms  => $amqp_sasl_mechanisms,
   }
 
 }
