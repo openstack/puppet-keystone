@@ -24,6 +24,12 @@ class keystone::deps {
   ~> Service<| tag == 'keystone-service' |>
   ~> anchor { 'keystone::service::end': }
 
+  # credential file for keystone api access should be generated during
+  # configuration phase
+  Anchor['keystone::config::begin']
+  -> Keystone_puppet_config<||>
+  ~> Anchor['keystone::config::end']
+
   # all cache settings should be applied and all packages should be installed
   # before service startup
   Oslo::Cache<||> -> Anchor['keystone::service::begin']
