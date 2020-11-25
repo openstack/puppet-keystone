@@ -13,6 +13,7 @@ describe 'keystone::db::sync' do
           :user        => 'keystone',
           :try_sleep   => 5,
           :tries       => 10,
+          :timeout     => 300,
           :refreshonly => true,
           :logoutput   => 'on_failure',
           :subscribe   => ['Anchor[keystone::install::end]',
@@ -24,11 +25,12 @@ describe 'keystone::db::sync' do
       }
     end
 
-    describe "overriding extra_params and keystone user" do
+    describe "overriding params" do
       let :params do
         {
-          :extra_params  => '--config-file /etc/keystone/keystone.conf',
-          :keystone_user => 'test_user',
+          :extra_params    => '--config-file /etc/keystone/keystone.conf',
+          :keystone_user   => 'test_user',
+          :db_sync_timeout => 750,
         }
       end
 
@@ -39,6 +41,7 @@ describe 'keystone::db::sync' do
           :user        => 'test_user',
           :try_sleep   => 5,
           :tries       => 10,
+          :timeout     => 750,
           :refreshonly => true,
           :logoutput   => 'on_failure',
           :subscribe   => ['Anchor[keystone::install::end]',
