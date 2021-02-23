@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The new ``keystone::healthcheck`` class has been added. This class manages
+    parameters of healthcheck middlware in oslo_middleware.
