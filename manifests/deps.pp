@@ -30,6 +30,11 @@ class keystone::deps {
   -> Keystone_puppet_config<||>
   ~> Anchor['keystone::config::end']
 
+  # On any uwsgi config change, we must restart Keystone.
+  Anchor['keystone::config::begin']
+  -> Keystone_uwsgi_config<||>
+  ~> Anchor['keystone::config::end']
+
   # all cache settings should be applied and all packages should be installed
   # before service startup
   Oslo::Cache<||> -> Anchor['keystone::service::begin']
