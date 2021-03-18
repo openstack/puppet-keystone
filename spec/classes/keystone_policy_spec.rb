@@ -4,9 +4,10 @@ describe 'keystone::policy' do
   shared_examples 'keystone::policy' do
     let :params do
       {
-        :enforce_scope => false,
-        :policy_path   => '/etc/keystone/policy.yaml',
-        :policies      => {
+        :enforce_scope        => false,
+        :enforce_new_defaults => false,
+        :policy_path          => '/etc/keystone/policy.yaml',
+        :policies             => {
           'context_is_admin' => {
             'key'   => 'context_is_admin',
             'value' => 'foo:bar'
@@ -24,8 +25,9 @@ describe 'keystone::policy' do
         :file_format => 'yaml',
       })
       is_expected.to contain_oslo__policy('keystone_config').with(
-        :enforce_scope => false,
-        :policy_file   => '/etc/keystone/policy.yaml',
+        :enforce_scope        => false,
+        :enforce_new_defaults => false,
+        :policy_file          => '/etc/keystone/policy.yaml',
       )
     end
   end
