@@ -24,7 +24,7 @@
 #   Defaults to empty hash.
 #
 # [*policy_path*]
-#   (Optional) Path to the nova policy.yaml file
+#   (Optional) Path to the keystone policy.yaml file
 #   Defaults to /etc/keystone/policy.yaml
 #
 class keystone::policy (
