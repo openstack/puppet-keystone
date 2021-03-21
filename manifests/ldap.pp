@@ -115,6 +115,130 @@
 #   API attribute. (list value)
 #   Defaults to 'undef'
 #
+# [*group_tree_dn*]
+#   Search base for groups. (string value)
+#   Defaults to 'undef'
+#
+# [*group_filter*]
+#   LDAP search filter for groups. (string value)
+#   Defaults to 'undef'
+#
+# [*group_objectclass*]
+#   LDAP objectclass for groups. (string value)
+#   Defaults to 'undef'
+#
+# [*group_id_attribute*]
+#   LDAP attribute mapped to group id. (string value)
+#   Defaults to 'undef'
+#
+# [*group_name_attribute*]
+#   LDAP attribute mapped to group name. (string value)
+#   Defaults to 'undef'
+#
+# [*group_member_attribute*]
+#   LDAP attribute mapped to show group membership. (string value)
+#   Defaults to 'undef'
+#
+# [*group_members_are_ids*]
+#   LDAP attribute when members of the group object class are keystone user IDs. (boolean value)
+#   Defaults to 'undef'
+#
+# [*group_desc_attribute*]
+#   LDAP attribute mapped to group description. (string value)
+#   Defaults to 'undef'
+#
+# [*group_attribute_ignore*]
+#   List of attributes stripped off the group on update. (list value)
+#   Defaults to 'undef'
+#
+# [*group_additional_attribute_mapping*]
+#   Additional attribute mappings for groups. Attribute mapping
+#   format is <ldap_attr>:<user_attr>, where ldap_attr is the
+#   attribute in the LDAP entry and user_attr is the Identity
+#   API attribute. (list value)
+#   Defaults to 'undef'
+#
+# [*chase_referrals*]
+#   Whether or not to chase returned referrals. (boolean value)
+#   Defaults to 'undef'
+#
+# [*use_tls*]
+#   Enable TLS for communicating with LDAP servers. (boolean value)
+#   Defaults to 'undef'
+#
+# [*tls_cacertfile*]
+#   CA certificate file path for communicating with LDAP servers. (string value)
+#   Defaults to 'undef'
+#
+# [*tls_cacertdir*]
+#   CA certificate directory path for communicating with LDAP servers. (string value)
+#   Defaults to 'undef'
+#
+# [*tls_req_cert*]
+#   Valid options for tls_req_cert are demand, never, and allow. (string value)
+#   Defaults to 'undef'
+#
+# [*identity_driver*]
+#   Identity backend driver. (string value)
+#   Defaults to 'undef'
+#
+# [*use_pool*]
+#   Enable LDAP connection pooling. (boolean value)
+#   Defaults to false
+#
+# [*pool_size*]
+#   Connection pool size. (integer value)
+#   Defaults to '10'
+#
+# [*pool_retry_max*]
+#   Maximum count of reconnect trials. (integer value)
+#   Defaults to '3'
+#
+# [*pool_retry_delay*]
+#   Time span in seconds to wait between two reconnect trials. (floating point value)
+#   Defaults to '0.1'
+#
+# [*pool_connection_timeout*]
+#   Connector timeout in seconds. Value -1 indicates indefinite wait for response. (integer value)
+#   Defaults to '-1'
+#
+# [*pool_connection_lifetime*]
+#   Connection lifetime in seconds. (integer value)
+#   Defaults to '600'
+#
+# [*use_auth_pool*]
+#   Enable LDAP connection pooling for end user authentication.
+#   If use_pool is disabled, then this setting is meaningless and is not used at all. (boolean value)
+#   Defaults to false
+#
+# [*auth_pool_size*]
+#   End user auth connection pool size. (integer value)
+#   Defaults to '100'
+#
+# [*auth_pool_connection_lifetime*]
+#   End user auth connection lifetime in seconds. (integer value)
+#   Defaults to '60'
+#
+# [*credential_driver*]
+#   Credential backend driver. (string value)
+#   Defaults to 'undef'
+#
+# [*assignment_driver*]
+#   Assignment backend driver. (string value)
+#   Defaults to 'undef'
+#
+# [*package_ensure*]
+#   (optional) Desired ensure state of packages.
+#   accepts latest or specific versions.
+#   Defaults to present.
+#
+# [*manage_packages*]
+#   (optional) Whether or not this module should manage
+#   LDAP support packages.
+#   Defaults to true.
+#
+# DEPRECATED PARAMETERS
+#
 # [*project_tree_dn*]
 #   Search base for projects (string value)
 #   Defaults to 'undef'
@@ -232,128 +356,6 @@
 #   API attribute. (list value)
 #   Defaults to 'undef'
 #
-# [*group_tree_dn*]
-#   Search base for groups. (string value)
-#   Defaults to 'undef'
-#
-# [*group_filter*]
-#   LDAP search filter for groups. (string value)
-#   Defaults to 'undef'
-#
-# [*group_objectclass*]
-#   LDAP objectclass for groups. (string value)
-#   Defaults to 'undef'
-#
-# [*group_id_attribute*]
-#   LDAP attribute mapped to group id. (string value)
-#   Defaults to 'undef'
-#
-# [*group_name_attribute*]
-#   LDAP attribute mapped to group name. (string value)
-#   Defaults to 'undef'
-#
-# [*group_member_attribute*]
-#   LDAP attribute mapped to show group membership. (string value)
-#   Defaults to 'undef'
-#
-# [*group_members_are_ids*]
-#   LDAP attribute when members of the group object class are keystone user IDs. (boolean value)
-#   Defaults to 'undef'
-#
-# [*group_desc_attribute*]
-#   LDAP attribute mapped to group description. (string value)
-#   Defaults to 'undef'
-#
-# [*group_attribute_ignore*]
-#   List of attributes stripped off the group on update. (list value)
-#   Defaults to 'undef'
-#
-# [*group_additional_attribute_mapping*]
-#   Additional attribute mappings for groups. Attribute mapping
-#   format is <ldap_attr>:<user_attr>, where ldap_attr is the
-#   attribute in the LDAP entry and user_attr is the Identity
-#   API attribute. (list value)
-#   Defaults to 'undef'
-#
-# [*chase_referrals*]
-#   Whether or not to chase returned referrals. (boolean value)
-#   Defaults to 'undef'
-#
-# [*use_tls*]
-#   Enable TLS for communicating with LDAP servers. (boolean value)
-#   Defaults to 'undef'
-#
-# [*tls_cacertfile*]
-#   CA certificate file path for communicating with LDAP servers. (string value)
-#   Defaults to 'undef'
-#
-# [*tls_cacertdir*]
-#   CA certificate directory path for communicating with LDAP servers. (string value)
-#   Defaults to 'undef'
-#
-# [*tls_req_cert*]
-#   Valid options for tls_req_cert are demand, never, and allow. (string value)
-#   Defaults to 'undef'
-#
-# [*identity_driver*]
-#   Identity backend driver. (string value)
-#   Defaults to 'undef'
-#
-# [*credential_driver*]
-#   Credential backend driver. (string value)
-#   Defaults to 'undef'
-#
-# [*assignment_driver*]
-#   Assignment backend driver. (string value)
-#   Defaults to 'undef'
-#
-# [*use_pool*]
-#   Enable LDAP connection pooling. (boolean value)
-#   Defaults to false
-#
-# [*pool_size*]
-#   Connection pool size. (integer value)
-#   Defaults to '10'
-#
-# [*pool_retry_max*]
-#   Maximum count of reconnect trials. (integer value)
-#   Defaults to '3'
-#
-# [*pool_retry_delay*]
-#   Time span in seconds to wait between two reconnect trials. (floating point value)
-#   Defaults to '0.1'
-#
-# [*pool_connection_timeout*]
-#   Connector timeout in seconds. Value -1 indicates indefinite wait for response. (integer value)
-#   Defaults to '-1'
-#
-# [*pool_connection_lifetime*]
-#   Connection lifetime in seconds. (integer value)
-#   Defaults to '600'
-#
-# [*use_auth_pool*]
-#   Enable LDAP connection pooling for end user authentication.
-#   If use_pool is disabled, then this setting is meaningless and is not used at all. (boolean value)
-#   Defaults to false
-#
-# [*auth_pool_size*]
-#   End user auth connection pool size. (integer value)
-#   Defaults to '100'
-#
-# [*auth_pool_connection_lifetime*]
-#   End user auth connection lifetime in seconds. (integer value)
-#   Defaults to '60'
-#
-# [*package_ensure*]
-#   (optional) Desired ensure state of packages.
-#   accepts latest or specific versions.
-#   Defaults to present.
-#
-# [*manage_packages*]
-#   (optional) Whether or not this module should manage
-#   LDAP support packages.
-#   Defaults to true.
-#
 # == Authors
 #
 #   Dan Bode dan@puppetlabs.com
@@ -387,33 +389,6 @@ class keystone::ldap(
   $user_enabled_emulation               = undef,
   $user_enabled_emulation_dn            = undef,
   $user_additional_attribute_mapping    = undef,
-  $project_tree_dn                      = undef,
-  $project_filter                       = undef,
-  $project_objectclass                  = undef,
-  $project_id_attribute                 = undef,
-  $project_member_attribute             = undef,
-  $project_desc_attribute               = undef,
-  $project_name_attribute               = undef,
-  $project_enabled_attribute            = undef,
-  $project_domain_id_attribute          = undef,
-  $project_attribute_ignore             = undef,
-  $project_allow_create                 = undef,
-  $project_allow_update                 = undef,
-  $project_allow_delete                 = undef,
-  $project_enabled_emulation            = undef,
-  $project_enabled_emulation_dn         = undef,
-  $project_additional_attribute_mapping = undef,
-  $role_tree_dn                         = undef,
-  $role_filter                          = undef,
-  $role_objectclass                     = undef,
-  $role_id_attribute                    = undef,
-  $role_name_attribute                  = undef,
-  $role_member_attribute                = undef,
-  $role_attribute_ignore                = undef,
-  $role_allow_create                    = undef,
-  $role_allow_update                    = undef,
-  $role_allow_delete                    = undef,
-  $role_additional_attribute_mapping    = undef,
   $group_tree_dn                        = undef,
   $group_filter                         = undef,
   $group_objectclass                    = undef,
@@ -443,7 +418,71 @@ class keystone::ldap(
   $auth_pool_connection_lifetime        = 60,
   $package_ensure                       = present,
   $manage_packages                      = true,
+  # DEPRECATED PARAMETERS
+  $project_tree_dn                      = undef,
+  $project_filter                       = undef,
+  $project_objectclass                  = undef,
+  $project_id_attribute                 = undef,
+  $project_member_attribute             = undef,
+  $project_desc_attribute               = undef,
+  $project_name_attribute               = undef,
+  $project_enabled_attribute            = undef,
+  $project_domain_id_attribute          = undef,
+  $project_attribute_ignore             = undef,
+  $project_allow_create                 = undef,
+  $project_allow_update                 = undef,
+  $project_allow_delete                 = undef,
+  $project_enabled_emulation            = undef,
+  $project_enabled_emulation_dn         = undef,
+  $project_additional_attribute_mapping = undef,
+  $role_tree_dn                         = undef,
+  $role_filter                          = undef,
+  $role_objectclass                     = undef,
+  $role_id_attribute                    = undef,
+  $role_name_attribute                  = undef,
+  $role_member_attribute                = undef,
+  $role_attribute_ignore                = undef,
+  $role_allow_create                    = undef,
+  $role_allow_update                    = undef,
+  $role_allow_delete                    = undef,
+  $role_additional_attribute_mapping    = undef,
 ) inherits keystone::params {
+
+  $deprecated_param_names = [
+    'project_tree_dn',
+    'project_filter',
+    'project_objectclass',
+    'project_id_attribute',
+    'project_member_attribute',
+    'project_desc_attribute',
+    'project_name_attribute',
+    'project_enabled_attribute',
+    'project_domain_id_attribute',
+    'project_attribute_ignore',
+    'project_allow_create',
+    'project_allow_update',
+    'project_allow_delete',
+    'project_enabled_amulation',
+    'project_enabled_amulation_dn',
+    'project_additional_attribute_mapping',
+    'role_tree_dn',
+    'role_filter',
+    'role_objectclass',
+    'role_id_attribute',
+    'role_name_attribute',
+    'role_member_attribute',
+    'role_attribute_ignore',
+    'role_allow_create',
+    'role_allow_update',
+    'role_allow_delete',
+    'role_additional_attribute_mapping',
+  ]
+  $deprecated_param_names.each |$param_name| {
+    $param = getvar($param_name)
+    if $param != undef {
+      warning("The ${param_name} is deprecated and has no effect")
+    }
+  }
 
   include keystone::deps
 
@@ -485,33 +524,6 @@ class keystone::ldap(
     'ldap/user_enabled_emulation':               value => $user_enabled_emulation;
     'ldap/user_enabled_emulation_dn':            value => $user_enabled_emulation_dn;
     'ldap/user_additional_attribute_mapping':    value => $user_additional_attribute_mapping;
-    'ldap/project_tree_dn':                      value => $project_tree_dn;
-    'ldap/project_filter':                       value => $project_filter;
-    'ldap/project_objectclass':                  value => $project_objectclass;
-    'ldap/project_id_attribute':                 value => $project_id_attribute;
-    'ldap/project_member_attribute':             value => $project_member_attribute;
-    'ldap/project_desc_attribute':               value => $project_desc_attribute;
-    'ldap/project_name_attribute':               value => $project_name_attribute;
-    'ldap/project_enabled_attribute':            value => $project_enabled_attribute;
-    'ldap/project_attribute_ignore':             value => $project_attribute_ignore;
-    'ldap/project_domain_id_attribute':          value => $project_domain_id_attribute;
-    'ldap/project_allow_create':                 value => $project_allow_create;
-    'ldap/project_allow_update':                 value => $project_allow_update;
-    'ldap/project_allow_delete':                 value => $project_allow_delete;
-    'ldap/project_enabled_emulation':            value => $project_enabled_emulation;
-    'ldap/project_enabled_emulation_dn':         value => $project_enabled_emulation_dn;
-    'ldap/project_additional_attribute_mapping': value => $project_additional_attribute_mapping;
-    'ldap/role_tree_dn':                         value => $role_tree_dn;
-    'ldap/role_filter':                          value => $role_filter;
-    'ldap/role_objectclass':                     value => $role_objectclass;
-    'ldap/role_id_attribute':                    value => $role_id_attribute;
-    'ldap/role_name_attribute':                  value => $role_name_attribute;
-    'ldap/role_member_attribute':                value => $role_member_attribute;
-    'ldap/role_attribute_ignore':                value => $role_attribute_ignore;
-    'ldap/role_allow_create':                    value => $role_allow_create;
-    'ldap/role_allow_update':                    value => $role_allow_update;
-    'ldap/role_allow_delete':                    value => $role_allow_delete;
-    'ldap/role_additional_attribute_mapping':    value => $role_additional_attribute_mapping;
     'ldap/group_tree_dn':                        value => $group_tree_dn;
     'ldap/group_filter':                         value => $group_filter;
     'ldap/group_objectclass':                    value => $group_objectclass;
