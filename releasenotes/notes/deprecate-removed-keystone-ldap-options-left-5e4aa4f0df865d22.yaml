@@ -1,0 +1,33 @@
+---
+features:
+  - |
+    The following parameters of the ``keystone::ldap`` class have been
+    deprecated and have no effect.
+
+      - ``project_tree_dn``
+      - ``project_filter``
+      - ``project_objectclass``
+      - ``project_id_attribute``
+      - ``project_member_attribute``
+      - ``project_name_attribute``
+      - ``project_desc_attribute``
+      - ``project_enabled_attribute``
+      - ``project_domain_id_attribute``
+      - ``project_attribute_ignore``
+      - ``project_allow_create``
+      - ``project_allow_update``
+      - ``project_allow_delete``
+      - ``project_enabled_emulation``
+      - ``project_enabled_emulation_dn``
+      - ``project_additional_attribute_mapping``
+      - ``role_tree_dn``
+      - ``role_filter``
+      - ``role_objectclass``
+      - ``role_id_attribute``
+      - ``role_name_attribute``
+      - ``role_member_attribute``
+      - ``role_attribute_ignore``
+      - ``role_allow_create``
+      - ``role_allow_update``
+      - ``role_allow_delete``
+      - ``role_additional_attribute_map``

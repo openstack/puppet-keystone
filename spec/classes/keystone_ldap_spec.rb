@@ -27,33 +27,6 @@ describe 'keystone::ldap' do
         :user_enabled_emulation               => 'True',
         :user_enabled_emulation_dn            => 'cn=openstack-enabled,cn=groups,cn=accounts,dc=example,dc=com',
         :user_additional_attribute_mapping    => 'description:name, gecos:name',
-        :project_tree_dn                      => 'ou=projects,ou=openstack,dc=example,dc=com',
-        :project_filter                       => '',
-        :project_objectclass                  => 'organizationalUnit',
-        :project_id_attribute                 => 'ou',
-        :project_member_attribute             => 'member',
-        :project_desc_attribute               => 'description',
-        :project_name_attribute               => 'ou',
-        :project_enabled_attribute            => 'enabled',
-        :project_domain_id_attribute          => 'businessCategory',
-        :project_attribute_ignore             => '',
-        :project_allow_create                 => 'True',
-        :project_allow_update                 => 'True',
-        :project_allow_delete                 => 'True',
-        :project_enabled_emulation            => 'False',
-        :project_enabled_emulation_dn         => 'True',
-        :project_additional_attribute_mapping => 'cn=enabled,ou=openstack,dc=example,dc=com',
-        :role_tree_dn                         => 'ou=roles,ou=openstack,dc=example,dc=com',
-        :role_filter                          => '',
-        :role_objectclass                     => 'organizationalRole',
-        :role_id_attribute                    => 'cn',
-        :role_name_attribute                  => 'ou',
-        :role_member_attribute                => 'roleOccupant',
-        :role_attribute_ignore                => 'description',
-        :role_allow_create                    => 'True',
-        :role_allow_update                    => 'True',
-        :role_allow_delete                    => 'True',
-        :role_additional_attribute_mapping    => '',
         :group_tree_dn                        => 'ou=groups,ou=openstack,dc=example,dc=com',
         :group_filter                         => 'cn=enabled-groups,cn=groups,cn=accounts,dc=example,dc=com',
         :group_objectclass                    => 'organizationalRole',
@@ -117,39 +90,6 @@ describe 'keystone::ldap' do
         is_expected.to contain_keystone_config('ldap/user_enabled_emulation').with_value('True')
         is_expected.to contain_keystone_config('ldap/user_enabled_emulation_dn').with_value('cn=openstack-enabled,cn=groups,cn=accounts,dc=example,dc=com')
         is_expected.to contain_keystone_config('ldap/user_additional_attribute_mapping').with_value('description:name, gecos:name')
-      }
-
-      it {
-        is_expected.to contain_keystone_config('ldap/project_tree_dn').with_value('ou=projects,ou=openstack,dc=example,dc=com')
-        is_expected.to contain_keystone_config('ldap/project_filter').with_value('')
-        is_expected.to contain_keystone_config('ldap/project_objectclass').with_value('organizationalUnit')
-        is_expected.to contain_keystone_config('ldap/project_id_attribute').with_value('ou')
-        is_expected.to contain_keystone_config('ldap/project_member_attribute').with_value('member')
-        is_expected.to contain_keystone_config('ldap/project_desc_attribute').with_value('description')
-        is_expected.to contain_keystone_config('ldap/project_name_attribute').with_value('ou')
-        is_expected.to contain_keystone_config('ldap/project_enabled_attribute').with_value('enabled')
-        is_expected.to contain_keystone_config('ldap/project_domain_id_attribute').with_value('businessCategory')
-        is_expected.to contain_keystone_config('ldap/project_attribute_ignore').with_value('')
-        is_expected.to contain_keystone_config('ldap/project_allow_create').with_value('True')
-        is_expected.to contain_keystone_config('ldap/project_allow_update').with_value('True')
-        is_expected.to contain_keystone_config('ldap/project_allow_delete').with_value('True')
-        is_expected.to contain_keystone_config('ldap/project_enabled_emulation').with_value('False')
-        is_expected.to contain_keystone_config('ldap/project_enabled_emulation_dn').with_value('True')
-        is_expected.to contain_keystone_config('ldap/project_additional_attribute_mapping').with_value('cn=enabled,ou=openstack,dc=example,dc=com')
-      }
-
-      it {
-        is_expected.to contain_keystone_config('ldap/role_tree_dn').with_value('ou=roles,ou=openstack,dc=example,dc=com')
-        is_expected.to contain_keystone_config('ldap/role_filter').with_value('')
-        is_expected.to contain_keystone_config('ldap/role_objectclass').with_value('organizationalRole')
-        is_expected.to contain_keystone_config('ldap/role_id_attribute').with_value('cn')
-        is_expected.to contain_keystone_config('ldap/role_name_attribute').with_value('ou')
-        is_expected.to contain_keystone_config('ldap/role_member_attribute').with_value('roleOccupant')
-        is_expected.to contain_keystone_config('ldap/role_attribute_ignore').with_value('description')
-        is_expected.to contain_keystone_config('ldap/role_allow_create').with_value('True')
-        is_expected.to contain_keystone_config('ldap/role_allow_update').with_value('True')
-        is_expected.to contain_keystone_config('ldap/role_allow_delete').with_value('True')
-        is_expected.to contain_keystone_config('ldap/role_additional_attribute_mapping').with_value('')
       }
 
       it {
