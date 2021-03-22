@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The new ``keystone::policy::enforce_new_defaults`` parameter has been
+    added.
