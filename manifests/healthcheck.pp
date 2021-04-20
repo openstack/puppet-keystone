@@ -1,4 +1,4 @@
-# == Define: keystone::healthcheck
+# == Class: keystone::healthcheck
 #
 # Configure oslo_middleware options in healthcheck section
 #
