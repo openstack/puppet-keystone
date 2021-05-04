@@ -106,9 +106,11 @@ class keystone::roles::admin(
   }
 
   $domains = unique(delete_undef_values([ $admin_user_domain, $admin_project_domain, $service_project_domain, $target_admin_domain]))
-  keystone_domain { $domains:
-    ensure  => present,
-    enabled => true,
+  if length($domains) > 0 {
+    keystone_domain { $domains:
+      ensure  => present,
+      enabled => true,
+    }
   }
 
   keystone_tenant { $service_tenant:
