@@ -163,7 +163,7 @@ class keystone::wsgi::apache (
   $headers                           = undef,
   $vhost_custom_fragment             = undef,
   $custom_wsgi_process_options       = {},
-) inherits ::keystone::params {
+) inherits keystone::params {
 
   include keystone::deps
 

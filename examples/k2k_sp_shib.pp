@@ -33,7 +33,7 @@ yumrepo { 'shibboleth':
   require  => Anchor['openstack_extras_redhat']
 }
 
-Yumrepo['shibboleth'] -> Class['::keystone::federation::shibboleth']
+Yumrepo['shibboleth'] -> Class['keystone::federation::shibboleth']
 # Yumrepo end
 
 class { 'mysql::server': }
