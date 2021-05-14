@@ -22,6 +22,5 @@
       featureset_override:
         run_tempest: false
         tempest_test_whitelist:
-          - 'identity'
-          - 'keystone-tempest-plugin'
+          - 'tempest.api.identity.v3'
         use_os_tempest: true
