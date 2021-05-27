@@ -122,15 +122,7 @@ describe 'keystone::federation::identity_provider' do
       let (:platform_params) do
         if facts[:osfamily] == 'RedHat'
           keystone_service = 'openstack-keystone'
-          if facts[:operatingsystem] == 'Fedora'
-            python_pysaml2_package_name = 'python3-pysaml2'
-          else
-            if facts[:operatingsystemmajrelease] > '7'
-              python_pysaml2_package_name = 'python3-pysaml2'
-            else
-              python_pysaml2_package_name = 'python-pysaml2'
-            end
-          end
+          python_pysaml2_package_name = 'python3-pysaml2'
         else
           keystone_service = 'keystone'
           python_pysaml2_package_name = 'python3-pysaml2'

@@ -220,15 +220,7 @@ describe 'keystone::ldap_backend' do
         when 'Debian'
           { :python_ldappool_package_name => 'python3-ldappool' }
         when 'RedHat'
-          if facts[:operatingsystem] == 'Fedora'
-            { :python_ldappool_package_name => 'python3-ldappool' }
-          else
-            if facts[:operatingsystemmajrelease] > '7'
-              { :python_ldappool_package_name => 'python3-ldappool' }
-            else
-              { :python_ldappool_package_name => 'python-ldappool' }
-            end
-          end
+          { :python_ldappool_package_name => 'python3-ldappool' }
         end
       end
       it_behaves_like 'keystone::ldap_backend'

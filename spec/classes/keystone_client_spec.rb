@@ -46,15 +46,7 @@ describe 'keystone::client' do
         when 'Debian'
           { :client_package_name => 'python3-keystoneclient' }
         when 'RedHat'
-          if facts[:operatingsystem] == 'Fedora'
-            { :client_package_name => 'python3-keystoneclient' }
-          else
-            if facts[:operatingsystemmajrelease] > '7'
-              { :client_package_name => 'python3-keystoneclient' }
-            else
-              { :client_package_name => 'python-keystoneclient' }
-            end
-          end
+          { :client_package_name => 'python3-keystoneclient' }
         end
       end
 
