@@ -5,12 +5,17 @@ require 'shared_examples'
 require 'webmock/rspec'
 require 'puppet-openstack_spec_helper/facts'
 
+fixture_path = File.expand_path(File.join(File.dirname(__FILE__), 'fixtures'))
+
 # LP1492636 - Cohabitation of compile matcher and webmock
 WebMock.disable_net_connect!(:allow => "169.254.169.254")
 
 RSpec.configure do |c|
   c.alias_it_should_behave_like_to :it_configures, 'configures'
   c.alias_it_should_behave_like_to :it_raises, 'raises'
+
+  c.module_path = File.join(fixture_path, 'modules')
+  c.manifest_dir = File.join(fixture_path, 'manifests')
 end
 
 RSpec::Matchers.define :be_absent do
@@ -35,5 +40,3 @@ def setup_provider_tests
     end
   end
 end
-
-Dir[File.dirname(__FILE__) + '/support/**/*.rb'].each { |f| require f }
