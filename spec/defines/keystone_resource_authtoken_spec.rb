@@ -214,15 +214,7 @@ describe 'keystone::resource::authtoken' do
         when 'Debian'
           memcache_package_name = 'python3-memcache'
         when 'RedHat'
-          if facts[:operatingsystem] == 'Fedora'
-            memcache_package_name = 'python3-memcached'
-          else
-            if facts[:operatingsystemmajrelease] > '7'
-              memcache_package_name = 'python3-memcached'
-            else
-              memcache_package_name = 'python-memcached'
-            end
-          end
+          memcache_package_name = 'python3-memcached'
         end
         {
           :memcache_package_name => memcache_package_name
