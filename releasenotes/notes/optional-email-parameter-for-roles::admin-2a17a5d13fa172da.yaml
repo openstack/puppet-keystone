@@ -1,4 +1,0 @@
----
-features:
-  - Email parameter is now optional for roles::admin and
-    the default value will be admin@localhost.
