@@ -49,8 +49,7 @@ describe provider_class do
         :name  => 'identity/domain_config_dir',
         :value => '/tmp'
       })
-      config_provider = Puppet::Type.type(:keystone_config)
-        .provider(:ini_setting)
+      config_provider = Puppet::Type.type(:keystone_config).provider(:openstackconfig)
       keystone_config = config_provider.new(config)
       keystone_config.class.expects(:file_path).at_least_once.returns(tmpfile)
       keystone_config.create
