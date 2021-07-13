@@ -155,7 +155,7 @@ Puppet::Type.type(:keystone_domain).provide(
   def keystone_conf_default_domain_id_entry(newid)
     conf = Puppet::Type::Keystone_config
       .new(:title => 'identity/default_domain_id', :value => newid)
-    entry = Puppet::Type.type(:keystone_config).provider(:ini_setting)
+    entry = Puppet::Type.type(:keystone_config).provider(:openstackconfig)
       .new(conf)
     entry
   end

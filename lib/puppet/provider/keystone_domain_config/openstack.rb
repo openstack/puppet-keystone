@@ -13,11 +13,11 @@ Puppet::Type.type(:keystone_domain_config).provide(
   def self.base_dir
     return @base_dir if @base_dir
     base_dir = Puppet::Resource.indirection
-      .find('Keystone_config/identity/domain_config_dir')[:value]
-    if base_dir == :absent
+      .find('Keystone_config/identity/domain_config_dir')
+    if base_dir[:ensure] == :absent
       '/etc/keystone/domains'
     else
-      base_dir
+      base_dir[:value][0]
     end
   end
 
@@ -38,7 +38,7 @@ Puppet::Type.type(:keystone_domain_config).provide(
   def self.prefetch(resources)
     catalog = resources.values.first.catalog
     resource_dir = find_domain_conf(catalog)
-    @base_dir = resource_dir.nil? ? nil : resource_dir[:value]
+    @base_dir = resource_dir.nil? ? nil : resource_dir[:value][0]
   end
 
   def self.base_dir_exists?
