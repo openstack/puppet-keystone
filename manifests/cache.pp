@@ -147,10 +147,9 @@ class keystone::cache(
 
   include keystone::deps
 
-  if is_string($memcache_servers) {
-    $memcache_servers_array = split($memcache_servers, ',')
-  } else {
-    $memcache_servers_array = $memcache_servers
+  $memcache_servers_array = $memcache_servers ? {
+    String  => split($memcache_servers, ','),
+    default => $memcache_servers
   }
 
   if !is_service_default($memcache_servers) {
