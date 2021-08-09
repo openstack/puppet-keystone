@@ -1,0 +1,11 @@
+---
+features:
+  - |
+    Adding the following configurable items for OpenID:
+
+    - ``keystone::federation::openidc::openidc_pass_userinfo_as`` to set
+      ``OIDCPassUserInfoAs``
+
+    - ``keystone::federation::openidc::openidc_pass_claim_as`` to set
+      ``OIDCPassClaimsAs``
+
