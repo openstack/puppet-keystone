@@ -178,5 +178,31 @@ describe 'keystone::federation::openidc' do
         expect(content).to match('OIDCClaimDelimiter ";"')
       end
     end
+
+    context 'with openidc_pass_userinfo_as attribute' do
+      before do
+        params.merge!({
+          :openidc_pass_userinfo_as => 'claims',
+        })
+      end
+
+      it 'should contain OIDC pass userinfo as' do
+        content = get_param('concat::fragment', 'configure_openidc_keystone', 'content')
+        expect(content).to match('OIDCPassUserInfoAs "claims"')
+      end
+    end
+
+    context 'with openidc_pass_claim_as attribute' do
+      before do
+        params.merge!({
+          :openidc_pass_claim_as => 'both',
+        })
+      end
+
+      it 'should contain OIDC pass claim as' do
+        content = get_param('concat::fragment', 'configure_openidc_keystone', 'content')
+        expect(content).to match('OIDCPassClaimsAs "both"')
+      end
+    end
   end
 end
