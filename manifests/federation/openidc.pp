@@ -83,6 +83,19 @@
 #  Must be one of introspection or jwks
 #  Defaults to introspection
 #
+# [*openidc_pass_userinfo_as*]
+#  Define the way(s) in which the claims resolved from the userinfo endpoint
+#  are passed to the application according to OIDCPassClaimsAs.
+#  Defaults to undef
+#
+# [*openidc_pass_claim_as*]
+#  Define the way in which the claims and tokens are passed to the application environment:
+#  "none": no claims/tokens are passed
+#  "environment": claims/tokens are passed as environment variables
+#  "headers": claims/tokens are passed in headers (also useful in reverse proxy scenario's)
+#  "both": claims/tokens are passed as both headers as well as environment variables (default)
+#  Defaults to undef
+#
 # [*memcached_servers*]
 #  (Optional) A list of memcache servers. Defaults to undef.
 #
@@ -134,6 +147,8 @@ class keystone::federation::openidc (
   $openidc_introspection_endpoint = undef,
   $openidc_verify_jwks_uri        = undef,
   $openidc_verify_method          = 'introspection',
+  $openidc_pass_userinfo_as       = undef,
+  $openidc_pass_claim_as          = undef,
   $memcached_servers              = undef,
   $redis_server                   = undef,
   $redis_password                 = undef,
@@ -160,6 +175,18 @@ class keystone::federation::openidc (
     if $openidc_enable_oauth and !$openidc_verify_jwks_uri {
       fail('You must set openidc_verify_jwks_uri when enabling oauth support' +
           ' and local signature verification using a JWKS URL')
+    }
+  }
+
+  if $openidc_pass_userinfo_as != undef {
+    if !($openidc_pass_userinfo_as in ['claims', 'json', 'jwt']) {
+      fail('Unsupported OIDCPassUserInfoAs. Must be one of: claims, json or jwt')
+    }
+  }
+
+  if $openidc_pass_claim_as != undef {
+    if !($openidc_pass_claim_as in ['none', 'environment', 'headers', 'both']) {
+      fail('Unsupported OIDCPassClaimAs. Must be one of: none, environment, headers, both')
     }
   }
 
