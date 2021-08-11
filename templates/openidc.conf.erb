@@ -34,6 +34,12 @@
 <%- if scope['::keystone::federation::openidc::openidc_claim_delimiter'] != nil -%>
   OIDCClaimDelimiter "<%= scope['::keystone::federation::openidc::openidc_claim_delimiter'] %>"
 <%- end -%>
+<%- if scope['::keystone::federation::openidc::openidc_pass_userinfo_as'] != nil -%>
+  OIDCPassUserInfoAs "<%= scope['::keystone::federation::openidc::openidc_pass_userinfo_as'] %>"
+<%- end -%>
+<%- if scope['::keystone::federation::openidc::openidc_pass_claim_as'] != nil -%>
+  OIDCPassClaimsAs "<%= scope['::keystone::federation::openidc::openidc_pass_claim_as'] %>"
+<%- end -%>
 
   # The following directives are necessary to support websso from Horizon
   # (Per https://docs.openstack.org/keystone/pike/advanced-topics/federation/websso.html)
