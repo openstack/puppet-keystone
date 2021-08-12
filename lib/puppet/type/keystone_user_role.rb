@@ -61,6 +61,25 @@ Puppet::Type.newtype(:keystone_user_role) do
     end
   end
 
+  newparam(:system) do
+    isnamevar
+    defaultto PuppetX::Keystone::CompositeNamevar::Unset
+    validate do |v|
+      if !resource.parameters[:project].nil? &&
+          resource.parameters[:project].value != PuppetX::Keystone::CompositeNamevar::Unset &&
+          v != PuppetX::Keystone::CompositeNamevar::Unset
+        raise(Puppet::ResourceError,
+              'Cannot define both project and system for a role.')
+      end
+      if !resource.parameters[:domain].nil? &&
+          resource.parameters[:domain].value != PuppetX::Keystone::CompositeNamevar::Unset &&
+          v != PuppetX::Keystone::CompositeNamevar::Unset
+        raise(Puppet::ResourceError,
+              'Cannot define both domain and scope for a role.')
+      end
+    end
+  end
+
   newproperty(:roles,  :array_matching => :all) do
     def insync?(is)
       return false unless is.is_a? Array
@@ -76,7 +95,7 @@ Puppet::Type.newtype(:keystone_user_role) do
 
   autorequire(:keystone_tenant) do
     rv = []
-    unless parameter_set?(:domain)
+    if parameter_set?(:project)
       # Pass through title parsing for matching resource.
       rv << provider.class.resource_to_name(self[:project_domain],
                                             self[:project], false)
@@ -97,7 +116,7 @@ Puppet::Type.newtype(:keystone_user_role) do
     rv = [self[:user_domain]]
     if parameter_set?(:domain)
       rv << self[:domain]
-    else
+    elsif parameter_set?(:project)
       rv << self[:project_domain]
     end
     # Only used to display the deprecation warning.
@@ -114,6 +133,7 @@ Puppet::Type.newtype(:keystone_user_role) do
     user = PuppetX::Keystone::CompositeNamevar.not_two_colon_regex
     project_domain = user
     domain = user
+    system = user
     user_domain = Regexp.new(/(?:[^:@]|:[^:@])+/)
     project = user_domain
     [
@@ -168,6 +188,23 @@ Puppet::Type.newtype(:keystone_user_role) do
         [
           [:user],
           [:project]
+        ]
+      ],
+      # fully qualified user
+      [
+        /^(#{user})::(#{user_domain})@::::(#{system})$/,
+        [
+          [:user],
+          [:user_domain],
+          [:system]
+        ]
+      ],
+      # user
+      [
+        /^(#{user})@::::(#{system})$/,
+        [
+          [:user],
+          [:system]
         ]
       ]
     ]

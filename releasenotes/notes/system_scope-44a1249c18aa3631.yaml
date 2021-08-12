@@ -1,0 +1,11 @@
+---
+features:
+  - |
+    The ``system_scope`` parameter has been added to the following resource
+    types.
+
+    - ``keystone::resource::authtoken``
+    - ``keystone::resource::service_user``
+
+  - |
+    The ``keystone_user_role`` resource type supports creating a system role.

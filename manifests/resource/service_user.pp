@@ -22,7 +22,8 @@
 #  (Required) The URL to use for authentication.
 #
 # [*project_name*]
-#  (Required) Service project name
+#  (Optional) Service project name
+#  Defaults to $::os_service_default
 #
 # [*user_domain_name*]
 #  (Optional) Name of domain for $username
@@ -35,6 +36,10 @@
 # [*send_service_user_token*]
 #  (Optional) The service uses service token feature when this is set as true
 #  Defaults to false
+#
+# [*system_scope*]
+#   (Optional) Scope for system operations
+#   Defaults to $::os_service_default
 #
 # [*insecure*]
 #  (Optional) If true, explicitly allow TLS without checking server cert
@@ -71,9 +76,10 @@ define keystone::resource::service_user(
   $username,
   $password,
   $auth_url,
-  $project_name,
+  $project_name            = $::os_service_default,
   $user_domain_name        = $::os_service_default,
   $project_domain_name     = $::os_service_default,
+  $system_scope            = $::os_service_default,
   $send_service_user_token = false,
   $insecure                = $::os_service_default,
   $auth_type               = $::os_service_default,
@@ -87,6 +93,16 @@ define keystone::resource::service_user(
   include keystone::params
   include keystone::deps
 
+  if is_service_default($system_scope) {
+    $project_name_real        = $project_name
+    $project_domain_name_real = $project_domain_name
+  } else {
+    # When system scope is used, project parameters should be removed otherwise
+    # project scope is used.
+    $project_name_real        = $::os_service_default
+    $project_domain_name_real = $::os_service_default
+  }
+
   $service_user_options = {
     'service_user/auth_type'               => {'value' => $auth_type},
     'service_user/auth_version'            => {'value' => $auth_version},
@@ -98,8 +114,9 @@ define keystone::resource::service_user(
     'service_user/username'                => {'value' => $username},
     'service_user/password'                => {'value' => $password, 'secret' => true},
     'service_user/user_domain_name'        => {'value' => $user_domain_name},
-    'service_user/project_name'            => {'value' => $project_name},
-    'service_user/project_domain_name'     => {'value' => $project_domain_name},
+    'service_user/project_name'            => {'value' => $project_name_real},
+    'service_user/project_domain_name'     => {'value' => $project_domain_name_real},
+    'service_user/system_scope'            => {'value' => $system_scope},
     'service_user/send_service_user_token' => {'value' => $send_service_user_token},
     'service_user/insecure'                => {'value' => $insecure},
   }

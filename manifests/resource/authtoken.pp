@@ -51,7 +51,8 @@
 #   (Required) The URL to use for authentication.
 #
 # [*project_name*]
-#   (Required) Service project name
+#   (Optional) Service project name
+#   Defaults to $::os_service_default
 #
 # [*user_domain_name*]
 #   (Optional) Name of domain for $username
@@ -59,6 +60,10 @@
 #
 # [*project_domain_name*]
 #   (Optional) Name of domain for $project_name
+#   Defaults to $::os_service_default
+#
+# [*system_scope*]
+#   (Optional) Scope for system operations
 #   Defaults to $::os_service_default
 #
 # [*insecure*]
@@ -226,9 +231,10 @@ define keystone::resource::authtoken(
   $username,
   $password,
   $auth_url,
-  $project_name,
+  $project_name                   = $::os_service_default,
   $user_domain_name               = $::os_service_default,
   $project_domain_name            = $::os_service_default,
+  $system_scope                   = $::os_service_default,
   $insecure                       = $::os_service_default,
   $auth_section                   = $::os_service_default,
   $auth_type                      = $::os_service_default,
@@ -300,6 +306,16 @@ define keystone::resource::authtoken(
     $memcached_servers_real = $::os_service_default
   }
 
+  if is_service_default($system_scope) {
+    $project_name_real        = $project_name
+    $project_domain_name_real = $project_domain_name
+  } else {
+    # When system scope is used, project parameters should be removed otherwise
+    # project scope is used.
+    $project_name_real        = $::os_service_default
+    $project_domain_name_real = $::os_service_default
+  }
+
   $keystonemiddleware_options = {
     'keystone_authtoken/auth_section'                   => {'value' => $auth_section},
     'keystone_authtoken/www_authenticate_uri'           => {'value' => $www_authenticate_uri},
@@ -330,8 +346,9 @@ define keystone::resource::authtoken(
     'keystone_authtoken/username'                       => {'value' => $username},
     'keystone_authtoken/password'                       => {'value' => $password, 'secret' => true},
     'keystone_authtoken/user_domain_name'               => {'value' => $user_domain_name},
-    'keystone_authtoken/project_name'                   => {'value' => $project_name},
-    'keystone_authtoken/project_domain_name'            => {'value' => $project_domain_name},
+    'keystone_authtoken/project_name'                   => {'value' => $project_name_real},
+    'keystone_authtoken/project_domain_name'            => {'value' => $project_domain_name_real},
+    'keystone_authtoken/system_scope'                   => {'value' => $system_scope},
     'keystone_authtoken/insecure'                       => {'value' => $insecure},
     'keystone_authtoken/service_token_roles'            => {'value' => join(any2array($service_token_roles), ',')},
     'keystone_authtoken/service_token_roles_required'   => {'value' => $service_token_roles_required},

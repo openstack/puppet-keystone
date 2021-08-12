@@ -7,8 +7,7 @@ describe 'keystone::resource::service_user' do
   let :params do
     { :username     => 'keystone',
       :password     => 'secret',
-      :auth_url     => 'http://127.0.0.1:5000',
-      :project_name => 'services' }
+      :auth_url     => 'http://127.0.0.1:5000' }
   end
 
   shared_examples 'shared examples' do
@@ -17,9 +16,10 @@ describe 'keystone::resource::service_user' do
         is_expected.to contain_keystone_config('service_user/username').with_value('keystone')
         is_expected.to contain_keystone_config('service_user/password').with_value('secret').with_secret(true)
         is_expected.to contain_keystone_config('service_user/auth_url').with_value( params[:auth_url] )
-        is_expected.to contain_keystone_config('service_user/project_name').with_value( params[:project_name] )
+        is_expected.to contain_keystone_config('service_user/project_name').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('service_user/project_domain_name').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('service_user/user_domain_name').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('service_user/system_scope').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('service_user/send_service_user_token').with_value(false)
         is_expected.to contain_keystone_config('service_user/insecure').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('service_user/auth_type').with_value('<SERVICE DEFAULT>')
@@ -37,7 +37,7 @@ describe 'keystone::resource::service_user' do
           :username                     => 'username',
           :password                     => 'hardpassword',
           :auth_url                     => 'http://127.1.1.127:5000/',
-          :project_name                 => 'NoProject',
+          :project_name                 => 'services',
           :user_domain_name             => 'MyDomain',
           :project_domain_name          => 'OurDomain',
           :send_service_user_token      =>  true,
@@ -55,8 +55,9 @@ describe 'keystone::resource::service_user' do
         is_expected.to contain_keystone_config('service_user/password').with_value(params[:password]).with_secret(true)
         is_expected.to contain_keystone_config('service_user/auth_url').with_value( params[:auth_url] )
         is_expected.to contain_keystone_config('service_user/project_name').with_value( params[:project_name] )
-        is_expected.to contain_keystone_config('service_user/user_domain_name').with_value(params[:user_domain_name])
         is_expected.to contain_keystone_config('service_user/project_domain_name').with_value(params[:project_domain_name])
+        is_expected.to contain_keystone_config('service_user/user_domain_name').with_value(params[:user_domain_name])
+        is_expected.to contain_keystone_config('service_user/system_scope').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('service_user/send_service_user_token').with_value(params[:send_service_user_token])
         is_expected.to contain_keystone_config('service_user/insecure').with_value(params[:insecure])
         is_expected.to contain_keystone_config('service_user/auth_version').with_value(params[:auth_version])
@@ -65,18 +66,26 @@ describe 'keystone::resource::service_user' do
         is_expected.to contain_keystone_config('service_user/keyfile').with_value(params[:keyfile])
         is_expected.to contain_keystone_config('service_user/region_name').with_value(params[:region_name])
       end
+
+      context 'set system_scope' do
+        before do
+          params.merge! ({
+            :project_name        => 'services',
+            :project_domain_name => 'Default',
+            :system_scope        => 'all',
+          })
+        end
+        it 'override system_scope but ignore project parameters' do
+          is_expected.to contain_keystone_config('service_user/project_name').with_value('<SERVICE DEFAULT>')
+          is_expected.to contain_keystone_config('service_user/project_domain_name').with_value('<SERVICE DEFAULT>')
+          is_expected.to contain_keystone_config('service_user/system_scope').with_value(params[:system_scope])
+        end
+      end
     end
 
     context 'without password required parameter' do
       let :params do
         params.delete(:password)
-      end
-      it { expect { is_expected.to raise_error(Puppet::Error) } }
-    end
-
-    context 'without specify project' do
-      let :params do
-        params.delete(:project_name)
       end
       it { expect { is_expected.to raise_error(Puppet::Error) } }
     end

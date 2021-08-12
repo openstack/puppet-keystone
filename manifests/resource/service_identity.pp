@@ -67,7 +67,15 @@
 #
 # [*roles*]
 #   List of roles;
-#   string; optional: default to ['admin']
+#   array of strings; optional: default to ['admin']
+#
+# [*system_scope*]
+#   Scope for system operations
+#   string; optional: default to 'all'
+#
+# [*system_roles*]
+#   List of system roles;
+#   array of strings; optional: default to []
 #
 # [*email*]
 #   Service email;
@@ -121,6 +129,8 @@ define keystone::resource::service_identity(
   $service_description   = "${name} service",
   $tenant                = 'services',
   $roles                 = ['admin'],
+  $system_scope          = 'all',
+  $system_roles          = [],
   $user_domain           = undef,
   $project_domain        = undef,
   $default_domain        = undef,
@@ -172,11 +182,20 @@ define keystone::resource::service_identity(
       # role from one service but adding it to another in the same puppet run.
       # So role deletion should be handled elsewhere.
       ensure_resource('keystone_role', $roles, { 'ensure' => 'present' })
+      ensure_resource('keystone_role', $system_roles, { 'ensure' => 'present' })
     }
-    ensure_resource('keystone_user_role', "${auth_name}@${tenant}", {
-      'ensure' => $ensure,
-      'roles'  => $roles,
-    })
+    unless empty($roles) {
+      ensure_resource('keystone_user_role', "${auth_name}@${tenant}", {
+        'ensure' => $ensure,
+        'roles'  => $roles,
+      })
+    }
+    unless empty($system_roles) {
+      ensure_resource('keystone_user_role', "${auth_name}@::::${system_scope}", {
+        'ensure' => $ensure,
+        'roles'  => $system_roles,
+      })
+    }
   }
 
   if $configure_service {

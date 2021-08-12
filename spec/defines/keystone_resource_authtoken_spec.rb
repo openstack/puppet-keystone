@@ -7,8 +7,7 @@ describe 'keystone::resource::authtoken' do
   let :params do
     { :username     => 'keystone',
       :password     => 'secret',
-      :auth_url     => 'http://127.0.0.1:5000',
-      :project_name => 'services' }
+      :auth_url     => 'http://127.0.0.1:5000' }
   end
 
   shared_examples 'shared examples' do
@@ -17,8 +16,9 @@ describe 'keystone::resource::authtoken' do
         is_expected.to contain_keystone_config('keystone_authtoken/username').with_value('keystone')
         is_expected.to contain_keystone_config('keystone_authtoken/password').with_value('secret').with_secret(true)
         is_expected.to contain_keystone_config('keystone_authtoken/auth_url').with_value( params[:auth_url] )
-        is_expected.to contain_keystone_config('keystone_authtoken/project_name').with_value( params[:project_name] )
+        is_expected.to contain_keystone_config('keystone_authtoken/project_name').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('keystone_authtoken/project_domain_name').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/system_scope').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('keystone_authtoken/user_domain_name').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('keystone_authtoken/insecure').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('keystone_authtoken/auth_section').with_value('<SERVICE DEFAULT>')
@@ -59,7 +59,7 @@ describe 'keystone::resource::authtoken' do
           :username                     => 'username',
           :password                     => 'hardpassword',
           :auth_url                     => 'http://127.1.1.127:5000/',
-          :project_name                 => 'NoProject',
+          :project_name                 => 'services',
           :user_domain_name             => 'MyDomain',
           :project_domain_name          => 'OurDomain',
           :insecure                     =>  true,
@@ -124,16 +124,24 @@ describe 'keystone::resource::authtoken' do
       end
     end
 
+    context 'set system_scope' do
+      before do
+        params.merge! ({
+          :project_name        => 'services',
+          :project_domain_name => 'Default',
+          :system_scope        => 'all',
+        })
+      end
+      it 'override system_scope but ignore project parameters' do
+        is_expected.to contain_keystone_config('keystone_authtoken/project_name').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/project_domain_name').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('keystone_authtoken/system_scope').with_value(params[:system_scope])
+      end
+    end
+
     context 'without password required parameter' do
       let :params do
         params.delete(:password)
-      end
-      it { expect { is_expected.to raise_error(Puppet::Error) } }
-    end
-
-    context 'without specify project' do
-      let :params do
-        params.delete(:project_name)
       end
       it { expect { is_expected.to raise_error(Puppet::Error) } }
     end

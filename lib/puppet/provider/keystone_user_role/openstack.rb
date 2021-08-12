@@ -61,7 +61,7 @@ Puppet::Type.type(:keystone_user_role).provide(
   mk_resource_methods
 
   # Don't want :absent
-  [:user, :user_domain, :project, :project_domain, :domain].each do |attr|
+  [:user, :user_domain, :project, :project_domain, :domain, :system].each do |attr|
     define_method(attr) do
       @property_hash[attr] ||= resource[attr]
     end
@@ -90,7 +90,7 @@ Puppet::Type.type(:keystone_user_role).provide(
     elsif set?(:domain)
       properties << '--domain' << domain
     else
-      raise(Puppet::Error, 'No project or domain specified for role')
+      properties << '--system' << system
     end
     properties << '--user' << get_user_id
     @properties = properties

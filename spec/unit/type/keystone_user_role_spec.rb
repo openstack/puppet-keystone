@@ -88,14 +88,31 @@ describe Puppet::Type.type(:keystone_user_role) do
         :project_domain => 'Default',
         :domain         => PuppetX::Keystone::CompositeNamevar::Unset
     end
+
+    describe "#{user}@::::all" do
+      include_examples 'parse title correctly',
+        :user           => user,
+        :user_domain    => 'Default',
+        :project        => PuppetX::Keystone::CompositeNamevar::Unset,
+        :project_domain => 'Default',
+        :domain         => PuppetX::Keystone::CompositeNamevar::Unset,
+        :system         => 'all'
+    end
+
+    describe "#{user}::user_domain@::::all" do
+      include_examples 'parse title correctly',
+        :user           => user,
+        :user_domain    => 'user_domain',
+        :project        => PuppetX::Keystone::CompositeNamevar::Unset,
+        :project_domain => 'Default',
+        :domain         => PuppetX::Keystone::CompositeNamevar::Unset,
+        :system         => 'all'
+    end
   end
   describe 'name::domain::foo@project' do
     include_examples 'croak on the title'
   end
   describe 'name::dom@ain@project' do
-    include_examples 'croak on the title'
-  end
-  describe 'name::domain@' do
     include_examples 'croak on the title'
   end
   describe 'name::domain@project::' do

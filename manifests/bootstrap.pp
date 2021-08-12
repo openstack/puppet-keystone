@@ -142,6 +142,11 @@ class keystone::bootstrap (
       'roles'  => $role_name,
     })
 
+    ensure_resource('keystone_user_role', "${username}@::::all", {
+      'ensure' => 'present',
+      'roles'  => $role_name,
+    })
+
     ensure_resource('keystone_service', "${service_name}::identity", {
       'ensure' => 'present',
     })

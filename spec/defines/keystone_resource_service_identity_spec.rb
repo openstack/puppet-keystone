@@ -45,6 +45,8 @@ describe 'keystone::resource::service_identity' do
         :roles  => ['admin'],
       )}
 
+      it { is_expected.to_not contain_keystone_user_role("#{title}@::::all") }
+
       it { is_expected.to contain_keystone_service("#{title}::network").with(
         :ensure      => 'present',
         :description => 'neutron service',
@@ -74,6 +76,8 @@ describe 'keystone::resource::service_identity' do
         :ensure => 'absent',
         :roles  => ['admin'],
       )}
+
+      it { is_expected.to_not contain_keystone_user_role("#{title}@::::all") }
 
       it { is_expected.to contain_keystone_service("#{title}::network").with(
         :ensure      => 'absent',
@@ -168,6 +172,8 @@ describe 'keystone::resource::service_identity' do
         :ensure => 'present',
         :roles  => ['admin'],
       )}
+
+      it { is_expected.to_not contain_keystone_user_role("#{title}@::::all") }
     end
 
     context 'with user and project domain' do
@@ -193,6 +199,8 @@ describe 'keystone::resource::service_identity' do
         :ensure => 'present',
         :roles  => ['admin'],
       )}
+
+      it { is_expected.to_not contain_keystone_user_role("#{title}@::::all") }
     end
 
     context 'with default domain only' do
@@ -216,6 +224,27 @@ describe 'keystone::resource::service_identity' do
       it { is_expected.to contain_keystone_user_role("#{title}@services").with(
         :ensure => 'present',
         :roles  => ['admin'],
+      )}
+
+      it { is_expected.to_not contain_keystone_user_role("#{title}@::::all") }
+    end
+
+    context 'with customized roles' do
+      let :params do
+        required_params.merge({
+          :roles        => ['admin', 'service'],
+          :system_roles => ['member', 'reader']
+        })
+      end
+
+      it { is_expected.to contain_keystone_user_role("#{title}@services").with(
+        :ensure => 'present',
+        :roles  => ['admin', 'service'],
+      )}
+
+      it { is_expected.to contain_keystone_user_role("#{title}@::::all").with(
+        :ensure => 'present',
+        :roles  => ['member', 'reader'],
       )}
     end
   end

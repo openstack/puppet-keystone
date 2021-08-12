@@ -56,6 +56,11 @@ describe 'keystone::bootstrap' do
         :roles  => ['admin'],
       )}
 
+      it { is_expected.to contain_keystone_user_role('admin@::::all').with(
+        :ensure => 'present',
+        :roles  => ['admin'],
+      )}
+
       it { is_expected.to contain_keystone_service('keystone::identity').with_ensure('present') }
 
       it { is_expected.to contain_keystone_endpoint('RegionOne/keystone::identity').with(
@@ -146,6 +151,11 @@ describe 'keystone::bootstrap' do
       )}
 
       it { is_expected.to contain_keystone_user_role('user@adminproj').with(
+        :ensure => 'present',
+        :roles  => ['adminrole'],
+      )}
+
+      it { is_expected.to contain_keystone_user_role('user@::::all').with(
         :ensure => 'present',
         :roles  => ['adminrole'],
       )}
