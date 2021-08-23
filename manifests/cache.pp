@@ -147,11 +147,6 @@ class keystone::cache(
 
   include keystone::deps
 
-  $memcache_servers_array = $memcache_servers ? {
-    String  => split($memcache_servers, ','),
-    default => $memcache_servers
-  }
-
   if !is_service_default($memcache_servers) {
     Service<| title == 'memcached' |> -> Anchor['keystone::service::begin']
   }
@@ -172,7 +167,7 @@ class keystone::cache(
     proxies                              => $proxies,
     enabled                              => $enabled,
     debug_cache_backend                  => $debug_cache_backend,
-    memcache_servers                     => $memcache_servers_array,
+    memcache_servers                     => $memcache_servers,
     memcache_dead_retry                  => $memcache_dead_retry,
     memcache_socket_timeout              => $memcache_socket_timeout,
     memcache_pool_maxsize                => $memcache_pool_maxsize,

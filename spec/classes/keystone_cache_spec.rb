@@ -24,7 +24,7 @@ describe 'keystone::cache' do
           :proxies                              => '<SERVICE DEFAULT>',
           :enabled                              => '<SERVICE DEFAULT>',
           :debug_cache_backend                  => '<SERVICE DEFAULT>',
-          :memcache_servers                     => ['<SERVICE DEFAULT>'],
+          :memcache_servers                     => '<SERVICE DEFAULT>',
           :memcache_dead_retry                  => '<SERVICE DEFAULT>',
           :memcache_socket_timeout              => '<SERVICE DEFAULT>',
           :memcache_pool_maxsize                => '<SERVICE DEFAULT>',
