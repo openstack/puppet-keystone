@@ -37,7 +37,7 @@ Puppet::Type.type(:keystone_domain).provide(
       properties << '--description'
       properties << resource[:description]
     end
-    @property_hash = self.class.request('domain', 'create', properties)
+    @property_hash = self.class.system_request('domain', 'create', properties)
     @property_hash[:is_default] = sym_to_bool(resource[:is_default])
     @property_hash[:ensure] = :present
     ensure_default_domain(true)
@@ -53,8 +53,8 @@ Puppet::Type.type(:keystone_domain).provide(
     end
     # have to disable first - Keystone does not allow you to delete an
     # enabled domain
-    self.class.request('domain', 'set', [resource[:name], '--disable'])
-    self.class.request('domain', 'delete', resource[:name])
+    self.class.system_request('domain', 'set', [resource[:name], '--disable'])
+    self.class.system_request('domain', 'delete', resource[:name])
     @property_hash[:ensure] = :absent
     ensure_default_domain(false, true)
     @property_hash.clear
@@ -111,7 +111,7 @@ Puppet::Type.type(:keystone_domain).provide(
 
   def self.instances
     self.do_not_manage = true
-    list = request('domain', 'list').collect do |domain|
+    list = system_request('domain', 'list').collect do |domain|
       new(
         :name        => domain[:name],
         :ensure      => :present,
@@ -142,7 +142,7 @@ Puppet::Type.type(:keystone_domain).provide(
       if @property_flush[:description]
         options << '--description' << resource[:description]
       end
-      self.class.request('domain', 'set', [resource[:name]] + options) unless options.empty?
+      self.class.system_request('domain', 'set', [resource[:name]] + options) unless options.empty?
       if @property_flush[:is_default]
         ensure_default_domain(false, false, @property_flush[:is_default])
       end

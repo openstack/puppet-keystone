@@ -4,6 +4,8 @@ Puppet::Type.newtype(:keystone_puppet_config) do
                     'puppet_x', 'keystone_config', 'ini_setting'))
   extend PuppetX::KeystoneConfig::IniSetting
 
+  desc 'Type for /etc/keystone/puppet.conf (DEPRECATED!!)'
+
   create_parameters
 
   autorequire(:file) do

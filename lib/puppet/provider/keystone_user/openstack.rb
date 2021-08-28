@@ -45,14 +45,14 @@ Puppet::Type.type(:keystone_user).provide(
       properties << '--domain'
       properties << user_domain
     end
-    @property_hash = self.class.request('user', 'create', properties)
+    @property_hash = self.class.system_request('user', 'create', properties)
     @property_hash[:name] = resource[:name]
     @property_hash[:domain] = user_domain
     @property_hash[:ensure] = :present
   end
 
   def destroy
-    self.class.request('user', 'delete', id)
+    self.class.system_request('user', 'delete', id)
     @property_hash.clear
   end
 
@@ -67,7 +67,7 @@ Puppet::Type.type(:keystone_user).provide(
       # project handled in tenant= separately
       unless options.empty?
         options << id
-        self.class.request('user', 'set', options)
+        self.class.system_request('user', 'set', options)
       end
       @property_flush.clear
     end
@@ -125,7 +125,7 @@ Puppet::Type.type(:keystone_user).provide(
       # Need to specify a project id to get a project scoped token.  List
       # all of the projects for the user, and use the id for the first one
       # that is enabled then fallback to domain id only.
-      projects = self.class.request('project', 'list', ['--user', id, '--long'])
+      projects = self.class.system_request('project', 'list', ['--user', id, '--long'])
       first_project = nil
       if projects && projects.respond_to?(:each)
         first_project = projects.detect { |p| p && p[:id] && p[:enabled] == 'True' }

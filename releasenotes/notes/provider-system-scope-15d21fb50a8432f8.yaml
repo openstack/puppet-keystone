@@ -1,0 +1,23 @@
+---
+upgrades:
+  - |
+    Now the following resource types require system scope credential instead
+    of project scope credential when sending requests to Keystone API.
+
+    - ``keystone_domain``
+    - ``keystone_endpoint``
+    - ``keystone_identity_provider``
+    - ``keystone_role``
+    - ``keystone_service``
+    - ``keystone_tenant``
+    - ``keystone_user_role``
+    - ``keystone_user``
+
+  - |
+    The ``/etc/keystone/puppet.conf`` file has been replaced by
+    the ``/etc/openstack/puppet/admin-clouds.yaml`` file.
+
+deprecations:
+  - |
+    The ``keystone_puppet_config`` resource type has been deprecated and will
+    be removed in a future release.

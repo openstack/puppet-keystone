@@ -35,9 +35,9 @@ Puppet::Type.type(:keystone_identity_provider).provide(
       resource[:description]
     properties << resource[:name]
 
-    @property_hash = self.class.request('identity provider',
-                                        'create',
-                                        properties)
+    @property_hash = self.class.system_request('identity provider',
+                                               'create',
+                                               properties)
 
   rescue Puppet::ExecutionFailure => e
     if e.message =~
@@ -54,7 +54,7 @@ Puppet::Type.type(:keystone_identity_provider).provide(
   end
 
   def destroy
-    self.class.request('identity provider', 'delete', id)
+    self.class.system_request('identity provider', 'delete', id)
     @property_hash.clear
   end
 
@@ -63,11 +63,11 @@ Puppet::Type.type(:keystone_identity_provider).provide(
   end
 
   def self.instances
-    list = request('identity provider', 'list')
+    list = system_request('identity provider', 'list')
     list.collect do |identity_provider|
 
       current_resource =
-        request('identity provider', 'show', identity_provider[:id])
+        system_request('identity provider', 'show', identity_provider[:id])
       new(
         :name        => identity_provider[:id],
         :id          => identity_provider[:id],
@@ -100,19 +100,19 @@ Puppet::Type.type(:keystone_identity_provider).provide(
   def enabled=(value)
     options = value == :false ? ['--disable'] : ['--enable']
     options << id
-    self.class.request('identity provider', 'set', options)
+    self.class.system_request('identity provider', 'set', options)
   end
 
   def remote_ids=(value)
     options = []
     options += self.class.remote_ids_cli(value)
-    self.class.request('identity provider', 'set', options + [id]) unless
+    self.class.system_request('identity provider', 'set', options + [id]) unless
       options.empty?
   end
 
   def remote_id_file=(value)
     options = ['--remote-id-file', value]
-    self.class.request('identity provider', 'set', options + [id])
+    self.class.system_request('identity provider', 'set', options + [id])
   end
 
   def remote_id_file
@@ -121,7 +121,7 @@ Puppet::Type.type(:keystone_identity_provider).provide(
 
   # bug/python-openstackclient/1478995: when fixed, parsing will be done by OSC.
   def self.clean_remote_ids(remote_ids)
-    version = request('--version', '').sub(/openstack\s+/i, '').strip
+    version = system_request('--version', '').sub(/openstack\s+/i, '').strip
     if Gem::Version.new(version) < Gem::Version.new('1.9.0')
       clean_remote_ids_old(remote_ids)
     else

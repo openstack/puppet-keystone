@@ -41,7 +41,7 @@ Puppet::Type.type(:keystone_tenant).provide(
     properties << '--domain'
     properties << resource[:domain]
 
-    @property_hash = self.class.request('project', 'create', properties)
+    @property_hash = self.class.system_request('project', 'create', properties)
     @property_hash[:name]   = resource[:name]
     @property_hash[:domain] = resource[:domain]
     @property_hash[:ensure] = :present
@@ -63,7 +63,7 @@ Puppet::Type.type(:keystone_tenant).provide(
     if self.class.do_not_manage
       fail("Not managing Keystone_tenant[#{@resource[:name]}] due to earlier Keystone API failures.")
     end
-    self.class.request('project', 'delete', id)
+    self.class.system_request('project', 'delete', id)
     @property_hash.clear
   end
 
@@ -90,7 +90,7 @@ Puppet::Type.type(:keystone_tenant).provide(
       warning(default_domain_deprecation_message)
     end
     self.do_not_manage = true
-    projects = request('project', 'list', '--long')
+    projects = system_request('project', 'list', '--long')
     list = projects.collect do |project|
       domain_name = domain_name_from_id(project[:domain_id])
       new(
@@ -125,7 +125,7 @@ Puppet::Type.type(:keystone_tenant).provide(
         options << '--disable'
       end
       (options << "--description=#{resource[:description]}") if @property_flush[:description]
-      self.class.request('project', 'set', [id] + options) unless options.empty?
+      self.class.system_request('project', 'set', [id] + options) unless options.empty?
       @property_flush.clear
     end
   end

@@ -30,9 +30,6 @@ at_exit { RSpec::Puppet::Coverage.report! }
 def setup_provider_tests
   Puppet::Provider::Keystone.class_exec do
     def self.reset
-      @public_endpoint = nil
-      @tenant_hash    = nil
-      @keystone_file  = nil
       Puppet::Provider::Keystone.class_variable_set('@@default_domain_id', nil)
       @domain_hash = nil
       @users_name  = nil
