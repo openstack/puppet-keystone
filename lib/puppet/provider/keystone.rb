@@ -244,13 +244,7 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
       @credentials.project_domain_name = keystone_puppet_credentials['project_domain_name']
     end
     raise error unless @credentials.set?
-    begin
-      Puppet::Provider::Openstack.request(service, action, properties, @credentials)
-    rescue Puppet::ExecutionFailure, Puppet::Error::OpenstackUnauthorizedError
-      # openstackclient < 4.0.0 does not support --os-endpoint and requires --os-url
-      @credentials.url = auth_endpoint
-      Puppet::Provider::Openstack.request(service, action, properties, @credentials)
-    end
+    Puppet::Provider::Openstack.request(service, action, properties, @credentials)
   end
 
   def self.set_domain_for_name(name, domain_name)
