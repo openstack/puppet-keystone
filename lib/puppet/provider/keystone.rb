@@ -25,26 +25,29 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
   end
 
   def self.get_keystone_puppet_credentials
-    auth_keys = ['auth_url', 'project_name', 'username',
-                 'password']
-    conf = keystone_puppet_conf
-    if conf and conf['keystone_authtoken'] and
-        auth_keys.all?{|k| !conf['keystone_authtoken'][k].nil?}
-      creds = Hash[ auth_keys.map \
-                   { |k| [k, conf['keystone_authtoken'][k].strip] } ]
+    auth_keys = ['auth_url', 'project_name', 'username', 'password']
+
+    conf = keystone_puppet_conf ? keystone_puppet_conf['keystone_authtoken'] : {}
+
+    if conf and auth_keys.all?{|k| !conf[k].nil?}
+      creds = Hash[ auth_keys.map { |k| [k, conf[k].strip] } ]
+
       if conf['project_domain_name']
         creds['project_domain_name'] = conf['project_domain_name']
       else
         creds['project_domain_name'] = 'Default'
       end
+
       if conf['user_domain_name']
         creds['user_domain_name'] = conf['user_domain_name']
       else
         creds['user_domain_name'] = 'Default'
       end
-      if conf['keystone_authtoken']['region_name']
-        creds['region_name'] = conf['keystone_authtoken']['region_name']
+
+      if conf['region_name']
+        creds['region_name'] = conf['region_name']
       end
+
       return creds
     else
       raise(Puppet::Error, "File: #{conf_filename} does not contain all " +
