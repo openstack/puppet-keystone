@@ -36,12 +36,18 @@
 #   (Optional) Path to the keystone policy folder
 #   Defaults to $::os_service_default
 #
+# [*purge_config*]
+#   (optional) Whether to set only the specified policy rules in the policy
+#    file.
+#    Defaults to false.
+#
 class keystone::policy (
   $enforce_scope        = $::os_service_default,
   $enforce_new_defaults = $::os_service_default,
   $policies             = {},
   $policy_path          = '/etc/keystone/policy.yaml',
   $policy_dirs          = $::os_service_default,
+  $purge_config         = false,
 ) {
 
   include keystone::deps
@@ -49,14 +55,16 @@ class keystone::policy (
 
   validate_legacy(Hash, 'validate_hash', $policies)
 
-  Openstacklib::Policy::Base {
-    file_path   => $policy_path,
-    file_user   => 'root',
-    file_group  => $::keystone::params::group,
-    file_format => 'yaml',
+  $policy_parameters = {
+    policies     => $policies,
+    policy_path  => $policy_path,
+    file_user    => 'root',
+    file_group   => $::keystone::params::group,
+    file_format  => 'yaml',
+    purge_config => $purge_config,
   }
 
-  create_resources('openstacklib::policy::base', $policies)
+  create_resources('openstacklib::policy', { $policy_path => $policy_parameters })
 
   oslo::policy { 'keystone_config':
     enforce_scope        => $enforce_scope,
