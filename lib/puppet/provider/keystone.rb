@@ -142,8 +142,11 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
     id_str = "#{name}_#{domain_name}"
     unless @users_name.keys.include?(id_str)
       user = fetch_user(name, domain_name)
-      err("Could not find user with name [#{name}] and domain [#{domain_name}]") unless user
-      @users_name[id_str] = user[:id]
+      if user && user.key?(:id)
+        @users_name[id_str] = user[:id]
+      else
+        err("Could not find user with name [#{name}] and domain [#{domain_name}]")
+      end
     end
     @users_name[id_str]
   end
@@ -153,8 +156,11 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
     id_str = "#{name}_#{domain_name}"
     unless @projects_name.keys.include?(id_str)
       project = fetch_project(name, domain_name)
-      err("Could not find project with name [#{name}] and domain [#{domain_name}]") unless project
-      @projects_name[id_str] = project[:id]
+      if project && project.key?(:id)
+        @projects_name[id_str] = project[:id]
+      else
+        err("Could not find project with name [#{name}] and domain [#{domain_name}]")
+      end
     end
     @projects_name[id_str]
   end
@@ -162,12 +168,19 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
   def self.domain_name_from_id(id)
     unless @domain_hash
       list = request('domain', 'list')
-      @domain_hash = Hash[list.collect{|domain| [domain[:id], domain[:name]]}]
+      if list.nil?
+        err("Could not list domains")
+      else
+        @domain_hash = Hash[list.collect{|domain| [domain[:id], domain[:name]]}]
+      end
     end
     unless @domain_hash.include?(id)
-      name = request('domain', 'show', id)[:name]
-      err("Could not find domain with id [#{id}]") unless name
-      @domain_hash[id] = name
+      domain = request('domain', 'show', id)
+      if domain && domain.key?(:name)
+        @domain_hash[id] = domain[:name]
+      else
+        err("Could not find domain with id [#{id}]")
+      end
     end
     @domain_hash[id]
   end
@@ -178,9 +191,12 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
       @domain_hash_name = Hash[list.collect{|domain| [domain[:name], domain[:id]]}]
     end
     unless @domain_hash_name.include?(name)
-      id = request('domain', 'show', name)[:id]
-      err("Could not find domain with name [#{name}]") unless id
-      @domain_hash_name[name] = id
+      domain = request('domain', 'show', name)
+      if domain && domain.key?(:id)
+        @domain_hash_name[name] = domain[:id]
+      else
+        err("Could not find domain with name [#{name}]")
+      end
     end
     @domain_hash_name[name]
   end
