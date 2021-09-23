@@ -166,7 +166,7 @@ describe 'keystone::resource::authtoken' do
 
         is_expected.to contain_package('python-memcache').with(
           :name   => platform_params[:memcache_package_name],
-          :ensure => 'present'
+          :ensure => 'installed'
         )
       end
     end
