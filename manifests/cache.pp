@@ -155,7 +155,6 @@ class keystone::cache(
     'memcache/dead_retry':          value => $memcache_dead_retry;
     'memcache/pool_maxsize':        value => $memcache_pool_maxsize;
     'memcache/pool_unused_timeout': value => $memcache_pool_unused_timeout;
-    'memcache/socket_timeout':      value => $memcache_socket_timeout;
     'token/caching':                value => $token_caching;
   }
 
