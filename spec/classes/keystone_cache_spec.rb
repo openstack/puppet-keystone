@@ -10,9 +10,6 @@ describe 'keystone::cache' do
 
     context 'with default parameters' do
       it 'configures cache' do
-        is_expected.to contain_keystone_config('memcache/dead_retry').with_value('<SERVICE DEFAULT>')
-        is_expected.to contain_keystone_config('memcache/pool_maxsize').with_value('<SERVICE DEFAULT>')
-        is_expected.to contain_keystone_config('memcache/pool_unused_timeout').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('token/caching').with_value('<SERVICE DEFAULT>')
 
         is_expected.to contain_oslo__cache('keystone_config').with(
@@ -61,9 +58,6 @@ describe 'keystone::cache' do
       end
 
       it 'configures cache' do
-        is_expected.to contain_keystone_config('memcache/dead_retry').with_value('60')
-        is_expected.to contain_keystone_config('memcache/pool_maxsize').with_value('10')
-        is_expected.to contain_keystone_config('memcache/pool_unused_timeout').with_value('120')
         is_expected.to contain_keystone_config('token/caching').with_value(true)
 
         is_expected.to contain_oslo__cache('keystone_config').with(
