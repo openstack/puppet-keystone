@@ -77,7 +77,7 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
       .find('Keystone_config/identity/default_domain_id')
     if default_domain_from_conf[:ensure] == :present
       # get from ini file
-      default_domain_from_conf[:value]
+      default_domain_from_conf[:value][0]
     else
       nil
     end
