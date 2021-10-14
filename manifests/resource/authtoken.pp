@@ -9,9 +9,9 @@
 # For example, instead of doing this::
 #
 #     glance_api_config {
-#       'keystone_authtoken/admin_tenant_name': value => $keystone_tenant;
-#       'keystone_authtoken/admin_user'       : value => $keystone_user;
-#       'keystone_authtoken/admin_password'   : value => $keystone_password;
+#       'keystone_authtoken/project_name': value => $keystone_tenant;
+#       'keystone_authtoken/username'    : value => $keystone_user;
+#       'keystone_authtoken/password'    : value => $keystone_password;
 #       secret => true;
 #       ...
 #     }
