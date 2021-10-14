@@ -7,16 +7,11 @@ Puppet::Type.newtype(:keystone_domain_config) do
   # to openstack cli
   extend PuppetX::KeystoneConfig::IniSetting
 
-  def initialize(*args)
-    super
-    # latest version of puppet got autonotify, but 3.8.2 doesn't so
-    # use this.
-    keystone_service = 'Service[keystone]'
-    self[:notify] = [keystone_service] if !catalog.nil? &&
-      catalog.resource(keystone_service)
-  end
-
   create_parameters
+
+  autonotify(:service) do
+    ['keystone']
+  end
 
   # if one declare the domain directory as a resource, this will
   # create a soft dependancy with it.
