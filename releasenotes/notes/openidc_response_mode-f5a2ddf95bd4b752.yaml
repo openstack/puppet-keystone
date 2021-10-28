@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    The ``keystone::federation::ipenidc`` class now supports the new
+    ``openidc_response_mode`` parameter, to customize mod_auth_openidc response
+    mode.
