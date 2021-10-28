@@ -7,6 +7,9 @@
   OIDCClientSecret "<%= scope['keystone::federation::openidc::openidc_client_secret']-%>"
   OIDCCryptoPassphrase "<%= scope['keystone::federation::openidc::openidc_crypto_passphrase']-%>"
 
+<%- if scope['::keystone::federation::openidc::openidc_response_mode'] != nil -%>
+  OIDCResponseMode "<%= scope['::keystone::federation::openidc::openidc_response_mode'] %>"
+<%- end -%>
 <%- if scope['::keystone::federation::openidc::openidc_cache_type'] != nil -%>
   OIDCCacheType <%= scope['::keystone::federation::openidc::openidc_cache_type'] %>
 <%- end -%>

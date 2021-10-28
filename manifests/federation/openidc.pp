@@ -38,6 +38,11 @@
 #  (Optional) String value.
 #  Defaults to 'id_token'
 #
+# [*openidc_response_mode*]
+#  (Optional) mod_auth_openidc response mode. Can be any response type
+#  supported by mod_auth_openidc (fragment, query, form_post).
+#  Defaults to undef
+#
 # [*openidc_cache_type*]
 #  (Optional) mod_auth_openidc cache type.  Can be any cache type
 #  supported by mod_auth_openidc (shm, file, memcache, redis).
@@ -137,6 +142,7 @@ class keystone::federation::openidc (
   $openidc_client_secret,
   $openidc_crypto_passphrase      = 'openstack',
   $openidc_response_type          = 'id_token',
+  $openidc_response_mode          = undef,
   $openidc_cache_type             = undef,
   $openidc_cache_shm_max          = undef,
   $openidc_cache_shm_entry_size   = undef,
