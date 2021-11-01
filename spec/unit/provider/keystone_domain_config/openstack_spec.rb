@@ -76,8 +76,7 @@ describe provider_class do
         expect { @domain_provider.create }.not_to raise_error
         expect(File).to exist('/tmp/keystone.bar.conf')
         expect(File.read('/tmp/keystone.bar.conf'))
-          .to eq('
-[dude]
+          .to eq('[dude]
 foo=blahh
 ')
       end
@@ -95,14 +94,12 @@ foo=blahh
         expect(File).to exist('/tmp/keystone.baz.conf')
 
         expect(File.read('/tmp/keystone.bar.conf'))
-          .to eq('
-[dude]
+          .to eq('[dude]
 foo=blahh
 ')
 
         expect(File.read('/tmp/keystone.baz.conf'))
-          .to eq('
-[duck]
+          .to eq('[duck]
 go=where
 ')
       end
