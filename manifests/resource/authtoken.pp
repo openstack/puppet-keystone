@@ -331,7 +331,7 @@ define keystone::resource::authtoken(
     'keystone_authtoken/project_name'                   => {'value' => $project_name},
     'keystone_authtoken/project_domain_name'            => {'value' => $project_domain_name},
     'keystone_authtoken/insecure'                       => {'value' => $insecure},
-    'keystone_authtoken/service_token_roles'            => {'value' => $service_token_roles},
+    'keystone_authtoken/service_token_roles'            => {'value' => join(any2array($service_token_roles), ',')},
     'keystone_authtoken/service_token_roles_required'   => {'value' => $service_token_roles_required},
     'keystone_authtoken/service_type'                   => {'value' => $service_type},
     'keystone_authtoken/interface'                      => {'value' => $interface},

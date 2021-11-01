@@ -199,6 +199,15 @@ describe 'keystone::resource::authtoken' do
       it { expect { is_expected.to raise_error(Puppet::Error, 'memcache_secret_key is required when memcache_security_strategy is defined') } }
     end
 
+    context 'when service_token_roles is an array' do
+      before do
+        params.merge!({
+          :service_token_roles => ['service', 'alt_service']
+        })
+
+        it { is_expected.to contain_keystone_config('service_token_roles').with_value('service,alt_service') }
+      end
+    end
   end
 
   on_supported_os({
