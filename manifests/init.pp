@@ -687,6 +687,7 @@ Support for deploying under eventlet will be dropped as of the M-release of Open
     'httpd': {
       include apache::params
       $service_name_real = $::apache::params::service_name
+      Service <| title == 'httpd' |> { tag +> 'keystone-service' }
     }
     default: {
       fail("Invalid service_name. Either keystone/openstack-keystone for \
