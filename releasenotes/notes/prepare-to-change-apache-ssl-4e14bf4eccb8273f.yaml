@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    Default value of the ``keystone::wsgi::apache::ssl`` parameter will be
+    changed from ``true`` to ``false`` in a future release. Make sure
+    the parameter is set to the desired value.
