@@ -167,30 +167,6 @@ class keystone::wsgi::apache (
 
   include keystone::deps
 
-  # TODO(tobias-urdin): This dependency chaining can be moved to keystone::deps
-  # when we have cleaned up some old eventlet code and users are forced to use
-  # apache even though it's pretty much enforced today.
-
-  # The httpd package is untagged, but needs to have ordering enforced,
-  # so handle it here rather than in the deps class.
-  Anchor['keystone::install::begin']
-  -> Package['httpd']
-  -> Anchor['keystone::install::end']
-
-  # Configure apache during the config phase
-  Anchor['keystone::config::begin']
-  -> Apache::Vhost<||>
-  ~> Anchor['keystone::config::end']
-
-  # Start the service during the service phase
-  Anchor['keystone::service::begin']
-  -> Service['httpd']
-  -> Anchor['keystone::service::end']
-
-  # Notify the service when config changes
-  Anchor['keystone::config::end']
-  ~> Service['httpd']
-
   ::openstacklib::wsgi::apache { 'keystone_wsgi':
     servername                  => $servername,
     bind_host                   => $bind_host,
