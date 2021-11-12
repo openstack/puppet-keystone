@@ -48,6 +48,10 @@
 #   cron jobs at the same time on all hosts this job is configured.
 #   Defaults to 0
 #
+# [*age*]
+#   (Optional) Number of days prior to today for deletion,
+#   Defaults to 0
+#
 # [*destination*]
 #   (Optional) Path to file to which rows should be archived
 #   Defaults to '/var/log/keystone/keystone-trustflush.log'
@@ -64,6 +68,7 @@ class keystone::cron::trust_flush (
   $month            = '*',
   $weekday          = '*',
   Integer $maxdelay = 0,
+  Integer $age      = 0,
   $destination      = '/var/log/keystone/keystone-trustflush.log',
   $user             = $::keystone::params::user,
 ) inherits keystone::params {
@@ -76,9 +81,15 @@ class keystone::cron::trust_flush (
     $sleep = "sleep `expr \${RANDOM} \\% ${maxdelay}`; "
   }
 
+  if $age == 0 {
+    $date = ''
+  } else {
+    $date = "--date `date --date 'today - ${age} days' +\\%d-\\%m-\\%Y` "
+  }
+
   cron { 'keystone-manage trust_flush':
     ensure      => $ensure,
-    command     => "${sleep}keystone-manage trust_flush >>${destination} 2>&1",
+    command     => "${sleep}keystone-manage trust_flush ${date}>>${destination} 2>&1",
     environment => 'PATH=/bin:/usr/bin:/usr/sbin SHELL=/bin/sh',
     user        => $user,
     minute      => $minute,

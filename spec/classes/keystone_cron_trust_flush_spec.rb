@@ -25,15 +25,16 @@ describe 'keystone::cron::trust_flush' do
 
     context 'with overriden params' do
       before do
-        params.merge!( :ensure      => 'absent',
-                       :minute      => 13,
-                       :hour        => 23,
-                       :monthday    => 3,
-                       :month       => 4,
-                       :weekday     => 2,
-                       :maxdelay    => 600,
-                       :destination => '/tmp/trustflush.log',
-                       :user        => 'nobody' )
+        params.merge!(
+          :ensure      => 'absent',
+          :minute      => 13,
+          :hour        => 23,
+          :monthday    => 3,
+          :month       => 4,
+          :weekday     => 2,
+          :maxdelay    => 600,
+          :destination => '/tmp/trustflush.log',
+          :user        => 'nobody' )
       end
 
       it { is_expected.to contain_class('keystone::deps') }
@@ -48,6 +49,27 @@ describe 'keystone::cron::trust_flush' do
         :monthday    => params[:monthday],
         :month       => params[:month],
         :weekday     => params[:weekday],
+        :require     => 'Anchor[keystone::dbsync::end]',
+      )}
+    end
+
+    context 'with age' do
+      before do
+        params.merge!(
+          :age => 14
+        )
+      end
+
+      it { is_expected.to contain_cron('keystone-manage trust_flush').with(
+        :ensure      => 'present',
+        :command     => 'keystone-manage trust_flush --date `date --date \'today - 14 days\' +\\%d-\\%m-\\%Y` >>/var/log/keystone/keystone-trustflush.log 2>&1',
+        :environment => 'PATH=/bin:/usr/bin:/usr/sbin SHELL=/bin/sh',
+        :user        => 'keystone',
+        :minute      => 1,
+        :hour        => '*',
+        :monthday    => '*',
+        :month       => '*',
+        :weekday     => '*',
         :require     => 'Anchor[keystone::dbsync::end]',
       )}
     end
