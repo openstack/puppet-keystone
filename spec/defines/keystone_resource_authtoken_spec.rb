@@ -189,14 +189,33 @@ describe 'keystone::resource::authtoken' do
       it { expect { is_expected.to raise_error(Puppet::Error, 'memcache_security_strategy can be set only to MAC or ENCRYPT') } }
     end
 
+    context 'memcache_security_strategy in lower case' do
+      before do
+        params.merge!({
+          :memcache_security_strategy => 'encrypt',
+          :memcache_secret_key        => 'secret_key',
+        })
+      end
+      it { is_expected.to contain_keystone_config('keystone_authtoken/memcache_security_strategy').with_value( params[:memcache_security_strategy] ) }
+    end
+
     context 'require memcache_secret_key when memcache_security_strategy is defined' do
       before do
         params.merge!({
           :memcache_security_strategy => 'MAC',
-          :memcache_secret_key => '<SERVICE DEFAULT>',
+          :memcache_secret_key        => '<SERVICE DEFAULT>',
         })
       end
       it { expect { is_expected.to raise_error(Puppet::Error, 'memcache_secret_key is required when memcache_security_strategy is defined') } }
+    end
+
+    context 'memcache_security_strategy is None' do
+      before do
+        params.merge!({
+          :memcache_security_strategy => 'none',
+        })
+      end
+      it { is_expected.to contain_keystone_config('keystone_authtoken/memcache_security_strategy').with_value( params[:memcache_security_strategy] ) }
     end
 
     context 'when service_token_roles is an array' do

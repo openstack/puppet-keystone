@@ -273,12 +273,14 @@ define keystone::resource::authtoken(
     validate_legacy(Boolean, 'validate_bool', $memcache_use_advanced_pool)
   }
 
-  if! ($memcache_security_strategy in [$::os_service_default,'MAC','ENCRYPT']) {
-    fail('memcache_security_strategy can be set only to MAC or ENCRYPT')
-  }
+  if !is_service_default($memcache_security_strategy) {
+    if !(downcase($memcache_security_strategy) in ['none', 'mac', 'encrypt']){
+      fail('memcache_security_strategy can be set only to None, MAC or ENCRYPT')
+    }
 
-  if !is_service_default($memcache_security_strategy) and is_service_default($memcache_secret_key) {
-    fail('memcache_secret_key is required when memcache_security_strategy is defined')
+    if downcase($memcache_security_strategy) != 'none' and is_service_default($memcache_secret_key) {
+      fail('memcache_secret_key is required when memcache_security_strategy is not None')
+    }
   }
 
   if !is_service_default($delay_auth_decision) {
