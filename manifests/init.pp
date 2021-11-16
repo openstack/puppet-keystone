@@ -587,16 +587,21 @@ removed in a future realse. Use keystone::db::database_max_overflow instead')
   # ssl config
   if ($enable_ssl) {
     keystone_config {
-      'ssl/enable':              value  => true;
-      'ssl/certfile':            value  => $ssl_certfile;
-      'ssl/keyfile':             value  => $ssl_keyfile;
-      'ssl/ca_certs':            value  => $ssl_ca_certs;
-      'ssl/ca_key':              value  => $ssl_ca_key;
-      'ssl/cert_subject':        value  => $ssl_cert_subject;
+      'ssl/enable':       value  => true;
+      'ssl/certfile':     value  => $ssl_certfile;
+      'ssl/keyfile':      value  => $ssl_keyfile;
+      'ssl/ca_certs':     value  => $ssl_ca_certs;
+      'ssl/ca_key':       value  => $ssl_ca_key;
+      'ssl/cert_subject': value  => $ssl_cert_subject;
     }
   } else {
     keystone_config {
-      'ssl/enable':              value  => false;
+      'ssl/enable':       value  => false;
+      'ssl/certfile':     value  => $::os_service_default;
+      'ssl/keyfile':      value  => $::os_service_default;
+      'ssl/ca_certs':     value  => $::os_service_default;
+      'ssl/ca_key':       value  => $::os_service_default;
+      'ssl/cert_subject': value  => $::os_service_default;
     }
   }
 

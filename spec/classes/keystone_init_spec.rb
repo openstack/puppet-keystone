@@ -41,6 +41,11 @@ describe 'keystone' do
         is_expected.to contain_keystone_config('revoke/driver').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('policy/driver').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('ssl/enable').with_value(false)
+        is_expected.to contain_keystone_config('ssl/certfile').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ssl/keyfile').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ssl/ca_certs').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ssl/ca_key').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ssl/cert_subject').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('token/revoke_by_id').with_value(true)
 
         is_expected.to contain_oslo__middleware('keystone_config').with(
@@ -132,6 +137,11 @@ describe 'keystone' do
         is_expected.to contain_keystone_config('revoke/driver').with_value('sql')
         is_expected.to contain_keystone_config('policy/driver').with_value('sql')
         is_expected.to contain_keystone_config('ssl/enable').with_value(false)
+        is_expected.to contain_keystone_config('ssl/certfile').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ssl/keyfile').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ssl/ca_certs').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ssl/ca_key').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ssl/cert_subject').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('token/revoke_by_id').with_value(true)
 
         is_expected.to contain_oslo__middleware('keystone_config').with(
