@@ -1,0 +1,5 @@
+---
+upgrade:
+  - |
+    The ``keystone::resource::service_identity::ignore_default_tenant``
+    parameter has been removed.

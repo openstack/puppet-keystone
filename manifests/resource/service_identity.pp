@@ -103,12 +103,6 @@
 #   If keystone_project_domain is not specified, use $keystone_default_domain
 #   Defaults to undef
 #
-# DEPRECATED PARAMETERS
-#
-# [*ignore_default_tenant*]
-#   Ignore setting the default tenant value when the user is created.
-#   string; optional: default to undef
-#
 define keystone::resource::service_identity(
   $ensure                = 'present',
   $admin_url             = false,
@@ -130,15 +124,9 @@ define keystone::resource::service_identity(
   $user_domain           = undef,
   $project_domain        = undef,
   $default_domain        = undef,
-  # DEPRECATED PARAMETERS
-  $ignore_default_tenant = undef,
 ) {
 
   include keystone::deps
-
-  if $ignore_default_tenant != undef {
-    warning('The ignore_default_tenant parameter was deprecated and has no effect')
-  }
 
   validate_legacy(Enum['present', 'absent'], 'validate_re', $ensure,
     [['^present$', '^absent$'], 'Valid values for ensure parameter are present or absent'])
