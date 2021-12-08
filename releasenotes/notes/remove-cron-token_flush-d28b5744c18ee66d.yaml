@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    The ``keystone::cron::token_flush`` class has been removed.
