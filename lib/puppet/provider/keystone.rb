@@ -48,6 +48,10 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
         creds['region_name'] = conf['region_name']
       end
 
+      if conf['interface']
+        creds['interface'] = conf['interface']
+      end
+
       return creds
     else
       raise(Puppet::Error, "File: #{conf_filename} does not contain all " +
