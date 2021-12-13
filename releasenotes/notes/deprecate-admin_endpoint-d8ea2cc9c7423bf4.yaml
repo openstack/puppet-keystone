@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The ``keystone::admin_endpoint`` parameter has been deprecated because it
+    has not been used for several releases.

@@ -174,14 +174,6 @@
 #   (Optional) Where to log
 #   Defaults to undef.
 #
-# [*admin_endpoint*]
-#   (Optional) The base admin endpoint URL for keystone that are
-#   advertised to clients (NOTE: this does NOT affect how keystone listens
-#   for connections) (string value)
-#   If set to false, no admin_endpoint will be defined in keystone.conf.
-#   Sample value: 'http://localhost:5000/'
-#   Defaults to $::os_service_default
-#
 # [*public_endpoint*]
 #   (Optional) The base public endpoint URL for keystone that are
 #   advertised to clients (NOTE: this does NOT affect how
@@ -401,6 +393,14 @@
 #   member_role_id option; see that option for more detail.
 #   Defaults to undef
 #
+# [*admin_endpoint*]
+#   (Optional) The base admin endpoint URL for keystone that are
+#   advertised to clients (NOTE: this does NOT affect how keystone listens
+#   for connections) (string value)
+#   If set to false, no admin_endpoint will be defined in keystone.conf.
+#   Sample value: 'http://localhost:5000/'
+#   Defaults to undef
+#
 # == Authors
 #
 #   Dan Bode dan@puppetlabs.com
@@ -423,7 +423,6 @@ class keystone(
   $password_hash_rounds                 = $::os_service_default,
   $revoke_driver                        = $::os_service_default,
   $revoke_by_id                         = true,
-  $admin_endpoint                       = $::os_service_default,
   $public_endpoint                      = $::os_service_default,
   $enable_ssl                           = false,
   $ssl_certfile                         = '/etc/keystone/ssl/certs/keystone.pem',
@@ -483,6 +482,7 @@ class keystone(
   $database_max_overflow                = undef,
   $member_role_id                       = undef,
   $member_role_name                     = undef,
+  $admin_endpoint                       = undef,
 ) inherits keystone::params {
 
   include keystone::deps
@@ -552,6 +552,10 @@ removed in a future realse. Use keystone::db::database_max_overflow instead')
   keystone_config {
     'DEFAULT/member_role_id':   ensure => absent;
     'DEFAULT/member_role_name': ensure => absent;
+  }
+
+  if $admin_endpoint != undef {
+    warning('The keystone::admin_endpoint parameter is deprecated. This parameter has no effect')
   }
 
   package { 'keystone':
