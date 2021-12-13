@@ -1,0 +1,6 @@
+---
+deprecations:
+  - |
+    The ``member_role_id`` parameter and the ``member_role_name`` parameter
+    of the ``keystone`` class have been deprecated and have no effect now.
+    These parameters will be removed in a future release.

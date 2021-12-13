@@ -316,18 +316,6 @@
 #   qualification those resources goes into "Default" domain.  See README.
 #   Defaults to undef (will use built-in Keystone default)
 #
-# [*member_role_id*]
-#   (Optional) Similar to the member_role_name option, this represents the
-#   default role ID used to associate users with their default projects in the
-#   v2 API. This will be used as the explicit role where one is not specified
-#   by the v2 API.
-#   Defaults to $::os_service_default
-#
-# [*member_role_name*]
-#   (Optional) # This is the role name used in combination with the
-#   member_role_id option; see that option for more detail.
-#   Defaults to $::os_service_default
-#
 # [*policy_driver*]
 #   Policy backend driver. (string value)
 #   Defaults to $::os_service_default.
@@ -401,6 +389,18 @@
 #   (Optional) If set, use this value for max_overflow with sqlalchemy.
 #   Defaults to: undef
 #
+# [*member_role_id*]
+#   (Optional) Similar to the member_role_name option, this represents the
+#   default role ID used to associate users with their default projects in the
+#   v2 API. This will be used as the explicit role where one is not specified
+#   by the v2 API.
+#   Defaults to undef
+#
+# [*member_role_name*]
+#   (Optional) # This is the role name used in combination with the
+#   member_role_id option; see that option for more detail.
+#   Defaults to undef
+#
 # == Authors
 #
 #   Dan Bode dan@puppetlabs.com
@@ -464,8 +464,6 @@ class keystone(
   $credential_key_repository            = '/etc/keystone/credential-keys',
   $credential_keys                      = false,
   $default_domain                       = undef,
-  $member_role_id                       = $::os_service_default,
-  $member_role_name                     = $::os_service_default,
   $policy_driver                        = $::os_service_default,
   $using_domain_config                  = false,
   $domain_config_directory              = '/etc/keystone/domains',
@@ -483,6 +481,8 @@ class keystone(
   $database_retry_interval              = undef,
   $database_max_pool_size               = undef,
   $database_max_overflow                = undef,
+  $member_role_id                       = undef,
+  $member_role_name                     = undef,
 ) inherits keystone::params {
 
   include keystone::deps
@@ -540,6 +540,20 @@ removed in a future realse. Use keystone::db::database_max_pool_size instead')
 removed in a future realse. Use keystone::db::database_max_overflow instead')
   }
 
+  if $member_role_id != undef {
+    warning('The keystone::member_role_id parameter is deprecated and has no effect')
+  }
+
+  if $member_role_name != undef {
+    warning('The keystone::member_role_name parameter is deprecated and has no effect')
+  }
+
+  # TODO(tkajinam): Remove this when removing member_role_* parameters
+  keystone_config {
+    'DEFAULT/member_role_id':   ensure => absent;
+    'DEFAULT/member_role_name': ensure => absent;
+  }
+
   package { 'keystone':
     ensure => $package_ensure,
     name   => $::keystone::params::package_name,
@@ -555,11 +569,6 @@ removed in a future realse. Use keystone::db::database_max_overflow instead')
 
   resources { 'keystone_config':
     purge  => $purge_config,
-  }
-
-  keystone_config {
-    'DEFAULT/member_role_id':   value => $member_role_id;
-    'DEFAULT/member_role_name': value => $member_role_name;
   }
 
   # Endpoint configuration
