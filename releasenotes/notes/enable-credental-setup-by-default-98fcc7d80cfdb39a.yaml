@@ -1,0 +1,5 @@
+---
+upgrade:
+  - |
+    Default value of the ``keystone::enable_credential_setup`` parameter has
+    been updated from ``false`` to ``true``.

@@ -283,8 +283,6 @@
 #   order to let Puppet manage Keystone keys in a consistent way, otherwise
 #   keystone-manage will generate different set of keys on keystone nodes and the
 #   service won't work.
-#   This feature was added at the end of Newton. The default value is now False
-#   by default but will switch to True once UCA will have latest Keystone version.
 #   Defaults to False
 #
 # [*credential_key_repository*]
@@ -460,7 +458,7 @@ class keystone(
   $fernet_max_active_keys               = $::os_service_default,
   $fernet_keys                          = false,
   $fernet_replace_keys                  = true,
-  $enable_credential_setup              = false,
+  $enable_credential_setup              = true,
   $credential_key_repository            = '/etc/keystone/credential-keys',
   $credential_keys                      = false,
   $default_domain                       = undef,

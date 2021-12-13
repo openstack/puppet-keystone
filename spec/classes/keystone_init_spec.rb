@@ -101,6 +101,21 @@ describe 'keystone' do
       it { is_expected.to contain_exec('keystone-manage db_sync') }
 
       it { is_expected.to_not contain_file('/etc/keystone/domains') }
+
+      it { is_expected.to contain_file('/etc/keystone/credential-keys').with(
+        :ensure => 'directory',
+        :owner  => 'keystone',
+        :group  => 'keystone',
+        'mode'  => '0600',
+      ) }
+
+      it { is_expected.to contain_exec('keystone-manage credential_setup').with(
+        :command => 'keystone-manage credential_setup --keystone-user keystone --keystone-group keystone',
+        :user    => 'keystone',
+        :creates => '/etc/keystone/credential-keys/0',
+        :require => 'File[/etc/keystone/credential-keys]',
+      ) }
+      it { is_expected.to contain_keystone_config('credential/key_repository').with_value('/etc/keystone/credential-keys')}
     end
 
     context 'with overridden parameters' do
@@ -309,28 +324,16 @@ describe 'keystone' do
       ) }
     end
 
-    context 'when enabling credential_setup' do
+    context 'when disabling credential_setup' do
       let :params do
         {
-          'enable_credential_setup'   => true,
-          'credential_key_repository' => '/etc/keystone/credential-keys',
+          'enable_credential_setup' => false,
         }
       end
 
-      it { is_expected.to contain_file(params['credential_key_repository']).with(
-        :ensure => 'directory',
-        :owner  => 'keystone',
-        :group  => 'keystone',
-        'mode'  => '0600',
-      ) }
-
-      it { is_expected.to contain_exec('keystone-manage credential_setup').with(
-        :command => 'keystone-manage credential_setup --keystone-user keystone --keystone-group keystone',
-        :user    => 'keystone',
-        :creates => '/etc/keystone/credential-keys/0',
-        :require => 'File[/etc/keystone/credential-keys]',
-      ) }
-      it { is_expected.to contain_keystone_config('credential/key_repository').with_value('/etc/keystone/credential-keys')}
+      it { is_expected.to_not contain_file('/etc/keystone/credential-keys') }
+      it { is_expected.to_not contain_exec('keystone-manage credential_setup') }
+      it { is_expected.to contain_keystone_config('credential/key_repository').with_value('/etc/keystone/credential-keys') }
     end
 
     context 'when overriding the credential key directory' do
@@ -341,9 +344,16 @@ describe 'keystone' do
         }
       end
 
+      it { is_expected.to contain_file('/var/lib/credential-keys').with(
+        :ensure => 'directory',
+        :owner  => 'keystone',
+        :group  => 'keystone',
+        'mode'  => '0600',
+      ) }
       it { is_expected.to contain_exec('keystone-manage credential_setup').with(
         :creates => '/var/lib/credential-keys/0'
       ) }
+      it { is_expected.to contain_keystone_config('credential/key_repository').with_value('/var/lib/credential-keys') }
     end
 
     context 'when overriding the keystone group and user' do
