@@ -86,6 +86,6 @@ class keystone::cron::trust_flush (
     monthday    => $monthday,
     month       => $month,
     weekday     => $weekday,
-    require     => Anchor['keystone::install::end'],
+    require     => Anchor['keystone::dbsync::end'],
   }
 }

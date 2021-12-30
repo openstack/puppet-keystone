@@ -19,7 +19,7 @@ describe 'keystone::cron::trust_flush' do
         :monthday    => '*',
         :month       => '*',
         :weekday     => '*',
-        :require     => 'Anchor[keystone::install::end]',
+        :require     => 'Anchor[keystone::dbsync::end]',
       )}
     end
 
@@ -48,7 +48,7 @@ describe 'keystone::cron::trust_flush' do
         :monthday    => params[:monthday],
         :month       => params[:month],
         :weekday     => params[:weekday],
-        :require     => 'Anchor[keystone::install::end]',
+        :require     => 'Anchor[keystone::dbsync::end]',
       )}
     end
   end
