@@ -209,19 +209,27 @@ class keystone::wsgi::apache (
     error_log_file              => $error_log_file,
     error_log_pipe              => $error_log_pipe,
     error_log_syslog            => $error_log_syslog,
+    require                     => Anchor['keystone::install::end'],
   }
 
   # Workaround to empty Keystone vhost that is provided & activated by default with running
   # Canonical packaging (called 'keystone'). This will make sure upgrading the package is
   # possible, see https://bugs.launchpad.net/ubuntu/+source/keystone/+bug/1737697
+  #
+  # The file should be created after the apache class is invoked, otherwise
+  # the file is deleted because of its default behavior which removes all files
+  # in sites-available/sites-enabled.
   if ($::operatingsystem == 'Ubuntu') {
     ensure_resource('file', '/etc/apache2/sites-available/keystone.conf', {
       'ensure'  => 'file',
       'content' => '',
     })
 
-    Package<| tag == 'keystone-package' |>
+    Anchor['keystone::install::end']
       -> File<| title == '/etc/apache2/sites-available/keystone.conf' |>
-      ~> Anchor['keystone::install::end']
+
+    File<| title == '/etc/apache2/sites-available' |>
+      -> File<| title == '/etc/apache2/sites-available/keystone.conf' |>
+      ~> Anchor['keystone::service::begin']
   }
 }
