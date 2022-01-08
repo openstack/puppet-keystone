@@ -695,7 +695,7 @@ removed in a future realse. Use keystone::db::database_max_overflow instead')
 
       # Note: Debian uses uwsgi if using keystone service, which isn't deprecated
       # and therefore, no warning should be displayed.
-      if $service_name == $::keystone::params::service_name and $::os_package_type != 'debian'{
+      if $service_name == $::keystone::params::service_name and $::operatingsystem != 'Debian'{
         warning("Keystone under Eventlet has been deprecated during the Kilo cycle. \
 Support for deploying under eventlet will be dropped as of the M-release of OpenStack.")
       }
