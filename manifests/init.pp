@@ -813,7 +813,7 @@ running as a standalone service, or httpd for being run by a httpd server")
   if $manage_service and $enabled {
     exec { 'restart_keystone':
       path        => ['/usr/sbin', '/usr/bin', '/sbin', '/bin/'],
-      command     => "service ${service_name_real} restart",
+      command     => "systemctl restart ${service_name_real}",
       refreshonly => true,
     }
   }
