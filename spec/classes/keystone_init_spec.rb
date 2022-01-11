@@ -164,7 +164,7 @@ describe 'keystone' do
       end
 
       it { is_expected.to contain_exec('restart_keystone').with(
-        'command' => "service #{platform_params[:httpd_service_name]} restart",
+        'command' => "systemctl restart #{platform_params[:httpd_service_name]}",
       ) }
     end
 
@@ -524,7 +524,7 @@ describe 'keystone' do
       end
 
       it { is_expected.to contain_exec('restart_keystone').with(
-        'command' => "service #{platform_params[:service_name]} restart",
+        'command' => "systemctl restart #{platform_params[:service_name]}",
       ) }
       it { is_expected.to contain_anchor('default_domain_created') }
     end
@@ -620,7 +620,7 @@ describe 'keystone' do
       let (:facts) do
         facts.merge!(OSDefaults.get_facts({
           :concat_basedir => '/var/lib/puppet/concat',
-          :fqdn           => 'some.host.tld'
+          :fqdn           => 'some.host.tld',
         }))
       end
 
