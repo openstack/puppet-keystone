@@ -141,6 +141,11 @@ define keystone::resource::service_identity(
   validate_legacy(Enum['present', 'absent'], 'validate_re', $ensure,
     [['^present$', '^absent$'], 'Valid values for ensure parameter are present or absent'])
 
+  validate_legacy(Boolean, 'validate_bool', $configure_endpoint)
+  validate_legacy(Boolean, 'validate_bool', $configure_user)
+  validate_legacy(Boolean, 'validate_bool', $configure_user_role)
+  validate_legacy(Boolean, 'validate_bool', $configure_service)
+
   if $service_name == undef {
     $service_name_real = $auth_name
   } else {
@@ -154,7 +159,12 @@ define keystone::resource::service_identity(
   }
 
   if $configure_user {
+    validate_legacy(String, 'validate_string', $password)
+    validate_legacy(String, 'validate_string', $auth_name)
+    validate_legacy(String, 'validate_string', $email)
+
     if $user_domain_real {
+      validate_legacy(String, 'validate_string', $user_domain_real)
       # We have to use ensure_resource here and hope for the best, because we have
       # no way to know if the $user_domain is the same domain passed as the
       # $default_domain parameter to class keystone.
@@ -176,6 +186,11 @@ define keystone::resource::service_identity(
   }
 
   if $configure_user_role {
+    validate_legacy(String, 'validate_string', $tenant)
+    validate_legacy(String, 'validate_string', $system_scope)
+    validate_legacy(Array, 'validate_array', $roles)
+    validate_legacy(Array, 'validate_array', $system_roles)
+
     if $ensure == 'present' {
       # NOTE(jaosorior): We only handle ensure 'present' here, since deleting a
       # role might be conflicting in some cases. e.g. the deployer removing a
