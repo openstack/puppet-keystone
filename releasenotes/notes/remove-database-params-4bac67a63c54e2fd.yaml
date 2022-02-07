@@ -1,0 +1,11 @@
+---
+features:
+  - |
+    The following parameters of the ``keystone`` class has been removed.
+
+    - ``database_connection``
+    - ``database_idle_timeout``
+    - ``database_max_overflow``
+    - ``database_max_pool_size``
+    - ``database_max_retries``
+    - ``database_retry_interval``

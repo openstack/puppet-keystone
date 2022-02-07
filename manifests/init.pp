@@ -354,31 +354,6 @@
 #
 # DEPRECATED PARAMETERS
 #
-# [*database_connection*]
-#   (Optional) Url used to connect to database.
-#   Defaults to undef.
-#
-# [*database_idle_timeout*]
-#   (Optional) Timeout when db connections should be reaped.
-#   Defaults to undef.
-#
-# [*database_max_retries*]
-#   (Optional) Maximum number of database connection retries during startup.
-#   Setting -1 implies an infinite retry count.
-#   (Defaults to undef)
-#
-# [*database_retry_interval*]
-#   (Optional) Interval between retries of opening a database connection.
-#   (Defaults to undef)
-#
-# [*database_max_pool_size*]
-#   (Optional) Maximum number of SQL connections to keep open in a pool.
-#   Defaults to: undef
-#
-# [*database_max_overflow*]
-#   (Optional) If set, use this value for max_overflow with sqlalchemy.
-#   Defaults to: undef
-#
 # [*member_role_id*]
 #   (Optional) Similar to the member_role_name option, this represents the
 #   default role ID used to associate users with their default projects in the
@@ -472,12 +447,6 @@ class keystone(
   $purge_config                         = false,
   $amqp_durable_queues                  = $::os_service_default,
   # DEPRECATED PARAMETERS
-  $database_connection                  = undef,
-  $database_idle_timeout                = undef,
-  $database_max_retries                 = undef,
-  $database_retry_interval              = undef,
-  $database_max_pool_size               = undef,
-  $database_max_overflow                = undef,
   $member_role_id                       = undef,
   $member_role_name                     = undef,
   $admin_endpoint                       = undef,
@@ -506,37 +475,6 @@ class keystone(
 
   include keystone::db
   include keystone::params
-
-  if $database_connection != undef {
-    warning('The database_connection parameter is deprecated and will be \
-removed in a future realse. Use keystone::db::database_connection instead')
-  }
-
-  if $database_idle_timeout != undef {
-    warning('The database_idle_timeout parameter is deprecated and will be \
-removed in a future realse. Use keystone::db::database_connection_recycle_time \
-instead')
-  }
-
-  if $database_max_retries!= undef {
-    warning('The database_max_retries parameter is deprecated and will be \
-removed in a future realse. Use keystone::db::database_max_retries instead')
-  }
-
-  if $database_retry_interval != undef {
-    warning('The database_retry_interval parameter is deprecated and will be \
-removed in a future realse. Use keystone::db::database_retry_interval instead')
-  }
-
-  if $database_max_pool_size != undef {
-    warning('The database_max_pool_size parameter is deprecated and will be \
-removed in a future realse. Use keystone::db::database_max_pool_size instead')
-  }
-
-  if $database_max_overflow != undef {
-    warning('The database_max_overflow parameter is deprecated and will be \
-removed in a future realse. Use keystone::db::database_max_overflow instead')
-  }
 
   if $member_role_id != undef {
     warning('The keystone::member_role_id parameter is deprecated and has no effect')
