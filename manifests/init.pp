@@ -677,39 +677,40 @@ removed in a future realse. Use keystone::db::database_max_overflow instead')
     } else {
       $service_ensure = 'stopped'
     }
+
+    case $service_name {
+      $::keystone::params::service_name: {
+        $service_name_real = $::keystone::params::service_name
+
+        class { 'keystone::service':
+          ensure       => $service_ensure,
+          service_name => $service_name,
+          enable       => $enabled,
+          hasstatus    => true,
+          hasrestart   => true,
+        }
+
+        # Note: Debian uses uwsgi if using keystone service, which isn't deprecated
+        # and therefore, no warning should be displayed.
+        if $service_name == $::keystone::params::service_name and $::operatingsystem != 'Debian'{
+          warning("Keystone under Eventlet has been deprecated during the Kilo cycle. \
+Support for deploying under eventlet will be dropped as of the M-release of OpenStack.")
+        }
+      }
+      'httpd': {
+        include apache::params
+        $service_name_real = $::apache::params::service_name
+        Service <| title == 'httpd' |> { tag +> 'keystone-service' }
+      }
+      default: {
+        fail("Invalid service_name. Either keystone/openstack-keystone for \
+running as a standalone service, or httpd for being run by a httpd server")
+      }
+    }
   } else {
     warning('Execution of db_sync does not depend on $enabled anymore. Please use sync_db instead.')
   }
 
-  case $service_name {
-    $::keystone::params::service_name: {
-      $service_name_real = $::keystone::params::service_name
-
-      class { 'keystone::service':
-        ensure       => $service_ensure,
-        service_name => $service_name,
-        enable       => $enabled,
-        hasstatus    => true,
-        hasrestart   => true,
-      }
-
-      # Note: Debian uses uwsgi if using keystone service, which isn't deprecated
-      # and therefore, no warning should be displayed.
-      if $service_name == $::keystone::params::service_name and $::operatingsystem != 'Debian'{
-        warning("Keystone under Eventlet has been deprecated during the Kilo cycle. \
-Support for deploying under eventlet will be dropped as of the M-release of OpenStack.")
-      }
-    }
-    'httpd': {
-      include apache::params
-      $service_name_real = $::apache::params::service_name
-      Service <| title == 'httpd' |> { tag +> 'keystone-service' }
-    }
-    default: {
-      fail("Invalid service_name. Either keystone/openstack-keystone for \
-running as a standalone service, or httpd for being run by a httpd server")
-    }
-  }
 
   if $sync_db {
     include keystone::db::sync
@@ -823,8 +824,12 @@ running as a standalone service, or httpd for being run by a httpd server")
       ensure     => present,
       enabled    => true,
       is_default => true,
-      require    => Service[$service_name],
     } ~> Exec<| title == 'restart_keystone' |>
+
+    if $manage_service {
+      Service[$service_name] -> Keystone_domain[$default_domain]
+    }
+
     anchor { 'default_domain_created':
       require => Keystone_domain[$default_domain],
     }
@@ -847,8 +852,10 @@ running as a standalone service, or httpd for being run by a httpd server")
         owner   => $keystone_user,
         group   => $keystone_group,
         mode    => '0750',
-        notify  => Service[$service_name],
         require => Anchor['keystone::install::end'],
+      }
+      if $manage_service {
+        File[$domain_config_directory] ~> Service[$service_name]
       }
     }
     # Here we want the creation to fail if the user has created those
