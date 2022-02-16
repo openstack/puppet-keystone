@@ -197,17 +197,10 @@ describe 'keystone' do
 
     context 'with disabled service managing' do
       let :params do
-        { :manage_service => false,
-          :enabled        => false }
+        { :manage_service => false }
       end
 
-      it { is_expected.to contain_service('keystone').with(
-        'ensure'     => nil,
-        'enable'     => false,
-        'hasstatus'  => true,
-        'hasrestart' => true
-      ) }
-      it { is_expected.to contain_anchor('keystone::service::end') }
+      it { is_expected.to_not contain_service('keystone') }
     end
 
     context 'with invalid catalog_type' do
