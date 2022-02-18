@@ -32,12 +32,6 @@
 #   (Optional) Space separated list of acceptable SASL mechanisms
 #   Defaults to $::os_service_default.
 #
-# DEPRECATED PARAMETERS
-#
-# [*amqp_allow_insecure_clients*]
-#   (Optional) Accept clients using either SSL or plain TCP
-#   Defaults to undef.
-#
 class keystone::messaging::amqp(
   $amqp_pre_settled                     = $::os_service_default,
   $amqp_idle_timeout                    = $::os_service_default,
@@ -46,16 +40,9 @@ class keystone::messaging::amqp(
   $amqp_ssl_key_file                    = $::os_service_default,
   $amqp_ssl_key_password                = $::os_service_default,
   $amqp_sasl_mechanisms                 = $::os_service_default,
-  # DEPRECATED PARAMETERS
-  $amqp_allow_insecure_clients          = undef,
 ) {
 
   include keystone::deps
-
-  if $amqp_allow_insecure_clients != undef {
-    warning('The amqp_allow_insecure_clients parameter is deprecated and \
-will be removed in a future release.')
-  }
 
   oslo::messaging::amqp { 'keystone_config':
     pre_settled      => $amqp_pre_settled,

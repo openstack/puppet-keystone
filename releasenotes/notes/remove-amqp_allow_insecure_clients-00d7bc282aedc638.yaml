@@ -1,0 +1,5 @@
+---
+upgrade:
+  - |
+    The ``keystone::messaging::amqp::allow_insecure_clients`` parameter has
+    been removed.
