@@ -35,6 +35,9 @@ describe 'keystone::cache' do
           :tls_certfile                         => '<SERVICE DEFAULT>',
           :tls_keyfile                          => '<SERVICE DEFAULT>',
           :tls_allowed_ciphers                  => '<SERVICE DEFAULT>',
+          :enable_retry_client                  => '<SERVICE DEFAULT>',
+          :retry_attempts                       => '<SERVICE DEFAULT>',
+          :retry_delay                          => '<SERVICE DEFAULT>',
           :manage_backend_package               => true,
         )
       end
@@ -60,6 +63,9 @@ describe 'keystone::cache' do
           :memcache_pool_unused_timeout         => '120',
           :memcache_pool_connection_get_timeout => '360',
           :tls_enabled                          => false,
+          :enable_retry_client                  => false,
+          :retry_attempts                       => 2,
+          :retry_delay                          => 0,
           :manage_backend_package               => false,
           :token_caching                        => true,
         }
@@ -91,6 +97,9 @@ describe 'keystone::cache' do
           :tls_certfile                         => '<SERVICE DEFAULT>',
           :tls_keyfile                          => '<SERVICE DEFAULT>',
           :tls_allowed_ciphers                  => '<SERVICE DEFAULT>',
+          :enable_retry_client                  => false,
+          :retry_attempts                       => 2,
+          :retry_delay                          => 0,
           :manage_backend_package               => false,
         )
       end
