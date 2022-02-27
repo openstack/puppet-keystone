@@ -24,11 +24,13 @@ class { 'mysql::server': }
 class { 'keystone::db::mysql':
   password => 'keystone',
 }
-class { 'keystone':
-  debug               => true,
+class { 'keystone::db':
   database_connection => 'mysql://keystone:keystone@127.0.0.1/keystone',
-  catalog_type        => 'sql',
-  enabled             => false,
+}
+class { 'keystone':
+  debug        => true,
+  catalog_type => 'sql',
+  enabled      => false,
 }
 class { 'keystone::bootstrap':
   password   => 'ChangeMe',
