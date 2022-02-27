@@ -28,9 +28,9 @@ class { 'keystone::db':
   database_connection => 'mysql://keystone:keystone@127.0.0.1/keystone',
 }
 class { 'keystone':
-  debug        => true,
-  catalog_type => 'sql',
-  enabled      => false,
+  debug          => true,
+  catalog_driver => 'sql',
+  enabled        => false,
 }
 class { 'keystone::bootstrap':
   password   => 'ChangeMe',

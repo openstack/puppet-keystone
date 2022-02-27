@@ -29,9 +29,9 @@ class { 'keystone::db':
 }
 
 class { 'keystone':
-  debug        => true,
-  catalog_type => 'sql',
-  enabled      => true,
+  debug          => true,
+  catalog_driver => 'sql',
+  enabled        => true,
 }
 class { 'keystone::bootstrap':
   password   => 'ChangeMe',

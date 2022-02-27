@@ -1,0 +1,5 @@
+---
+deprecations:
+  - |
+    The ``keystone::catalog_type`` parameter has been deprecated. Use
+    the ``catalog_driver`` parameter instead.

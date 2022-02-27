@@ -46,9 +46,9 @@ class { 'keystone::db':
 }
 
 class { 'keystone':
-  debug        => true,
-  catalog_type => 'sql',
-  enabled      => false,
+  debug          => true,
+  catalog_driver => 'sql',
+  enabled        => false,
 }
 
 class { 'keystone::bootstrap':

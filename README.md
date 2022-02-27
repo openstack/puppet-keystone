@@ -55,7 +55,7 @@ class { 'keystone::db':
 }
 
 class { 'keystone':
-  catalog_type => 'sql',
+  catalog_driver => 'sql',
 }
 
 class { 'keystone::bootstrap':
