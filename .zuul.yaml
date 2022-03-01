@@ -8,6 +8,7 @@
     check:
       jobs:
         - puppet-keystone-tripleo-standalone
+        - puppet-keystone-tripleo-centos-9-standalone
     gate:
       jobs:
         - puppet-keystone-tripleo-standalone
@@ -17,10 +18,18 @@
     parent: tripleo-puppet-ci-centos-8-standalone
     description: |
       TripleO standalone Job running Identity specific Tempest tests.
-    vars:
+    vars: &standalone_vars
       build_container_images: true
       featureset_override:
         run_tempest: false
         tempest_test_whitelist:
           - 'tempest.api.identity.v3'
         use_os_tempest: true
+
+- job:
+    name: puppet-keystone-tripleo-centos-9-standalone
+    parent: tripleo-puppet-ci-centos-9-standalone
+    description: |
+      TripleO standalone Job running Identity specific Tempest tests.
+    voting: false
+    vars: *standalone_vars
