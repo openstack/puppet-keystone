@@ -4,9 +4,11 @@ class { 'mysql::server': }
 class { 'keystone::db::mysql':
   password => 'keystone',
 }
+class { 'keystone::db':
+  database_connection => 'mysql://keystone:keystone@127.0.0.1/keystone',
+}
 class { 'keystone':
   debug               => true,
-  database_connection => 'mysql://keystone:keystone@192.168.1.1/keystone',
   enabled             => true,
   # The domain configuration setup at keystone level
   using_domain_config => true,
