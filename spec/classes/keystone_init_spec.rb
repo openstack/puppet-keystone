@@ -129,7 +129,7 @@ describe 'keystone' do
           :revoke_by_id                 => true,
           :enable_proxy_headers_parsing => true,
           :max_request_body_size        => 114688,
-          :catalog_type                 => 'template',
+          :catalog_driver               => 'templated',
           :catalog_template_file        => '/some/template_file',
           :token_provider               => 'uuid',
           :max_token_size               => 255,
