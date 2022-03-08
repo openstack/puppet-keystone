@@ -65,7 +65,7 @@ Puppet::Type.type(:keystone_endpoint).provide(
     end
     ids = @property_hash[:id].split(',')
     ids.each do |id|
-      self.class.request('endpoint', 'delete', id)
+      self.class.system_request('endpoint', 'delete', id)
     end
     @property_hash.clear
   end
@@ -153,10 +153,9 @@ Puppet::Type.type(:keystone_endpoint).provide(
                                          scope.to_s.sub(/_url$/, ''),
                                          property_flush[scope])[:id]
           else
-            self.class.request('endpoint',
-                               'set',
-                               [ids[scope],
-                                "--url=#{resource[scope]}"])
+            self.class.system_request('endpoint',
+                                      'set',
+                                      [ids[scope], "--url=#{resource[scope]}"])
           end
         end
       end
@@ -170,7 +169,7 @@ Puppet::Type.type(:keystone_endpoint).provide(
 
   def endpoint_create(name, region, interface, url)
     properties = [name, interface, url, '--region', region]
-    self.class.request('endpoint', 'create', properties)
+    self.class.system_request('endpoint', 'create', properties)
   end
 
   private
@@ -179,7 +178,7 @@ Puppet::Type.type(:keystone_endpoint).provide(
     return @endpoints unless @endpoints.nil?
     prev_do_not_manage = self.do_not_manage
     self.do_not_manage = true
-    @endpoints = request('endpoint', 'list')
+    @endpoints = system_request('endpoint', 'list')
     self.do_not_manage = prev_do_not_manage
     @endpoints
   end
@@ -192,7 +191,7 @@ Puppet::Type.type(:keystone_endpoint).provide(
     return @services unless @services.nil?
     prev_do_not_manage = self.do_not_manage
     self.do_not_manage = true
-    @services = request('service', 'list')
+    @services = system_request('service', 'list')
     self.do_not_manage = prev_do_not_manage
     @services
   end

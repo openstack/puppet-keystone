@@ -159,33 +159,45 @@ class keystone::bootstrap (
     })
   }
 
-  # The below creates and populates the /etc/keystone/puppet.conf file that contains
-  # the credentials that can be loaded by providers. Ensure it has the proper owner,
-  # group and mode so that it cannot be read by anything other than root.
+  # NOTE(tkajinam): puppet.conf is no longer required and now clouds.yaml
+  #                 is used instead.
+  # TODO(tkajinam): Remove this after Y release.
   file { '/etc/keystone/puppet.conf':
-    ensure  => 'present',
-    replace => false,
-    content => '',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0600',
-    require => Anchor['keystone::install::end'],
+    ensure  => 'absent',
+    require => Anchor['keystone::config::begin'],
+    before  => Anchor['keystone::config::end'],
   }
 
-  if $interface == 'admin' {
-    $auth_url_real = $admin_url
-  } elsif $interface == 'internal' {
-    $auth_url_real = $internal_url_real
-  } else {
-    $auth_url_real = $public_url
+  $auth_url_real = $interface ? {
+    'admin'    => $admin_url,
+    'internal' => $internal_url_real,
+    default    => $public_url
   }
 
-  keystone::resource::authtoken { 'keystone_puppet_config':
+  ensure_resource('file', '/etc/openstack', {
+    'ensure' => 'directory',
+    'mode'   => '0755',
+    'owner'  => 'root',
+    'group'  => 'root',
+  })
+
+  ensure_resource('file', '/etc/openstack/puppet', {
+    'ensure' => 'directory',
+    'mode'   => '0755',
+    'owner'  => 'root',
+    'group'  => 'root',
+  })
+
+  openstacklib::clouds { '/etc/openstack/puppet/admin-clouds.yaml':
     username     => $username,
     password     => $password,
     auth_url     => $auth_url_real,
     project_name => $project_name,
+    system_scope => 'all',
     region_name  => $region,
     interface    => $interface,
   }
+  Anchor['keystone::config::begin']
+    -> Openstacklib::Clouds['/etc/openstack/puppet/admin-clouds.yaml']
+    -> Anchor['keystone::config::end']
 }

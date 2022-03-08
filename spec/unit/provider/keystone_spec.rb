@@ -15,7 +15,7 @@ describe Puppet::Provider::Keystone do
   let(:set_env) do
     ENV['OS_USERNAME']     = 'test'
     ENV['OS_PASSWORD']     = 'abc123'
-    ENV['OS_PROJECT_NAME'] = 'test'
+    ENV['OS_SYSTEM_SCOPE'] = 'all'
     ENV['OS_AUTH_URL']     = 'http://127.0.0.1:5000/v3'
   end
 
@@ -66,7 +66,7 @@ id="newid"
     let(:set_env) do
       ENV['OS_USERNAME']     = 'test'
       ENV['OS_PASSWORD']     = 'abc123'
-      ENV['OS_PROJECT_NAME'] = 'test'
+      ENV['OS_SYSTEM_SCOPE'] = 'all'
       ENV['OS_AUTH_URL']     = 'http://127.0.0.1:5000/v3'
     end
 
@@ -98,7 +98,7 @@ id="the_project_id"
     let(:set_env) do
       ENV['OS_USERNAME']     = 'test'
       ENV['OS_PASSWORD']     = 'abc123'
-      ENV['OS_PROJECT_NAME'] = 'test'
+      ENV['OS_SYSTEM_SCOPE'] = 'all'
       ENV['OS_AUTH_URL']     = 'http://127.0.0.1:5000/v3'
     end
 
@@ -127,14 +127,6 @@ id="the_user_id"
   end
 
   describe '#get_auth_url' do
-    it 'should raise when OS_AUTH_URL is no defined in either the environment or the openrc file and there is no keystone puppet config file' do
-      home = ENV['HOME']
-      ENV.clear
-      File.expects(:exists?).with("#{home}/openrc").returns(false)
-      File.expects(:exists?).with('/root/openrc').returns(false)
-      expect { klass.get_auth_url }.to raise_error(Puppet::Error, "File: /etc/keystone/puppet.conf does not contain all required configuration keys. Cannot authenticate to Keystone.")
-    end
-
     it 'should return the OS_AUTH_URL from the environment' do
       ENV.clear
       ENV['OS_AUTH_URL'] = 'http://127.0.0.1:5001'

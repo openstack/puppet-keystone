@@ -8,68 +8,15 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
 
   extend Puppet::Provider::Openstack::Auth
 
-  INI_FILENAME = '/etc/keystone/keystone.conf'
   DEFAULT_DOMAIN = 'Default'
 
   @@default_domain_id = nil
 
-  def self.conf_filename
-    '/etc/keystone/puppet.conf'
-  end
-
-  def self.keystone_puppet_conf
-    return @keystone_puppet_conf if @keystone_puppet_conf
-    @keystone_puppet_conf = Puppet::Util::IniConfig::File.new
-    @keystone_puppet_conf.read(conf_filename)
-    @keystone_puppet_conf
-  end
-
-  def self.get_keystone_puppet_credentials
-    auth_keys = ['auth_url', 'project_name', 'username', 'password']
-
-    conf = keystone_puppet_conf ? keystone_puppet_conf['keystone_authtoken'] : {}
-
-    if conf and auth_keys.all?{|k| !conf[k].nil?}
-      creds = Hash[ auth_keys.map { |k| [k, conf[k].strip] } ]
-
-      if conf['project_domain_name']
-        creds['project_domain_name'] = conf['project_domain_name']
-      else
-        creds['project_domain_name'] = 'Default'
-      end
-
-      if conf['user_domain_name']
-        creds['user_domain_name'] = conf['user_domain_name']
-      else
-        creds['user_domain_name'] = 'Default'
-      end
-
-      if conf['region_name']
-        creds['region_name'] = conf['region_name']
-      end
-
-      if conf['interface']
-        creds['interface'] = conf['interface']
-      end
-
-      return creds
-    else
-      raise(Puppet::Error, "File: #{conf_filename} does not contain all " +
-            "required configuration keys. Cannot authenticate to Keystone.")
-    end
-  end
-
-  def self.keystone_puppet_credentials
-    @keystone_puppet_credentials ||= get_keystone_puppet_credentials
-  end
-
-  def keystone_puppet_credentials
-    self.class.keystone_puppet_credentials
-  end
-
   def self.get_auth_endpoint
-    q = keystone_puppet_credentials
-    "#{q['auth_url']}"
+    configs = self.request('configuration', 'show')
+    "#{configs['auth.auth_url']}"
+  rescue Puppet::Error::OpenstackAuthInputError
+    nil
   end
 
   def self.auth_endpoint
@@ -171,7 +118,7 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
 
   def self.domain_name_from_id(id)
     unless @domain_hash
-      list = request('domain', 'list')
+      list = system_request('domain', 'list')
       if list.nil?
         err("Could not list domains")
       else
@@ -179,7 +126,7 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
       end
     end
     unless @domain_hash.include?(id)
-      domain = request('domain', 'show', id)
+      domain = system_request('domain', 'show', id)
       if domain && domain.key?(:name)
         @domain_hash[id] = domain[:name]
       else
@@ -191,11 +138,11 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
 
   def self.domain_id_from_name(name)
     unless @domain_hash_name
-      list = request('domain', 'list')
+      list = system_request('domain', 'list')
       @domain_hash_name = Hash[list.collect{|domain| [domain[:name], domain[:id]]}]
     end
     unless @domain_hash_name.include?(name)
-      domain = request('domain', 'show', name)
+      domain = system_request('domain', 'show', name)
       if domain && domain.key?(:id)
         @domain_hash_name[name] = domain[:id]
       else
@@ -207,18 +154,18 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
 
   def self.fetch_project(name, domain)
     domain ||= default_domain
-    request('project', 'show',
-            [name, '--domain', domain],
-            {:no_retry_exception_msgs => /No project with a name or ID/})
+    system_request('project', 'show',
+                   [name, '--domain', domain],
+                   {:no_retry_exception_msgs => /No project with a name or ID/})
   rescue Puppet::ExecutionFailure => e
     raise e unless e.message =~ /No project with a name or ID/
   end
 
   def self.fetch_user(name, domain)
     domain ||= default_domain
-    request('user', 'show',
-            [name, '--domain', domain],
-            {:no_retry_exception_msgs => /No user with a name or ID/})
+    system_request('user', 'show',
+                   [name, '--domain', domain],
+                   {:no_retry_exception_msgs => /No user with a name or ID/})
   rescue Puppet::ExecutionFailure => e
     raise e unless e.message =~ /No user with a name or ID/
   end
@@ -234,40 +181,12 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
     return auth_url
   end
 
-  def self.ini_filename
-    INI_FILENAME
+  def self.project_request(service, action, properties=nil, options={})
+    self.request(service, action, properties, options, 'project')
   end
 
-  def self.keystone_file
-    return @keystone_file if @keystone_file
-    if File.exists?(ini_filename)
-      @keystone_file = Puppet::Util::IniConfig::File.new
-      @keystone_file.read(ini_filename)
-      @keystone_file
-    end
-  end
-
-  def self.request(service, action, properties=nil, options={})
-    super
-  rescue Puppet::Error::OpenstackAuthInputError, Puppet::Error::OpenstackUnauthorizedError => error
-    keystone_request(service, action, error, properties)
-  end
-
-  def self.keystone_request(service, action, error, properties=nil)
-    properties ||= []
-    @credentials.username = keystone_puppet_credentials['username']
-    @credentials.password = keystone_puppet_credentials['password']
-    @credentials.project_name = keystone_puppet_credentials['project_name']
-    @credentials.auth_url = auth_endpoint
-    if keystone_puppet_credentials['region_name']
-      @credentials.region_name = keystone_puppet_credentials['region_name']
-    end
-    if @credentials.version == '3'
-      @credentials.user_domain_name = keystone_puppet_credentials['user_domain_name']
-      @credentials.project_domain_name = keystone_puppet_credentials['project_domain_name']
-    end
-    raise error unless @credentials.set?
-    Puppet::Provider::Openstack.request(service, action, properties, @credentials)
+  def self.system_request(service, action, properties=nil, options={})
+    self.request(service, action, properties, options, 'system')
   end
 
   def self.set_domain_for_name(name, domain_name)

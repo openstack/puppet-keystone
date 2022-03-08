@@ -71,20 +71,31 @@ describe 'keystone::bootstrap' do
       )}
 
       it { is_expected.to contain_file('/etc/keystone/puppet.conf').with(
-        :ensure => 'present',
-        :replace => false,
-        :content => '',
-        :owner   => 'root',
-        :group   => 'root',
-        :mode    => '0600',
-        :require => 'Anchor[keystone::install::end]',
+        :ensure  => 'absent',
+        :require => 'Anchor[keystone::config::begin]',
+        :before  => 'Anchor[keystone::config::end]',
       )}
 
-      it { is_expected.to contain_keystone__resource__authtoken('keystone_puppet_config').with(
+      it { is_expected.to contain_file('/etc/openstack').with(
+        :ensure  => 'directory',
+        :mode    => '0755',
+        :owner   => 'root',
+        :group   => 'root',
+      )}
+
+      it { is_expected.to contain_file('/etc/openstack/puppet').with(
+        :ensure  => 'directory',
+        :mode    => '0755',
+        :owner   => 'root',
+        :group   => 'root',
+      )}
+
+      it { is_expected.to contain_openstacklib__clouds('/etc/openstack/puppet/admin-clouds.yaml').with(
         :username     => 'admin',
         :password     => 'secret',
         :auth_url     => 'http://127.0.0.1:5000',
         :project_name => 'admin',
+        :system_scope => 'all',
         :region_name  => 'RegionOne',
         :interface    => 'public',
       )}
@@ -170,21 +181,32 @@ describe 'keystone::bootstrap' do
       )}
 
       it { is_expected.to contain_file('/etc/keystone/puppet.conf').with(
-        :ensure => 'present',
-        :replace => false,
-        :content => '',
-        :owner   => 'root',
-        :group   => 'root',
-        :mode    => '0600',
-        :require => 'Anchor[keystone::install::end]',
+        :ensure  => 'absent',
+        :require => 'Anchor[keystone::config::begin]',
+        :before  => 'Anchor[keystone::config::end]',
       )}
 
-      it { is_expected.to contain_keystone__resource__authtoken('keystone_puppet_config').with(
+      it { is_expected.to contain_file('/etc/openstack').with(
+        :ensure  => 'directory',
+        :mode    => '0755',
+        :owner   => 'root',
+        :group   => 'root',
+      )}
+
+      it { is_expected.to contain_file('/etc/openstack/puppet').with(
+        :ensure  => 'directory',
+        :mode    => '0755',
+        :owner   => 'root',
+        :group   => 'root',
+      )}
+
+      it { is_expected.to contain_openstacklib__clouds('/etc/openstack/puppet/admin-clouds.yaml').with(
         :username     => 'user',
         :password     => 'secret',
         :auth_url     => 'http://admin:1234',
         :project_name => 'adminproj',
         :region_name  => 'RegionTwo',
+        :system_scope => 'all',
         :interface    => 'admin',
       )}
     end
@@ -210,20 +232,31 @@ describe 'keystone::bootstrap' do
       it { is_expected.to_not contain_keystone_endpoint('RegionOne/keystone::identity') }
 
       it { is_expected.to contain_file('/etc/keystone/puppet.conf').with(
-        :ensure => 'present',
-        :replace => false,
-        :content => '',
-        :owner   => 'root',
-        :group   => 'root',
-        :mode    => '0600',
-        :require => 'Anchor[keystone::install::end]',
+        :ensure  => 'absent',
+        :require => 'Anchor[keystone::config::begin]',
+        :before  => 'Anchor[keystone::config::end]',
       )}
 
-      it { is_expected.to contain_keystone__resource__authtoken('keystone_puppet_config').with(
+      it { is_expected.to contain_file('/etc/openstack').with(
+        :ensure  => 'directory',
+        :mode    => '0755',
+        :owner   => 'root',
+        :group   => 'root',
+      )}
+
+      it { is_expected.to contain_file('/etc/openstack/puppet').with(
+        :ensure  => 'directory',
+        :mode    => '0755',
+        :owner   => 'root',
+        :group   => 'root',
+      )}
+
+      it { is_expected.to contain_openstacklib__clouds('/etc/openstack/puppet/admin-clouds.yaml').with(
         :username     => 'admin',
         :password     => 'secret',
         :auth_url     => 'http://127.0.0.1:5000',
         :project_name => 'admin',
+        :system_scope => 'all',
         :region_name  => 'RegionOne',
         :interface    => 'public',
       )}
@@ -254,7 +287,7 @@ describe 'keystone::bootstrap' do
         }
       end
 
-      it { is_expected.to contain_keystone__resource__authtoken('keystone_puppet_config').with(
+      it { is_expected.to contain_openstacklib__clouds('/etc/openstack/puppet/admin-clouds.yaml').with(
         :auth_url  => 'http://internal:1234',
         :interface => 'internal',
       )}

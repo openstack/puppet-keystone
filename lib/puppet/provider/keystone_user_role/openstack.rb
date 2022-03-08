@@ -29,7 +29,7 @@ Puppet::Type.type(:keystone_user_role).provide(
     if resource[:roles]
       options = properties
       resource[:roles].each do |role|
-        self.class.request('role', 'add', [role] + options)
+        self.class.system_request('role', 'add', [role] + options)
       end
     end
   end
@@ -38,14 +38,14 @@ Puppet::Type.type(:keystone_user_role).provide(
     if @property_hash[:roles]
       options = properties
       @property_hash[:roles].each do |role|
-        self.class.request('role', 'remove', [role] + options)
+        self.class.system_request('role', 'remove', [role] + options)
       end
     end
     @property_hash[:ensure] = :absent
   end
 
   def exists?
-    roles_db = self.class.request('role assignment', 'list', ['--names'] + properties)
+    roles_db = self.class.system_request('role assignment', 'list', ['--names'] + properties)
     @property_hash[:name] = resource[:name]
     if roles_db.empty?
       @property_hash[:ensure] = :absent
@@ -73,10 +73,10 @@ Puppet::Type.type(:keystone_user_role).provide(
     remove = current_roles - Array(value)
     add    = Array(value) - current_roles
     add.each do |role_name|
-      self.class.request('role', 'add', [role_name] + properties)
+      self.class.system_request('role', 'add', [role_name] + properties)
     end
     remove.each do |role_name|
-      self.class.request('role', 'remove', [role_name] + properties)
+      self.class.system_request('role', 'remove', [role_name] + properties)
     end
   end
 
