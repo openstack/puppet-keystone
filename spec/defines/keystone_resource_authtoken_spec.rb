@@ -172,13 +172,40 @@ describe 'keystone::resource::authtoken' do
     end
 
     context 'when specifying IPv6 memcached_servers params' do
-      before do
-        params.merge! ({
-          :memcached_servers              => '[fd12:3456:789a:1::1]:11211',
-      })
+      context 'by a string' do
+        before do
+          params.merge! ({
+            :memcached_servers => '[fd12:3456:789a:1::1]:11211',
+          })
+        end
+        it 'configures memcache severs with inet6: prefix in keystone authtoken' do
+          is_expected.to contain_keystone_config('keystone_authtoken/memcached_servers')\
+            .with_value('inet6:[fd12:3456:789a:1::1]:11211')
+        end
       end
-      it 'configures memcache severs with inet6: prefix in keystone authtoken' do
-        is_expected.to contain_keystone_config('keystone_authtoken/memcached_servers').with_value('inet6:[fd12:3456:789a:1::1]:11211')
+
+      context 'by a commma-separated string' do
+        before do
+          params.merge! ({
+            :memcached_servers => '[fd12:3456:789a:1::1]:11211,[fd12:3456:789a:1::2]:11211',
+          })
+        end
+        it 'configures memcache severs with inet6: prefix in keystone authtoken' do
+          is_expected.to contain_keystone_config('keystone_authtoken/memcached_servers')\
+            .with_value('inet6:[fd12:3456:789a:1::1]:11211,inet6:[fd12:3456:789a:1::2]:11211')
+        end
+      end
+
+      context 'by an array' do
+        before do
+          params.merge! ({
+            :memcached_servers => ['[fd12:3456:789a:1::1]:11211', '[fd12:3456:789a:1::2]:11211']
+          })
+        end
+        it 'configures memcache severs with inet6: prefix in keystone authtoken' do
+          is_expected.to contain_keystone_config('keystone_authtoken/memcached_servers')\
+            .with_value('inet6:[fd12:3456:789a:1::1]:11211,inet6:[fd12:3456:789a:1::2]:11211')
+        end
       end
     end
 
