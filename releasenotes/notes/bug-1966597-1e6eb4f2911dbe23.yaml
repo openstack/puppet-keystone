@@ -1,0 +1,5 @@
+---
+fixes:
+  - |
+    Now the ``keystone::ldap`` class enables connection pools for LDAP access
+    by default.
