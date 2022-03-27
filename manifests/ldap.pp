@@ -185,40 +185,40 @@
 #
 # [*use_pool*]
 #   Enable LDAP connection pooling. (boolean value)
-#   Defaults to true
+#   Defaults to $::os_service_default
 #
 # [*pool_size*]
 #   Connection pool size. (integer value)
-#   Defaults to '10'
+#   Defaults to $::os_service_default
 #
 # [*pool_retry_max*]
 #   Maximum count of reconnect trials. (integer value)
-#   Defaults to '3'
+#   Defaults to $::os_service_default
 #
 # [*pool_retry_delay*]
 #   Time span in seconds to wait between two reconnect trials. (floating point value)
-#   Defaults to '0.1'
+#   Defaults to $::os_service_default
 #
 # [*pool_connection_timeout*]
 #   Connector timeout in seconds. Value -1 indicates indefinite wait for response. (integer value)
-#   Defaults to '-1'
+#   Defaults to $::os_service_default
 #
 # [*pool_connection_lifetime*]
 #   Connection lifetime in seconds. (integer value)
-#   Defaults to '600'
+#   Defaults to $::os_service_default
 #
 # [*use_auth_pool*]
 #   Enable LDAP connection pooling for end user authentication.
 #   If use_pool is disabled, then this setting is meaningless and is not used at all. (boolean value)
-#   Defaults to true
+#   Defaults to $::os_service_default
 #
 # [*auth_pool_size*]
 #   End user auth connection pool size. (integer value)
-#   Defaults to '100'
+#   Defaults to $::os_service_default
 #
 # [*auth_pool_connection_lifetime*]
 #   End user auth connection lifetime in seconds. (integer value)
-#   Defaults to '60'
+#   Defaults to $::os_service_default
 #
 # [*credential_driver*]
 #   Credential backend driver. (string value)
@@ -289,15 +289,15 @@ class keystone::ldap(
   $identity_driver                      = $::os_service_default,
   $assignment_driver                    = $::os_service_default,
   $credential_driver                    = $::os_service_default,
-  $use_pool                             = true,
-  $pool_size                            = 10,
-  $pool_retry_max                       = 3,
-  $pool_retry_delay                     = 0.1,
-  $pool_connection_timeout              = -1,
-  $pool_connection_lifetime             = 600,
-  $use_auth_pool                        = true,
-  $auth_pool_size                       = 100,
-  $auth_pool_connection_lifetime        = 60,
+  $use_pool                             = $::os_service_default,
+  $pool_size                            = $::os_service_default,
+  $pool_retry_max                       = $::os_service_default,
+  $pool_retry_delay                     = $::os_service_default,
+  $pool_connection_timeout              = $::os_service_default,
+  $pool_connection_lifetime             = $::os_service_default,
+  $use_auth_pool                        = $::os_service_default,
+  $auth_pool_size                       = $::os_service_default,
+  $auth_pool_connection_lifetime        = $::os_service_default,
   $package_ensure                       = present,
   $manage_packages                      = true,
 ) inherits keystone::params {

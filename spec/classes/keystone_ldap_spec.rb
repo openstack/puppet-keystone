@@ -43,15 +43,15 @@ describe 'keystone::ldap' do
         :tls_cacertfile                       => '/etc/ssl/certs/ca-certificates.crt',
         :tls_req_cert                         => 'demand',
         :identity_driver                      => 'ldap',
-        :use_pool                             => 'True',
-        :pool_size                            => 20,
-        :pool_retry_max                       => 2,
-        :pool_retry_delay                     => 0.2,
-        :pool_connection_timeout              => 222,
-        :pool_connection_lifetime             => 222,
-        :use_auth_pool                        => 'True',
-        :auth_pool_size                       => 20,
-        :auth_pool_connection_lifetime        => 200,
+        :use_pool                             => true,
+        :pool_size                            => 10,
+        :pool_retry_max                       => 3,
+        :pool_retry_delay                     => 0.1,
+        :pool_connection_timeout              => -1,
+        :pool_connection_lifetime             => 600,
+        :use_auth_pool                        => true,
+        :auth_pool_size                       => 100,
+        :auth_pool_connection_lifetime        => 60,
       }
     end
 
@@ -115,15 +115,15 @@ describe 'keystone::ldap' do
       }
 
       it {
-        is_expected.to contain_keystone_config('ldap/use_pool').with_value('True')
-        is_expected.to contain_keystone_config('ldap/pool_size').with_value('20')
-        is_expected.to contain_keystone_config('ldap/pool_retry_max').with_value('2')
-        is_expected.to contain_keystone_config('ldap/pool_retry_delay').with_value('0.2')
-        is_expected.to contain_keystone_config('ldap/pool_connection_timeout').with_value('222')
-        is_expected.to contain_keystone_config('ldap/pool_connection_lifetime').with_value('222')
-        is_expected.to contain_keystone_config('ldap/use_auth_pool').with_value('True')
-        is_expected.to contain_keystone_config('ldap/auth_pool_size').with_value('20')
-        is_expected.to contain_keystone_config('ldap/auth_pool_connection_lifetime').with_value('200')
+        is_expected.to contain_keystone_config('ldap/use_pool').with_value(true)
+        is_expected.to contain_keystone_config('ldap/pool_size').with_value('10')
+        is_expected.to contain_keystone_config('ldap/pool_retry_max').with_value(3)
+        is_expected.to contain_keystone_config('ldap/pool_retry_delay').with_value(0.1)
+        is_expected.to contain_keystone_config('ldap/pool_connection_timeout').with_value(-1)
+        is_expected.to contain_keystone_config('ldap/pool_connection_lifetime').with_value(600)
+        is_expected.to contain_keystone_config('ldap/use_auth_pool').with_value(true)
+        is_expected.to contain_keystone_config('ldap/auth_pool_size').with_value(100)
+        is_expected.to contain_keystone_config('ldap/auth_pool_connection_lifetime').with_value(60)
       }
 
       it { is_expected.to contain_keystone_config('identity/driver').with_value('ldap') }
