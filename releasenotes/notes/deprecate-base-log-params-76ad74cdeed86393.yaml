@@ -1,0 +1,5 @@
+---
+deprecations:
+  - |
+    The ``keystone::log_dir`` parameter and the ``keystone::log_file``
+    parameter have been deprecated and have no effect now.
