@@ -85,15 +85,15 @@ class keystone::federation::identity_provider(
   $certfile                      = $::keystone::ssl_ca_certs,
   $keyfile                       = $::keystone::ssl_ca_key,
   $user                          = 'keystone',
-  $idp_organization_name         = undef,
-  $idp_organization_display_name = undef,
-  $idp_organization_url          = undef,
-  $idp_contact_company           = undef,
-  $idp_contact_name              = undef,
-  $idp_contact_surname           = undef,
-  $idp_contact_email             = undef,
-  $idp_contact_telephone         = undef,
-  $idp_contact_type              = undef,
+  $idp_organization_name         = $::os_service_default,
+  $idp_organization_display_name = $::os_service_default,
+  $idp_organization_url          = $::os_service_default,
+  $idp_contact_company           = $::os_service_default,
+  $idp_contact_name              = $::os_service_default,
+  $idp_contact_surname           = $::os_service_default,
+  $idp_contact_email             = $::os_service_default,
+  $idp_contact_telephone         = $::os_service_default,
+  $idp_contact_type              = $::os_service_default,
   $package_ensure                = present,
 ) {
 
@@ -131,12 +131,13 @@ class keystone::federation::identity_provider(
     'saml/idp_contact_telephone':         value => $idp_contact_telephone;
   }
 
-  if $idp_contact_type and !($idp_contact_type in ['technical','support','administrative','billing','other']) {
-    fail('Allowed values for idp_contact_type are: technical, support, administrative, billing and other')
-  } else{
+  if (is_service_default($idp_contact_type) or
+      ($idp_contact_type in ['technical','support','administrative','billing','other'])) {
     keystone_config {
       'saml/idp_contact_type': value => $idp_contact_type;
     }
+  } else{
+    fail('Allowed values for idp_contact_type are: technical, support, administrative, billing and other')
   }
 
   exec {'saml_idp_metadata':
