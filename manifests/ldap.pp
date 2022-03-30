@@ -6,59 +6,60 @@
 #
 # [*url*]
 #   URL for connecting to the LDAP server. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*user*]
 #   User BindDN to query the LDAP server. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*password*]
 #   Password for the BindDN to query the LDAP server. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*suffix*]
 #   LDAP server suffix (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*query_scope*]
 #   The LDAP scope for queries, this can be either "one"
 #   (onelevel/singleLevel) or "sub" (subtree/wholeSubtree). (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*page_size*]
 #   Maximum results per page; a value of zero ("0") disables paging. (integer value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*user_tree_dn*]
 #   Search base for users. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*user_filter*]
 #   LDAP search filter for users. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*user_objectclass*]
 #   LDAP objectclass for users. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*user_id_attribute*]
 #   LDAP attribute mapped to user id. WARNING: must not be a multivalued attribute. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*user_name_attribute*]
 #   LDAP attribute mapped to user name. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*user_description_attribute*]
 #   LDAP attribute mapped to user description. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*user_mail_attribute*]
 #   LDAP attribute mapped to user email. (string value)
+#   Defaults to $::os_service_default
 #
 # [*user_enabled_attribute*]
 #   LDAP attribute mapped to user enabled flag. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*user_enabled_mask*]
 #   Bitmask integer to indicate the bit that the enabled value is stored in if
@@ -66,7 +67,7 @@
 #   boolean. A value of "0" indicates the mask is not used. If this is not set
 #   to "0" the typical value is "2". This is typically used when
 #   "user_enabled_attribute = userAccountControl". (integer value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*user_enabled_default*]
 #   Default value to enable users. This should match an appropriate int value
@@ -74,7 +75,7 @@
 #   is enabled or disabled. If this is not set to "True" the typical value is
 #   "512". This is typically used when "user_enabled_attribute =
 #   userAccountControl". (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*user_enabled_invert*]
 #   Invert the meaning of the boolean enabled values. Some LDAP servers use a
@@ -82,30 +83,30 @@
 #   "user_enabled_invert = true" will allow these lock attributes to be used.
 #   This setting will have no effect if "user_enabled_mask" or
 #   "user_enabled_emulation" settings are in use. (boolean value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*user_attribute_ignore*]
 #   List of attributes stripped off the user on update. (list value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*user_default_project_id_attribute*]
 #   LDAP attribute mapped to default_project_id for users. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*user_pass_attribute*]
 #   LDAP attribute mapped to password. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*user_enabled_emulation*]
 #   If true, Keystone uses an alternative method to determine if
 #   a user is enabled or not by checking if they are a member of
 #   the "user_enabled_emulation_dn" group. (boolean value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*user_enabled_emulation_dn*]
 #   DN of the group entry to hold enabled users when using enabled emulation.
 #   (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*user_additional_attribute_mapping*]
 #   List of additional LDAP attributes used for mapping
@@ -113,74 +114,74 @@
 #   format is <ldap_attr>:<user_attr>, where ldap_attr is the
 #   attribute in the LDAP entry and user_attr is the Identity
 #   API attribute. (list value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*group_tree_dn*]
 #   Search base for groups. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*group_filter*]
 #   LDAP search filter for groups. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*group_objectclass*]
 #   LDAP objectclass for groups. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*group_id_attribute*]
 #   LDAP attribute mapped to group id. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*group_name_attribute*]
 #   LDAP attribute mapped to group name. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*group_member_attribute*]
 #   LDAP attribute mapped to show group membership. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*group_members_are_ids*]
 #   LDAP attribute when members of the group object class are keystone user IDs. (boolean value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*group_desc_attribute*]
 #   LDAP attribute mapped to group description. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*group_attribute_ignore*]
 #   List of attributes stripped off the group on update. (list value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*group_additional_attribute_mapping*]
 #   Additional attribute mappings for groups. Attribute mapping
 #   format is <ldap_attr>:<user_attr>, where ldap_attr is the
 #   attribute in the LDAP entry and user_attr is the Identity
 #   API attribute. (list value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*chase_referrals*]
 #   Whether or not to chase returned referrals. (boolean value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*use_tls*]
 #   Enable TLS for communicating with LDAP servers. (boolean value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*tls_cacertfile*]
 #   CA certificate file path for communicating with LDAP servers. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*tls_cacertdir*]
 #   CA certificate directory path for communicating with LDAP servers. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*tls_req_cert*]
 #   Valid options for tls_req_cert are demand, never, and allow. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*identity_driver*]
 #   Identity backend driver. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*use_pool*]
 #   Enable LDAP connection pooling. (boolean value)
@@ -221,11 +222,11 @@
 #
 # [*credential_driver*]
 #   Credential backend driver. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*assignment_driver*]
 #   Assignment backend driver. (string value)
-#   Defaults to 'undef'
+#   Defaults to $::os_service_default
 #
 # [*package_ensure*]
 #   (optional) Desired ensure state of packages.
@@ -247,47 +248,47 @@
 # Copyright 2012 Puppetlabs Inc, unless otherwise noted.
 #
 class keystone::ldap(
-  $url                                  = undef,
-  $user                                 = undef,
-  $password                             = undef,
-  $suffix                               = undef,
-  $query_scope                          = undef,
-  $page_size                            = undef,
-  $user_tree_dn                         = undef,
-  $user_filter                          = undef,
-  $user_objectclass                     = undef,
-  $user_id_attribute                    = undef,
-  $user_name_attribute                  = undef,
-  $user_description_attribute           = undef,
-  $user_mail_attribute                  = undef,
-  $user_enabled_attribute               = undef,
-  $user_enabled_mask                    = undef,
-  $user_enabled_default                 = undef,
-  $user_enabled_invert                  = undef,
-  $user_attribute_ignore                = undef,
-  $user_default_project_id_attribute    = undef,
-  $user_pass_attribute                  = undef,
-  $user_enabled_emulation               = undef,
-  $user_enabled_emulation_dn            = undef,
-  $user_additional_attribute_mapping    = undef,
-  $group_tree_dn                        = undef,
-  $group_filter                         = undef,
-  $group_objectclass                    = undef,
-  $group_id_attribute                   = undef,
-  $group_name_attribute                 = undef,
-  $group_member_attribute               = undef,
-  $group_members_are_ids                = undef,
-  $group_desc_attribute                 = undef,
-  $group_attribute_ignore               = undef,
-  $group_additional_attribute_mapping   = undef,
-  $chase_referrals                      = undef,
-  $use_tls                              = undef,
-  $tls_cacertdir                        = undef,
-  $tls_cacertfile                       = undef,
-  $tls_req_cert                         = undef,
-  $identity_driver                      = undef,
-  $assignment_driver                    = undef,
-  $credential_driver                    = undef,
+  $url                                  = $::os_service_default,
+  $user                                 = $::os_service_default,
+  $password                             = $::os_service_default,
+  $suffix                               = $::os_service_default,
+  $query_scope                          = $::os_service_default,
+  $page_size                            = $::os_service_default,
+  $user_tree_dn                         = $::os_service_default,
+  $user_filter                          = $::os_service_default,
+  $user_objectclass                     = $::os_service_default,
+  $user_id_attribute                    = $::os_service_default,
+  $user_name_attribute                  = $::os_service_default,
+  $user_description_attribute           = $::os_service_default,
+  $user_mail_attribute                  = $::os_service_default,
+  $user_enabled_attribute               = $::os_service_default,
+  $user_enabled_mask                    = $::os_service_default,
+  $user_enabled_default                 = $::os_service_default,
+  $user_enabled_invert                  = $::os_service_default,
+  $user_attribute_ignore                = $::os_service_default,
+  $user_default_project_id_attribute    = $::os_service_default,
+  $user_pass_attribute                  = $::os_service_default,
+  $user_enabled_emulation               = $::os_service_default,
+  $user_enabled_emulation_dn            = $::os_service_default,
+  $user_additional_attribute_mapping    = $::os_service_default,
+  $group_tree_dn                        = $::os_service_default,
+  $group_filter                         = $::os_service_default,
+  $group_objectclass                    = $::os_service_default,
+  $group_id_attribute                   = $::os_service_default,
+  $group_name_attribute                 = $::os_service_default,
+  $group_member_attribute               = $::os_service_default,
+  $group_members_are_ids                = $::os_service_default,
+  $group_desc_attribute                 = $::os_service_default,
+  $group_attribute_ignore               = $::os_service_default,
+  $group_additional_attribute_mapping   = $::os_service_default,
+  $chase_referrals                      = $::os_service_default,
+  $use_tls                              = $::os_service_default,
+  $tls_cacertdir                        = $::os_service_default,
+  $tls_cacertfile                       = $::os_service_default,
+  $tls_req_cert                         = $::os_service_default,
+  $identity_driver                      = $::os_service_default,
+  $assignment_driver                    = $::os_service_default,
+  $credential_driver                    = $::os_service_default,
   $use_pool                             = true,
   $pool_size                            = 10,
   $pool_retry_max                       = 3,
@@ -311,7 +312,7 @@ class keystone::ldap(
     })
   }
 
-  if ($tls_cacertdir != undef) {
+  if ! is_service_default($tls_cacertdir) {
     file { $tls_cacertdir:
       ensure => directory
     }
