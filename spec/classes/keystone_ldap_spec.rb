@@ -2,63 +2,150 @@ require 'spec_helper'
 
 describe 'keystone::ldap' do
   shared_examples 'keystone::ldap' do
-    let :params do
-      {
-        :url                                  => 'ldap://foo',
-        :user                                 => 'cn=foo,dc=example,dc=com',
-        :password                             => 'abcdefg',
-        :suffix                               => 'dc=example,dc=com',
-        :query_scope                          => 'sub',
-        :page_size                            => '50',
-        :user_tree_dn                         => 'cn=users,dc=example,dc=com',
-        :user_filter                          => '(memberOf=cn=openstack,cn=groups,cn=accounts,dc=example,dc=com)',
-        :user_objectclass                     => 'inetUser',
-        :user_id_attribute                    => 'uid',
-        :user_name_attribute                  => 'cn',
-        :user_description_attribute           => 'description',
-        :user_mail_attribute                  => 'mail',
-        :user_enabled_attribute               => 'UserAccountControl',
-        :user_enabled_mask                    => '2',
-        :user_enabled_default                 => '512',
-        :user_enabled_invert                  => 'False',
-        :user_attribute_ignore                => '',
-        :user_default_project_id_attribute    => 'defaultProject',
-        :user_pass_attribute                  => 'krbPassword',
-        :user_enabled_emulation               => 'True',
-        :user_enabled_emulation_dn            => 'cn=openstack-enabled,cn=groups,cn=accounts,dc=example,dc=com',
-        :user_additional_attribute_mapping    => 'description:name, gecos:name',
-        :group_tree_dn                        => 'ou=groups,ou=openstack,dc=example,dc=com',
-        :group_filter                         => 'cn=enabled-groups,cn=groups,cn=accounts,dc=example,dc=com',
-        :group_objectclass                    => 'organizationalRole',
-        :group_id_attribute                   => 'cn',
-        :group_name_attribute                 => 'cn',
-        :group_member_attribute               => 'roleOccupant',
-        :group_members_are_ids                => 'True',
-        :group_desc_attribute                 => 'description',
-        :group_attribute_ignore               => '',
-        :group_additional_attribute_mapping   => '',
-        :chase_referrals                      => 'False',
-        :use_tls                              => 'False',
-        :tls_cacertdir                        => '/etc/ssl/certs/',
-        :tls_cacertfile                       => '/etc/ssl/certs/ca-certificates.crt',
-        :tls_req_cert                         => 'demand',
-        :identity_driver                      => 'ldap',
-        :use_pool                             => true,
-        :pool_size                            => 10,
-        :pool_retry_max                       => 3,
-        :pool_retry_delay                     => 0.1,
-        :pool_connection_timeout              => -1,
-        :pool_connection_lifetime             => 600,
-        :use_auth_pool                        => true,
-        :auth_pool_size                       => 100,
-        :auth_pool_connection_lifetime        => 60,
+    context 'with defaults' do
+      it {
+        is_expected.to contain_package('python-ldappool').with(
+          :ensure => 'present',
+          :name   => platform_params[:python_ldappool_package_name],
+          :tag    => 'keystone-package'
+        )
       }
+
+      it {
+        is_expected.to contain_keystone_config('ldap/url').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/user').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/password').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/suffix').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/query_scope').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/page_size').with_value('<SERVICE DEFAULT>')
+      }
+
+      it {
+        is_expected.to contain_keystone_config('ldap/user_tree_dn').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/user_filter').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/user_objectclass').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/user_id_attribute').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/user_name_attribute').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/user_description_attribute').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/user_mail_attribute').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/user_enabled_attribute').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/user_enabled_mask').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/user_enabled_default').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/user_enabled_invert').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/user_attribute_ignore').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/user_default_project_id_attribute').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/user_tree_dn').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/user_pass_attribute').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/user_enabled_emulation').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/user_enabled_emulation_dn').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/user_additional_attribute_mapping').with_value('<SERVICE DEFAULT>')
+      }
+
+      it {
+        is_expected.to contain_keystone_config('ldap/group_tree_dn').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/group_filter').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/group_objectclass').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/group_id_attribute').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/group_member_attribute').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/group_members_are_ids').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/group_desc_attribute').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/group_name_attribute').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/group_attribute_ignore').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/group_additional_attribute_mapping').with_value('<SERVICE DEFAULT>')
+      }
+
+      it {
+        is_expected.to contain_keystone_config('ldap/chase_referrals').with_value('<SERVICE DEFAULT>')
+      }
+
+      it {
+        is_expected.to contain_keystone_config('ldap/use_tls').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/tls_cacertdir').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/tls_cacertfile').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/tls_req_cert').with_value('<SERVICE DEFAULT>')
+      }
+
+      it {
+        is_expected.to contain_keystone_config('ldap/use_pool').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/pool_size').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/pool_retry_max').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/pool_retry_delay').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/pool_connection_timeout').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/pool_connection_lifetime').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/use_auth_pool').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/auth_pool_size').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ldap/auth_pool_connection_lifetime').with_value('<SERVICE DEFAULT>')
+      }
+
+      it { is_expected.to contain_keystone_config('identity/driver').with_value('<SERVICE DEFAULT>') }
     end
 
     context 'with parameters' do
+      let :params do
+        {
+          :url                                  => 'ldap://foo',
+          :user                                 => 'cn=foo,dc=example,dc=com',
+          :password                             => 'abcdefg',
+          :suffix                               => 'dc=example,dc=com',
+          :query_scope                          => 'sub',
+          :page_size                            => '50',
+          :user_tree_dn                         => 'cn=users,dc=example,dc=com',
+          :user_filter                          => '(memberOf=cn=openstack,cn=groups,cn=accounts,dc=example,dc=com)',
+          :user_objectclass                     => 'inetUser',
+          :user_id_attribute                    => 'uid',
+          :user_name_attribute                  => 'cn',
+          :user_description_attribute           => 'description',
+          :user_mail_attribute                  => 'mail',
+          :user_enabled_attribute               => 'UserAccountControl',
+          :user_enabled_mask                    => '2',
+          :user_enabled_default                 => '512',
+          :user_enabled_invert                  => 'False',
+          :user_attribute_ignore                => '',
+          :user_default_project_id_attribute    => 'defaultProject',
+          :user_pass_attribute                  => 'krbPassword',
+          :user_enabled_emulation               => 'True',
+          :user_enabled_emulation_dn            => 'cn=openstack-enabled,cn=groups,cn=accounts,dc=example,dc=com',
+          :user_additional_attribute_mapping    => 'description:name, gecos:name',
+          :group_tree_dn                        => 'ou=groups,ou=openstack,dc=example,dc=com',
+          :group_filter                         => 'cn=enabled-groups,cn=groups,cn=accounts,dc=example,dc=com',
+          :group_objectclass                    => 'organizationalRole',
+          :group_id_attribute                   => 'cn',
+          :group_name_attribute                 => 'cn',
+          :group_member_attribute               => 'roleOccupant',
+          :group_members_are_ids                => 'True',
+          :group_desc_attribute                 => 'description',
+          :group_attribute_ignore               => '',
+          :group_additional_attribute_mapping   => '',
+          :chase_referrals                      => 'False',
+          :use_tls                              => 'False',
+          :tls_cacertdir                        => '/etc/ssl/certs/',
+          :tls_cacertfile                       => '/etc/ssl/certs/ca-certificates.crt',
+          :tls_req_cert                         => 'demand',
+          :identity_driver                      => 'ldap',
+          :use_pool                             => true,
+          :pool_size                            => 10,
+          :pool_retry_max                       => 3,
+          :pool_retry_delay                     => 0.1,
+          :pool_connection_timeout              => -1,
+          :pool_connection_lifetime             => 600,
+          :use_auth_pool                        => true,
+          :auth_pool_size                       => 100,
+          :auth_pool_connection_lifetime        => 60,
+          :package_ensure                       => 'latest',
+        }
+      end
+
       it {
         is_expected.to contain_package('python-ldappool').with(
-          :name => platform_params[:python_ldappool_package_name],
+          :ensure => 'latest',
+          :name   => platform_params[:python_ldappool_package_name],
+          :tag    => 'keystone-package'
+        )
+      }
+
+      it {
+        is_expected.to contain_file('/etc/ssl/certs/').with(
+          :ensure => 'directory'
         )
       }
 
@@ -105,7 +192,9 @@ describe 'keystone::ldap' do
         is_expected.to contain_keystone_config('ldap/group_additional_attribute_mapping').with_value('')
       }
 
-      it { is_expected.to contain_keystone_config('ldap/chase_referrals').with_value('False') }
+      it {
+        is_expected.to contain_keystone_config('ldap/chase_referrals').with_value('False')
+      }
 
       it {
         is_expected.to contain_keystone_config('ldap/use_tls').with_value('False')
@@ -130,8 +219,8 @@ describe 'keystone::ldap' do
     end
 
     context 'with manage_packages set to false' do
-      before do
-        params.merge!( :manage_packages => false )
+      let :params do
+        { :manage_packages => false }
       end
 
       it { is_expected.to_not contain_package('python-ldappool') }
