@@ -184,7 +184,7 @@
 #
 # [*use_pool*]
 #   Enable LDAP connection pooling. (boolean value)
-#   Defaults to false
+#   Defaults to true
 #
 # [*pool_size*]
 #   Connection pool size. (integer value)
@@ -209,7 +209,7 @@
 # [*use_auth_pool*]
 #   Enable LDAP connection pooling for end user authentication.
 #   If use_pool is disabled, then this setting is meaningless and is not used at all. (boolean value)
-#   Defaults to false
+#   Defaults to true
 #
 # [*auth_pool_size*]
 #   End user auth connection pool size. (integer value)
@@ -288,13 +288,13 @@ class keystone::ldap(
   $identity_driver                      = undef,
   $assignment_driver                    = undef,
   $credential_driver                    = undef,
-  $use_pool                             = false,
+  $use_pool                             = true,
   $pool_size                            = 10,
   $pool_retry_max                       = 3,
   $pool_retry_delay                     = 0.1,
   $pool_connection_timeout              = -1,
   $pool_connection_lifetime             = 600,
-  $use_auth_pool                        = false,
+  $use_auth_pool                        = true,
   $auth_pool_size                       = 100,
   $auth_pool_connection_lifetime        = 60,
   $package_ensure                       = present,
