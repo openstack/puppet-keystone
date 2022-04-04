@@ -38,12 +38,12 @@ describe 'keystone' do
         is_expected.to contain_keystone_config('identity/password_hash_rounds').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('revoke/driver').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('policy/driver').with_value('<SERVICE DEFAULT>')
-        is_expected.to contain_keystone_config('ssl/enable').with_value(false)
-        is_expected.to contain_keystone_config('ssl/certfile').with_value('<SERVICE DEFAULT>')
-        is_expected.to contain_keystone_config('ssl/keyfile').with_value('<SERVICE DEFAULT>')
-        is_expected.to contain_keystone_config('ssl/ca_certs').with_value('<SERVICE DEFAULT>')
-        is_expected.to contain_keystone_config('ssl/ca_key').with_value('<SERVICE DEFAULT>')
-        is_expected.to contain_keystone_config('ssl/cert_subject').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('ssl/enable').with_ensure('absent')
+        is_expected.to contain_keystone_config('ssl/certfile').with_ensure('absent')
+        is_expected.to contain_keystone_config('ssl/keyfile').with_ensure('absent')
+        is_expected.to contain_keystone_config('ssl/ca_certs').with_ensure('absent')
+        is_expected.to contain_keystone_config('ssl/ca_key').with_ensure('absent')
+        is_expected.to contain_keystone_config('ssl/cert_subject').with_ensure('absent')
         is_expected.to contain_keystone_config('token/revoke_by_id').with_value(true)
 
         is_expected.to contain_oslo__middleware('keystone_config').with(
@@ -145,12 +145,6 @@ describe 'keystone' do
         is_expected.to contain_keystone_config('identity/password_hash_rounds').with_value(12)
         is_expected.to contain_keystone_config('revoke/driver').with_value('sql')
         is_expected.to contain_keystone_config('policy/driver').with_value('sql')
-        is_expected.to contain_keystone_config('ssl/enable').with_value(false)
-        is_expected.to contain_keystone_config('ssl/certfile').with_value('<SERVICE DEFAULT>')
-        is_expected.to contain_keystone_config('ssl/keyfile').with_value('<SERVICE DEFAULT>')
-        is_expected.to contain_keystone_config('ssl/ca_certs').with_value('<SERVICE DEFAULT>')
-        is_expected.to contain_keystone_config('ssl/ca_key').with_value('<SERVICE DEFAULT>')
-        is_expected.to contain_keystone_config('ssl/cert_subject').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('token/revoke_by_id').with_value(true)
 
         is_expected.to contain_oslo__middleware('keystone_config').with(
@@ -219,20 +213,6 @@ describe 'keystone' do
       end
 
       it { is_expected.not_to contain_exec('keystone-manage db_sync') }
-    end
-
-    context 'when enabling SSL' do
-      let :params do
-        {
-          'enable_ssl'  => true,
-        }
-      end
-      it {is_expected.to contain_keystone_config('ssl/enable').with_value(true)}
-      it {is_expected.to contain_keystone_config('ssl/certfile').with_value('/etc/keystone/ssl/certs/keystone.pem')}
-      it {is_expected.to contain_keystone_config('ssl/keyfile').with_value('/etc/keystone/ssl/private/keystonekey.pem')}
-      it {is_expected.to contain_keystone_config('ssl/ca_certs').with_value('/etc/keystone/ssl/certs/ca.pem')}
-      it {is_expected.to contain_keystone_config('ssl/ca_key').with_value('/etc/keystone/ssl/private/cakey.pem')}
-      it {is_expected.to contain_keystone_config('ssl/cert_subject').with_value('/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost')}
     end
 
     context 'with RabbitMQ communication SSLed' do

@@ -166,32 +166,6 @@
 #   keystone listens for connections) (string value)
 #   Defaults to $::os_service_default
 #
-# [*enable_ssl*]
-#   (Optional) Toggle for SSL support on the keystone eventlet servers.
-#   (boolean value)
-#   Defaults to false
-#
-# [*ssl_certfile*]
-#   (Optional) Path of the certfile for SSL. (string value)
-#   Defaults to '/etc/keystone/ssl/certs/keystone.pem'
-#
-# [*ssl_keyfile*]
-#   (Optional) Path of the keyfile for SSL. (string value)
-#   Defaults to '/etc/keystone/ssl/private/keystonekey.pem'
-#
-# [*ssl_ca_certs*]
-#   (Optional) Path of the ca cert file for SSL. (string value)
-#   Defaults to '/etc/keystone/ssl/certs/ca.pem'
-#
-# [*ssl_ca_key*]
-#   (Optional) Path of the CA key file for SSL (string value)
-#   Defaults to '/etc/keystone/ssl/private/cakey.pem'
-#
-# [*ssl_cert_subject*]
-#   (Optional) SSL Certificate Subject (auto generated certificate)
-#   (string value)
-#   Defaults to '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost'
-#
 # [*service_name*]
 #   (Optional) Name of the service that will be providing the
 #   server functionality of keystone.  For example, the default
@@ -374,6 +348,32 @@
 #   (Optional) Where to log
 #   Defaults to undef.
 #
+# [*enable_ssl*]
+#   (Optional) Toggle for SSL support on the keystone eventlet servers.
+#   (boolean value)
+#   Defaults to undef
+#
+# [*ssl_certfile*]
+#   (Optional) Path of the certfile for SSL. (string value)
+#   Defaults to undef
+#
+# [*ssl_keyfile*]
+#   (Optional) Path of the keyfile for SSL. (string value)
+#   Defaults to undef
+#
+# [*ssl_ca_certs*]
+#   (Optional) Path of the ca cert file for SSL. (string value)
+#   Defaults to undef
+#
+# [*ssl_ca_key*]
+#   (Optional) Path of the CA key file for SSL (string value)
+#   Defaults to undef
+#
+# [*ssl_cert_subject*]
+#   (Optional) SSL Certificate Subject (auto generated certificate)
+#   (string value)
+#   Defaults to undef
+#
 # == Authors
 #
 #   Dan Bode dan@puppetlabs.com
@@ -394,12 +394,6 @@ class keystone(
   $revoke_driver                        = $::os_service_default,
   $revoke_by_id                         = true,
   $public_endpoint                      = $::os_service_default,
-  $enable_ssl                           = false,
-  $ssl_certfile                         = '/etc/keystone/ssl/certs/keystone.pem',
-  $ssl_keyfile                          = '/etc/keystone/ssl/private/keystonekey.pem',
-  $ssl_ca_certs                         = '/etc/keystone/ssl/certs/ca.pem',
-  $ssl_ca_key                           = '/etc/keystone/ssl/private/cakey.pem',
-  $ssl_cert_subject                     = '/C=US/ST=Unset/L=Unset/O=Unset/CN=localhost',
   $manage_service                       = true,
   $enabled                              = true,
   $rabbit_heartbeat_timeout_threshold   = $::os_service_default,
@@ -450,6 +444,12 @@ class keystone(
   $catalog_type                         = undef,
   $log_dir                              = undef,
   $log_file                             = undef,
+  $enable_ssl                           = undef,
+  $ssl_certfile                         = undef,
+  $ssl_keyfile                          = undef,
+  $ssl_ca_certs                         = undef,
+  $ssl_ca_key                           = undef,
+  $ssl_cert_subject                     = undef,
 ) inherits keystone::params {
 
   include keystone::deps
@@ -460,6 +460,18 @@ class keystone(
     warning('The catalog_type parameter is deprecated. Use the catalog_driver parameter instead.')
     if ! $catalog_driver {
       validate_legacy(Enum['template', 'sql'], 'validate_re', $catalog_type)
+    }
+  }
+
+  [
+    'enable_ssl',
+    'ssl_certfile',
+    'ssl_ca_certs',
+    'ssl_ca_key',
+    'ssl_cert_subject'
+  ].each |String $ssl_opt| {
+    if getvar($ssl_opt) != undef {
+      warning("The ${ssl_opt} parameter has been deprecated and has no effect.")
     }
   }
 
@@ -544,25 +556,14 @@ class keystone(
     'policy/driver': value => $policy_driver;
   }
 
-  # ssl config
-  if ($enable_ssl) {
-    keystone_config {
-      'ssl/enable':       value  => true;
-      'ssl/certfile':     value  => $ssl_certfile;
-      'ssl/keyfile':      value  => $ssl_keyfile;
-      'ssl/ca_certs':     value  => $ssl_ca_certs;
-      'ssl/ca_key':       value  => $ssl_ca_key;
-      'ssl/cert_subject': value  => $ssl_cert_subject;
-    }
-  } else {
-    keystone_config {
-      'ssl/enable':       value  => false;
-      'ssl/certfile':     value  => $::os_service_default;
-      'ssl/keyfile':      value  => $::os_service_default;
-      'ssl/ca_certs':     value  => $::os_service_default;
-      'ssl/ca_key':       value  => $::os_service_default;
-      'ssl/cert_subject': value  => $::os_service_default;
-    }
+  # TODO(tkajinam): Remove this after Z-release
+  keystone_config {
+    'ssl/enable':       ensure => absent;
+    'ssl/certfile':     ensure => absent;
+    'ssl/keyfile':      ensure => absent;
+    'ssl/ca_certs':     ensure => absent;
+    'ssl/ca_key':       ensure => absent;
+    'ssl/cert_subject': ensure => absent;
   }
 
   oslo::middleware { 'keystone_config':
