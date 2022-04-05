@@ -160,15 +160,6 @@
 #   (Optional) Seconds to wait for a response from a call.
 #   Defaults to $::os_service_default
 #
-# [*log_dir*]
-#   (Optional) Directory where logs should be stored
-#   If set to $::os_service_default, it will not log to any directory
-#   Defaults to undef.
-#
-# [*log_file*]
-#   (Optional) Where to log
-#   Defaults to undef.
-#
 # [*public_endpoint*]
 #   (Optional) The base public endpoint URL for keystone that are
 #   advertised to clients (NOTE: this does NOT affect how
@@ -374,6 +365,15 @@
 #   This accepts sql or template.
 #   Defaults to undef.
 #
+# [*log_dir*]
+#   (Optional) Directory where logs should be stored
+#   If set to $::os_service_default, it will not log to any directory
+#   Defaults to undef.
+#
+# [*log_file*]
+#   (Optional) Where to log
+#   Defaults to undef.
+#
 # == Authors
 #
 #   Dan Bode dan@puppetlabs.com
@@ -385,8 +385,6 @@
 class keystone(
   $package_ensure                       = 'present',
   $client_package_ensure                = 'present',
-  $log_dir                              = undef,
-  $log_file                             = undef,
   $catalog_driver                       = false,
   $catalog_template_file                = '/etc/keystone/default_catalog.templates',
   $token_provider                       = 'fernet',
@@ -450,6 +448,8 @@ class keystone(
   $member_role_name                     = undef,
   $admin_endpoint                       = undef,
   $catalog_type                         = undef,
+  $log_dir                              = undef,
+  $log_file                             = undef,
 ) inherits keystone::params {
 
   include keystone::deps
@@ -485,6 +485,14 @@ class keystone(
 
   if $member_role_name != undef {
     warning('The keystone::member_role_name parameter is deprecated and has no effect')
+  }
+
+  if $log_dir != undef {
+    warning('The keystone::log_dir parameter is deprecated and has no effect.')
+  }
+
+  if $log_file != undef {
+    warning('The keystone::log_file parameter is deprecated and has no effect.')
   }
 
   # TODO(tkajinam): Remove this when removing member_role_* parameters
