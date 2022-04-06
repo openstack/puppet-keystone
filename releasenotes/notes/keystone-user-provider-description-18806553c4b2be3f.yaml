@@ -1,0 +1,4 @@
+---
+features:
+  - |
+    Added ``description`` parameter to ``keystone_user`` resource.

@@ -38,6 +38,9 @@ Puppet::Type.type(:keystone_user).provide(
     if resource[:password]
       properties << '--password' << resource[:password]
     end
+    if resource[:description]
+      properties << '--description' << resource[:description]
+    end
     if resource[:email]
       properties << '--email' << resource[:email]
     end
@@ -63,6 +66,7 @@ Puppet::Type.type(:keystone_user).provide(
       options << '--disable' if @property_flush[:enabled] == :false
       # There is a --description flag for the set command, but it does not work if the value is empty
       options << '--password' << resource[:password] if @property_flush[:password]
+      options << '--description' << resource[:description] if @property_flush[:description]
       options << '--email'    << resource[:email]    if @property_flush[:email]
       # project handled in tenant= separately
       unless options.empty?
@@ -96,6 +100,10 @@ Puppet::Type.type(:keystone_user).provide(
 
   def enabled=(value)
     @property_flush[:enabled] = value
+  end
+
+  def description=(value)
+    @property_flush[:description] = value
   end
 
   def email=(value)
