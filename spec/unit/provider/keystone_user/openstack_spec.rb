@@ -110,6 +110,18 @@ username="user1"
           end
         end
       end
+      context '.description' do
+        it 'change the description' do
+          described_class.expects(:openstack)
+            .with('user', 'set', ['--description', 'new description',
+                                     '37b7086693ec482389799da5dc546fa4'])
+            .returns('""')
+          provider.expects(:id).returns('37b7086693ec482389799da5dc546fa4')
+          provider.expects(:resource).returns(:description => 'new description')
+          provider.description = 'new description'
+          provider.flush
+        end
+      end
       context '.email' do
         it 'change the mail' do
           described_class.expects(:openstack)
@@ -284,6 +296,44 @@ username="user1"
               :enabled  => 'True',
               :password => 'secret',
               :email    => 'user1@example.com'
+            }
+          }
+        ]
+      end
+
+      context 'description provided' do
+        let(:resources) do
+          [
+            Puppet::Type.type(:keystone_user).new(
+              :title         => 'user1',
+              :ensure        => :present,
+              :enabled       => 'True',
+              :password      => 'secret',
+              :description   => 'my description',
+              :email         => 'user1@example.com',
+            )
+          ]
+        end
+        before(:each) do
+          described_class.expects(:openstack)
+            .with('user', 'create', '--format', 'shell', ['user1', '--enable', '--password', 'secret', '--description', 'my description', '--email', 'user1@example.com', '--domain', 'Default'])
+            .returns('description="my description"
+email="user1@example.com"
+enabled="True"
+id="user1_id"
+name="user1"
+username="user1"
+')
+        end
+        include_examples 'create the correct resource', [
+          {
+            'description in resource' => {
+              :name        => 'user1',
+              :ensure      => 'present',
+              :enabled     => 'True',
+              :password    => 'secret',
+              :description => 'my description',
+              :email       => 'user1@example.com'
             }
           }
         ]

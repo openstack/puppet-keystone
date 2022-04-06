@@ -163,9 +163,14 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
 
   def self.fetch_user(name, domain)
     domain ||= default_domain
-    system_request('user', 'show',
-                   [name, '--domain', domain],
-                   {:no_retry_exception_msgs => /No user with a name or ID/})
+    user = system_request('user', 'show',
+                          [name, '--domain', domain],
+                          {:no_retry_exception_msgs => /No user with a name or ID/})
+    # The description key is only set if it exists
+    if user and user.key?(:id) and !user.key?(:description)
+        user[:description] = ''
+    end
+    user
   rescue Puppet::ExecutionFailure => e
     raise e unless e.message =~ /No user with a name or ID/
   end
