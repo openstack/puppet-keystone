@@ -147,19 +147,13 @@ username="user1"
 
     it 'checks the password' do
       mock_creds = Puppet::Provider::Openstack::CredentialsV3.new
-      mock_creds.auth_url   = 'http://127.0.0.1:5000'
-      mock_creds.password   = 'pass_one'
-      mock_creds.username   = 'user_one'
-      mock_creds.user_id    = 'project1_id'
-      mock_creds.project_id = 'project-id-1'
+      mock_creds.auth_url         = 'http://127.0.0.1:5000'
+      mock_creds.password         = 'pass_one'
+      mock_creds.username         = 'user_one'
+      mock_creds.user_id          = 'user1_id'
+      mock_creds.user_domain_name = 'Default'
       Puppet::Provider::Openstack::CredentialsV3.expects(:new).returns(mock_creds)
 
-      described_class.expects(:openstack)
-        .with('project', 'list', '--quiet', '--format', 'csv',
-              ['--user', 'user1_id', '--long'])
-        .returns('"ID","Name","Domain ID","Description","Enabled"
-"project-id-1","domain_one","domain1_id","Domain One",True
-')
       Puppet::Provider::Openstack.expects(:openstack)
         .with('token', 'issue', ['--format', 'value'])
         .returns('2015-05-14T04:06:05Z
@@ -167,79 +161,18 @@ e664a386befa4a30878dcef20e79f167
 8dce2ae9ecd34c199d2877bf319a3d06
 ac43ec53d5a74a0b9f51523ae41a29f0
 ')
-      provider.expects(:id).times(2).returns('user1_id')
-      password = provider.password
-      expect(password).to eq('pass_one')
-    end
-
-    it 'checks the password with some projects disabled' do
-      mock_creds = Puppet::Provider::Openstack::CredentialsV3.new
-      mock_creds.auth_url   = 'http://127.0.0.1:5000'
-      mock_creds.password   = 'pass_one'
-      mock_creds.username   = 'user_one'
-      mock_creds.user_id    = 'project1_id'
-      mock_creds.project_id = 'project-id-2'
-      Puppet::Provider::Openstack::CredentialsV3.expects(:new).returns(mock_creds)
-
-      described_class.expects(:openstack)
-        .with('project', 'list', '--quiet', '--format', 'csv',
-              ['--user', 'user1_id', '--long'])
-        .returns('"ID","Name","Domain ID","Description","Enabled"
-"project-id-1","domain_one","domain1_id","Domain One",False
-"project-id-2","domain_one","domain1_id","Domain One",True
-"project-id-3","domain_one","domain1_id","Domain One",False
-')
-      Puppet::Provider::Openstack.expects(:openstack)
-        .with('token', 'issue', ['--format', 'value'])
-        .returns('2015-05-14T04:06:05Z
-e664a386befa4a30878dcef20e79f167
-8dce2ae9ecd34c199d2877bf319a3d06
-ac43ec53d5a74a0b9f51523ae41a29f0
-')
-      provider.expects(:id).times(2).returns('user1_id')
+      provider.expects(:id).returns('user1_id')
       password = provider.password
       expect(password).to eq('pass_one')
     end
 
     it 'fails the password check' do
-      described_class.expects(:openstack)
-        .with('project', 'list', '--quiet', '--format', 'csv',
-              ['--user', 'user1_id', '--long'])
-        .returns('"ID","Name","Domain ID","Description","Enabled"
-"project-id-1","domain_one","domain1_id","Domain One",True
-')
       Puppet::Provider::Openstack.expects(:openstack)
         .with('token', 'issue', ['--format', 'value'])
         .raises(Puppet::ExecutionFailure, 'HTTP 401 invalid authentication')
-      provider.expects(:id).times(2).returns('user1_id')
+      provider.expects(:id).returns('user1_id')
       password = provider.password
       expect(password).to eq(nil)
-    end
-
-    it 'checks the password with domain scoped token' do
-      provider.expects(:id).twice.returns('project1_id')
-      provider.expects(:domain_id).returns('domain1_id')
-      mock_creds = Puppet::Provider::Openstack::CredentialsV3.new
-      mock_creds.auth_url    = 'http://127.0.0.1:5000'
-      mock_creds.password    = 'foo'
-      mock_creds.username    = 'foo'
-      mock_creds.user_id     = 'project1_id'
-      mock_creds.domain_id = 'domain1_id'
-      Puppet::Provider::Openstack::CredentialsV3.expects(:new).returns(mock_creds)
-      described_class.expects(:openstack)
-        .with('project', 'list', '--quiet', '--format', 'csv',
-              ['--user', 'project1_id', '--long'])
-        .returns('"ID","Name","Domain ID","Description","Enabled"
-')
-      Puppet::Provider::Openstack.expects(:openstack)
-        .with('token', 'issue', ['--format', 'value'])
-        .returns('2015-05-14T04:06:05Z
-e664a386befa4a30878dcef20e79f167
-8dce2ae9ecd34c199d2877bf319a3d06
-ac43ec53d5a74a0b9f51523ae41a29f0
-')
-      password = provider.password
-      expect(password).to eq('pass_one')
     end
   end
 
