@@ -52,6 +52,13 @@ describe 'keystone server running with Apache/WSGI with resources' do
         ensure => present,
         roles  => ['admin'],
       }
+      keystone_user { 'user_with_description':
+        ensure      => present,
+        enabled     => true,
+        description => 'my super description',
+        email       => 'me@example.tld',
+        password    => 'super_secret',
+      }
       # service user exists only in the service_domain - must
       # use v3 api
       keystone::resource::service_identity { 'civ3::service_domain':
@@ -79,8 +86,10 @@ describe 'keystone server running with Apache/WSGI with resources' do
 
     shared_examples_for 'keystone user/tenant/service/role/endpoint resources using v3 API' do |auth_creds|
       it 'should find ci user' do
-        command("openstack #{auth_creds} --os-auth-url http://127.0.0.1:5000/v3 --os-identity-api-version 3 user list") do |r|
+        command("openstack #{auth_creds} --os-auth-url http://127.0.0.1:5000/v3 --os-identity-api-version 3 user list --long") do |r|
           expect(r.stdout).to match(/ci/)
+          expect(r.stdout).to match(/user\_with\_description/)
+          expect(r.stdout).to match(/my\ super\ description/)
           expect(r.stderr).to be_empty
         end
       end

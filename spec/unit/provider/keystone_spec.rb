@@ -122,7 +122,7 @@ id="the_project_id"
 name="The User"
 id="the_user_id"
 ')
-      expect(klass.fetch_user('The User', 'Default')).to eq({:name=>"The User", :id=>"the_user_id"})
+      expect(klass.fetch_user('The User', 'Default')).to eq({:name=>"The User", :id=>"the_user_id", :description=>""})
     end
   end
 
