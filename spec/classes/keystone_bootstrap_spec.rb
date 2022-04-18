@@ -24,7 +24,7 @@ describe 'keystone::bootstrap' do
           "OS_BOOTSTRAP_INTERNAL_URL=http://127.0.0.1:5000",
           "OS_BOOTSTRAP_REGION_ID=RegionOne",
         ],
-        :user        => platform_params[:keystone_user],
+        :user        => platform_params[:user],
         :path        => '/usr/bin',
         :refreshonly => true,
         :subscribe   => 'Anchor[keystone::dbsync::end]',
@@ -134,7 +134,7 @@ describe 'keystone::bootstrap' do
           "OS_BOOTSTRAP_INTERNAL_URL=http://internal:1342",
           "OS_BOOTSTRAP_REGION_ID=RegionTwo",
         ],
-        :user        => platform_params[:keystone_user],
+        :user        => platform_params[:user],
         :path        => '/usr/bin',
         :refreshonly => true,
         :subscribe   => 'Anchor[keystone::dbsync::end]',
@@ -303,7 +303,7 @@ describe 'keystone::bootstrap' do
       end
 
       let(:platform_params) do
-        { :keystone_user => 'keystone' }
+        { :user => 'keystone' }
       end
 
       it_behaves_like 'keystone::bootstrap'

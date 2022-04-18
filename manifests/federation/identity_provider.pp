@@ -61,7 +61,7 @@
 #
 # [*user*]
 #  (Optional) User with access to keystone files. (string value)
-#  Defaults to 'keystone'.
+#  Defaults to $::keystone::params::user.
 #
 # [*package_ensure*]
 #   (optional) Desired ensure state of packages.
@@ -84,7 +84,7 @@ class keystone::federation::identity_provider(
   $idp_metadata_path,
   $certfile                      = $::keystone::ssl_ca_certs,
   $keyfile                       = $::keystone::ssl_ca_key,
-  $user                          = 'keystone',
+  $user                          = $::keystone::params::user,
   $idp_organization_name         = $::os_service_default,
   $idp_organization_display_name = $::os_service_default,
   $idp_organization_url          = $::os_service_default,
@@ -95,10 +95,9 @@ class keystone::federation::identity_provider(
   $idp_contact_telephone         = $::os_service_default,
   $idp_contact_type              = $::os_service_default,
   $package_ensure                = present,
-) {
+) inherits keystone::params {
 
   include keystone::deps
-  include keystone::params
 
   if $::keystone::service_name != 'httpd' {
     fail ('Keystone need to be running under Apache for Federation work.')

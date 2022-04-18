@@ -317,8 +317,8 @@ and \"${domain_dir_enabled}\" for identity/domain_config_dir"
   if (!defined(File[$domain_dir_enabled])) {
     ensure_resource('file', $domain_dir_enabled, {
       ensure  => directory,
-      owner   => 'keystone',
-      group   => 'keystone',
+      owner   => $::keystone::params::user,
+      group   => $::keystone::params::group,
       mode    => '0750',
     })
   }

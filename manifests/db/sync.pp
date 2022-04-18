@@ -12,7 +12,7 @@
 #
 # [*keystone_user*]
 #   (Optional) Specify the keystone system user to be used with keystone-manage.
-#   Defaults to $::keystone::params::keystone_user
+#   Defaults to $::keystone::params::user
 #
 # [*db_sync_timeout*]
 #   (Optional) Timeout for the execution of the db_sync
@@ -20,7 +20,7 @@
 #
 class keystone::db::sync(
   $extra_params    = undef,
-  $keystone_user   = $::keystone::params::keystone_user,
+  $keystone_user   = $::keystone::params::user,
   $db_sync_timeout = 300,
 ) inherits keystone::params {
 

@@ -5,9 +5,12 @@ class keystone::params {
   include openstacklib::defaults
 
   $client_package_name = 'python3-keystoneclient'
-  $keystone_user       = 'keystone'
-  $keystone_group      = 'keystone'
+  $user                = 'keystone'
   $group               = 'keystone'
+
+  # NOTE(tkajinam) These are kept for backword compatibility
+  $keystone_user       = $user
+  $keystone_group      = $group
 
   case $::osfamily {
     'Debian': {
