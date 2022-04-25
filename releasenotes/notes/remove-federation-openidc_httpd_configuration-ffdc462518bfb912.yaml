@@ -1,0 +1,5 @@
+---
+upgrade:
+  - |
+    The ``keystone::federation::openidc_httpd_configuration`` class has been
+    removed.
