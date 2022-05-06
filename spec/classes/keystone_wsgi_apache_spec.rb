@@ -5,7 +5,6 @@ describe 'keystone::wsgi::apache' do
   let :pre_condition do
     "class { 'keystone':
        service_name => 'httpd',
-       enable_ssl   => true,
      }"
   end
 
@@ -25,7 +24,7 @@ describe 'keystone::wsgi::apache' do
         :threads                     => 1,
         :user                        => 'keystone',
         :priority                    => '10',
-        :ssl                         => true,
+        :ssl                         => false,
         :wsgi_daemon_process         => 'keystone',
         :wsgi_process_display_name   => 'keystone',
         :wsgi_process_group          => 'keystone',
@@ -53,7 +52,7 @@ describe 'keystone::wsgi::apache' do
           :bind_host                   => '127.0.0.1',
           :api_port                    => 1234,
           :path                        => '/keystone',
-          :ssl                         => false,
+          :ssl                         => true,
           :workers                     => 10,
           :ssl_cert                    => 'ssl cert',
           :ssl_key                     => 'ssl key',

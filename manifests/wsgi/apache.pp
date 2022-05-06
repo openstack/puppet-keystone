@@ -28,7 +28,7 @@
 #
 # [*ssl*]
 #   (Optional) Use SSL.
-#   Defaults to true
+#   Defaults to false
 #
 # [*workers*]
 #   (Optional) Number of WSGI workers to spawn.
@@ -138,7 +138,7 @@ class keystone::wsgi::apache (
   $bind_host                         = undef,
   $api_port                          = 5000,
   $path                              = '/',
-  $ssl                               = undef,
+  $ssl                               = false,
   $workers                           = $::os_workers_keystone,
   $ssl_cert                          = undef,
   $ssl_key                           = undef,
@@ -165,11 +165,6 @@ class keystone::wsgi::apache (
   $custom_wsgi_process_options       = {},
 ) inherits keystone::params {
 
-  if $ssl == undef {
-    warning('Default of the ssl parameter will be changed in a future release')
-  }
-  $ssl_real = pick($ssl, true)
-
   include keystone::deps
 
   ::openstacklib::wsgi::apache { 'keystone_wsgi':
@@ -182,7 +177,7 @@ class keystone::wsgi::apache (
     threads                     => $threads,
     user                        => $::keystone::params::keystone_user,
     priority                    => $priority,
-    ssl                         => $ssl_real,
+    ssl                         => $ssl,
     ssl_cert                    => $ssl_cert,
     ssl_key                     => $ssl_key,
     ssl_chain                   => $ssl_chain,

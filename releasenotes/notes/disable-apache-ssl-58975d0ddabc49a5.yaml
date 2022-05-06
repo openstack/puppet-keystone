@@ -1,0 +1,5 @@
+---
+upgrade:
+  - |
+    Default value of the ``keystone::wsgi::apache::ssl`` parameter has been
+    changed from ``true`` to ``false`` and now ssl is disabled by default.
