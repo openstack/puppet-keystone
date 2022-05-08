@@ -56,6 +56,7 @@ describe 'keystone' do
         is_expected.to contain_keystone_config('token/provider').with_value('fernet')
         is_expected.to contain_keystone_config('DEFAULT/max_token_size').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('DEFAULT/notification_format').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('DEFAULT/notification_opt_out').with_value('<SERVICE DEFAULT>')
 
         is_expected.to contain_oslo__messaging__default('keystone_config').with(
           :transport_url        => '<SERVICE DEFAULT>',
@@ -134,6 +135,11 @@ describe 'keystone' do
           :token_provider               => 'uuid',
           :max_token_size               => 255,
           :notification_format          => 'basic',
+          :notification_opt_out         => [
+            'identity.authenticate.success',
+            'identity.authenticate.pending',
+            'identity.authenticate.failed'
+            ],
         }
       end
 
@@ -157,6 +163,11 @@ describe 'keystone' do
         is_expected.to contain_keystone_config('token/provider').with_value('uuid')
         is_expected.to contain_keystone_config('DEFAULT/max_token_size').with_value(255)
         is_expected.to contain_keystone_config('DEFAULT/notification_format').with_value('basic')
+        is_expected.to contain_keystone_config('DEFAULT/notification_opt_out').with_value([
+          'identity.authenticate.success',
+          'identity.authenticate.pending',
+          'identity.authenticate.failed'
+        ])
       end
     end
 

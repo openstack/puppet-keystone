@@ -1,0 +1,4 @@
+---
+features:
+  - |
+    The new ``keystone::notification_opt_out`` parameter has been added.
