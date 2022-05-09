@@ -1,5 +1,6 @@
 # == Class keystone::service
 #
+# DEPRECATED !!
 # Encapsulates the keystone service to a class.
 #
 # === Parameters
@@ -33,6 +34,8 @@ class keystone::service (
 ) inherits keystone::params {
 
   include keystone::deps
+
+  warning('The keystone::service class is deprecated and will be removed in a future release,')
 
   service { 'keystone':
     ensure     => $ensure,
