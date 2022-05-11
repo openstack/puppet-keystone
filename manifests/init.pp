@@ -290,11 +290,11 @@
 #
 # [*keystone_user*]
 #   (Optional) Specify the keystone system user to be used with keystone-manage.
-#   Defaults to $::keystone::params::keystone_user
+#   Defaults to $::keystone::params::user
 #
 # [*keystone_group*]
 #   (Optional) Specify the keystone system group to be used with keystone-manage.
-#   Defaults to $::keystone::params::keystone_group
+#   Defaults to $::keystone::params::group
 #
 # [*manage_policyrcd*]
 #   (Optional) Whether to manage the policy-rc.d on debian based systems to
@@ -437,8 +437,8 @@ class keystone(
   $policy_driver                        = $::os_service_default,
   $using_domain_config                  = false,
   $domain_config_directory              = '/etc/keystone/domains',
-  $keystone_user                        = $::keystone::params::keystone_user,
-  $keystone_group                       = $::keystone::params::keystone_group,
+  $keystone_user                        = $::keystone::params::user,
+  $keystone_group                       = $::keystone::params::group,
   $manage_policyrcd                     = false,
   $enable_proxy_headers_parsing         = $::os_service_default,
   $max_request_body_size                = $::os_service_default,

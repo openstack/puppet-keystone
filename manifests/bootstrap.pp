@@ -84,7 +84,7 @@ class keystone::bootstrap (
   if defined('$::keystone::keystone_user') {
     $keystone_user = $::keystone::keystone_user
   } else {
-    $keystone_user = $::keystone::params::keystone_user
+    $keystone_user = $::keystone::params::user
   }
 
   if $bootstrap {
