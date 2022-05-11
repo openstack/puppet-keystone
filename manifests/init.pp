@@ -320,18 +320,6 @@
 #
 # DEPRECATED PARAMETERS
 #
-# [*member_role_id*]
-#   (Optional) Similar to the member_role_name option, this represents the
-#   default role ID used to associate users with their default projects in the
-#   v2 API. This will be used as the explicit role where one is not specified
-#   by the v2 API.
-#   Defaults to undef
-#
-# [*member_role_name*]
-#   (Optional) # This is the role name used in combination with the
-#   member_role_id option; see that option for more detail.
-#   Defaults to undef
-#
 # [*admin_endpoint*]
 #   (Optional) The base admin endpoint URL for keystone that are
 #   advertised to clients (NOTE: this does NOT affect how keystone listens
@@ -445,8 +433,6 @@ class keystone(
   $purge_config                         = false,
   $amqp_durable_queues                  = $::os_service_default,
   # DEPRECATED PARAMETERS
-  $member_role_id                       = undef,
-  $member_role_name                     = undef,
   $admin_endpoint                       = undef,
   $catalog_type                         = undef,
   $log_dir                              = undef,
@@ -497,26 +483,12 @@ class keystone(
   include keystone::db
   include keystone::params
 
-  if $member_role_id != undef {
-    warning('The keystone::member_role_id parameter is deprecated and has no effect')
-  }
-
-  if $member_role_name != undef {
-    warning('The keystone::member_role_name parameter is deprecated and has no effect')
-  }
-
   if $log_dir != undef {
     warning('The keystone::log_dir parameter is deprecated and has no effect.')
   }
 
   if $log_file != undef {
     warning('The keystone::log_file parameter is deprecated and has no effect.')
-  }
-
-  # TODO(tkajinam): Remove this when removing member_role_* parameters
-  keystone_config {
-    'DEFAULT/member_role_id':   ensure => absent;
-    'DEFAULT/member_role_name': ensure => absent;
   }
 
   if $admin_endpoint != undef {

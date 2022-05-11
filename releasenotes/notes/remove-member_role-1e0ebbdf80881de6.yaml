@@ -1,0 +1,5 @@
+---
+upgrade:
+  - |
+    The ``member_role_id`` parameter and the ``member_role_name`` parameter
+    of the ``keystone`` class have been removed.
