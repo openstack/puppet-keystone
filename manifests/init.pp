@@ -148,8 +148,14 @@
 #   Default to $::os_service_default
 #
 # [*notification_format*]
-#   Format for the notifications. Valid values are 'basic' and 'cadf'.
-#   Default to undef
+#   (Optional) Define the notification format for identity service events.
+#   Valid values are 'basic' and 'cadf'.
+#   Default to $::os_service_default
+#
+# [*notification_opt_out*]
+#   (Optional) Opt out notifications that match the patterns expressed in this
+#   list.
+#   Defaults to $::os_service_default
 #
 # [*control_exchange*]
 #   (Optional) AMQP exchange to connect to if using RabbitMQ
@@ -413,6 +419,7 @@ class keystone(
   $notification_driver                  = $::os_service_default,
   $notification_topics                  = $::os_service_default,
   $notification_format                  = $::os_service_default,
+  $notification_opt_out                 = $::os_service_default,
   $control_exchange                     = $::os_service_default,
   $rpc_response_timeout                 = $::os_service_default,
   $service_name                         = $::keystone::params::service_name,
@@ -590,7 +597,11 @@ class keystone(
   keystone_config {
     'token/provider':              value => $token_provider;
     'DEFAULT/max_token_size':      value => $max_token_size;
-    'DEFAULT/notification_format': value => $notification_format;
+  }
+
+  keystone_config {
+    'DEFAULT/notification_format':  value => $notification_format;
+    'DEFAULT/notification_opt_out': value => $notification_opt_out;
   }
 
   oslo::messaging::default { 'keystone_config':
