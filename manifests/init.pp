@@ -486,8 +486,7 @@ class keystone(
     # openstacklib policy_rcd only affects debian based systems.
     Policy_rcd <| title == 'keystone' |> -> Package['keystone']
     Policy_rcd['apache2'] -> Package['httpd']
-    # we don't have keystone service anymore starting from Newton
-    if ($::operatingsystem == 'Ubuntu') and (versioncmp($::operatingsystemmajrelease, '16') >= 0) {
+    if ($::operatingsystem == 'Ubuntu') {
       $policy_services = 'apache2'
     } else {
       $policy_services = ['keystone', 'apache2']
