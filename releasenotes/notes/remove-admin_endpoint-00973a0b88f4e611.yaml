@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    The ``keystone::admin_endpoint`` parameter has been removed.

@@ -320,14 +320,6 @@
 #
 # DEPRECATED PARAMETERS
 #
-# [*admin_endpoint*]
-#   (Optional) The base admin endpoint URL for keystone that are
-#   advertised to clients (NOTE: this does NOT affect how keystone listens
-#   for connections) (string value)
-#   If set to false, no admin_endpoint will be defined in keystone.conf.
-#   Sample value: 'http://localhost:5000/'
-#   Defaults to undef
-#
 # [*catalog_type*]
 #   (Optional) Type of catalog that keystone uses to store endpoints, services.
 #   This accepts sql or template.
@@ -433,7 +425,6 @@ class keystone(
   $purge_config                         = false,
   $amqp_durable_queues                  = $::os_service_default,
   # DEPRECATED PARAMETERS
-  $admin_endpoint                       = undef,
   $catalog_type                         = undef,
   $log_dir                              = undef,
   $log_file                             = undef,
@@ -489,10 +480,6 @@ class keystone(
 
   if $log_file != undef {
     warning('The keystone::log_file parameter is deprecated and has no effect.')
-  }
-
-  if $admin_endpoint != undef {
-    warning('The keystone::admin_endpoint parameter is deprecated. This parameter has no effect')
   }
 
   package { 'keystone':
