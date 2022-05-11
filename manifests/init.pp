@@ -632,12 +632,13 @@ class keystone(
       $::keystone::params::service_name: {
         $service_name_real = $::keystone::params::service_name
 
-        class { 'keystone::service':
-          ensure       => $service_ensure,
-          service_name => $service_name,
-          enable       => $enabled,
-          hasstatus    => true,
-          hasrestart   => true,
+        service { 'keystone':
+          ensure     => $service_ensure,
+          name       => $service_name,
+          enable     => $enabled,
+          hasstatus  => true,
+          hasrestart => true,
+          tag        => 'keystone-service',
         }
 
         # Note: Debian uses uwsgi if using keystone service, which isn't deprecated
