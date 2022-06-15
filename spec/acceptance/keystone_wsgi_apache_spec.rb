@@ -368,7 +368,7 @@ describe 'keystone server running with Apache/WSGI with resources' do
           # which doesn't exit.  The next "test" clean everything up
           # to have a working keystone again.
 
-          # TODO: Sould we add a working ldap server ?
+          # TODO: Should we add a working ldap server ?
         end
 
         describe file('/etc/keystone/domains/keystone.domain_1_ldap_backend.conf') do

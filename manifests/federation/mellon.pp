@@ -33,7 +33,7 @@
 #   Defaults to present.
 #
 # [*enable_websso*]
-#   (optional) Wheater or not to enable Web Single Sign-On (SSO)
+#   (optional) Whether or not to enable Web Single Sign-On (SSO)
 #   Defaults to false
 #
 class keystone::federation::mellon (

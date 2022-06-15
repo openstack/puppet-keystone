@@ -51,7 +51,7 @@ class keystone::deps {
   # Support packages need to be installed in the install phase, but we don't
   # put them in the chain above because we don't want any false dependencies
   # between packages with the keystone-package tag and the keystone-support-package
-  # tag.  Note: the package resources here will have a 'before' relationshop on
+  # tag.  Note: the package resources here will have a 'before' relationship on
   # the keystone::install::end anchor.  The line between keystone-support-package and
   # keystone-package should be whether or not keystone services would need to be
   # restarted if the package state was changed.
@@ -87,7 +87,7 @@ class keystone::deps {
   Anchor['keystone::config::end']  ~> Anchor['keystone::service::begin']
 
   # Install the package before the Apache module purges wsgi-keystone.conf.
-  # Otherwise, the run isn't indempotent.
+  # Otherwise, the run isn't idempotent.
   Package<| tag == 'keystone-package'|> -> File<| title == '/etc/apache2/sites-enabled' |>
   Package<| tag == 'keystone-package'|> -> File<| title == '/etc/apache2/sites-available' |>
 
