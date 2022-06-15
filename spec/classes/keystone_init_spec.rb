@@ -10,8 +10,9 @@ describe 'keystone' do
       it { is_expected.to contain_class('keystone::policy') }
 
       it { is_expected.to contain_package('keystone').with(
-        'ensure' => 'present',
-        'tag'    => ['openstack', 'keystone-package'],
+        :ensure => 'present',
+        :name   => platform_params[:package_name],
+        :tag    => ['openstack', 'keystone-package'],
       ) }
 
       it { is_expected.to contain_class('keystone::client').with(
@@ -638,7 +639,7 @@ describe 'keystone' do
             :service_name       => 'keystone',
             :httpd_service_name => 'apache2' }
         when 'RedHat'
-          { :package_name       => 'opnestack-keystone',
+          { :package_name       => 'openstack-keystone',
             :service_name       => 'openstack-keystone',
             :httpd_service_name => 'httpd' }
         end
