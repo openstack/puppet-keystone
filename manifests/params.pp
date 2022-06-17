@@ -8,7 +8,7 @@ class keystone::params {
   $user                = 'keystone'
   $group               = 'keystone'
 
-  # NOTE(tkajinam) These are kept for backword compatibility
+  # NOTE(tkajinam) These are kept for backward compatibility
   $keystone_user       = $user
   $keystone_group      = $group
 

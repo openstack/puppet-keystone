@@ -85,7 +85,7 @@
 #   Defaults to '/usr/bin/keystone-wsgi-public'
 #
 # [*custom_wsgi_process_options*]
-#   (Optional) gives you the oportunity to add custom process options or to
+#   (Optional) gives you the opportunity to add custom process options or to
 #   overwrite the default options for the WSGI process.
 #   For example to use a virtual python environment for the WSGI process
 #   you could set it to:

@@ -101,7 +101,7 @@ end
 # attribute [Array[Hash]]
 # - the first hash are the expected result
 # - second are the combination of attributes you want to test
-# The provider must be build from ressource_attrs
+# The provider must be build from resource_attrs
 # see examples in keystone_{user/user_role/tenant/service}
 shared_examples_for 'create the correct resource' do |attributes|
   expected_results = attributes.shift['expected_results']

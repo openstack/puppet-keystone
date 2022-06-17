@@ -279,7 +279,7 @@ Puppet::Type.type(:keystone_endpoint).provide(
     service = services.find { |s| s[:type] == type }
     service_id = ''
     if service.nil? && services.count == 1
-      # For backward comptatibility, match the service by name only.
+      # For backward compatibility, match the service by name only.
       service_id = services[0][:id]
     else
       # Math the service by id.

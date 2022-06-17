@@ -192,7 +192,7 @@ describe 'keystone::resource::authtoken' do
         end
       end
 
-      context 'by a commma-separated string' do
+      context 'by a comma-separated string' do
         before do
           params.merge! ({
             :memcached_servers => '[fd12:3456:789a:1::1]:11211,[fd12:3456:789a:1::2]:11211',

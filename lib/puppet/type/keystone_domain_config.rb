@@ -14,7 +14,7 @@ Puppet::Type.newtype(:keystone_domain_config) do
   end
 
   # if one declare the domain directory as a resource, this will
-  # create a soft dependancy with it.
+  # create a soft dependency with it.
   autorequire(:file) do
     currently_defined = provider.class.find_domain_conf(catalog)
     # we use the catalog and fall back to provider.self.base_dir (see

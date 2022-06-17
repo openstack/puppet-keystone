@@ -95,7 +95,7 @@
 #
 # [*rabbit_use_ssl*]
 #   (Optional) Connect over SSL for RabbitMQ
-#   Defaults to $::os_serice_default
+#   Defaults to $::os_service_default
 #
 # [*kombu_ssl_ca_certs*]
 #   (Optional) SSL certification authority file (valid only if SSL enabled).
