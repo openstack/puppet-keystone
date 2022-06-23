@@ -1,0 +1,5 @@
+---
+security:
+  - |
+    Content of fernet keys and credential keys are now hidden from output, when
+    these files are updated.

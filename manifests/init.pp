@@ -1050,6 +1050,7 @@ running as a standalone service, or httpd for being run by a httpd server")
           'group'     => $keystone_group,
           'mode'      => '0600',
           'replace'   => $fernet_replace_keys,
+          'show_diff' => false,
           'subscribe' => 'Anchor[keystone::install::end]',
         }
       )
@@ -1085,6 +1086,7 @@ running as a standalone service, or httpd for being run by a httpd server")
           'owner'     => $keystone_user,
           'group'     => $keystone_group,
           'mode'      => '0600',
+          'show_diff' => false,
           'subscribe' => 'Anchor[keystone::install::end]',
         }
       )
