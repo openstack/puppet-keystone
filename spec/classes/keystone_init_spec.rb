@@ -372,11 +372,13 @@ describe 'keystone' do
       it { is_expected.to contain_file('/etc/keystone/credential-keys/0').with(
         'content'   => 't-WdduhORSqoyAykuqWAQSYjg2rSRuJYySgI2xh48CI=',
         'owner'     => 'keystone',
+        :show_diff  => false,
         'subscribe' => 'Anchor[keystone::install::end]',
       )}
       it { is_expected.to contain_file('/etc/keystone/credential-keys/1').with(
         'content'   => 'GLlnyygEVJP4-H2OMwClXn3sdSQUZsM5F194139Unv8=',
         'owner'     => 'keystone',
+        :show_diff  => false,
         'subscribe' => 'Anchor[keystone::install::end]',
       )}
     end
