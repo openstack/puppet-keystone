@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The ``keystone::wsgi::apache`` class now supports customizing request
+    headers added by apache.

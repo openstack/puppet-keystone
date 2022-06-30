@@ -34,6 +34,7 @@ describe 'keystone::wsgi::apache' do
         :wsgi_script_source          => '/usr/bin/keystone-wsgi-public',
         :wsgi_pass_authorization     => 'On',
         :headers                     => nil,
+        :request_headers             => nil,
         :custom_wsgi_process_options => {},
         :access_log_file             => false,
         :access_log_pipe             => false,
@@ -67,7 +68,8 @@ describe 'keystone::wsgi::apache' do
           :wsgi_pass_authorization     => 'Off',
           :wsgi_chunked_request        => 'On',
           :wsgi_script_source          => '/path/to/my/script.py',
-          :headers                     => 'set X-Frame-Options "DENY"',
+          :headers                     => ['set X-XSS-Protection "1; mode=block"'],
+          :request_headers             => ['set Content-Type "application/json"'],
           :vhost_custom_fragment       => 'custom',
           :custom_wsgi_process_options => { 'python-path' => '/my/python/virtualenv' },
         }
@@ -94,6 +96,7 @@ describe 'keystone::wsgi::apache' do
         :wsgi_chunked_request        => params[:wsgi_chunked_request],
         :wsgi_script_source          => params[:wsgi_script_source],
         :headers                     => params[:headers],
+        :request_headers             => params[:request_headers],
         :vhost_custom_fragment       => params[:vhost_custom_fragment],
         :custom_wsgi_process_options => params[:custom_wsgi_process_options],
       )}
