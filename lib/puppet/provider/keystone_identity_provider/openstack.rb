@@ -119,38 +119,10 @@ Puppet::Type.type(:keystone_identity_provider).provide(
     remote_ids
   end
 
-  # bug/python-openstackclient/1478995: when fixed, parsing will be done by OSC.
   def self.clean_remote_ids(remote_ids)
-    version = system_request('--version', '').sub(/openstack\s+/i, '').strip
-    if Gem::Version.new(version) < Gem::Version.new('1.9.0')
-      clean_remote_ids_old(remote_ids)
-    else
-      remote_ids.split(',').map(&:strip)
-    end
+    remote_ids.split(',').map(&:strip)
   end
 
-  def self.clean_remote_ids_old(remote_ids)
-    remote_ids_clean = []
-    if remote_ids != '[]'
-      python_array_of_unicode_string = %r/
-      u                                      # the u character
-      (?<delimiter>["'])                     # followed by a delimiter
-      (?<value>                              # which holds the value
-        .+?                                  # composed of non-delimiter
-      )
-      (\k<delimiter>)                        # ended by the delimiter
-      /x
-      remote_ids_clean = JSON.parse(remote_ids.gsub(
-        python_array_of_unicode_string,
-        '"\k<value>"'))
-    end
-  rescue JSON::ParserError
-    raise(Puppet::Error,
-      "Could not parse #{remote_ids} into a valid structure. " \
-        'Please submit a bug report.')
-  else
-    remote_ids_clean
-  end
   def self.remote_ids_cli(remote_ids)
     remote_ids.map { |e| ['--remote-id', e.to_s] }.flatten
   end
