@@ -34,7 +34,7 @@ describe 'Puppet::Type.type(:keystone_puppet_config)' do
     expect(@keystone_puppet_config[:value]).to eq('bar')
   end
 
-  it 'should not accept a value with whitespace' do
+  it 'should accept a value with whitespace' do
     @keystone_puppet_config[:value] = 'b ar'
     expect(@keystone_puppet_config[:value]).to eq('b ar')
   end
