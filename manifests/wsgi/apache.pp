@@ -124,6 +124,10 @@
 #   (Optional) Headers for the vhost.
 #   Defaults to undef
 #
+# [*request_headers*]
+#   (optional) Modifies collected request headers in various ways.
+#   Defaults to undef
+#
 # [*vhost_custom_fragment*]
 #   (Optional) Passes a string of custom configuration
 #   directives to be placed at the end of the vhost configuration.
@@ -161,6 +165,7 @@ class keystone::wsgi::apache (
   $error_log_pipe                    = undef,
   $error_log_syslog                  = undef,
   $headers                           = undef,
+  $request_headers                   = undef,
   $vhost_custom_fragment             = undef,
   $custom_wsgi_process_options       = {},
 ) inherits keystone::params {
@@ -195,6 +200,7 @@ class keystone::wsgi::apache (
     wsgi_pass_authorization     => $wsgi_pass_authorization,
     wsgi_chunked_request        => $wsgi_chunked_request,
     headers                     => $headers,
+    request_headers             => $request_headers,
     custom_wsgi_process_options => $custom_wsgi_process_options,
     vhost_custom_fragment       => $vhost_custom_fragment,
     access_log_file             => $access_log_file,
