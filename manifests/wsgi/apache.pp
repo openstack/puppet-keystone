@@ -64,7 +64,7 @@
 #
 # [*priority*]
 #   (Optional) The priority for the vhost.
-#   Defaults to '10'
+#   Defaults to 10
 #
 # [*threads*]
 #   (Optional) The number of threads for the vhost.
@@ -94,19 +94,19 @@
 #
 # [*access_log_file*]
 #   (Optional) The log file name for the virtualhost.
-#   Defaults to false
+#   Defaults to undef
 #
 # [*access_log_pipe*]
 #   (Optional) Specifies a pipe where Apache sends access logs for the virtualhost.
-#   Defaults to false
+#   Defaults to undef
 #
 # [*access_log_syslog*]
 #   (Optional) Sends the virtualhost access log messages to syslog.
-#   Defaults to false
+#   Defaults to undef
 #
 # [*access_log_format*]
 #   (Optional) The log format for the virtualhost.
-#   Defaults to false
+#   Defaults to undef
 #
 # [*error_log_file*]
 #   (Optional) The error log file name for the virtualhost.
@@ -153,10 +153,10 @@ class keystone::wsgi::apache (
   $wsgi_pass_authorization           = 'On',
   $wsgi_chunked_request              = undef,
   $wsgi_script_source                = '/usr/bin/keystone-wsgi-public',
-  $access_log_file                   = false,
-  $access_log_pipe                   = false,
-  $access_log_syslog                 = false,
-  $access_log_format                 = false,
+  $access_log_file                   = undef,
+  $access_log_pipe                   = undef,
+  $access_log_syslog                 = undef,
+  $access_log_format                 = undef,
   $error_log_file                    = undef,
   $error_log_pipe                    = undef,
   $error_log_syslog                  = undef,
