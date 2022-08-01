@@ -47,7 +47,7 @@ describe Puppet::Type.type(:keystone_identity_provider).provider(:openstack) do
 description="Nice id provider"
 enabled="True"
 id="idp_one"
-remote_ids="[u'entityid_idp1', u'http://entityid_idp2/saml/meta', u'3']"
+remote_ids="entityid_idp1, http://entityid_idp2/saml/meta, 3"
 EOR
       )
       provider.create
@@ -104,7 +104,7 @@ EOR
 description="Nice id provider"
 enabled="True"
 id="idp_one"
-remote_ids="[u'entityid_idp1', u'http://entityid_idp2/saml/meta', u'3']"
+remote_ids="entityid_idp1, http://entityid_idp2/saml/meta, 3"
 EOR
       )
       provider.create
@@ -151,7 +151,7 @@ EOR
 description="None"
 enabled="True"
 id="idp_one"
-remote_ids="[u'entityid_idp1', u'http://entityid_idp2/saml/meta', u'3']"
+remote_ids="entityid_idp1, http://entityid_idp2/saml/meta, 3"
 EOR
       )
       described_class.expects(:openstack)
@@ -165,13 +165,9 @@ EOR
 description="Idp two description"
 enabled="False"
 id="idp_two"
-remote_ids="[]"
+remote_ids=""
 EOR
       )
-      described_class.expects(:openstack)
-        .with('--version', '', [])
-        .twice
-        .returns("openstack 1.7.0\n")
       instances =
         Puppet::Type::Keystone_identity_provider::ProviderOpenstack.instances
       expect(instances.count).to eq(2)
@@ -261,38 +257,14 @@ EOR
   end
 
   describe '#clean_remote_ids' do
-    context 'before python-openstackclient/+bug/1478995' do
-      let(:edge_cases_remote_ids) do
-        {
-          %q|[u'http://remoteid?id=idp_one&name=ldap', u"http://remoteid_2?id='idp'"]| =>
-            ['http://remoteid?id=idp_one&name=ldap', "http://remoteid_2?id='idp'"],
-          %q|[u'http://remoteid?id=idp_one&name=ldap']| => ['http://remoteid?id=idp_one&name=ldap']
-        }
-      end
-      it 'should handle tricky cases' do
-        described_class.expects(:openstack)
-          .with('--version', '', [])
-          .twice
-          .returns("openstack 1.7.0\n")
-        edge_cases_remote_ids.each do |edge_case, solution|
-          expect(described_class.clean_remote_ids(edge_case)).to eq(solution)
-        end
-      end
+    let(:remote_ids) do
+      [
+        "http://remoteid?id=idp_one&name=ldap, http://remoteid_2?id='idp'",
+        ['http://remoteid?id=idp_one&name=ldap', "http://remoteid_2?id='idp'"]
+      ]
     end
-    context 'after python-openstackclient/+bug/1478995' do
-      let(:remote_ids) do
-        [
-          "http://remoteid?id=idp_one&name=ldap, http://remoteid_2?id='idp'",
-            ['http://remoteid?id=idp_one&name=ldap', "http://remoteid_2?id='idp'"]
-        ]
-      end
-      it 'should handle the new output' do
-        described_class.expects(:openstack)
-          .with('--version', '', [])
-          .once
-          .returns("openstack 1.9.0\n")
-        expect(described_class.clean_remote_ids(remote_ids[0])).to eq(remote_ids[1])
-      end
+    it 'should handle the new output' do
+      expect(described_class.clean_remote_ids(remote_ids[0])).to eq(remote_ids[1])
     end
   end
 end
