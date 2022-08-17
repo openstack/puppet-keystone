@@ -159,15 +159,6 @@ class keystone::bootstrap (
     })
   }
 
-  # NOTE(tkajinam): puppet.conf is no longer required and now clouds.yaml
-  #                 is used instead.
-  # TODO(tkajinam): Remove this after Y release.
-  file { '/etc/keystone/puppet.conf':
-    ensure  => 'absent',
-    require => Anchor['keystone::config::begin'],
-    before  => Anchor['keystone::config::end'],
-  }
-
   $auth_url_real = $interface ? {
     'admin'    => $admin_url,
     'internal' => $internal_url_real,

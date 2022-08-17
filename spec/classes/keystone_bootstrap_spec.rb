@@ -70,12 +70,6 @@ describe 'keystone::bootstrap' do
         :internal_url => 'http://127.0.0.1:5000',
       )}
 
-      it { is_expected.to contain_file('/etc/keystone/puppet.conf').with(
-        :ensure  => 'absent',
-        :require => 'Anchor[keystone::config::begin]',
-        :before  => 'Anchor[keystone::config::end]',
-      )}
-
       it { is_expected.to contain_file('/etc/openstack').with(
         :ensure  => 'directory',
         :mode    => '0755',
@@ -180,12 +174,6 @@ describe 'keystone::bootstrap' do
         :internal_url => 'http://internal:1342',
       )}
 
-      it { is_expected.to contain_file('/etc/keystone/puppet.conf').with(
-        :ensure  => 'absent',
-        :require => 'Anchor[keystone::config::begin]',
-        :before  => 'Anchor[keystone::config::end]',
-      )}
-
       it { is_expected.to contain_file('/etc/openstack').with(
         :ensure  => 'directory',
         :mode    => '0755',
@@ -230,12 +218,6 @@ describe 'keystone::bootstrap' do
       it { is_expected.to_not contain_keystone_user_role('admin@admin') }
       it { is_expected.to_not contain_keystone_service('keystone::identity') }
       it { is_expected.to_not contain_keystone_endpoint('RegionOne/keystone::identity') }
-
-      it { is_expected.to contain_file('/etc/keystone/puppet.conf').with(
-        :ensure  => 'absent',
-        :require => 'Anchor[keystone::config::begin]',
-        :before  => 'Anchor[keystone::config::end]',
-      )}
 
       it { is_expected.to contain_file('/etc/openstack').with(
         :ensure  => 'directory',
