@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The new ``keystone::wsgi::apache::wsgi_process_display_name`` parameter
+    has been added.
