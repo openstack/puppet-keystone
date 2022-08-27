@@ -19,7 +19,7 @@
 #   Defaults to $::os_service_default
 #
 # [*disable_by_file_paths*]
-#   (Optional) Check the presense of a file to determine if an application
+#   (Optional) Check the presence of a file to determine if an application
 #   is running on a port. Expects a "port:path" list of strings.
 #   Defaults to $::os_service_default
 #
