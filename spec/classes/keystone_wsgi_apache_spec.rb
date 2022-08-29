@@ -51,7 +51,7 @@ describe 'keystone::wsgi::apache' do
         {
           :servername                  => 'dummy.host',
           :bind_host                   => '127.0.0.1',
-          :api_port                    => 1234,
+          :port                        => 1234,
           :path                        => '/keystone',
           :ssl                         => true,
           :workers                     => 10,
@@ -78,7 +78,7 @@ describe 'keystone::wsgi::apache' do
       it { should contain_openstacklib__wsgi__apache('keystone_wsgi').with(
         :servername                  => params[:servername],
         :bind_host                   => params[:bind_host],
-        :bind_port                   => params[:api_port],
+        :bind_port                   => params[:port],
         :path                        => params[:path],
         :workers                     => params[:workers],
         :threads                     => params[:threads],
@@ -105,7 +105,7 @@ describe 'keystone::wsgi::apache' do
     context 'with backward compatible ports' do
       let :params do
         {
-          :api_port => [35357, 5000],
+          :port => [35357, 5000],
         }
       end
 
