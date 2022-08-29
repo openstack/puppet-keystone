@@ -168,9 +168,12 @@ class keystone::wsgi::apache (
   $request_headers                   = undef,
   $vhost_custom_fragment             = undef,
   $custom_wsgi_process_options       = {},
-) inherits keystone::params {
+) {
 
   include keystone::deps
+  include keystone::params
+
+  Anchor['keystone::install::end'] -> Class['apache']
 
   ::openstacklib::wsgi::apache { 'keystone_wsgi':
     servername                  => $servername,
@@ -210,7 +213,6 @@ class keystone::wsgi::apache (
     error_log_file              => $error_log_file,
     error_log_pipe              => $error_log_pipe,
     error_log_syslog            => $error_log_syslog,
-    require                     => Anchor['keystone::install::end'],
   }
 
   # Workaround to empty Keystone vhost that is provided & activated by default with running
