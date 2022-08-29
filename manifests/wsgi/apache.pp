@@ -70,6 +70,10 @@
 #   (Optional) The number of threads for the vhost.
 #   Defaults to 1
 #
+# [*wsgi_process_display_name*]
+#   (Optional) Name of the WSGI process display-name.
+#   Defaults to 'keystone'
+#
 # [*wsgi_application_group*]
 #   (Optional) The application group of the WSGI script.
 #   Defaults to '%{GLOBAL}'
@@ -157,6 +161,7 @@ class keystone::wsgi::apache (
   $ssl_crl_path                      = undef,
   $ssl_crl                           = undef,
   $ssl_certs_dir                     = undef,
+  $wsgi_process_display_name         = 'keystone',
   $threads                           = 1,
   $priority                          = '10',
   $wsgi_application_group            = '%{GLOBAL}',
@@ -206,7 +211,7 @@ class keystone::wsgi::apache (
     ssl_crl                     => $ssl_crl,
     ssl_certs_dir               => $ssl_certs_dir,
     wsgi_daemon_process         => 'keystone',
-    wsgi_process_display_name   => 'keystone',
+    wsgi_process_display_name   => $wsgi_process_display_name,
     wsgi_process_group          => 'keystone',
     wsgi_script_dir             => $::keystone::params::keystone_wsgi_script_path,
     wsgi_script_file            => 'keystone',
