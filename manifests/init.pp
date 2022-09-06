@@ -599,6 +599,11 @@ class keystone(
 
     case $service_name {
       $::keystone::params::service_name: {
+        if $::operatingsystem != 'Debian' {
+          # TODO(tkajinam): Make this hard-fail
+          warning('Keystone under Eventlet is no longer supported by this operating system')
+        }
+
         $service_name_real = $::keystone::params::service_name
 
         service { 'keystone':
@@ -609,22 +614,25 @@ class keystone(
           hasrestart => true,
           tag        => 'keystone-service',
         }
-
-        # Note: Debian uses uwsgi if using keystone service, which isn't deprecated
-        # and therefore, no warning should be displayed.
-        if $service_name == $::keystone::params::service_name and $::operatingsystem != 'Debian'{
-          warning("Keystone under Eventlet has been deprecated during the Kilo cycle. \
-Support for deploying under eventlet will be dropped as of the M-release of OpenStack.")
-        }
       }
       'httpd': {
         include apache::params
         $service_name_real = $::apache::params::service_name
         Service <| title == 'httpd' |> { tag +> 'keystone-service' }
+
+        if $::operatingsystem == 'Debian' {
+          service { 'keystone':
+            ensure => 'stopped',
+            name   => $::keystone::params::service_name,
+            enable => false,
+            tag    => 'keystone-service',
+          }
+          # we need to make sure keystone/eventlet is stopped before trying to start apache
+          Service['keystone'] -> Service[$service_name]
+        }
       }
       default: {
-        fail("Invalid service_name. Either keystone/openstack-keystone for \
-running as a standalone service, or httpd for being run by a httpd server")
+        fail('Invalid service_name.')
       }
     }
   } else {

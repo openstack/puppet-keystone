@@ -28,7 +28,8 @@ describe 'keystone::federation::identity_provider' do
 
   shared_examples 'keystone::federation::identity_provider' do
     let :pre_condition do
-      "class { 'keystone':
+      "include apache
+       class { 'keystone':
          service_name => 'httpd',
          enable_ssl   => true,
        }"

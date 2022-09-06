@@ -183,9 +183,16 @@ describe 'keystone' do
       end
 
       it do
-        expect {
-          is_expected.to contain_service(platform_params[:service_name]).with('ensure' => 'running')
-        }.to raise_error(RSpec::Expectations::ExpectationNotMetError, /expected that the catalogue would contain Service\[#{platform_params[:service_name]}\]/)
+        if facts[:operatingsystem] == 'Debian'
+          is_expected.to contain_service('keystone').with(
+            :ensure => 'stopped',
+            :name   => platform_params[:service_name],
+            :enable => false,
+            :tag    => 'keystone-service',
+          )
+        else
+          is_expected.to_not contain_service('keystone')
+        end
       end
 
       it { is_expected.to contain_exec('restart_keystone').with(
