@@ -635,10 +635,7 @@ class keystone(
         fail('Invalid service_name.')
       }
     }
-  } else {
-    warning('Execution of db_sync does not depend on $enabled anymore. Please use sync_db instead.')
   }
-
 
   if $sync_db {
     include keystone::db::sync
