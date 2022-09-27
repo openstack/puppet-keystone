@@ -49,15 +49,15 @@
   OIDCRedirectURI "<%= @keystone_url -%>/v3/auth/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::openidc::idp_name']-%>/protocols/openid/websso"
   OIDCRedirectURI "<%= @keystone_url -%>/v3/auth/OS-FEDERATION/websso/openid"
 
-  <LocationMatch "/v3/auth/OS-FEDERATION/websso/openid">
+  <Location "/v3/auth/OS-FEDERATION/websso/openid">
       AuthType "openid-connect"
       Require valid-user
-  </LocationMatch>
+  </Location>
 
-  <LocationMatch "/v3/auth/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::openidc::idp_name']-%>/protocols/openid/websso">
+  <Location "/v3/auth/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::openidc::idp_name']-%>/protocols/openid/websso">
       AuthType "openid-connect"
       Require valid-user
-  </LocationMatch>
+  </Location>
 
 <%- if scope['::keystone::federation::openidc::openidc_enable_oauth'] -%>
   <%- if scope['keystone::federation::openidc::openidc_verify_method'] == 'introspection' -%>
@@ -68,7 +68,7 @@
   OIDCOAuthVerifyJwksUri "<%= scope['keystone::federation::openidc::openidc_verify_jwks_uri']-%>"
   <%- end -%>
 
-  <Location ~ "/v3/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::openidc::idp_name']-%>/protocols/openid/auth">
+  <Location "/v3/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::openidc::idp_name']-%>/protocols/openid/auth">
       AuthType oauth20
       Require valid-user
   </Location>
