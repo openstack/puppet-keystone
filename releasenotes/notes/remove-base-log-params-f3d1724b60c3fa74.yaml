@@ -1,0 +1,5 @@
+---
+upgrade:
+  - |
+    The ``keystone::log_dir`` parameter and the ``keystone::log_file``
+    parameter have been removed.

@@ -325,15 +325,6 @@
 #   This accepts sql or template.
 #   Defaults to undef.
 #
-# [*log_dir*]
-#   (Optional) Directory where logs should be stored
-#   If set to $::os_service_default, it will not log to any directory
-#   Defaults to undef.
-#
-# [*log_file*]
-#   (Optional) Where to log
-#   Defaults to undef.
-#
 # [*enable_ssl*]
 #   (Optional) Toggle for SSL support on the keystone eventlet servers.
 #   (boolean value)
@@ -426,8 +417,6 @@ class keystone(
   $amqp_durable_queues                  = $::os_service_default,
   # DEPRECATED PARAMETERS
   $catalog_type                         = undef,
-  $log_dir                              = undef,
-  $log_file                             = undef,
   $enable_ssl                           = undef,
   $ssl_certfile                         = undef,
   $ssl_keyfile                          = undef,
@@ -473,14 +462,6 @@ class keystone(
 
   include keystone::db
   include keystone::params
-
-  if $log_dir != undef {
-    warning('The keystone::log_dir parameter is deprecated and has no effect.')
-  }
-
-  if $log_file != undef {
-    warning('The keystone::log_file parameter is deprecated and has no effect.')
-  }
 
   package { 'keystone':
     ensure => $package_ensure,
