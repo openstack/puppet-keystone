@@ -325,32 +325,6 @@
 #   This accepts sql or template.
 #   Defaults to undef.
 #
-# [*enable_ssl*]
-#   (Optional) Toggle for SSL support on the keystone eventlet servers.
-#   (boolean value)
-#   Defaults to undef
-#
-# [*ssl_certfile*]
-#   (Optional) Path of the certfile for SSL. (string value)
-#   Defaults to undef
-#
-# [*ssl_keyfile*]
-#   (Optional) Path of the keyfile for SSL. (string value)
-#   Defaults to undef
-#
-# [*ssl_ca_certs*]
-#   (Optional) Path of the ca cert file for SSL. (string value)
-#   Defaults to undef
-#
-# [*ssl_ca_key*]
-#   (Optional) Path of the CA key file for SSL (string value)
-#   Defaults to undef
-#
-# [*ssl_cert_subject*]
-#   (Optional) SSL Certificate Subject (auto generated certificate)
-#   (string value)
-#   Defaults to undef
-#
 # == Authors
 #
 #   Dan Bode dan@puppetlabs.com
@@ -417,12 +391,6 @@ class keystone(
   $amqp_durable_queues                  = $::os_service_default,
   # DEPRECATED PARAMETERS
   $catalog_type                         = undef,
-  $enable_ssl                           = undef,
-  $ssl_certfile                         = undef,
-  $ssl_keyfile                          = undef,
-  $ssl_ca_certs                         = undef,
-  $ssl_ca_key                           = undef,
-  $ssl_cert_subject                     = undef,
 ) inherits keystone::params {
 
   include keystone::deps
@@ -433,18 +401,6 @@ class keystone(
     warning('The catalog_type parameter is deprecated. Use the catalog_driver parameter instead.')
     if ! $catalog_driver {
       validate_legacy(Enum['template', 'sql'], 'validate_re', $catalog_type)
-    }
-  }
-
-  [
-    'enable_ssl',
-    'ssl_certfile',
-    'ssl_ca_certs',
-    'ssl_ca_key',
-    'ssl_cert_subject'
-  ].each |String $ssl_opt| {
-    if getvar($ssl_opt) != undef {
-      warning("The ${ssl_opt} parameter has been deprecated and has no effect.")
     }
   }
 
@@ -500,16 +456,6 @@ class keystone(
 
   keystone_config {
     'policy/driver': value => $policy_driver;
-  }
-
-  # TODO(tkajinam): Remove this after Z-release
-  keystone_config {
-    'ssl/enable':       ensure => absent;
-    'ssl/certfile':     ensure => absent;
-    'ssl/keyfile':      ensure => absent;
-    'ssl/ca_certs':     ensure => absent;
-    'ssl/ca_key':       ensure => absent;
-    'ssl/cert_subject': ensure => absent;
   }
 
   oslo::middleware { 'keystone_config':

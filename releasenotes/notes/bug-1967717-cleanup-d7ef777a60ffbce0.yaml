@@ -1,0 +1,11 @@
+---
+upgrade:
+  - |
+    The following parameters of the ``keystone`` class have been removed.
+
+    - ``enable_ssl``
+    - ``ssl_certfile``
+    - ``ssl_keyfile``
+    - ``ssl_ca_certs``
+    - ``ssl_ca_key``
+    - ``ssl_cert_subject``

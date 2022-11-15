@@ -31,7 +31,6 @@ describe 'keystone::federation::identity_provider' do
       "include apache
        class { 'keystone':
          service_name => 'httpd',
-         enable_ssl   => true,
        }"
     end
 
@@ -103,7 +102,6 @@ describe 'keystone::federation::identity_provider' do
     let :pre_condition do
       "class { 'keystone':
          service_name => '#{platform_params[:keystone_service]}',
-         enable_ssl   => true,
        }"
     end
 
