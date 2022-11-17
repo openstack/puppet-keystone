@@ -579,7 +579,7 @@ class keystone(
       subscribe => Anchor['keystone::install::end'],
     })
 
-  if $fernet_keys {
+    if $fernet_keys {
       validate_legacy(Hash, 'validate_hash', $fernet_keys)
       create_resources('file', $fernet_keys, {
           'owner'     => $keystone_user,
