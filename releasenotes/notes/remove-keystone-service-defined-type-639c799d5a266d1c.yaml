@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    The ``keystone::service`` defined resource type has been removed.
