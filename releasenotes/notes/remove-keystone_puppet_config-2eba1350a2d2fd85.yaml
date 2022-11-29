@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    The ``keystone_puppet_config`` resource type has been removed.
