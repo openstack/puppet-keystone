@@ -44,20 +44,7 @@
   OIDCPassClaimsAs "<%= scope['::keystone::federation::openidc::openidc_pass_claim_as'] %>"
 <%- end -%>
 
-  # The following directives are necessary to support websso from Horizon
-  # (Per https://docs.openstack.org/keystone/pike/advanced-topics/federation/websso.html)
-  OIDCRedirectURI "<%= @keystone_url -%>/v3/auth/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::openidc::idp_name']-%>/protocols/openid/websso"
-  OIDCRedirectURI "<%= @keystone_url -%>/v3/auth/OS-FEDERATION/websso/openid"
-
-  <Location "/v3/auth/OS-FEDERATION/websso/openid">
-      AuthType "openid-connect"
-      Require valid-user
-  </Location>
-
-  <Location "/v3/auth/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::openidc::idp_name']-%>/protocols/openid/websso">
-      AuthType "openid-connect"
-      Require valid-user
-  </Location>
+  OIDCRedirectURI "<%= @keystone_url -%>/v3/auth/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::openidc::idp_name']-%>/protocols/openid/auth"
 
 <%- if scope['::keystone::federation::openidc::openidc_enable_oauth'] -%>
   <%- if scope['keystone::federation::openidc::openidc_verify_method'] == 'introspection' -%>
@@ -72,4 +59,21 @@
       AuthType oauth20
       Require valid-user
   </Location>
+<%- else -%>
+  <Location "/v3/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::openidc::idp_name']-%>/protocols/openid/auth">
+      AuthType "openid-connect"
+      Require valid-user
+  </Location>
 <%- end -%>
+
+  # The following directives are necessary to support websso from Horizon
+  # (Per https://docs.openstack.org/keystone/latest/admin/federation/configure_federation.html#id5)
+  <Location "/v3/auth/OS-FEDERATION/websso/openid">
+      AuthType "openid-connect"
+      Require valid-user
+  </Location>
+
+  <Location "/v3/auth/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::openidc::idp_name']-%>/protocols/openid/websso">
+      AuthType "openid-connect"
+      Require valid-user
+  </Location>
