@@ -141,12 +141,6 @@
 #   (Optional) apache::vhost wsgi_chunked_request parameter.
 #   Defaults to undef
 #
-# DEPRECATED PARAMETERS
-#
-# [*api_port*]
-#   (Optional) The keystone API port.
-#   Defaults to 5000
-#
 class keystone::wsgi::apache (
   $servername                        = $::fqdn,
   $bind_host                         = undef,
@@ -179,8 +173,6 @@ class keystone::wsgi::apache (
   $request_headers                   = undef,
   $vhost_custom_fragment             = undef,
   $custom_wsgi_process_options       = {},
-  # DEPRECATED PARAMETERS
-  $api_port                          = undef,
 ) {
 
   include keystone::deps
@@ -188,14 +180,10 @@ class keystone::wsgi::apache (
 
   Anchor['keystone::install::end'] -> Class['apache']
 
-  if $api_port {
-    warning('The api_port parameter is deprecated. Use the port parameter')
-  }
-
   ::openstacklib::wsgi::apache { 'keystone_wsgi':
     servername                  => $servername,
     bind_host                   => $bind_host,
-    bind_port                   => pick($api_port, $port),
+    bind_port                   => $port,
     group                       => $::keystone::params::group,
     path                        => $path,
     workers                     => $workers,
