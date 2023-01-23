@@ -9,6 +9,7 @@ describe 'keystone::policy' do
           :enforce_scope        => false,
           :enforce_new_defaults => false,
           :policy_path          => '/etc/keystone/policy.yaml',
+          :policy_default_rule  => 'default',
           :policy_dirs          => '/etc/keystone/policy.d',
           :policies             => {
             'context_is_admin' => {
@@ -37,6 +38,7 @@ describe 'keystone::policy' do
           :enforce_scope        => false,
           :enforce_new_defaults => false,
           :policy_file          => '/etc/keystone/policy.yaml',
+          :policy_default_rule  => 'default',
           :policy_dirs          => '/etc/keystone/policy.d',
         )
       end
