@@ -164,6 +164,9 @@ class keystone::federation::openidc (
 ) {
 
   include apache
+  include apache::mod::authn_core
+  include apache::mod::authz_user
+
   include keystone::deps
   include keystone::params
 
