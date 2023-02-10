@@ -72,6 +72,8 @@ describe 'keystone::federation::openidc' do
     end
 
     it { is_expected.to contain_package(platform_parameters[:openidc_package_name]) }
+    it { is_expected.to contain_class('apache::mod::authn_core') }
+    it { is_expected.to contain_class('apache::mod::authz_user') }
 
     context 'with only required parameters' do
       it 'should have basic params for openidc in Keystone configuration' do
