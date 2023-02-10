@@ -58,22 +58,7 @@ describe 'keystone::federation::openidc' do
       facts.merge!(OSDefaults.get_facts({}))
     end
 
-    let(:platform_parameters) do
-      case facts[:osfamily]
-      when 'Debian'
-        {
-          :openidc_package_name => 'libapache2-mod-auth-openidc',
-        }
-      when 'RedHat'
-        {
-          :openidc_package_name => 'mod_auth_openidc',
-        }
-      end
-    end
-
-    it { is_expected.to contain_package(platform_parameters[:openidc_package_name]) }
-    it { is_expected.to contain_class('apache::mod::authn_core') }
-    it { is_expected.to contain_class('apache::mod::authz_user') }
+    it { is_expected.to contain_class('apache::mod::auth_openidc') }
 
     context 'with only required parameters' do
       it 'should have basic params for openidc in Keystone configuration' do

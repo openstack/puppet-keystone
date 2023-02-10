@@ -27,27 +27,35 @@
 #  The value 999 corresponds to the order for concat::fragment "${name}-file_footer".
 #  (Optional) Defaults to 331.
 #
+# [*enable_websso*]
+#   (optional) Whether or not to enable Web Single Sign-On (SSO)
+#   Defaults to false
+#
+# DEPRECATED PARAMETERS
+#
 # [*package_ensure*]
 #   (optional) Desired ensure state of packages.
 #   accepts latest or specific versions.
 #   Defaults to present.
-#
-# [*enable_websso*]
-#   (optional) Whether or not to enable Web Single Sign-On (SSO)
-#   Defaults to false
 #
 class keystone::federation::mellon (
   $methods,
   $idp_name,
   $protocol_name,
   $template_order = 331,
-  $package_ensure = present,
   $enable_websso  = false,
+  # DEPRECATED PARAMETERS
+  $package_ensure = undef,
 ) {
 
   include apache
+  include apache::mod::auth_mellon
   include keystone::deps
   include keystone::params
+
+  if $package_ensure != undef {
+    warning('The package_ensure parameter is deprecated and has no effect.')
+  }
 
   # Note: if puppet-apache modify these values, this needs to be updated
   if $template_order <= 330 or $template_order >= 999 {
@@ -75,11 +83,6 @@ Apache + Mellon SP setups, where a REMOTE_USER env variable is always set, even 
       'mapped/remote_id_attribute': value => 'MELLON_IDP';
     }
   }
-
-  ensure_packages([$::keystone::params::mellon_package_name], {
-    ensure => $package_ensure,
-    tag    => 'keystone-support-package',
-  })
 
   concat::fragment { 'configure_mellon_keystone':
     target  => "${keystone::wsgi::apache::priority}-keystone_wsgi.conf",

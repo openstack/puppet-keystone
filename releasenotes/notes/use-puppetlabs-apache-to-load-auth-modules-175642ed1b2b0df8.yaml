@@ -1,0 +1,8 @@
+---
+deprecations:
+  - |
+    The following parameters have been deprecated and have no effect. Now
+    the module packages are managed using puppetlabs-apache module.
+
+    - ``keystone::federation::openidc::package_ensure``
+    - ``keystone::federation::mellon::package_ensure``

@@ -128,10 +128,12 @@
 #  The value 999 corresponds to the order for concat::fragment "${name}-file_footer".
 #  (Optional) Defaults to 331.
 #
+# DEPRECATED PARAMETERS
+#
 # [*package_ensure*]
 #  (Optional) Desired ensure state of packages.
 #  accepts latest or specific versions.
-#  Defaults to present.
+#  Defaults to undef,
 #
 class keystone::federation::openidc (
   $keystone_url,
@@ -160,15 +162,19 @@ class keystone::federation::openidc (
   $redis_password                 = undef,
   $remote_id_attribute            = undef,
   $template_order                 = 331,
-  $package_ensure                 = present,
+  # DEPRECATED PARAMETERS
+  $package_ensure                 = undef,
 ) {
 
   include apache
-  include apache::mod::authn_core
-  include apache::mod::authz_user
+  include apache::mod::auth_openidc
 
   include keystone::deps
   include keystone::params
+
+  if $package_ensure != undef {
+    warning('The package_ensure parameter is deprecated and has no effect.')
+  }
 
   if !($openidc_verify_method in ['introspection', 'jwks']) {
     fail('Unsupported token verification method.' +
@@ -228,11 +234,6 @@ class keystone::federation::openidc (
       'openid/remote_id_attribute': value => $remote_id_attribute;
     }
   }
-
-  ensure_packages([$::keystone::params::openidc_package_name], {
-    ensure => $package_ensure,
-    tag    => 'keystone-support-package',
-  })
 
   concat::fragment { 'configure_openidc_keystone':
     target  => "${keystone::wsgi::apache::priority}-keystone_wsgi.conf",

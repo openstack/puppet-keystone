@@ -42,6 +42,10 @@ describe 'keystone::federation::mellon' do
 
   shared_examples 'Federation Mellon' do
     context 'with only required parameters' do
+      it 'should enable auth_mellon module' do
+        is_expected.to contain_class('apache::mod::auth_mellon')
+      end
+
       it 'should have basic params for mellon in Keystone configuration' do
         is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2')
         is_expected.to contain_keystone_config('auth/saml2').with_ensure('absent')
@@ -88,13 +92,6 @@ describe 'keystone::federation::mellon' do
       end
 
       it_behaves_like 'Federation Mellon'
-
-      case [:osfamily]
-      when 'Debian'
-        it { is_expected.to contain_package('libapache2-mod-auth-mellon') }
-      when 'RedHat'
-        it { is_expected.to contain_package('mod_auth_mellon') }
-      end
     end
   end
 end

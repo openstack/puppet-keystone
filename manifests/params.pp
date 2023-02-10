@@ -20,8 +20,6 @@ class keystone::params {
       $python_memcache_package_name = 'python3-memcache'
       $python_ldappool_package_name = 'python3-ldappool'
       $python_pysaml2_package_name  = 'python3-pysaml2'
-      $mellon_package_name          = 'libapache2-mod-auth-mellon'
-      $openidc_package_name         = 'libapache2-mod-auth-openidc'
     }
     'RedHat': {
       $package_name                 = 'openstack-keystone'
@@ -30,8 +28,6 @@ class keystone::params {
       $python_memcache_package_name = 'python3-memcached'
       $python_ldappool_package_name = 'python3-ldappool'
       $python_pysaml2_package_name  = 'python3-pysaml2'
-      $mellon_package_name          = 'mod_auth_mellon'
-      $openidc_package_name         = 'mod_auth_openidc'
     }
     default: {
       fail("Unsupported osfamily ${::osfamily}")
