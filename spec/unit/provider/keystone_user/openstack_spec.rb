@@ -43,9 +43,9 @@ describe Puppet::Type.type(:keystone_user).provider(:openstack) do
   describe 'when managing a user' do
     describe '#create' do
       it 'creates a user' do
-        described_class.expects(:openstack)
+        expect(described_class).to receive(:openstack)
           .with('user', 'create', '--format', 'shell', ['user1', '--enable', '--password', 'secret', '--email', 'user1@example.com', '--domain', 'domain1'])
-          .returns('email="user1@example.com"
+          .and_return('email="user1@example.com"
 enabled="True"
 id="user1_id"
 name="user1"
@@ -58,8 +58,8 @@ username="user1"
 
     describe '#destroy' do
       it 'destroys a user' do
-        provider.expects(:id).returns('my-user-id')
-        described_class.expects(:openstack)
+        expect(provider).to receive(:id).and_return('my-user-id')
+        expect(described_class).to receive(:openstack)
           .with('user', 'delete', 'my-user-id')
         provider.destroy
       end
@@ -68,20 +68,20 @@ username="user1"
     describe '#exists' do
       context 'when user does not exist' do
         it 'should detect it' do
-          described_class.expects(:openstack)
+          expect(described_class).to receive(:openstack)
             .with('domain', 'list', '--quiet', '--format', 'csv', [])
-            .returns('"ID","Name","Enabled","Description"
+            .and_return('"ID","Name","Enabled","Description"
 "default","Default",True,"default"
 "domain1_id","domain1",True,"domain1"
 "domain2_id","domain2",True,"domain2"
 "domain3_id","domain3",True,"domain3"
 ')
-          described_class.expects(:openstack)
+          expect(described_class).to receive(:openstack)
             .with('user', 'show', '--format', 'shell',
                   ['user1', '--domain', 'domain1_id'])
-            .once
-            .raises(Puppet::ExecutionFailure,
-                    "No user with a name or ID of 'user1' exists.")
+            .exactly(1).times
+            .and_raise(Puppet::ExecutionFailure,
+                       "No user with a name or ID of 'user1' exists.")
           expect(provider.exists?).to be_falsey
         end
       end
@@ -91,20 +91,20 @@ username="user1"
       context '.enable' do
         describe '-> false' do
           it 'properly set enable to false' do
-            described_class.expects(:openstack)
+            expect(described_class).to receive(:openstack)
               .with('user', 'set', ['--disable', '37b7086693ec482389799da5dc546fa4'])
-              .returns('""')
-            provider.expects(:id).returns('37b7086693ec482389799da5dc546fa4')
+              .and_return('""')
+            expect(provider).to receive(:id).and_return('37b7086693ec482389799da5dc546fa4')
             provider.enabled = :false
             provider.flush
           end
         end
         describe '-> true' do
           it 'properly set enable to true' do
-            described_class.expects(:openstack)
+            expect(described_class).to receive(:openstack)
               .with('user', 'set', ['--enable', '37b7086693ec482389799da5dc546fa4'])
-              .returns('""')
-            provider.expects(:id).returns('37b7086693ec482389799da5dc546fa4')
+              .and_return('""')
+            expect(provider).to receive(:id).and_return('37b7086693ec482389799da5dc546fa4')
             provider.enabled = :true
             provider.flush
           end
@@ -112,24 +112,24 @@ username="user1"
       end
       context '.description' do
         it 'change the description' do
-          described_class.expects(:openstack)
+          expect(described_class).to receive(:openstack)
             .with('user', 'set', ['--description', 'new description',
                                      '37b7086693ec482389799da5dc546fa4'])
-            .returns('""')
-          provider.expects(:id).returns('37b7086693ec482389799da5dc546fa4')
-          provider.expects(:resource).returns(:description => 'new description')
+            .and_return('""')
+          expect(provider).to receive(:id).and_return('37b7086693ec482389799da5dc546fa4')
+          expect(provider).to receive(:resource).and_return(:description => 'new description')
           provider.description = 'new description'
           provider.flush
         end
       end
       context '.email' do
         it 'change the mail' do
-          described_class.expects(:openstack)
+          expect(described_class).to receive(:openstack)
             .with('user', 'set', ['--email', 'new email',
                                      '37b7086693ec482389799da5dc546fa4'])
-            .returns('""')
-          provider.expects(:id).returns('37b7086693ec482389799da5dc546fa4')
-          provider.expects(:resource).returns(:email => 'new email')
+            .and_return('""')
+          expect(provider).to receive(:id).and_return('37b7086693ec482389799da5dc546fa4')
+          expect(provider).to receive(:resource).and_return(:email => 'new email')
           provider.email = 'new email'
           provider.flush
         end
@@ -164,25 +164,25 @@ username="user1"
       mock_creds.username         = 'user_one'
       mock_creds.user_id          = 'user1_id'
       mock_creds.user_domain_name = 'Default'
-      Puppet::Provider::Openstack::CredentialsV3.expects(:new).returns(mock_creds)
+      expect(Puppet::Provider::Openstack::CredentialsV3).to receive(:new).and_return(mock_creds)
 
-      Puppet::Provider::Openstack.expects(:openstack)
+      expect(Puppet::Provider::Openstack).to receive(:openstack)
         .with('token', 'issue', ['--format', 'value'])
-        .returns('2015-05-14T04:06:05Z
+        .and_return('2015-05-14T04:06:05Z
 e664a386befa4a30878dcef20e79f167
 8dce2ae9ecd34c199d2877bf319a3d06
 ac43ec53d5a74a0b9f51523ae41a29f0
 ')
-      provider.expects(:id).returns('user1_id')
+      expect(provider).to receive(:id).and_return('user1_id')
       password = provider.password
       expect(password).to eq('pass_one')
     end
 
     it 'fails the password check' do
-      Puppet::Provider::Openstack.expects(:openstack)
+      expect(Puppet::Provider::Openstack).to receive(:openstack)
         .with('token', 'issue', ['--format', 'value'])
-        .raises(Puppet::ExecutionFailure, 'HTTP 401 invalid authentication')
-      provider.expects(:id).returns('user1_id')
+        .and_raise(Puppet::ExecutionFailure, 'HTTP 401 invalid authentication')
+      expect(provider).to receive(:id).and_return('user1_id')
       password = provider.password
       expect(password).to eq(nil)
     end
@@ -222,9 +222,9 @@ ac43ec53d5a74a0b9f51523ae41a29f0
     describe '#create' do
       context 'domain provided' do
         before(:each) do
-          described_class.expects(:openstack)
+          expect(described_class).to receive(:openstack)
             .with('user', 'create', '--format', 'shell', ['user1', '--enable', '--password', 'secret', '--email', 'user1@example.com', '--domain', 'domain1'])
-            .returns('email="user1@example.com"
+            .and_return('email="user1@example.com"
 enabled="True"
 id="user1_id"
 name="user1"
@@ -272,9 +272,9 @@ username="user1"
       end
       context 'domain not provided' do
         before(:each) do
-          described_class.expects(:openstack)
+          expect(described_class).to receive(:openstack)
             .with('user', 'create', '--format', 'shell', ['user1', '--enable', '--password', 'secret', '--email', 'user1@example.com', '--domain', 'Default'])
-            .returns('email="user1@example.com"
+            .and_return('email="user1@example.com"
 enabled="True"
 id="user1_id"
 name="user1"
@@ -315,9 +315,9 @@ username="user1"
           ]
         end
         before(:each) do
-          described_class.expects(:openstack)
+          expect(described_class).to receive(:openstack)
             .with('user', 'create', '--format', 'shell', ['user1', '--enable', '--password', 'secret', '--description', 'my description', '--email', 'user1@example.com', '--domain', 'Default'])
-            .returns('description="my description"
+            .and_return('description="my description"
 email="user1@example.com"
 enabled="True"
 id="user1_id"

@@ -35,28 +35,28 @@ describe Puppet::Provider::Keystone do
 
   describe '#domain_id_from_name' do
     it 'should list all domains when requesting a domain name from an ID' do
-      klass.expects(:openstack)
+      expect(klass).to receive(:openstack)
            .with('domain', 'list', '--quiet', '--format', 'csv', [])
-           .returns('"ID","Name","Enabled","Description"
+           .and_return('"ID","Name","Enabled","Description"
 "someid","SomeName",True,"default domain"
 ')
       expect(klass.domain_id_from_name('SomeName')).to eq('someid')
     end
     it 'should lookup a domain when not found in the hash' do
-      klass.expects(:openstack)
+      expect(klass).to receive(:openstack)
            .with('domain', 'show', '--format', 'shell', 'NewName')
-           .returns('
+           .and_return('
 name="NewName"
 id="newid"
 ')
       expect(klass.domain_id_from_name('NewName')).to eq('newid')
     end
     it 'should print an error when there is no such domain' do
-      klass.expects(:openstack)
+      expect(klass).to receive(:openstack)
            .with('domain', 'show', '--format', 'shell', 'doesnotexist')
-           .returns('
+           .and_return('
 ')
-      klass.expects(:err)
+      expect(klass).to receive(:err)
            .with('Could not find domain with name [doesnotexist]')
       expect(klass.domain_id_from_name('doesnotexist')).to eq(nil)
     end
@@ -75,18 +75,18 @@ id="newid"
     end
 
     it 'should be false if the project does not exist' do
-      klass.expects(:request_timeout).returns(0)
-      klass.expects(:openstack)
+      expect(klass).to receive(:request_timeout).and_return(0)
+      expect(klass).to receive(:openstack)
         .with('project', 'show', '--format', 'shell', ['no_project', '--domain', 'Default'])
-        .once
-        .raises(Puppet::ExecutionFailure, "Execution of '/usr/bin/openstack project show --format shell no_project' returned 1: No project with a name or ID of 'no_project' exists.")
+        .exactly(1).times
+        .and_raise(Puppet::ExecutionFailure, "Execution of '/usr/bin/openstack project show --format shell no_project' returned 1: No project with a name or ID of 'no_project' exists.")
       expect(klass.fetch_project('no_project', 'Default')).to be_falsey
     end
 
     it 'should return the project' do
-      klass.expects(:openstack)
+      expect(klass).to receive(:openstack)
         .with('project', 'show', '--format', 'shell', ['The Project', '--domain', 'Default'])
-        .returns('
+        .and_return('
 name="The Project"
 id="the_project_id"
 ')
@@ -107,18 +107,18 @@ id="the_project_id"
     end
 
     it 'should be false if the user does not exist' do
-      klass.expects(:request_timeout).returns(0)
-      klass.expects(:openstack)
+      expect(klass).to receive(:request_timeout).and_return(0)
+      expect(klass).to receive(:openstack)
         .with('user', 'show', '--format', 'shell', ['no_user', '--domain', 'Default'])
-        .once
-        .raises(Puppet::ExecutionFailure, "Execution of '/usr/bin/openstack user show --format shell no_user' returned 1: No user with a name or ID of 'no_user' exists.")
+        .exactly(1).times
+        .and_raise(Puppet::ExecutionFailure, "Execution of '/usr/bin/openstack user show --format shell no_user' returned 1: No user with a name or ID of 'no_user' exists.")
       expect(klass.fetch_user('no_user', 'Default')).to be_falsey
     end
 
     it 'should return the user' do
-      klass.expects(:openstack)
+      expect(klass).to receive(:openstack)
         .with('user', 'show', '--format', 'shell', ['The User', '--domain', 'Default'])
-        .returns('
+        .and_return('
 name="The User"
 id="the_user_id"
 ')
@@ -137,14 +137,14 @@ id="the_user_id"
       home = ENV['HOME']
       ENV.clear
       mock = {'OS_AUTH_URL' => 'http://127.0.0.1:5001'}
-      klass.expects(:get_os_vars_from_rcfile).with("#{home}/openrc").returns(mock)
+      expect(klass).to receive(:get_os_vars_from_rcfile).with("#{home}/openrc").and_return(mock)
       expect(klass.get_auth_url).to eq('http://127.0.0.1:5001')
     end
 
     it 'should use auth_endpoint when nothing else is available' do
       ENV.clear
       mock = 'http://127.0.0.1:5001'
-      klass.expects(:auth_endpoint).returns(mock)
+      expect(klass).to receive(:auth_endpoint).and_return(mock)
       expect(klass.get_auth_url).to eq('http://127.0.0.1:5001')
     end
   end
@@ -157,11 +157,11 @@ id="the_user_id"
     end
 
     it 'should return the name only when the provided domain is the default domain id' do
-      klass.expects(:default_domain_id)
-        .returns('default')
-      klass.expects(:openstack)
+      expect(klass).to receive(:default_domain_id)
+        .and_return('default')
+      expect(klass).to receive(:openstack)
         .with('domain', 'show', '--format', 'shell', 'Default')
-        .returns('
+        .and_return('
 name="Default"
 id="default"
 ')
@@ -169,11 +169,11 @@ id="default"
     end
 
     it 'should return the name and domain when the provided domain is not the default domain id' do
-      klass.expects(:default_domain_id)
-        .returns('default')
-      klass.expects(:openstack)
+      expect(klass).to receive(:default_domain_id)
+        .and_return('default')
+      expect(klass).to receive(:openstack)
         .with('domain', 'show', '--format', 'shell', 'Other Domain')
-        .returns('
+        .and_return('
 name="Other Domain"
 id="other_domain_id"
 ')
@@ -181,11 +181,11 @@ id="other_domain_id"
     end
 
     it 'should return the name only if the domain cannot be fetched' do
-      klass.expects(:default_domain_id)
-        .returns('default')
-      klass.expects(:openstack)
+      expect(klass).to receive(:default_domain_id)
+        .and_return('default')
+      expect(klass).to receive(:openstack)
         .with('domain', 'show', '--format', 'shell', 'Unknown Domain')
-        .returns('')
+        .and_return('')
       expect(klass.set_domain_for_name('name', 'Unknown Domain')).to eq('name')
     end
   end
@@ -196,22 +196,22 @@ id="other_domain_id"
     end
 
     it 'should list all domains when requesting a domain name from an ID' do
-      klass.expects(:openstack)
+      expect(klass).to receive(:openstack)
            .with('domain', 'list', '--quiet', '--format', 'csv', [])
-           .returns('"ID","Name","Enabled","Description"
+           .and_return('"ID","Name","Enabled","Description"
 "somename","SomeName",True,"default domain"
 ')
       expect(klass.domain_name_from_id('somename')).to eq('SomeName')
     end
     it 'should lookup a domain when not found in the hash' do
-      klass.expects(:openstack)
+      expect(klass).to receive(:openstack)
            .with('domain', 'list', '--quiet', '--format', 'csv', [])
-           .returns('"ID","Name","Enabled","Description"
+           .and_return('"ID","Name","Enabled","Description"
 "somename","SomeName",True,"default domain"
 ')
-      klass.expects(:openstack)
+      expect(klass).to receive(:openstack)
            .with('domain', 'show', '--format', 'shell', 'another')
-           .returns('
+           .and_return('
 name="AnOther"
 id="another"
 ')
@@ -219,16 +219,16 @@ id="another"
       expect(klass.domain_name_from_id('another')).to eq('AnOther')
     end
     it 'should print an error when there is no such domain' do
-      klass.expects(:openstack)
+      expect(klass).to receive(:openstack)
            .with('domain', 'list', '--quiet', '--format', 'csv', [])
-           .returns('"ID","Name","Enabled","Description"
+           .and_return('"ID","Name","Enabled","Description"
 "somename","SomeName",True,"default domain"
 ')
-      klass.expects(:openstack)
+      expect(klass).to receive(:openstack)
            .with('domain', 'show', '--format', 'shell', 'doesnotexist')
-           .returns('
+           .and_return('
 ')
-      klass.expects(:err)
+      expect(klass).to receive(:err)
            .with('Could not find domain with id [doesnotexist]')
       expect(klass.domain_name_from_id('doesnotexist')).to eq(nil)
     end

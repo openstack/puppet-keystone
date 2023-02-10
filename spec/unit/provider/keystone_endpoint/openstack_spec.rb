@@ -39,30 +39,30 @@ describe Puppet::Type.type(:keystone_endpoint).provider(:openstack) do
 
     describe '#create' do
       before(:each) do
-        described_class.expects(:openstack)
+        expect(described_class).to receive(:openstack)
           .with('endpoint', 'create', '--format', 'shell',
                 ['service_id1', 'admin', 'http://127.0.0.1:5002', '--region', 'region'])
-          .returns('admin_url="http://127.0.0.1:5002"
+          .and_return('admin_url="http://127.0.0.1:5002"
 id="endpoint1_id"
 region="region"
 ')
-        described_class.expects(:openstack)
+        expect(described_class).to receive(:openstack)
           .with('endpoint', 'create', '--format', 'shell',
                 ['service_id1', 'internal', 'http://127.0.0.1:5001', '--region', 'region'])
-          .returns('internal_url="http://127.0.0.1:5001"
+          .and_return('internal_url="http://127.0.0.1:5001"
 id="endpoint2_id"
 region="region"
 ')
-        described_class.expects(:openstack)
+        expect(described_class).to receive(:openstack)
           .with('endpoint', 'create', '--format', 'shell',
                 ['service_id1', 'public', 'http://127.0.0.1:5000', '--region', 'region'])
-          .returns('public_url="http://127.0.0.1:5000"
+          .and_return('public_url="http://127.0.0.1:5000"
 id="endpoint3_id"
 region="region"
 ')
-        described_class.expects(:openstack)
+        expect(described_class).to receive(:openstack)
           .with('service', 'list', '--quiet', '--format', 'csv', [])
-          .returns('"ID","Name","Type"
+          .and_return('"ID","Name","Type"
 "service_id1","endpoint","type_one"
 ')
       end
@@ -96,11 +96,11 @@ region="region"
     describe '#destroy' do
       it 'destroys an endpoint' do
         provider.instance_variable_get('@property_hash')[:id] = 'endpoint1_id,endpoint2_id,endpoint3_id'
-        described_class.expects(:openstack)
+        expect(described_class).to receive(:openstack)
           .with('endpoint', 'delete', 'endpoint1_id')
-        described_class.expects(:openstack)
+        expect(described_class).to receive(:openstack)
           .with('endpoint', 'delete', 'endpoint2_id')
-        described_class.expects(:openstack)
+        expect(described_class).to receive(:openstack)
           .with('endpoint', 'delete', 'endpoint3_id')
         provider.destroy
         expect(provider.exists?).to be_falsey
@@ -120,9 +120,9 @@ region="region"
     describe '#instances' do
       context 'basic' do
         it 'finds every tenant' do
-          described_class.expects(:openstack)
+          expect(described_class).to receive(:openstack)
             .with('endpoint', 'list', '--quiet', '--format', 'csv', [])
-            .returns('"ID","Region","Service Name","Service Type","Enabled","Interface","URL"
+            .and_return('"ID","Region","Service Name","Service Type","Enabled","Interface","URL"
 "endpoint1_id","RegionOne","keystone","identity",True,"admin","http://127.0.0.1:5002"
 "endpoint2_id","RegionOne","keystone","identity",True,"internal","https://127.0.0.1:5001"
 "endpoint3_id","RegionOne","keystone","identity",True,"public","https://127.0.0.1:5000"
@@ -133,9 +133,9 @@ region="region"
       end
       context 'many different region' do
         it 'should not mix up the endpoints' do
-          described_class.expects(:openstack)
+          expect(described_class).to receive(:openstack)
             .with('endpoint', 'list', '--quiet', '--format', 'csv', [])
-            .returns('"ID","Region","Service Name","Service Type","Enabled","Interface","URL"
+            .and_return('"ID","Region","Service Name","Service Type","Enabled","Interface","URL"
 "endpoint1_id","RegionOne","keystone","identity",True,"admin","http://One-127.0.0.1:5002"
 "endpoint2_id","RegionOne","keystone","identity",True,"internal","https://One-127.0.0.1:5001"
 "endpoint3_id","RegionOne","keystone","identity",True,"public","https://One-127.0.0.1:5000"
@@ -216,9 +216,9 @@ region="region"
     describe '#prefetch' do
       context 'working: fq or nfq and matching resource' do
         before(:each) do
-          described_class.expects(:openstack)
+          expect(described_class).to receive(:openstack)
             .with('endpoint', 'list', '--quiet', '--format', 'csv', [])
-            .returns('"ID","Region","Service Name","Service Type","Enabled","Interface","URL"
+            .and_return('"ID","Region","Service Name","Service Type","Enabled","Interface","URL"
 "endpoint1_id","RegionOne","keystone","identity",True,"admin","http://127.0.0.1:5002"
 "endpoint2_id","RegionOne","keystone","identity",True,"internal","https://127.0.0.1:5001"
 "endpoint3_id","RegionOne","keystone","identity",True,"public","https://127.0.0.1:5000"
@@ -257,9 +257,9 @@ region="region"
       context 'not working' do
         context 'too many type' do
           before(:each) do
-            described_class.expects(:openstack)
+            expect(described_class).to receive(:openstack)
               .with('endpoint', 'list', '--quiet', '--format', 'csv', [])
-              .returns('"ID","Region","Service Name","Service Type","Enabled","Interface","URL"
+              .and_return('"ID","Region","Service Name","Service Type","Enabled","Interface","URL"
 "endpoint1_id","RegionOne","keystone","identity",True,"admin","http://127.0.0.1:5002"
 "endpoint2_id","RegionOne","keystone","identity",True,"internal","https://127.0.0.1:5001"
 "endpoint3_id","RegionOne","keystone","identity",True,"public","https://127.0.0.1:5000"
@@ -271,18 +271,18 @@ region="region"
           it "should fail as it's not possible to get the right type here" do
             existing = Puppet::Type.type(:keystone_endpoint)
               .new(:title => 'RegionOne/keystone', :ensure => :present)
-            resource = mock
+            resource = double
             r = []
             r << existing
 
             catalog = Puppet::Resource::Catalog.new
             r.each { |res| catalog.add_resource(res) }
-            m_value = mock
-            m_first = mock
-            resource.expects(:values).returns(m_value)
-            m_value.expects(:first).returns(m_first)
-            m_first.expects(:catalog).returns(catalog)
-            m_first.expects(:class).returns(described_class.resource_type)
+            m_value = double
+            m_first = double
+            expect(resource).to receive(:values).and_return(m_value)
+            expect(m_value).to receive(:first).and_return(m_first)
+            expect(m_first).to receive(:catalog).and_return(catalog)
+            expect(m_first).to receive(:class).and_return(described_class.resource_type)
             expect { described_class.prefetch(resource) }
               .to raise_error(Puppet::Error,
                               /endpoint matching RegionOne\/keystone: identity identityv3/)
@@ -292,34 +292,34 @@ region="region"
 
       context 'not any type but existing service' do
         before(:each) do
-          described_class.expects(:openstack)
+          expect(described_class).to receive(:openstack)
             .with('endpoint', 'list', '--quiet', '--format', 'csv', [])
-            .returns('"ID","Region","Service Name","Service Type","Enabled","Interface","URL"
+            .and_return('"ID","Region","Service Name","Service Type","Enabled","Interface","URL"
 "endpoint1_id","RegionOne","keystone","identity",True,"admin","http://127.0.0.1:5002"
 "endpoint2_id","RegionOne","keystone","identity",True,"internal","https://127.0.0.1:5001"
 "endpoint3_id","RegionOne","keystone","identity",True,"public","https://127.0.0.1:5000"
 ')
-          described_class.expects(:openstack)
+          expect(described_class).to receive(:openstack)
             .with('service', 'list', '--quiet', '--format', 'csv', [])
-            .returns('"ID","Name","Type"
+            .and_return('"ID","Name","Type"
 "service1_id","keystonev3","identity"
 ')
         end
         it 'should be successful' do
           existing = Puppet::Type.type(:keystone_endpoint)
             .new(:title => 'RegionOne/keystonev3', :ensure => :present)
-          resource = mock
+          resource = double
           r = []
           r << existing
 
           catalog = Puppet::Resource::Catalog.new
           r.each { |res| catalog.add_resource(res) }
-          m_value = mock
-          m_first = mock
-          resource.expects(:values).returns(m_value)
-          m_value.expects(:first).returns(m_first)
-          m_first.expects(:catalog).returns(catalog)
-          m_first.expects(:class).returns(described_class.resource_type)
+          m_value = double
+          m_first = double
+          expect(resource).to receive(:values).and_return(m_value)
+          expect(m_value).to receive(:first).and_return(m_first)
+          expect(m_first).to receive(:catalog).and_return(catalog)
+          expect(m_first).to receive(:class).and_return(described_class.resource_type)
 
           expect { described_class.prefetch(resource) }.not_to raise_error
           expect(existing.provider.ensure).to eq(:absent)
@@ -340,11 +340,11 @@ region="region"
       end
       context '#update a missing endpoint' do
         it 'creates an endpoint' do
-          described_class.expects(:openstack)
+          expect(described_class).to receive(:openstack)
             .with('endpoint', 'create', '--format', 'shell',
                   ['service_id_1', 'admin', 'http://127.0.0.1:4999',
                    '--region', 'region'])
-            .returns(<<-eoo
+            .and_return(<<-eoo
 enabled="True"
 id="endpoint1_id"
 interface="internal"
@@ -357,14 +357,14 @@ url="http://127.0.0.1:5001"
           eoo
                     )
 
-          provider.expects(:property_flush)
-            .times(5)
-            .returns({:admin_url => 'http://127.0.0.1:4999'})
-          provider.expects(:property_hash)
-            .twice
-            .returns({:id => ',endpoint2_id,endpoint3_id'})
-          provider.expects(:service_id)
-            .returns('service_id_1')
+          expect(provider).to receive(:property_flush)
+            .exactly(5).times
+            .and_return({:admin_url => 'http://127.0.0.1:4999'})
+          expect(provider).to receive(:property_hash)
+            .exactly(2).times
+            .and_return({:id => ',endpoint2_id,endpoint3_id'})
+          expect(provider).to receive(:service_id)
+            .and_return('service_id_1')
           provider.flush
           expect(provider.exists?).to be_truthy
           expect(provider.id).to eq('endpoint1_id,endpoint2_id,endpoint3_id')
@@ -373,15 +373,15 @@ url="http://127.0.0.1:5001"
 
       context 'adjust a url' do
         it 'update the url' do
-          described_class.expects(:openstack)
+          expect(described_class).to receive(:openstack)
             .with('endpoint', 'set',
                   ['endpoint1_id', '--url=http://127.0.0.1:4999'])
-          provider.expects(:property_flush)
-            .times(4)
-            .returns({:admin_url => 'http://127.0.0.1:4999'})
-          provider.expects(:property_hash)
-            .twice
-            .returns({:id => 'endpoint1_id,endpoint2_id,endpoint3_id'})
+          expect(provider).to receive(:property_flush)
+            .exactly(4).times
+            .and_return({:admin_url => 'http://127.0.0.1:4999'})
+          expect(provider).to receive(:property_hash)
+            .exactly(2).times
+            .and_return({:id => 'endpoint1_id,endpoint2_id,endpoint3_id'})
           provider.flush
           expect(provider.exists?).to be_truthy
           expect(provider.id).to eq('endpoint1_id,endpoint2_id,endpoint3_id')

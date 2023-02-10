@@ -31,9 +31,9 @@ describe provider_class do
 
   def before_hook(domainlist, provider_class)
     if domainlist
-      provider_class.expects(:openstack).once
+      expect(provider_class).to receive(:openstack).exactly(1).times
         .with('domain', 'list', '--quiet', '--format', 'csv', [])
-        .returns('"ID","Name","Enabled","Description"
+        .and_return('"ID","Name","Enabled","Description"
 "domain_one_id","domain_one",True,"project_one domain"
 "domain_two_id","domain_two",True,"domain_two domain"
 "another_domain_id","another_domain",True,"another domain"
@@ -66,9 +66,9 @@ describe provider_class do
 
     describe '#create', :domainlist => false do
       it 'creates a tenant' do
-        provider.class.expects(:openstack)
+        expect(provider.class).to receive(:openstack)
           .with('project', 'create', '--format', 'shell', ['project_one', '--enable', '--description', 'Project One', '--domain', 'Default'])
-          .returns('description="Project One"
+          .and_return('description="Project One"
 enabled="True"
 name="project_one"
 id="project_one"
@@ -82,7 +82,7 @@ domain_id="domain_one_id"
     describe '#destroy', :domainlist => false do
       it 'destroys a tenant' do
         provider.instance_variable_get('@property_hash')[:id] = 'my-project-id'
-        provider.class.expects(:openstack)
+        expect(provider.class).to receive(:openstack)
           .with('project', 'delete', 'my-project-id')
         provider.destroy
         expect(provider.exists?).to be_falsey
@@ -97,9 +97,9 @@ domain_id="domain_one_id"
 
     describe '#instances', :domainlist => true do
       it 'finds every tenant' do
-        provider_class.expects(:openstack)
+        expect(provider_class).to receive(:openstack)
           .with('project', 'list', '--quiet', '--format', 'csv', '--long')
-          .returns('"ID","Name","Domain ID","Description","Enabled"
+          .and_return('"ID","Name","Domain ID","Description","Enabled"
 "1cb05cfed7c24279be884ba4f6520262","project_one","domain_one_id","Project One",True
 "2cb05cfed7c24279be884ba4f6520262","project_one","domain_two_id","Project One, domain Two",True
 ')
@@ -113,12 +113,12 @@ domain_id="domain_one_id"
 
     describe '#prefetch' do
       before(:each) do
-        provider_class.expects(:domain_name_from_id).with('default').returns('Default')
-        provider_class.expects(:domain_name_from_id).with('domain_two_id').returns('domain_two')
+        expect(provider_class).to receive(:domain_name_from_id).with('default').and_return('Default')
+        expect(provider_class).to receive(:domain_name_from_id).with('domain_two_id').and_return('domain_two')
         # There are one for self.instance and one for each Puppet::Type.type calls.
-        provider.class.expects(:openstack)
+        expect(provider.class).to receive(:openstack)
           .with('project', 'list', '--quiet', '--format', 'csv', '--long')
-          .returns('"ID","Name","Domain ID","Description","Enabled"
+          .and_return('"ID","Name","Domain ID","Description","Enabled"
 "1cb05cfed7c24279be884ba4f6520262","project_one","default","A project",True
 "2cb05cfed7c24279be884ba4f6520262","project_one","domain_two_id","A domain_two",True
 ')
@@ -134,20 +134,20 @@ domain_id="domain_one_id"
       context '.enable' do
         describe '-> false' do
           it 'properly set enable to false' do
-            provider_class.expects(:openstack)
+            expect(provider_class).to receive(:openstack)
               .with('project', 'set', ['37b7086693ec482389799da5dc546fa4', '--disable'])
-              .returns('""')
-            provider.expects(:id).returns('37b7086693ec482389799da5dc546fa4')
+              .and_return('""')
+            expect(provider).to receive(:id).and_return('37b7086693ec482389799da5dc546fa4')
             provider.enabled = :false
             provider.flush
           end
         end
         describe '-> true' do
           it 'properly set enable to true' do
-            provider_class.expects(:openstack)
+            expect(provider_class).to receive(:openstack)
               .with('project', 'set', ['37b7086693ec482389799da5dc546fa4', '--enable'])
-              .returns('""')
-            provider.expects(:id).returns('37b7086693ec482389799da5dc546fa4')
+              .and_return('""')
+            expect(provider).to receive(:id).and_return('37b7086693ec482389799da5dc546fa4')
             provider.enabled = :true
             provider.flush
           end
@@ -155,24 +155,24 @@ domain_id="domain_one_id"
       end
       context '.description' do
         it 'change the description' do
-          provider_class.expects(:openstack)
+          expect(provider_class).to receive(:openstack)
             .with('project', 'set', ['37b7086693ec482389799da5dc546fa4',
                                      '--description=new description'])
-            .returns('""')
-          provider.expects(:id).returns('37b7086693ec482389799da5dc546fa4')
-          provider.expects(:resource).returns(:description => 'new description')
+            .and_return('""')
+          expect(provider).to receive(:id).and_return('37b7086693ec482389799da5dc546fa4')
+          expect(provider).to receive(:resource).and_return(:description => 'new description')
           provider.description = 'new description'
           provider.flush
         end
       end
       context '.enable/description' do
         it 'properly change the enable and the description' do
-          provider_class.expects(:openstack)
+          expect(provider_class).to receive(:openstack)
             .with('project', 'set', ['37b7086693ec482389799da5dc546fa4', '--disable',
                                      '--description=new description'])
-            .returns('""')
-          provider.expects(:id).returns('37b7086693ec482389799da5dc546fa4')
-          provider.expects(:resource).returns(:description => 'new description')
+            .and_return('""')
+          expect(provider).to receive(:id).and_return('37b7086693ec482389799da5dc546fa4')
+          expect(provider).to receive(:resource).and_return(:description => 'new description')
           provider.enabled = :false
           provider.description = 'new description'
           provider.flush
@@ -185,9 +185,9 @@ domain_id="domain_one_id"
     describe '#create' do
       describe 'with domain in resource', :domainlist => false do
         before(:each) do
-          provider_class.expects(:openstack)
+          expect(provider_class).to receive(:openstack)
             .with('project', 'create', '--format', 'shell', ['project_one', '--enable', '--description', 'Project One', '--domain', 'domain_one'])
-            .returns('description="Project One"
+            .and_return('description="Project One"
 enabled="True"
 name="project_one"
 id="project-id"
@@ -234,13 +234,13 @@ domain_id="domain_one_id"
 
     describe '#prefetch' do
       before(:each) do
-        provider_class.expects(:domain_name_from_id)
-          .with('domain_one_id').returns('domain_one')
-        provider_class.expects(:domain_name_from_id)
-          .with('domain_two_id').returns('domain_two')
-        provider_class.expects(:openstack)
+        expect(provider_class).to receive(:domain_name_from_id)
+          .with('domain_one_id').and_return('domain_one')
+        expect(provider_class).to receive(:domain_name_from_id)
+          .with('domain_two_id').and_return('domain_two')
+        expect(provider_class).to receive(:openstack)
           .with('project', 'list', '--quiet', '--format', 'csv', '--long')
-          .returns('"ID","Name","Domain ID","Description","Enabled"
+          .and_return('"ID","Name","Domain ID","Description","Enabled"
 "1cb05cfed7c24279be884ba4f6520262","name","domain_one_id","A project_one",True
 "2cb05cfed7c24279be884ba4f6520262","project_one","domain_two_id","A domain_two",True
 ')

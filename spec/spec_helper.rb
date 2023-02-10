@@ -17,6 +17,8 @@ RSpec.configure do |c|
 
   c.module_path = File.join(fixture_path, 'modules')
   c.manifest_dir = File.join(fixture_path, 'manifests')
+
+  c.mock_with :rspec
 end
 
 RSpec::Matchers.define :be_absent do

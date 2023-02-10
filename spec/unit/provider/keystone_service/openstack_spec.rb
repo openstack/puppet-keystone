@@ -38,10 +38,10 @@ describe provider_class do
 
     describe '#create' do
       before(:each) do
-        provider_class.expects(:openstack)
+        expect(provider_class).to receive(:openstack)
           .with('service', 'create', '--format', 'shell',
                 ['type_one', '--name', 'service_one', '--description', 'Service One'])
-          .returns('description="Service One"
+          .and_return('description="Service One"
 enabled="True"
 id="8f0dd4c0abc44240998fbb3f5089ecbf"
 name="service_one"
@@ -75,7 +75,7 @@ type="type_one"
     end
     describe '#destroy' do
       it 'destroys a service' do
-        provider_class.expects(:openstack)
+        expect(provider_class).to receive(:openstack)
           .with('service', 'delete', [])
         provider.destroy
         expect(provider.exists?).to be_falsey
@@ -91,9 +91,9 @@ type="type_one"
 
     describe '#instances' do
       it 'finds every service' do
-        provider_class.expects(:openstack)
+        expect(provider_class).to receive(:openstack)
           .with('service', 'list', '--quiet', '--format', 'csv', '--long')
-          .returns('"ID","Name","Type","Description"
+          .and_return('"ID","Name","Type","Description"
 "8f0dd4c0abc44240998fbb3f5089ecbf","service_one","type_one","Service One"
 ')
         instances = provider_class.instances
@@ -106,9 +106,9 @@ type="type_one"
     before(:each) do
       # This call done by self.instance in prefetch in what make the
       # resource exists.
-      provider_class.expects(:openstack)
+      expect(provider_class).to receive(:openstack)
         .with('service', 'list', '--quiet', '--format', 'csv', '--long')
-        .returns('"ID","Name","Type","Description"
+        .and_return('"ID","Name","Type","Description"
 "8f0dd4c0abc44240998fbb3f5089ecbf","service_1","type_1",""
 ')
     end

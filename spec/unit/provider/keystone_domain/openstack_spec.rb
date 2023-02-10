@@ -50,12 +50,12 @@ describe Puppet::Type.type(:keystone_domain).provider(:openstack) do
 
     describe '#create' do
       it 'creates a domain' do
-        entry = mock
-        provider.expects(:keystone_conf_default_domain_id_entry).returns(entry)
+        entry = double
+        expect(provider).to receive(:keystone_conf_default_domain_id_entry).and_return(entry)
 
-        described_class.expects(:openstack)
+        expect(described_class).to receive(:openstack)
           .with('domain', 'create', '--format', 'shell', ['domain_one', '--enable', '--description', 'Domain One'])
-          .returns('id="1cb05cfed7c24279be884ba4f6520262"
+          .and_return('id="1cb05cfed7c24279be884ba4f6520262"
 name="domain_one"
 description="Domain One"
 enabled=True
@@ -67,11 +67,11 @@ enabled=True
 
     describe '#destroy' do
       it 'destroys a domain' do
-        entry = mock
-        provider.expects(:keystone_conf_default_domain_id_entry).returns(entry)
-        described_class.expects(:openstack)
+        entry = double
+        expect(provider).to receive(:keystone_conf_default_domain_id_entry).and_return(entry)
+        expect(described_class).to receive(:openstack)
           .with('domain', 'set', ['domain_one', '--disable'])
-        described_class.expects(:openstack)
+        expect(described_class).to receive(:openstack)
           .with('domain', 'delete', 'domain_one')
 
         provider.destroy
@@ -82,9 +82,9 @@ enabled=True
 
     describe '#instances' do
       it 'finds every domain' do
-        described_class.expects(:openstack)
+        expect(described_class).to receive(:openstack)
           .with('domain', 'list', '--quiet', '--format', 'csv', [])
-          .returns('"ID","Name","Description","Enabled"
+          .and_return('"ID","Name","Description","Enabled"
 "1cb05cfed7c24279be884ba4f6520262","domain_one","Domain One",True
 ')
         instances = described_class.instances
@@ -105,17 +105,17 @@ enabled=True
 
       context 'default_domain_id defined in keystone.conf' do
         it 'creates a default domain' do
-          described_class.expects(:openstack)
+          expect(described_class).to receive(:openstack)
             .with('domain', 'create', '--format', 'shell',
             ['new_default', '--enable', '--description', 'New default domain.'])
-            .returns('id="1cb05cfed7c24279be884ba4f6520262"
+            .and_return('id="1cb05cfed7c24279be884ba4f6520262"
 name="domain_one"
 description="Domain One"
 enabled=True
 ')
-          entry = mock
-          provider.expects(:keystone_conf_default_domain_id_entry).returns(entry)
-          entry.expects(:create).returns(nil)
+          entry = double
+          expect(provider).to receive(:keystone_conf_default_domain_id_entry).and_return(entry)
+          expect(entry).to receive(:create).and_return(nil)
           provider.create
           expect(provider.exists?).to be_truthy
         end
@@ -124,18 +124,18 @@ enabled=True
 
     describe '#destroy default' do
       it 'destroys a default domain' do
-        entry = mock
-        provider.expects(:keystone_conf_default_domain_id_entry).returns(entry)
+        entry = double
+        expect(provider).to receive(:keystone_conf_default_domain_id_entry).and_return(entry)
 
-        described_class.expects(:default_domain_id).returns('1cb05cfed7c24279be884ba4f6520262')
-        provider.expects(:is_default).returns(:true)
-        provider.expects(:id).times(3).returns('1cb05cfed7c24279be884ba4f6520262')
+        expect(described_class).to receive(:default_domain_id).and_return('1cb05cfed7c24279be884ba4f6520262')
+        expect(provider).to receive(:is_default).and_return(:true)
+        expect(provider).to receive(:id).exactly(3).times.and_return('1cb05cfed7c24279be884ba4f6520262')
 
-        described_class.expects(:openstack)
+        expect(described_class).to receive(:openstack)
           .with('domain', 'set', ['domain_one', '--disable'])
-        described_class.expects(:openstack)
+        expect(described_class).to receive(:openstack)
           .with('domain', 'delete', 'domain_one')
-        entry.expects(:destroy)
+        expect(entry).to receive(:destroy)
         provider.destroy
         expect(provider.exists?).to be_falsey
       end
@@ -153,17 +153,17 @@ enabled=True
       end
 
       it 'changes the description' do
-        described_class.expects(:openstack)
+        expect(described_class).to receive(:openstack)
           .with('domain', 'set', ['domain_one', '--description', 'new description'])
         provider.description = 'new description'
         provider.flush
       end
 
       it 'changes is_default' do
-        entry = mock
-        provider.expects(:keystone_conf_default_domain_id_entry).returns(entry)
-        provider.expects(:id).times(3).returns('current_default_domain')
-        entry.expects(:create)
+        entry = double
+        expect(provider).to receive(:keystone_conf_default_domain_id_entry).and_return(entry)
+        expect(provider).to receive(:id).exactly(3).times.and_return('current_default_domain')
+        expect(entry).to receive(:create)
 
         provider.is_default=(:true)
         provider.flush

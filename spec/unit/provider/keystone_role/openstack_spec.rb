@@ -35,9 +35,9 @@ describe provider_class do
 
     describe '#create' do
       it 'creates a role' do
-        provider.class.expects(:openstack)
+        expect(provider.class).to receive(:openstack)
           .with('role', 'create', '--format', 'shell', 'foo')
-          .returns('name="foo"')
+          .and_return('name="foo"')
         provider.create
         expect(provider.exists?).to be_truthy
       end
@@ -45,7 +45,7 @@ describe provider_class do
 
     describe '#destroy' do
       it 'destroys a role' do
-        provider.class.expects(:openstack)
+        expect(provider.class).to receive(:openstack)
           .with('role', 'delete', [])
         provider.destroy
         expect(provider.exists?).to be_falsey
@@ -64,9 +64,9 @@ describe provider_class do
 
     describe '#instances' do
       it 'finds every role' do
-        provider.class.expects(:openstack)
+        expect(provider.class).to receive(:openstack)
           .with('role', 'list', '--quiet', '--format', 'csv', [])
-          .returns('"ID","Name"
+          .and_return('"ID","Name"
 "1cb05cfed7c24279be884ba4f6520262","foo"
 '
                   )

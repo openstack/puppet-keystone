@@ -29,7 +29,7 @@ describe Puppet::Type.type(:keystone_identity_provider).provider(:openstack) do
   before(:example) { set_env }
   describe '#create success' do
     it 'creates an identity provider' do
-      described_class.expects(:openstack)
+      expect(described_class).to receive(:openstack)
         .with(
               'identity provider', 'create',
               '--format', 'shell', [
@@ -41,8 +41,8 @@ describe Puppet::Type.type(:keystone_identity_provider).provider(:openstack) do
                 'idp_one'
               ]
              )
-        .once
-        .returns(
+        .exactly(1).times
+        .and_return(
         <<-EOR
 description="Nice id provider"
 enabled="True"
@@ -55,8 +55,8 @@ EOR
     end
   end
   describe '#create failure' do
-    it 'fails with an helpfull message when hitting remote-id duplicate.' do
-      described_class.expects(:openstack)
+    it 'fails with an helpful message when hitting remote-id duplicate.' do
+      expect(described_class).to receive(:openstack)
         .with(
               'identity provider', 'create',
               '--format', 'shell', [
@@ -68,10 +68,10 @@ EOR
                 'idp_one'
               ]
              )
-        .once
-        .raises(Puppet::ExecutionFailure,
-                'openstack Conflict occurred attempting to' \
-                  ' store identity_provider')
+        .exactly(1).times
+        .and_raise(Puppet::ExecutionFailure,
+                   'openstack Conflict occurred attempting to' \
+                   ' store identity_provider')
       expect { provider.create }
         .to raise_error(Puppet::Error::OpenstackDuplicateRemoteId)
     end
@@ -88,7 +88,7 @@ EOR
       }
     end
     it 'create a resource whit remote id in a file' do
-      described_class.expects(:openstack)
+      expect(described_class).to receive(:openstack)
         .with(
               'identity provider', 'create',
               '--format', 'shell', [
@@ -98,8 +98,8 @@ EOR
                 'idp_one'
               ]
              )
-        .once
-        .returns(
+        .exactly(1).times
+        .and_return(
         <<-EOR
 description="Nice id provider"
 enabled="True"
@@ -116,7 +116,7 @@ EOR
   describe '#destroy' do
     it 'destroy an identity provider' do
       provider.instance_variable_get('@property_hash')[:id] = 'idp_one'
-      described_class.expects(:openstack)
+      expect(described_class).to receive(:openstack)
         .with(
               'identity provider', 'delete', 'idp_one'
              )
@@ -127,26 +127,26 @@ EOR
 
   describe '#instances' do
     it 'finds every identity provider' do
-      described_class.expects(:openstack)
+      expect(described_class).to receive(:openstack)
         .with(
               'identity provider', 'list',
               '--quiet', '--format', 'csv', []
              )
-        .once
-        .returns(
+        .exactly(1).times
+        .and_return(
         <<-EOR
 "ID","Enabled","Description"
 "idp_one",True,""
 "idp_two",False,"Idp two description"
 EOR
       )
-      described_class.expects(:openstack)
+      expect(described_class).to receive(:openstack)
         .with(
               'identity provider', 'show',
               '--format', 'shell', 'idp_one'
              )
-        .once
-        .returns(
+        .exactly(1).times
+        .and_return(
         <<-EOR
 description="None"
 enabled="True"
@@ -154,13 +154,13 @@ id="idp_one"
 remote_ids="entityid_idp1, http://entityid_idp2/saml/meta, 3"
 EOR
       )
-      described_class.expects(:openstack)
+      expect(described_class).to receive(:openstack)
         .with(
               'identity provider', 'show',
               '--format', 'shell', 'idp_two'
              )
-        .once
-        .returns(
+        .exactly(1).times
+        .and_return(
         <<-EOR
 description="Idp two description"
 enabled="False"
@@ -179,8 +179,8 @@ EOR
   describe '#update' do
     context 'remote_ids' do
       it 'changes the remote_ids' do
-        provider.expects(:id).returns('1234')
-        described_class.expects(:openstack)
+        expect(provider).to receive(:id).and_return('1234')
+        expect(described_class).to receive(:openstack)
           .with(
                 'identity provider', 'set',
                 [
@@ -189,41 +189,41 @@ EOR
                   '1234'
                 ]
                )
-          .once
+          .exactly(1).times
         provider.remote_ids = ['entityid_idp1', 'http://entityid_idp2/saml/meta']
       end
     end
     context 'with remote_id_file' do
       it 'changes the remote_id_file' do
-        provider.expects(:id).returns('1234')
-        described_class.expects(:openstack)
+        expect(provider).to receive(:id).and_return('1234')
+        expect(described_class).to receive(:openstack)
           .with(
                 'identity provider', 'set',
                 ['--remote-id-file', '/tmp/new_file', '1234']
                )
-          .once
+          .exactly(1).times
         provider.remote_id_file = '/tmp/new_file'
       end
     end
     context 'enabled' do
       it 'changes the enable to true' do
-        provider.expects(:id).returns('1234')
-        described_class.expects(:openstack)
+        expect(provider).to receive(:id).and_return('1234')
+        expect(described_class).to receive(:openstack)
           .with(
                 'identity provider', 'set',
                 ['--enable', '1234']
                )
-          .once
+          .exactly(1).times
         provider.enabled = :true
       end
       it 'changes the enable to false' do
-        provider.expects(:id).returns('1234')
-        described_class.expects(:openstack)
+        expect(provider).to receive(:id).and_return('1234')
+        expect(described_class).to receive(:openstack)
           .with(
                 'identity provider', 'set',
                 ['--disable', '1234']
                )
-          .once
+          .exactly(1).times
         provider.enabled = :false
       end
     end
@@ -247,9 +247,9 @@ EOR
       existing
     end
     it 'fill the resource with the right provider' do
-      described_class.expects(:instances)
-        .once
-        .returns([found_resource])
+      expect(described_class).to receive(:instances)
+        .exactly(1).times
+        .and_return([found_resource])
       expect(resources_catalog['idp_one'].provider).to be_absent
       described_class.prefetch(resources_catalog)
       expect(resources_catalog['idp_one'].provider).not_to be_absent

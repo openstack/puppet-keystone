@@ -35,7 +35,7 @@ describe provider_class do
       })
       config_provider = Puppet::Type.type(:keystone_config).provider(:openstackconfig)
       keystone_config = config_provider.new(config)
-      keystone_config.class.expects(:file_path).at_least_once.returns(tmpfile)
+      expect(keystone_config.class).to receive(:file_path).at_least(1).times.and_return(tmpfile)
       keystone_config.create
 
       @domain = Puppet::Type::Keystone_domain_config.new(

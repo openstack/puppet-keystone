@@ -85,8 +85,9 @@ describe Puppet::Type.type(:keystone_identity_provider) do
         )
       end
       it 'must be in sync' do
-        File.expects(:readlines).with('/tmp/remote_ids').once
-          .returns(['  remoteids', '', 'http://secondids  ', '   	'])
+        expect(File).to receive(:readlines).with('/tmp/remote_ids')
+          .exactly(1).times
+          .and_return(['  remoteids', '', 'http://secondids  ', '   	'])
         remote_id_file = service_provider.parameter('remote_id_file')
         expect(remote_id_file.insync?(
           ['http://secondids', 'remoteids'])).to be_truthy

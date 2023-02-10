@@ -78,18 +78,18 @@ shared_examples_for 'prefetch the resources' do
   it 'should correctly prefetch the existing resource' do
     existing     = resources[0]
     non_existing = resources[1]
-    resource = mock
+    resource = double
     r = []
     r << existing
 
     catalog = Puppet::Resource::Catalog.new
     r.each { |res| catalog.add_resource(res) }
-    m_value = mock
-    m_first = mock
-    resource.expects(:values).returns(m_value)
-    m_value.expects(:first).returns(m_first)
-    m_first.expects(:catalog).returns(catalog)
-    m_first.expects(:class).returns(described_class.resource_type)
+    m_value = double
+    m_first = double
+    expect(resource).to receive(:values).and_return(m_value)
+    expect(m_value).to receive(:first).and_return(m_first)
+    expect(m_first).to receive(:catalog).and_return(catalog)
+    expect(m_first).to receive(:class).and_return(described_class.resource_type)
     described_class.prefetch(resource)
 
     # found and not found
