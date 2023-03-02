@@ -16,7 +16,7 @@ describe 'keystone::wsgi::apache' do
       }
 
       it { should contain_openstacklib__wsgi__apache('keystone_wsgi').with(
-        :servername                  => 'some.host.tld',
+        :servername                  => 'foo.example.com',
         :bind_host                   => nil,
         :bind_port                   => 5000,
         :group                       => 'keystone',
@@ -195,13 +195,11 @@ describe 'keystone::wsgi::apache' do
       let (:facts) do
         facts.merge!(OSDefaults.get_facts({
           :os_workers_keystone => 8,
-          :concat_basedir      => '/var/lib/puppet/concat',
-          :fqdn                => 'some.host.tld',
         }))
       end
 
       let(:platform_params) do
-        case facts[:osfamily]
+        case facts[:os]['family']
         when 'Debian'
           {
             :wsgi_script_path => '/usr/lib/cgi-bin/keystone',
@@ -214,7 +212,7 @@ describe 'keystone::wsgi::apache' do
       end
 
       it_behaves_like 'keystone::wsgi::apache'
-      if facts[:operatingsystem] == 'Ubuntu'
+      if facts[:os]['name'] == 'Ubuntu'
         it_behaves_like 'keystone::wsgi::apache on Ubuntu'
       end
     end

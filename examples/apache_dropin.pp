@@ -34,8 +34,8 @@ class { 'keystone':
 }
 class { 'keystone::bootstrap':
   password   => 'ChangeMe',
-  public_url => "https://${::fqdn}:5000",
-  admin_url  => "https://${::fqdn}:5000",
+  public_url => "https://${facts['networking']['fqdn']}:5000",
+  admin_url  => "https://${facts['networking']['fqdn']}:5000",
 }
 
 keystone_config { 'ssl/enable': value => true }

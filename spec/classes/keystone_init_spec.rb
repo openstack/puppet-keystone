@@ -177,7 +177,7 @@ describe 'keystone' do
       end
 
       it do
-        if facts[:operatingsystem] == 'Debian'
+        if facts[:os]['name'] == 'Debian'
           is_expected.to contain_service('keystone').with(
             :ensure => 'stopped',
             :name   => platform_params[:service_name],
@@ -620,14 +620,11 @@ describe 'keystone' do
   }).each do |os,facts|
     context "on #{os}" do
       let (:facts) do
-        facts.merge!(OSDefaults.get_facts({
-          :concat_basedir => '/var/lib/puppet/concat',
-          :fqdn           => 'some.host.tld',
-        }))
+        facts.merge!(OSDefaults.get_facts())
       end
 
       let(:platform_params) do
-        case facts[:osfamily]
+        case facts[:os]['family']
         when 'Debian'
           { :package_name       => 'keystone',
             :service_name       => 'keystone',

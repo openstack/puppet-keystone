@@ -32,15 +32,15 @@
 #
 # [*password_hash_algorithm*]
 #   (Optional) The password hash algorithm to use.
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*password_hash_rounds*]
 #   (Optional) The amount of rounds to do on the hash.
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*revoke_driver*]
 #   (Optional) Driver for token revocation.
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*revoke_by_id*]
 #   (Optional) Revoke token by token identifier.
@@ -62,11 +62,11 @@
 #   (Optional) A URL representing the messaging driver to use and its full
 #   configuration. Transport URLs take the form:
 #     transport://user:pass@host1:port[,hostN:portN]/virtual_host
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*rabbit_ha_queues*]
 #   (Optional) Use HA queues in RabbitMQ.
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*rabbit_heartbeat_timeout_threshold*]
 #   (Optional) Number of seconds after which the RabbitMQ broker is considered
@@ -74,14 +74,14 @@
 #   Heartbeating helps to ensure the TCP connection to RabbitMQ isn't silently
 #   closed, resulting in missed or lost messages from the queue.
 #   (Requires kombu >= 3.0.7 and amqp >= 1.4.0)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*rabbit_heartbeat_rate*]
 #   (Optional) How often during the rabbit_heartbeat_timeout_threshold period to
 #   check the heartbeat on RabbitMQ connection.  (i.e. rabbit_heartbeat_rate=2
 #   when rabbit_heartbeat_timeout_threshold=60, the heartbeat will be checked
 #   every 30 seconds.
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*rabbit_heartbeat_in_pthread*]
 #   (Optional) EXPERIMENTAL: Run the health check heartbeat thread
@@ -91,86 +91,86 @@
 #   example if the parent process have monkey patched the
 #   stdlib by using eventlet/greenlet then the heartbeat
 #   will be run through a green thread.
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*rabbit_use_ssl*]
 #   (Optional) Connect over SSL for RabbitMQ
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*kombu_ssl_ca_certs*]
 #   (Optional) SSL certification authority file (valid only if SSL enabled).
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*kombu_ssl_certfile*]
 #   (Optional) SSL cert file (valid only if SSL enabled).
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*kombu_ssl_keyfile*]
 #   (Optional) SSL key file (valid only if SSL enabled).
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*kombu_ssl_version*]
 #   (Optional) SSL version to use (valid only if SSL enabled).
 #   Valid values are TLSv1, SSLv23 and SSLv3. SSLv2 may be
 #   available on some distributions.
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*kombu_reconnect_delay*]
 #   (Optional) How long to wait before reconnecting in response
 #   to an AMQP consumer cancel notification. (floating point value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*kombu_failover_strategy*]
 #   (Optional) Determines how the next RabbitMQ node is chosen in case the one
 #   we are currently connected to becomes unavailable. Takes effect only if
 #   more than one RabbitMQ node is provided in config. (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*kombu_compression*]
 #   (Optional) Possible values are: gzip, bz2. If not set compression will not
 #   be used. This option may notbe available in future versions. EXPERIMENTAL.
 #   (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*notification_transport_url*]
 #   (Optional) A URL representing the messaging driver to use for notifications
 #   and its full configuration. Transport URLs take the form:
 #     transport://user:pass@host1:port[,hostN:portN]/virtual_host
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*notification_driver*]
 #   RPC driver. Not enabled by default (list value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*notification_topics*]
 #   (Optional) AMQP topics to publish to when using the RPC notification driver.
 #   (list value)
-#   Default to $::os_service_default
+#   Default to $facts['os_service_default']
 #
 # [*notification_format*]
 #   (Optional) Define the notification format for identity service events.
 #   Valid values are 'basic' and 'cadf'.
-#   Default to $::os_service_default
+#   Default to $facts['os_service_default']
 #
 # [*notification_opt_out*]
 #   (Optional) Opt out notifications that match the patterns expressed in this
 #   list.
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*control_exchange*]
 #   (Optional) AMQP exchange to connect to if using RabbitMQ
 #   (string value)
-#   Default to $::os_service_default
+#   Default to $facts['os_service_default']
 #
 # [*rpc_response_timeout*]
 #   (Optional) Seconds to wait for a response from a call.
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*public_endpoint*]
 #   (Optional) The base public endpoint URL for keystone that are
 #   advertised to clients (NOTE: this does NOT affect how
 #   keystone listens for connections) (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*service_name*]
 #   (Optional) Name of the service that will be providing the
@@ -193,7 +193,7 @@
 #
 # [*max_token_size*]
 #   (Optional) maximum allowable Keystone token size
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*sync_db*]
 #   (Optional) Run db sync on the node.
@@ -213,7 +213,7 @@
 #
 # [*fernet_max_active_keys*]
 #   (Optional) Number of maximum active Fernet keys. Integer > 0.
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*fernet_keys*]
 #   (Optional) Hash of Keystone fernet keys
@@ -274,7 +274,7 @@
 #
 # [*policy_driver*]
 #   Policy backend driver. (string value)
-#   Defaults to $::os_service_default.
+#   Defaults to $facts['os_service_default'].
 #
 # [*using_domain_config*]
 #   (Optional) Eases the use of the keystone_domain_config resource type.
@@ -303,11 +303,11 @@
 #
 # [*enable_proxy_headers_parsing*]
 #   (Optional) Enable oslo middleware to parse proxy headers.
-#   Defaults to $::os_service_default.
+#   Defaults to $facts['os_service_default'].
 #
 # [*max_request_body_size*]
 #   (Optional) Set max request body size
-#   Defaults to $::os_service_default.
+#   Defaults to $facts['os_service_default'].
 #
 # [*purge_config*]
 #   (Optional) Whether to set only the specified config options
@@ -316,7 +316,7 @@
 #
 # [*amqp_durable_queues*]
 #   (Optional) Whether to use durable queues in AMQP.
-#   Defaults to $::os_service_default.
+#   Defaults to $facts['os_service_default'].
 #
 # DEPRECATED PARAMETERS
 #
@@ -340,55 +340,55 @@ class keystone(
   $catalog_template_file                = '/etc/keystone/default_catalog.templates',
   $token_provider                       = 'fernet',
   $token_expiration                     = 3600,
-  $password_hash_algorithm              = $::os_service_default,
-  $password_hash_rounds                 = $::os_service_default,
-  $revoke_driver                        = $::os_service_default,
+  $password_hash_algorithm              = $facts['os_service_default'],
+  $password_hash_rounds                 = $facts['os_service_default'],
+  $revoke_driver                        = $facts['os_service_default'],
   $revoke_by_id                         = true,
-  $public_endpoint                      = $::os_service_default,
+  $public_endpoint                      = $facts['os_service_default'],
   $manage_service                       = true,
   $enabled                              = true,
-  $rabbit_heartbeat_timeout_threshold   = $::os_service_default,
-  $rabbit_heartbeat_rate                = $::os_service_default,
-  $rabbit_heartbeat_in_pthread          = $::os_service_default,
-  $rabbit_use_ssl                       = $::os_service_default,
-  $default_transport_url                = $::os_service_default,
-  $rabbit_ha_queues                     = $::os_service_default,
-  $kombu_ssl_ca_certs                   = $::os_service_default,
-  $kombu_ssl_certfile                   = $::os_service_default,
-  $kombu_ssl_keyfile                    = $::os_service_default,
-  $kombu_ssl_version                    = $::os_service_default,
-  $kombu_reconnect_delay                = $::os_service_default,
-  $kombu_failover_strategy              = $::os_service_default,
-  $kombu_compression                    = $::os_service_default,
-  $notification_transport_url           = $::os_service_default,
-  $notification_driver                  = $::os_service_default,
-  $notification_topics                  = $::os_service_default,
-  $notification_format                  = $::os_service_default,
-  $notification_opt_out                 = $::os_service_default,
-  $control_exchange                     = $::os_service_default,
-  $rpc_response_timeout                 = $::os_service_default,
+  $rabbit_heartbeat_timeout_threshold   = $facts['os_service_default'],
+  $rabbit_heartbeat_rate                = $facts['os_service_default'],
+  $rabbit_heartbeat_in_pthread          = $facts['os_service_default'],
+  $rabbit_use_ssl                       = $facts['os_service_default'],
+  $default_transport_url                = $facts['os_service_default'],
+  $rabbit_ha_queues                     = $facts['os_service_default'],
+  $kombu_ssl_ca_certs                   = $facts['os_service_default'],
+  $kombu_ssl_certfile                   = $facts['os_service_default'],
+  $kombu_ssl_keyfile                    = $facts['os_service_default'],
+  $kombu_ssl_version                    = $facts['os_service_default'],
+  $kombu_reconnect_delay                = $facts['os_service_default'],
+  $kombu_failover_strategy              = $facts['os_service_default'],
+  $kombu_compression                    = $facts['os_service_default'],
+  $notification_transport_url           = $facts['os_service_default'],
+  $notification_driver                  = $facts['os_service_default'],
+  $notification_topics                  = $facts['os_service_default'],
+  $notification_format                  = $facts['os_service_default'],
+  $notification_opt_out                 = $facts['os_service_default'],
+  $control_exchange                     = $facts['os_service_default'],
+  $rpc_response_timeout                 = $facts['os_service_default'],
   $service_name                         = $::keystone::params::service_name,
-  $max_token_size                       = $::os_service_default,
+  $max_token_size                       = $facts['os_service_default'],
   $sync_db                              = true,
   $enable_fernet_setup                  = true,
   $fernet_key_repository                = '/etc/keystone/fernet-keys',
-  $fernet_max_active_keys               = $::os_service_default,
+  $fernet_max_active_keys               = $facts['os_service_default'],
   $fernet_keys                          = false,
   $fernet_replace_keys                  = true,
   $enable_credential_setup              = true,
   $credential_key_repository            = '/etc/keystone/credential-keys',
   $credential_keys                      = false,
   $default_domain                       = undef,
-  $policy_driver                        = $::os_service_default,
+  $policy_driver                        = $facts['os_service_default'],
   $using_domain_config                  = false,
   $domain_config_directory              = '/etc/keystone/domains',
   $keystone_user                        = $::keystone::params::user,
   $keystone_group                       = $::keystone::params::group,
   $manage_policyrcd                     = false,
-  $enable_proxy_headers_parsing         = $::os_service_default,
-  $max_request_body_size                = $::os_service_default,
+  $enable_proxy_headers_parsing         = $facts['os_service_default'],
+  $max_request_body_size                = $facts['os_service_default'],
   $purge_config                         = false,
-  $amqp_durable_queues                  = $::os_service_default,
+  $amqp_durable_queues                  = $facts['os_service_default'],
   # DEPRECATED PARAMETERS
   $catalog_type                         = undef,
 ) inherits keystone::params {
@@ -408,7 +408,7 @@ class keystone(
     # openstacklib policy_rcd only affects debian based systems.
     Policy_rcd <| title == 'keystone' |> -> Package['keystone']
     Policy_rcd['apache2'] -> Package['httpd']
-    if ($::operatingsystem == 'Ubuntu') {
+    if ($facts['os']['name'] == 'Ubuntu') {
       $policy_services = 'apache2'
     } else {
       $policy_services = ['keystone', 'apache2']
@@ -526,7 +526,7 @@ class keystone(
 
     case $service_name {
       $::keystone::params::service_name: {
-        if $::operatingsystem != 'Debian' {
+        if $facts['os']['name'] != 'Debian' {
           # TODO(tkajinam): Make this hard-fail
           warning('Keystone under Eventlet is no longer supported by this operating system')
         }
@@ -547,7 +547,7 @@ class keystone(
         $service_name_real = $::apache::params::service_name
         Service <| title == 'httpd' |> { tag +> 'keystone-service' }
 
-        if $::operatingsystem == 'Debian' {
+        if $facts['os']['name'] == 'Debian' {
           service { 'keystone':
             ensure => 'stopped',
             name   => $::keystone::params::service_name,

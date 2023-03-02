@@ -273,7 +273,7 @@ describe 'keystone::resource::authtoken' do
       end
 
       let(:platform_params) do
-        case facts[:osfamily]
+        case facts[:os]['family']
         when 'Debian'
           memcache_package_name = 'python3-memcache'
         when 'RedHat'

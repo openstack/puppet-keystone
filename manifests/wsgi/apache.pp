@@ -12,7 +12,7 @@
 #
 # [*servername*]
 #   (Optional) The servername for the virtualhost.
-#   Defaults to $::fqdn
+#   Defaults to $facts['networking']['fqdn']
 #
 # [*bind_host*]
 #   (Optional) The host/ip address Apache will listen on.
@@ -32,7 +32,7 @@
 #
 # [*workers*]
 #   (Optional) Number of WSGI workers to spawn.
-#   Defaults to $::os_workers_keystone
+#   Defaults to $facts['os_workers_keystone']
 #
 # [*ssl_cert*]
 #   (Optional) Path to SSL certificate
@@ -142,12 +142,12 @@
 #   Defaults to undef
 #
 class keystone::wsgi::apache (
-  $servername                        = $::fqdn,
+  $servername                        = $facts['networking']['fqdn'],
   $bind_host                         = undef,
   $port                              = 5000,
   $path                              = '/',
   $ssl                               = false,
-  $workers                           = $::os_workers_keystone,
+  $workers                           = $facts['os_workers_keystone'],
   $ssl_cert                          = undef,
   $ssl_key                           = undef,
   $ssl_chain                         = undef,
@@ -227,7 +227,7 @@ class keystone::wsgi::apache (
   # The file should be created after the apache class is invoked, otherwise
   # the file is deleted because of its default behavior which removes all files
   # in sites-available/sites-enabled.
-  if ($::operatingsystem == 'Ubuntu') {
+  if ($facts['os']['name'] == 'Ubuntu') {
     ensure_resource('file', '/etc/apache2/sites-available/keystone.conf', {
       'ensure'  => 'file',
       'content' => '',

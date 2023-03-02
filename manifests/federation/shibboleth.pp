@@ -74,8 +74,8 @@ Apache + Shibboleth SP setups, where a REMOTE_USER env variable is always set, e
     'auth/saml2':   ensure => absent;
   }
 
-  if $::osfamily == 'Debian' or ($::osfamily == 'RedHat' and (defined(Yumrepo[$yum_repo_name])) or defined(Package['shibboleth'])) {
-    if $::osfamily == 'RedHat' {
+  if $facts['os']['family'] == 'Debian' or ($facts['os']['family'] == 'RedHat' and (defined(Yumrepo[$yum_repo_name])) or defined(Package['shibboleth'])) {
+    if $facts['os']['family'] == 'RedHat' {
       warning('The platform is not officially supported, use at your own risk.  Check manifest documentation for more.')
       apache::mod { 'shib2':
         id   => 'mod_shib',
@@ -90,7 +90,7 @@ Apache + Shibboleth SP setups, where a REMOTE_USER env variable is always set, e
       content => template('keystone/shibboleth.conf.erb'),
       order   => $template_order,
     }
-  } elsif $::osfamily == 'Redhat' {
+  } elsif $facts['os']['family'] == 'Redhat' {
     if !$suppress_warning {
       warning( 'Can not configure Shibboleth in Apache on RedHat OS.Read the Note on this federation/shibboleth.pp' )
     }

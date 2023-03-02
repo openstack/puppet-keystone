@@ -236,7 +236,7 @@ describe 'keystone::ldap' do
       end
 
       let (:platform_params) do
-        case facts[:osfamily]
+        case facts[:os]['family']
         when 'Debian'
           { :python_ldappool_package_name => 'python3-ldappool' }
         when 'RedHat'

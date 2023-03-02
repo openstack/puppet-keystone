@@ -52,63 +52,63 @@
 #
 # [*project_name*]
 #   (Optional) Service project name
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*user_domain_name*]
 #   (Optional) Name of domain for $username
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*project_domain_name*]
 #   (Optional) Name of domain for $project_name
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*system_scope*]
 #   (Optional) Scope for system operations
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*insecure*]
 #  (Optional) If true, explicitly allow TLS without checking server cert
 #  against any certificate authorities.  WARNING: not recommended.  Use with
 #  caution.
-#  Defaults to $::os_service_default
+#  Defaults to $facts['os_service_default']
 #
 # [*auth_section*]
 #  (Optional) Config Section from which to load plugin specific options
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*auth_type*]
 #  (Optional) Authentication type to load
-#  Defaults to $::os_service_default
+#  Defaults to $facts['os_service_default']
 #
 # [*www_authenticate_uri*]
 #  (Optional) Complete public Identity API endpoint.
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*auth_version*]
 #  (Optional) API version of the admin Identity API endpoint.
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*cache*]
 #  (Optional) Env key for the swift cache.
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*cafile*]
 #  (Optional) A PEM encoded Certificate Authority to use when verifying HTTPs
 #  connections.
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*certfile*]
 #  (Optional) Required if identity server requires client certificate
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*collect_timing*]
 #  (Optional) If true, collect per-method timing information for each API call.
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*delay_auth_decision*]
 #  (Optional) Do not handle authorization requests within the middleware, but
 #  delegate the authorization decision to downstream WSGI components. Boolean value
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*enforce_token_bind*]
 #  (Optional) Used to control the use and type of token binding. Can be set
@@ -118,56 +118,56 @@
 #  type is unknown the token will be rejected. "required" any form of token
 #  binding is needed to be allowed. Finally the name of a binding method that
 #  must be present in tokens. String value.
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*http_connect_timeout*]
 #  (Optional) Request timeout value for communicating with Identity API server.
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*http_request_max_retries*]
 #  (Optional) How many times are we trying to reconnect when communicating
 #  with Identity API Server. Integer value
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*include_service_catalog*]
 #  (Optional) Indicate whether to set the X-Service-Catalog header. If False,
 #  middleware will not ask for service catalog on token validation and will not
 #  set the X-Service-Catalog header. Boolean value.
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*keyfile*]
 #  (Optional) Required if identity server requires client certificate
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*memcache_pool_conn_get_timeout*]
 #  (Optional) Number of seconds that an operation will wait to get a memcached
 #  client connection from the pool. Integer value
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*memcache_pool_dead_retry*]
 #  (Optional) Number of seconds memcached server is considered dead before it
 #  is tried again. Integer value
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*memcache_pool_maxsize*]
 #  (Optional) Maximum total number of open connections to every memcached
 #  server. Integer value
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*memcache_pool_socket_timeout*]
 #  (Optional) Number of seconds a connection to memcached is held unused in the
 #  pool before it is closed. Integer value
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*memcache_pool_unused_timeout*]
 #  (Optional) Number of seconds a connection to memcached is held unused in the
 #  pool before it is closed. Integer value
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*memcache_secret_key*]
 #  (Optional, mandatory if memcache_security_strategy is defined) This string
 #  is used for key derivation.
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*memcache_security_strategy*]
 #  (Optional) If defined, indicate whether token data should be authenticated or
@@ -175,27 +175,27 @@
 #  in the cache. If ENCRYPT, token data is encrypted and authenticated in the
 #  cache. If the value is not one of these options or empty, auth_token will
 #  raise an exception on initialization.
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*memcache_use_advanced_pool*]
 #  (Optional)  Use the advanced (eventlet safe) memcached client pool. The
 #  advanced pool will only work under python 2.x Boolean value
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*memcached_servers*]
 #  (Optional) Optionally specify a list of memcached server(s) to use for
 #  caching. If left undefined, tokens will instead be cached in-process.
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*region_name*]
 #  (Optional) The region in which the identity server can be found.
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*token_cache_time*]
 #  (Optional) In order to prevent excessive effort spent validating tokens,
 #  the middleware caches previously-seen tokens for a configurable duration
 #  (in seconds). Set to -1 to disable caching completely. Integer value
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*manage_memcache_package*]
 #  (Optional) Whether to install the python-memcache package.
@@ -209,63 +209,63 @@
 #  here are applied as an ANY check so any role in this list
 #  must be present. For backwards compatibility reasons this
 #  currently only affects the allow_expired check. (list value)
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*service_token_roles_required*]
 #  (optional) backwards compatibility to ensure that the service tokens are
 #  compared against a list of possible roles for validity
 #  true/false
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*service_type*]
 #  (Optional) The name or type of the service as it appears in the service
 #  catalog. This is used to validate tokens that have restricted access rules.
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 # [*interface*]
 #  (Optional) Interface to use for the Identity API endpoint. Valid values are
 #  "public", "internal" or "admin".
-#  Defaults to $::os_service_default.
+#  Defaults to $facts['os_service_default'].
 #
 define keystone::resource::authtoken(
   $username,
   $password,
   $auth_url,
-  $project_name                   = $::os_service_default,
-  $user_domain_name               = $::os_service_default,
-  $project_domain_name            = $::os_service_default,
-  $system_scope                   = $::os_service_default,
-  $insecure                       = $::os_service_default,
-  $auth_section                   = $::os_service_default,
-  $auth_type                      = $::os_service_default,
-  $www_authenticate_uri           = $::os_service_default,
-  $auth_version                   = $::os_service_default,
-  $cache                          = $::os_service_default,
-  $cafile                         = $::os_service_default,
-  $certfile                       = $::os_service_default,
-  $collect_timing                 = $::os_service_default,
-  $delay_auth_decision            = $::os_service_default,
-  $enforce_token_bind             = $::os_service_default,
-  $http_connect_timeout           = $::os_service_default,
-  $http_request_max_retries       = $::os_service_default,
-  $include_service_catalog        = $::os_service_default,
-  $keyfile                        = $::os_service_default,
-  $memcache_pool_conn_get_timeout = $::os_service_default,
-  $memcache_pool_dead_retry       = $::os_service_default,
-  $memcache_pool_maxsize          = $::os_service_default,
-  $memcache_pool_socket_timeout   = $::os_service_default,
-  $memcache_pool_unused_timeout   = $::os_service_default,
-  $memcache_secret_key            = $::os_service_default,
-  $memcache_security_strategy     = $::os_service_default,
-  $memcache_use_advanced_pool     = $::os_service_default,
-  $memcached_servers              = $::os_service_default,
-  $region_name                    = $::os_service_default,
-  $token_cache_time               = $::os_service_default,
+  $project_name                   = $facts['os_service_default'],
+  $user_domain_name               = $facts['os_service_default'],
+  $project_domain_name            = $facts['os_service_default'],
+  $system_scope                   = $facts['os_service_default'],
+  $insecure                       = $facts['os_service_default'],
+  $auth_section                   = $facts['os_service_default'],
+  $auth_type                      = $facts['os_service_default'],
+  $www_authenticate_uri           = $facts['os_service_default'],
+  $auth_version                   = $facts['os_service_default'],
+  $cache                          = $facts['os_service_default'],
+  $cafile                         = $facts['os_service_default'],
+  $certfile                       = $facts['os_service_default'],
+  $collect_timing                 = $facts['os_service_default'],
+  $delay_auth_decision            = $facts['os_service_default'],
+  $enforce_token_bind             = $facts['os_service_default'],
+  $http_connect_timeout           = $facts['os_service_default'],
+  $http_request_max_retries       = $facts['os_service_default'],
+  $include_service_catalog        = $facts['os_service_default'],
+  $keyfile                        = $facts['os_service_default'],
+  $memcache_pool_conn_get_timeout = $facts['os_service_default'],
+  $memcache_pool_dead_retry       = $facts['os_service_default'],
+  $memcache_pool_maxsize          = $facts['os_service_default'],
+  $memcache_pool_socket_timeout   = $facts['os_service_default'],
+  $memcache_pool_unused_timeout   = $facts['os_service_default'],
+  $memcache_secret_key            = $facts['os_service_default'],
+  $memcache_security_strategy     = $facts['os_service_default'],
+  $memcache_use_advanced_pool     = $facts['os_service_default'],
+  $memcached_servers              = $facts['os_service_default'],
+  $region_name                    = $facts['os_service_default'],
+  $token_cache_time               = $facts['os_service_default'],
   $manage_memcache_package        = false,
-  $service_token_roles            = $::os_service_default,
-  $service_token_roles_required   = $::os_service_default,
-  $service_type                   = $::os_service_default,
-  $interface                      = $::os_service_default,
+  $service_token_roles            = $facts['os_service_default'],
+  $service_token_roles_required   = $facts['os_service_default'],
+  $service_type                   = $facts['os_service_default'],
+  $interface                      = $facts['os_service_default'],
 ) {
 
   include keystone::params
@@ -308,7 +308,7 @@ define keystone::resource::authtoken(
       })
     }
   } else {
-    $memcached_servers_real = $::os_service_default
+    $memcached_servers_real = $facts['os_service_default']
   }
 
   if is_service_default($system_scope) {
@@ -317,8 +317,8 @@ define keystone::resource::authtoken(
   } else {
     # When system scope is used, project parameters should be removed otherwise
     # project scope is used.
-    $project_name_real        = $::os_service_default
-    $project_domain_name_real = $::os_service_default
+    $project_name_real        = $facts['os_service_default']
+    $project_domain_name_real = $facts['os_service_default']
   }
 
   $keystonemiddleware_options = {

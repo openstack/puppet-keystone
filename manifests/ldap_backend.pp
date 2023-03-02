@@ -9,59 +9,59 @@
 #
 # [*url*]
 #   URL for connecting to the LDAP server. (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*user*]
 #   User BindDN to query the LDAP server. (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*password*]
 #   Password for the BindDN to query the LDAP server. (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*suffix*]
 #   LDAP server suffix (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*query_scope*]
 #   The LDAP scope for queries, this can be either "one"
 #   (onelevel/singleLevel) or "sub" (subtree/wholeSubtree). (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*page_size*]
 #   Maximum results per page; a value of zero ("0") disables paging. (integer value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*user_tree_dn*]
 #   Search base for users. (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*user_filter*]
 #   LDAP search filter for users. (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*user_objectclass*]
 #   LDAP objectclass for users. (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*user_id_attribute*]
 #   LDAP attribute mapped to user id. WARNING: must not be a multivalued attribute. (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*user_name_attribute*]
 #   LDAP attribute mapped to user name. (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*user_description_attribute*]
 #   LDAP attribute mapped to user description. (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*user_mail_attribute*]
 #   LDAP attribute mapped to user email. (string value)
 #
 # [*user_enabled_attribute*]
 #   LDAP attribute mapped to user enabled flag. (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*user_enabled_mask*]
 #   Bitmask integer to indicate the bit that the enabled value is stored in if
@@ -69,7 +69,7 @@
 #   boolean. A value of "0" indicates the mask is not used. If this is not set
 #   to "0" the typical value is "2". This is typically used when
 #   "user_enabled_attribute = userAccountControl". (integer value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*user_enabled_default*]
 #   Default value to enable users. This should match an appropriate int value
@@ -77,7 +77,7 @@
 #   is enabled or disabled. If this is not set to "True" the typical value is
 #   "512". This is typically used when "user_enabled_attribute =
 #   userAccountControl". (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*user_enabled_invert*]
 #   Invert the meaning of the boolean enabled values. Some LDAP servers use a
@@ -85,30 +85,30 @@
 #   "user_enabled_invert = true" will allow these lock attributes to be used.
 #   This setting will have no effect if "user_enabled_mask" or
 #   "user_enabled_emulation" settings are in use. (boolean value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*user_attribute_ignore*]
 #   List of attributes stripped off the user on update. (list value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*user_default_project_id_attribute*]
 #   LDAP attribute mapped to default_project_id for users. (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*user_pass_attribute*]
 #   LDAP attribute mapped to password. (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*user_enabled_emulation*]
 #   If true, Keystone uses an alternative method to determine if
 #   a user is enabled or not by checking if they are a member of
 #   the "user_enabled_emulation_dn" group. (boolean value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*user_enabled_emulation_dn*]
 #   DN of the group entry to hold enabled users when using enabled emulation.
 #   (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*user_additional_attribute_mapping*]
 #   List of additional LDAP attributes used for mapping
@@ -116,75 +116,75 @@
 #   format is <ldap_attr>:<user_attr>, where ldap_attr is the
 #   attribute in the LDAP entry and user_attr is the Identity
 #   API attribute. (list value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*group_tree_dn*]
 #   Search base for groups. (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*group_filter*]
 #   LDAP search filter for groups. (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*group_objectclass*]
 #   LDAP objectclass for groups. (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*group_id_attribute*]
 #   LDAP attribute mapped to group id. (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*group_name_attribute*]
 #   LDAP attribute mapped to group name. (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*group_member_attribute*]
 #   LDAP attribute mapped to show group membership. (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*group_members_are_ids*]
 #   LDAP attribute when members of the group object class are keystone user IDs. (boolean value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*group_desc_attribute*]
 #   LDAP attribute mapped to group description. (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*group_attribute_ignore*]
 #   List of attributes stripped off the group on update. (list value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*group_additional_attribute_mapping*]
 #   Additional attribute mappings for groups. Attribute mapping
 #   format is <ldap_attr>:<user_attr>, where ldap_attr is the
 #   attribute in the LDAP entry and user_attr is the Identity
 #   API attribute. (list value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*group_ad_nesting*]
 #   If enabled, group queries will use Active Directory specific
 #   filters for nested groups. (boolean value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*chase_referrals*]
 #   Whether or not to chase returned referrals. (boolean value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*use_tls*]
 #   Enable TLS for communicating with LDAP servers. (boolean value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*tls_cacertfile*]
 #   CA certificate file path for communicating with LDAP servers. (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*tls_cacertdir*]
 #   CA certificate directory path for communicating with LDAP servers. (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*tls_req_cert*]
 #   Valid options for tls_req_cert are demand, never, and allow. (string value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*identity_driver*]
 #   Identity backend driver. (string value)
@@ -192,40 +192,40 @@
 #
 # [*use_pool*]
 #   Enable LDAP connection pooling. (boolean value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*pool_size*]
 #   Connection pool size. (integer value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*pool_retry_max*]
 #   Maximum count of reconnect trials. (integer value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*pool_retry_delay*]
 #   Time span in seconds to wait between two reconnect trials. (floating point value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*pool_connection_timeout*]
 #   Connector timeout in seconds. Value -1 indicates indefinite wait for response. (integer value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*pool_connection_lifetime*]
 #   Connection lifetime in seconds. (integer value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*use_auth_pool*]
 #   Enable LDAP connection pooling for end user authentication.
 #   If use_pool is disabled, then this setting is meaningless and is not used at all. (boolean value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*auth_pool_size*]
 #   End user auth connection pool size. (integer value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*auth_pool_connection_lifetime*]
 #   End user auth connection lifetime in seconds. (integer value)
-#   Defaults to $::os_service_default
+#   Defaults to $facts['os_service_default']
 #
 # [*package_ensure*]
 #   (optional) Desired ensure state of packages.
@@ -245,55 +245,55 @@
 # == Dependencies
 # == Examples
 define keystone::ldap_backend(
-  $url                                  = $::os_service_default,
-  $user                                 = $::os_service_default,
-  $password                             = $::os_service_default,
-  $suffix                               = $::os_service_default,
-  $query_scope                          = $::os_service_default,
-  $page_size                            = $::os_service_default,
-  $user_tree_dn                         = $::os_service_default,
-  $user_filter                          = $::os_service_default,
-  $user_objectclass                     = $::os_service_default,
-  $user_id_attribute                    = $::os_service_default,
-  $user_name_attribute                  = $::os_service_default,
-  $user_description_attribute           = $::os_service_default,
-  $user_mail_attribute                  = $::os_service_default,
-  $user_enabled_attribute               = $::os_service_default,
-  $user_enabled_mask                    = $::os_service_default,
-  $user_enabled_default                 = $::os_service_default,
-  $user_enabled_invert                  = $::os_service_default,
-  $user_attribute_ignore                = $::os_service_default,
-  $user_default_project_id_attribute    = $::os_service_default,
-  $user_pass_attribute                  = $::os_service_default,
-  $user_enabled_emulation               = $::os_service_default,
-  $user_enabled_emulation_dn            = $::os_service_default,
-  $user_additional_attribute_mapping    = $::os_service_default,
-  $group_tree_dn                        = $::os_service_default,
-  $group_filter                         = $::os_service_default,
-  $group_objectclass                    = $::os_service_default,
-  $group_id_attribute                   = $::os_service_default,
-  $group_name_attribute                 = $::os_service_default,
-  $group_member_attribute               = $::os_service_default,
-  $group_members_are_ids                = $::os_service_default,
-  $group_desc_attribute                 = $::os_service_default,
-  $group_attribute_ignore               = $::os_service_default,
-  $group_additional_attribute_mapping   = $::os_service_default,
-  $group_ad_nesting                     = $::os_service_default,
-  $chase_referrals                      = $::os_service_default,
-  $use_tls                              = $::os_service_default,
-  $tls_cacertdir                        = $::os_service_default,
-  $tls_cacertfile                       = $::os_service_default,
-  $tls_req_cert                         = $::os_service_default,
+  $url                                  = $facts['os_service_default'],
+  $user                                 = $facts['os_service_default'],
+  $password                             = $facts['os_service_default'],
+  $suffix                               = $facts['os_service_default'],
+  $query_scope                          = $facts['os_service_default'],
+  $page_size                            = $facts['os_service_default'],
+  $user_tree_dn                         = $facts['os_service_default'],
+  $user_filter                          = $facts['os_service_default'],
+  $user_objectclass                     = $facts['os_service_default'],
+  $user_id_attribute                    = $facts['os_service_default'],
+  $user_name_attribute                  = $facts['os_service_default'],
+  $user_description_attribute           = $facts['os_service_default'],
+  $user_mail_attribute                  = $facts['os_service_default'],
+  $user_enabled_attribute               = $facts['os_service_default'],
+  $user_enabled_mask                    = $facts['os_service_default'],
+  $user_enabled_default                 = $facts['os_service_default'],
+  $user_enabled_invert                  = $facts['os_service_default'],
+  $user_attribute_ignore                = $facts['os_service_default'],
+  $user_default_project_id_attribute    = $facts['os_service_default'],
+  $user_pass_attribute                  = $facts['os_service_default'],
+  $user_enabled_emulation               = $facts['os_service_default'],
+  $user_enabled_emulation_dn            = $facts['os_service_default'],
+  $user_additional_attribute_mapping    = $facts['os_service_default'],
+  $group_tree_dn                        = $facts['os_service_default'],
+  $group_filter                         = $facts['os_service_default'],
+  $group_objectclass                    = $facts['os_service_default'],
+  $group_id_attribute                   = $facts['os_service_default'],
+  $group_name_attribute                 = $facts['os_service_default'],
+  $group_member_attribute               = $facts['os_service_default'],
+  $group_members_are_ids                = $facts['os_service_default'],
+  $group_desc_attribute                 = $facts['os_service_default'],
+  $group_attribute_ignore               = $facts['os_service_default'],
+  $group_additional_attribute_mapping   = $facts['os_service_default'],
+  $group_ad_nesting                     = $facts['os_service_default'],
+  $chase_referrals                      = $facts['os_service_default'],
+  $use_tls                              = $facts['os_service_default'],
+  $tls_cacertdir                        = $facts['os_service_default'],
+  $tls_cacertfile                       = $facts['os_service_default'],
+  $tls_req_cert                         = $facts['os_service_default'],
   $identity_driver                      = 'ldap',
-  $use_pool                             = $::os_service_default,
-  $pool_size                            = $::os_service_default,
-  $pool_retry_max                       = $::os_service_default,
-  $pool_retry_delay                     = $::os_service_default,
-  $pool_connection_timeout              = $::os_service_default,
-  $pool_connection_lifetime             = $::os_service_default,
-  $use_auth_pool                        = $::os_service_default,
-  $auth_pool_size                       = $::os_service_default,
-  $auth_pool_connection_lifetime        = $::os_service_default,
+  $use_pool                             = $facts['os_service_default'],
+  $pool_size                            = $facts['os_service_default'],
+  $pool_retry_max                       = $facts['os_service_default'],
+  $pool_retry_delay                     = $facts['os_service_default'],
+  $pool_connection_timeout              = $facts['os_service_default'],
+  $pool_connection_lifetime             = $facts['os_service_default'],
+  $use_auth_pool                        = $facts['os_service_default'],
+  $auth_pool_size                       = $facts['os_service_default'],
+  $auth_pool_connection_lifetime        = $facts['os_service_default'],
   $package_ensure                       = present,
   $manage_packages                      = true,
   $create_domain_entry                  = false,

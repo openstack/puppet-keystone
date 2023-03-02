@@ -11,7 +11,7 @@
 #
 # [*processes*]
 #   (Optional) Number of processes.
-#   Defaults to $::os_workers.
+#   Defaults to $facts['os_workers'].
 #
 # [*threads*]
 #   (Optional) Number of threads.
@@ -22,14 +22,14 @@
 #   Defaults to 100
 #
 class keystone::wsgi::uwsgi (
-  $processes         = $::os_workers,
+  $processes         = $facts['os_workers'],
   $threads           = 32,
   $listen_queue_size = 100,
 ){
 
   include keystone::deps
 
-  if $::operatingsystem != 'Debian'{
+  if $facts['os']['name'] != 'Debian'{
     warning('This class is only valid for Debian, as other operating systems are not using uwsgi by default.')
   }
 

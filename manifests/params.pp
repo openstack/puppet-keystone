@@ -12,7 +12,7 @@ class keystone::params {
   $keystone_user       = $user
   $keystone_group      = $group
 
-  case $::osfamily {
+  case $facts['os']['family'] {
     'Debian': {
       $package_name                 = 'keystone'
       $service_name                 = 'keystone'
@@ -30,7 +30,7 @@ class keystone::params {
       $python_pysaml2_package_name  = 'python3-pysaml2'
     }
     default: {
-      fail("Unsupported osfamily ${::osfamily}")
+      fail("Unsupported osfamily: ${facts['os']['family']}")
     }
   }
 }
