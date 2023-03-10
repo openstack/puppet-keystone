@@ -14,7 +14,7 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
 
   def self.get_auth_endpoint
     configs = self.request('configuration', 'show')
-    "#{configs['auth.auth_url']}"
+    "#{configs[:'auth.auth_url']}"
   rescue Puppet::Error::OpenstackAuthInputError
     nil
   end
