@@ -54,9 +54,10 @@ describe 'keystone' do
         is_expected.to contain_keystone_config('DEFAULT/notification_opt_out').with_value('<SERVICE DEFAULT>')
 
         is_expected.to contain_oslo__messaging__default('keystone_config').with(
-          :transport_url        => '<SERVICE DEFAULT>',
-          :control_exchange     => '<SERVICE DEFAULT>',
-          :rpc_response_timeout => '<SERVICE DEFAULT>',
+          :executor_thread_pool_size => '<SERVICE DEFAULT>',
+          :transport_url             => '<SERVICE DEFAULT>',
+          :control_exchange          => '<SERVICE DEFAULT>',
+          :rpc_response_timeout      => '<SERVICE DEFAULT>',
         )
 
         is_expected.to contain_oslo__messaging__notifications('keystone_config').with(
@@ -270,15 +271,17 @@ describe 'keystone' do
           :notification_driver        => ['keystone.openstack.common.notifier.rpc_notifier'],
           :notification_topics        => ['notifications'],
           :control_exchange           => 'keystone',
-          :rpc_response_timeout       => 120
+          :rpc_response_timeout       => 120,
+          :executor_thread_pool_size  => 64,
         }
       end
 
       it {
         is_expected.to contain_oslo__messaging__default('keystone_config').with(
-          :transport_url        => 'rabbit://user:pass@host:1234/virt',
-          :control_exchange     => 'keystone',
-          :rpc_response_timeout => 120,
+          :executor_thread_pool_size => 64,
+          :transport_url             => 'rabbit://user:pass@host:1234/virt',
+          :control_exchange          => 'keystone',
+          :rpc_response_timeout      => 120,
         )
 
         is_expected.to contain_oslo__messaging__notifications('keystone_config').with(

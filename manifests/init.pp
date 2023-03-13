@@ -166,6 +166,10 @@
 #   (Optional) Seconds to wait for a response from a call.
 #   Defaults to $facts['os_service_default']
 #
+# [*executor_thread_pool_size*]
+#   (Optional) Size of executor thread pool when executor is threading or eventlet.
+#   Defaults to $facts['os_service_default'].
+#
 # [*public_endpoint*]
 #   (Optional) The base public endpoint URL for keystone that are
 #   advertised to clients (NOTE: this does NOT affect how
@@ -366,6 +370,7 @@ class keystone(
   $notification_format                  = $facts['os_service_default'],
   $notification_opt_out                 = $facts['os_service_default'],
   $control_exchange                     = $facts['os_service_default'],
+  $executor_thread_pool_size            = $facts['os_service_default'],
   $rpc_response_timeout                 = $facts['os_service_default'],
   $service_name                         = $::keystone::params::service_name,
   $max_token_size                       = $facts['os_service_default'],
@@ -490,9 +495,10 @@ class keystone(
   }
 
   oslo::messaging::default { 'keystone_config':
-    transport_url        => $default_transport_url,
-    control_exchange     => $control_exchange,
-    rpc_response_timeout => $rpc_response_timeout,
+    executor_thread_pool_size => $executor_thread_pool_size,
+    transport_url             => $default_transport_url,
+    control_exchange          => $control_exchange,
+    rpc_response_timeout      => $rpc_response_timeout,
   }
 
   oslo::messaging::notifications { 'keystone_config':
