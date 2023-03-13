@@ -1,0 +1,4 @@
+---
+features:
+  - |
+    The new ``keystone::executor_thread_pool_size`` parameter has been added.
