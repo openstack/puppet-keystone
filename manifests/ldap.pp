@@ -304,6 +304,8 @@ class keystone::ldap(
 
   include keystone::deps
 
+  validate_legacy(Boolean, 'validate_bool', $manage_packages)
+
   if $manage_packages {
     ensure_resource('package',  'python-ldappool', {
       ensure => $package_ensure,

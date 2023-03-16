@@ -83,19 +83,19 @@
 #
 # [*configure_endpoint*]
 #   Whether to create the endpoint.
-#   string; optional: default to True
+#   boolean; optional: default to True
 #
 # [*configure_user*]
 #   Whether to create the user.
-#   string; optional: default to True
+#   boolean; optional: default to True
 #
 # [*configure_user_role*]
 #   Whether to create the user role.
-#   string; optional: default to True
+#   boolean; optional: default to True
 #
 # [*configure_service*]
 #   Whether to create the service.
-#   string; optional: default to True
+#   boolean; optional: default to True
 #
 # [*user_domain*]
 #   (Optional) Domain for $auth_name

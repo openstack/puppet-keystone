@@ -302,6 +302,9 @@ define keystone::ldap_backend(
   include keystone::deps
   include keystone::params
 
+  validate_legacy(Boolean, 'validate_bool', $manage_packages)
+  validate_legacy(Boolean, 'validate_bool', $create_domain_entry)
+
   $domain_enabled = getparam(Keystone_config['identity/domain_specific_drivers_enabled'], 'value')
   $domain_dir_enabled = getparam(Keystone_config['identity/domain_config_dir'], 'value')
   $err_msg = "You should add \"using_domain_config => true\" parameter to your Keystone class, \

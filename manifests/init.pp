@@ -402,6 +402,14 @@ class keystone(
   include keystone::logging
   include keystone::policy
 
+  validate_legacy(Boolean, 'validate_bool', $manage_service)
+  validate_legacy(Boolean, 'validate_bool', $enabled)
+  validate_legacy(Boolean, 'validate_bool', $sync_db)
+  validate_legacy(Boolean, 'validate_bool', $enable_fernet_setup)
+  validate_legacy(Boolean, 'validate_bool', $enable_credential_setup)
+  validate_legacy(Boolean, 'validate_bool', $using_domain_config)
+  validate_legacy(Boolean, 'validate_bool', $manage_policyrcd)
+
   if $catalog_type != undef {
     warning('The catalog_type parameter is deprecated. Use the catalog_driver parameter instead.')
     if ! $catalog_driver {

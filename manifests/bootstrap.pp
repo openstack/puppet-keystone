@@ -76,6 +76,8 @@ class keystone::bootstrap (
 
   include keystone::deps
 
+  validate_legacy(Boolean, 'validate_bool', $bootstrap)
+
   $internal_url_real = $internal_url ? {
     undef   => $public_url,
     default => $internal_url

@@ -172,6 +172,8 @@ class keystone::federation::openidc (
   include keystone::deps
   include keystone::params
 
+  validate_legacy(Boolean, 'validate_bool', $openidc_enable_oauth)
+
   if $package_ensure != undef {
     warning('The package_ensure parameter is deprecated and has no effect.')
   }

@@ -268,8 +268,10 @@ define keystone::resource::authtoken(
   $interface                      = $facts['os_service_default'],
 ) {
 
-  include keystone::params
   include keystone::deps
+  include keystone::params
+
+  validate_legacy(Boolean, 'validate_bool', $manage_memcache_package)
 
   if !is_service_default($include_service_catalog) {
     validate_legacy(Boolean, 'validate_bool', $include_service_catalog)
