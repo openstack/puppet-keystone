@@ -61,5 +61,5 @@
     ],
     "source": "https://opendev.org/openstack/puppet-keystone.git",
     "summary": "Puppet module for OpenStack Keystone",
-    "version": "19.4.0"
+    "version": "19.5.0"
 }
