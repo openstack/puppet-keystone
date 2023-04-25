@@ -74,27 +74,37 @@ Apache + Shibboleth SP setups, where a REMOTE_USER env variable is always set, e
     'auth/saml2':   ensure => absent;
   }
 
-  if $facts['os']['family'] == 'Debian' or ($facts['os']['family'] == 'RedHat' and (defined(Yumrepo[$yum_repo_name])) or defined(Package['shibboleth'])) {
-    if $facts['os']['family'] == 'RedHat' {
-      warning('The platform is not officially supported, use at your own risk.  Check manifest documentation for more.')
-      apache::mod { 'shib2':
-        id   => 'mod_shib',
-        path => '/usr/lib64/shibboleth/mod_shib_24.so'
-      }
-    } else {
+  case $facts['os']['family'] {
+    'Debian': {
       class { 'apache::mod::shib': }
-    }
 
-    concat::fragment { 'configure_shibboleth_keystone':
-      target  => "${keystone::wsgi::apache::priority}-keystone_wsgi.conf",
-      content => template('keystone/shibboleth.conf.erb'),
-      order   => $template_order,
+      concat::fragment { 'configure_shibboleth_keystone':
+        target  => "${keystone::wsgi::apache::priority}-keystone_wsgi.conf",
+        content => template('keystone/shibboleth.conf.erb'),
+        order   => $template_order,
+      }
     }
-  } elsif $facts['os']['family'] == 'Redhat' {
-    if !$suppress_warning {
-      warning( 'Can not configure Shibboleth in Apache on RedHat OS.Read the Note on this federation/shibboleth.pp' )
+    'RedHat': {
+      if defined(Yumrepo[$yum_repo_name]) or defined(Package['shibboleth']) {
+        warning('The platform is not officially supported, use at your own risk.  Check manifest documentation for more.')
+        apache::mod { 'shib2':
+          id   => 'mod_shib',
+          path => '/usr/lib64/shibboleth/mod_shib_24.so'
+        }
+
+        concat::fragment { 'configure_shibboleth_keystone':
+          target  => "${keystone::wsgi::apache::priority}-keystone_wsgi.conf",
+          content => template('keystone/shibboleth.conf.erb'),
+          order   => $template_order,
+        }
+      } else {
+        if !$suppress_warning {
+          warning( 'Can not configure Shibboleth in Apache on RedHat OS. Read the Note on this federation/shibboleth.pp' )
+        }
+      }
     }
-  } else {
-    fail('Unsupported platform')
+    default: {
+      fail('Unsupported platform')
+    }
   }
 }
