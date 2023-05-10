@@ -707,7 +707,7 @@ class keystone(
   }
 
   if $using_domain_config {
-    validate_legacy(Stdlib::Absolutepath, 'validate_absolute_path', $domain_config_directory)
+    validate_legacy(Stdlib::Compat::Absolute_path, 'validate_absolute_path', $domain_config_directory)
 
     # Better than ensure resource.  We don't want to conflict with any
     # user definition even if they don't match exactly our parameters.
