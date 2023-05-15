@@ -1,0 +1,8 @@
+---
+upgrade:
+  - |
+    The following parameters have been removed.
+
+    - ``keystone::federation::openidc::package_ensure``
+    - ``keystone::federation::mellon::package_ensure``
+
