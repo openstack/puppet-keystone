@@ -41,11 +41,6 @@ describe 'keystone::federation::identity_provider' do
         :ensure => 'present',
       )}
 
-      it { is_expected.to contain_package('python-pysaml2').with(
-        :ensure => 'present',
-        :name   => platform_params[:python_pysaml2_package_name],
-      )}
-
       it {
         is_expected.to contain_keystone_config('saml/certfile').with_value(params[:certfile])
         is_expected.to contain_keystone_config('saml/keyfile').with_value(params[:keyfile])

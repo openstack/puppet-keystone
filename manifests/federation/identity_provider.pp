@@ -108,12 +108,6 @@ class keystone::federation::identity_provider(
     tag    => 'keystone-support-package',
   }
 
-  package{ 'python-pysaml2':
-    ensure => $package_ensure,
-    name   => $keystone::params::python_pysaml2_package_name,
-    tag    => 'keystone-support-package',
-  }
-
   keystone_config {
     'saml/certfile':                      value => $certfile;
     'saml/keyfile':                       value => $keyfile;

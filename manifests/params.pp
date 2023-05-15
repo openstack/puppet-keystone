@@ -19,7 +19,6 @@ class keystone::params {
       $keystone_wsgi_script_path    = '/usr/lib/cgi-bin/keystone'
       $python_memcache_package_name = 'python3-memcache'
       $python_ldappool_package_name = 'python3-ldappool'
-      $python_pysaml2_package_name  = 'python3-pysaml2'
     }
     'RedHat': {
       $package_name                 = 'openstack-keystone'
@@ -27,7 +26,6 @@ class keystone::params {
       $keystone_wsgi_script_path    = '/var/www/cgi-bin/keystone'
       $python_memcache_package_name = 'python3-memcached'
       $python_ldappool_package_name = 'python3-ldappool'
-      $python_pysaml2_package_name  = 'python3-pysaml2'
     }
     default: {
       fail("Unsupported osfamily: ${facts['os']['family']}")
