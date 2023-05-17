@@ -709,35 +709,21 @@ class keystone(
   if $using_domain_config {
     validate_legacy(Stdlib::Compat::Absolute_path, 'validate_absolute_path', $domain_config_directory)
 
-    # Better than ensure resource.  We don't want to conflict with any
-    # user definition even if they don't match exactly our parameters.
-    # The error catching mechanism in the provider will remind them if
-    # they did something silly, like defining a file rather than a
-    # directory.  For the permission it's their choice.
-    if (!defined(File[$domain_config_directory])) {
-      file { $domain_config_directory:
-        ensure  => directory,
-        owner   => $keystone_user,
-        group   => $keystone_group,
-        mode    => '0750',
-        require => Anchor['keystone::install::end'],
-      }
-      if $manage_service {
-        File[$domain_config_directory] ~> Service[$service_name]
-      }
+    file { $domain_config_directory:
+      ensure  => directory,
+      owner   => $keystone_user,
+      group   => $keystone_group,
+      mode    => '0750',
+      require => Anchor['keystone::install::end'],
     }
-    # Here we want the creation to fail if the user has created those
-    # resources with different values. That means that the user
-    # wrongly uses using_domain_config parameter.
-    ensure_resource(
-      'keystone_config',
-      'identity/domain_specific_drivers_enabled',
-      {'value' => true}
-    )
-    ensure_resource(
-      'keystone_config',
-      'identity/domain_config_dir',
-      {'value' => $domain_config_directory}
-    )
+
+    if $manage_service {
+      File[$domain_config_directory] ~> Service[$service_name]
+    }
+
+    keystone_config {
+      'identity/domain_specific_drivers_enabled': value => true;
+      'identity/domain_config_dir':               value => $domain_config_directory;
+    }
   }
 }
