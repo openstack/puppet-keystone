@@ -81,6 +81,9 @@ describe 'keystone' do
           :heartbeat_in_pthread        => '<SERVICE DEFAULT>',
           :amqp_durable_queues         => '<SERVICE DEFAULT>',
         )
+
+        is_expected.to contain_keystone_config('identity/domain_specific_drivers_enabled').with_ensure('absent')
+        is_expected.to contain_keystone_config('identity/domain_config_dir').with_ensure('absent')
       end
 
       it { is_expected.to contain_service('keystone').with(

@@ -725,5 +725,10 @@ class keystone(
       'identity/domain_specific_drivers_enabled': value => true;
       'identity/domain_config_dir':               value => $domain_config_directory;
     }
+  } else {
+    keystone_config {
+      'identity/domain_specific_drivers_enabled': ensure => absent;
+      'identity/domain_config_dir':               ensure => absent;
+    }
   }
 }
