@@ -128,13 +128,6 @@
 #  The value 999 corresponds to the order for concat::fragment "${name}-file_footer".
 #  (Optional) Defaults to 331.
 #
-# DEPRECATED PARAMETERS
-#
-# [*package_ensure*]
-#  (Optional) Desired ensure state of packages.
-#  accepts latest or specific versions.
-#  Defaults to undef,
-#
 class keystone::federation::openidc (
   $keystone_url,
   $methods,
@@ -162,8 +155,6 @@ class keystone::federation::openidc (
   $redis_password                 = undef,
   $remote_id_attribute            = undef,
   $template_order                 = 331,
-  # DEPRECATED PARAMETERS
-  $package_ensure                 = undef,
 ) {
 
   include apache
@@ -173,10 +164,6 @@ class keystone::federation::openidc (
   include keystone::params
 
   validate_legacy(Boolean, 'validate_bool', $openidc_enable_oauth)
-
-  if $package_ensure != undef {
-    warning('The package_ensure parameter is deprecated and has no effect.')
-  }
 
   if !($openidc_verify_method in ['introspection', 'jwks']) {
     fail('Unsupported token verification method.' +
