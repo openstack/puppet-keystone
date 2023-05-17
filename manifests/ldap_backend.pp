@@ -305,25 +305,12 @@ define keystone::ldap_backend(
   validate_legacy(Boolean, 'validate_bool', $manage_packages)
   validate_legacy(Boolean, 'validate_bool', $create_domain_entry)
 
-  $domain_enabled = getparam(Keystone_config['identity/domain_specific_drivers_enabled'], 'value')
-  $domain_dir_enabled = getparam(Keystone_config['identity/domain_config_dir'], 'value')
-  $err_msg = "You should add \"using_domain_config => true\" parameter to your Keystone class, \
-got \"${domain_enabled}\" for identity/domain_specific_drivers_enabled \
-and \"${domain_dir_enabled}\" for identity/domain_config_dir"
-
-  if(bool2num($domain_enabled) == 0) {
-    fail($err_msg)
+  if !defined(Class[keystone]) {
+    fail('The keystone class should be included before this class')
   }
 
-  validate_legacy(Pattern[/^\/.+/], 'validate_re', $domain_dir_enabled, [$err_msg])
-
-  if (!defined(File[$domain_dir_enabled])) {
-    ensure_resource('file', $domain_dir_enabled, {
-      ensure  => directory,
-      owner   => $::keystone::params::user,
-      group   => $::keystone::params::group,
-      mode    => '0750',
-    })
+  if ! $::keystone::using_domain_config {
+    fail('Domain specific drivers are not enabled. Set keystone::using_domain_config to true.')
   }
 
   $domain = $name

@@ -7,14 +7,9 @@ describe 'keystone::ldap_backend' do
       let(:title) { 'Default' }
       let(:pre_condition) do
         <<-EOM
-        exec { 'restart_keystone':
-          path        => ['/usr/sbin', '/usr/bin', '/sbin', '/bin/'],
-          command     => "service ${service_name_real} restart",
-          refreshonly => true,
+        class { 'keystone':
+          using_domain_config => true
         }
-        keystone_config {'identity/domain_specific_drivers_enabled': value => true}
-        keystone_config {'identity/domain_config_dir': value => '/etc/keystone/domains'}
-        file {'/etc/keystone/keystone.conf': ensure => present }
         EOM
       end
 
@@ -170,9 +165,9 @@ describe 'keystone::ldap_backend' do
       end
       let(:pre_condition) do
         <<-EOM
-        keystone_config {'identity/domain_specific_drivers_enabled': value => true}
-        keystone_config {'identity/domain_config_dir': value => '/etc/keystone/domains'}
-        file {'/etc/keystone/keystone.conf': ensure => present }
+        class { 'keystone':
+          using_domain_config => true
+        }
         EOM
       end
       it 'should use the domain from the title' do
@@ -183,22 +178,10 @@ describe 'keystone::ldap_backend' do
 
     context 'checks' do
       let(:title) { 'domain' }
-      context 'Missing identity/domain_specific_drivers_enabled' do
+      context 'with domain specific drivers disabled' do
         let(:pre_condition) do
         <<-EOM
-        keystone_config {'identity/domain_config_dir': value => '/etc/keystone/domains'}
-        file {'/etc/keystone/keystone.conf': ensure => present }
-        EOM
-        end
-
-        it { should raise_error(Puppet::Error) }
-      end
-
-      context 'Missing identity/domain_config_dir' do
-        let(:pre_condition) do
-        <<-EOM
-        keystone_config {'identity/domain_specific_drivers_enabled': value => true}
-        file {'/etc/keystone/keystone.conf': ensure => present }
+        class { 'keystone': }
         EOM
         end
 
