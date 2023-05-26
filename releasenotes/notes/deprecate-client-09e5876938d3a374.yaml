@@ -1,0 +1,10 @@
+---
+deprecations:
+  - |
+    The ``keystone::client_package_ensure`` parameter has been deprecated and
+    has no effect.
+
+  - |
+    The ``keystone::client`` class has been deprecated, because
+    the python-keystoneclient package no longer provides CLI. Use
+    the ``openstacklib::openstackclient`` class instead.

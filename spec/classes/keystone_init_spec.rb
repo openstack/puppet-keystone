@@ -15,9 +15,7 @@ describe 'keystone' do
         :tag    => ['openstack', 'keystone-package'],
       ) }
 
-      it { is_expected.to contain_class('keystone::client').with(
-        'ensure' => 'present'
-      ) }
+      it { is_expected.to contain_class('openstacklib::openstackclient') }
 
       it 'should synchronize the db if $sync_db is true' do
         is_expected.to contain_exec('keystone-manage db_sync').with(

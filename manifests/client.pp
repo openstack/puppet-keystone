@@ -19,6 +19,9 @@ class keystone::client (
 
   include keystone::deps
 
+  warning("The keystone::client class has been deprecated and will be removed \
+in a future release.")
+
   package { 'python-keystoneclient':
     ensure => $ensure,
     name   => $client_package_name,

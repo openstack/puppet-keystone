@@ -8,11 +8,6 @@
 #   accepts latest or specific versions.
 #   Defaults to present.
 #
-# [*client_package_ensure*]
-#   (Optional) Desired ensure state of the client package.
-#   accepts latest or specific versions.
-#   Defaults to present.
-#
 # [*catalog_driver*]
 #   (Optional) Catalog driver used by Keystone to store endpoints and services.
 #   Defaults to false.
@@ -329,6 +324,11 @@
 #   This accepts sql or template.
 #   Defaults to undef.
 #
+# [*client_package_ensure*]
+#   (Optional) Desired ensure state of the client package.
+#   accepts latest or specific versions.
+#   Defaults to present.
+#
 # == Authors
 #
 #   Dan Bode dan@puppetlabs.com
@@ -339,7 +339,6 @@
 #
 class keystone(
   $package_ensure                       = 'present',
-  $client_package_ensure                = 'present',
   $catalog_driver                       = false,
   $catalog_template_file                = '/etc/keystone/default_catalog.templates',
   $token_provider                       = 'fernet',
@@ -396,6 +395,7 @@ class keystone(
   $amqp_durable_queues                  = $facts['os_service_default'],
   # DEPRECATED PARAMETERS
   $catalog_type                         = undef,
+  $client_package_ensure                = undef,
 ) inherits keystone::params {
 
   include keystone::deps
@@ -415,6 +415,10 @@ class keystone(
     if ! $catalog_driver {
       validate_legacy(Enum['template', 'sql'], 'validate_re', $catalog_type)
     }
+  }
+
+  if $client_package_ensure != undef {
+    warning('The client_package_ensure parameter is deprecated and has no effect.')
   }
 
   if $manage_policyrcd {
@@ -437,13 +441,7 @@ class keystone(
     name   => $::keystone::params::package_name,
     tag    => ['openstack', 'keystone-package'],
   }
-  if $client_package_ensure == 'present' {
-    include keystone::client
-  } else {
-    class { 'keystone::client':
-      ensure => $client_package_ensure,
-    }
-  }
+  include openstacklib::openstackclient
 
   resources { 'keystone_config':
     purge  => $purge_config,
