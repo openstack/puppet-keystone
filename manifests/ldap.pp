@@ -283,7 +283,8 @@ class keystone::ldap(
   $group_additional_attribute_mapping   = $facts['os_service_default'],
   $chase_referrals                      = $facts['os_service_default'],
   $use_tls                              = $facts['os_service_default'],
-  $tls_cacertdir                        = $facts['os_service_default'],
+  Variant[Openstacklib::ServiceDefault, Stdlib::Absolutepath] $tls_cacertdir
+    = $facts['os_service_default'],
   $tls_cacertfile                       = $facts['os_service_default'],
   $tls_req_cert                         = $facts['os_service_default'],
   $identity_driver                      = $facts['os_service_default'],
@@ -299,12 +300,10 @@ class keystone::ldap(
   $auth_pool_size                       = $facts['os_service_default'],
   $auth_pool_connection_lifetime        = $facts['os_service_default'],
   $package_ensure                       = present,
-  $manage_packages                      = true,
+  Boolean $manage_packages              = true,
 ) inherits keystone::params {
 
   include keystone::deps
-
-  validate_legacy(Boolean, 'validate_bool', $manage_packages)
 
   if $manage_packages {
     ensure_resource('package',  'python-ldappool', {

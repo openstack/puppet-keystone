@@ -34,7 +34,7 @@
 #   Defaults to 'utf8_general_ci'
 #
 class keystone::db::mysql(
-  $password,
+  String[1] $password,
   $dbname        = 'keystone',
   $user          = 'keystone',
   $host          = '127.0.0.1',
@@ -44,8 +44,6 @@ class keystone::db::mysql(
 ) {
 
   include keystone::deps
-
-  validate_legacy(String, 'validate_string', $password)
 
   ::openstacklib::db::mysql { 'keystone':
     user          => $user,

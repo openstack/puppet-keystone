@@ -144,7 +144,7 @@ class keystone::federation::openidc (
   $openidc_cache_dir              = undef,
   $openidc_cache_clean_interval   = undef,
   $openidc_claim_delimiter        = undef,
-  $openidc_enable_oauth           = false,
+  Boolean $openidc_enable_oauth   = false,
   $openidc_introspection_endpoint = undef,
   $openidc_verify_jwks_uri        = undef,
   $openidc_verify_method          = 'introspection',
@@ -162,8 +162,6 @@ class keystone::federation::openidc (
 
   include keystone::deps
   include keystone::params
-
-  validate_legacy(Boolean, 'validate_bool', $openidc_enable_oauth)
 
   if !($openidc_verify_method in ['introspection', 'jwks']) {
     fail('Unsupported token verification method.' +

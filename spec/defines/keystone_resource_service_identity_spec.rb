@@ -118,9 +118,9 @@ describe 'keystone::resource::service_identity' do
 
     context 'when trying to create an endpoint without service_type (will be dropped in Mitaka)' do
       let :params do
+        required_params.delete(:service_type)
         required_params.merge(
           :configure_service => false,
-          :service_type      => false,
         )
       end
       it { is_expected.to contain_keystone_endpoint("RegionOne/#{title}").with(

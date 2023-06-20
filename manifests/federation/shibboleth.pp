@@ -45,9 +45,9 @@
 #
 class keystone::federation::shibboleth (
   $methods,
-  $suppress_warning = false,
-  $template_order   = 331,
-  $yum_repo_name    = 'shibboleth',
+  Boolean $suppress_warning = false,
+  $template_order           = 331,
+  $yum_repo_name            = 'shibboleth',
 ) {
 
   include apache
@@ -66,8 +66,6 @@ Apache + Shibboleth SP setups, where a REMOTE_USER env variable is always set, e
   if !('saml2' in $methods ) {
     fail('Methods should contain saml2 as one of the auth methods.')
   }
-
-  validate_legacy(Boolean, 'validate_bool', $suppress_warning)
 
   keystone_config {
     'auth/methods': value  => join(any2array($methods),',');

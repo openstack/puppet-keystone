@@ -295,15 +295,12 @@ define keystone::ldap_backend(
   $auth_pool_size                       = $facts['os_service_default'],
   $auth_pool_connection_lifetime        = $facts['os_service_default'],
   $package_ensure                       = present,
-  $manage_packages                      = true,
-  $create_domain_entry                  = false,
+  Boolean $manage_packages              = true,
+  Boolean $create_domain_entry          = false,
 ) {
 
   include keystone::deps
   include keystone::params
-
-  validate_legacy(Boolean, 'validate_bool', $manage_packages)
-  validate_legacy(Boolean, 'validate_bool', $create_domain_entry)
 
   if !defined(Class[keystone]) {
     fail('The keystone class should be included before this class')

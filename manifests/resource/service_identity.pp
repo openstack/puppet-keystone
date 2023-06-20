@@ -112,39 +112,31 @@
 #   Defaults to undef
 #
 define keystone::resource::service_identity(
-  $ensure                = 'present',
-  $admin_url             = false,
-  $internal_url          = false,
-  $password              = false,
-  $public_url            = false,
-  $service_type          = false,
-  $auth_name             = $name,
-  $configure_endpoint    = true,
-  $configure_user        = true,
-  $configure_user_role   = true,
-  $configure_service     = true,
-  $email                 = "${name}@localhost",
-  $region                = 'RegionOne',
-  $service_name          = undef,
-  $service_description   = "${name} service",
-  $tenant                = 'services',
-  $roles                 = ['admin'],
-  $system_scope          = 'all',
-  $system_roles          = [],
-  $user_domain           = undef,
-  $project_domain        = undef,
-  $default_domain        = undef,
+  Enum['present', 'absent'] $ensure   = 'present',
+  Optional[String] $admin_url         = undef,
+  Optional[String] $internal_url      = undef,
+  Optional[String] $password          = undef,
+  Optional[String] $public_url        = undef,
+  Optional[String] $service_type      = undef,
+  String[1] $auth_name                = $name,
+  Boolean $configure_endpoint         = true,
+  Boolean $configure_user             = true,
+  Boolean $configure_user_role        = true,
+  Boolean $configure_service          = true,
+  String $email                       = "${name}@localhost",
+  String[1] $region                   = 'RegionOne',
+  Optional[String[1]] $service_name   = undef,
+  String $service_description         = "${name} service",
+  String[1] $tenant                   = 'services',
+  Array[String[1]] $roles             = ['admin'],
+  String[1] $system_scope             = 'all',
+  Array[String[1]] $system_roles      = [],
+  Optional[String[1]] $user_domain    = undef,
+  Optional[String[1]] $project_domain = undef,
+  Optional[String[1]] $default_domain = undef,
 ) {
 
   include keystone::deps
-
-  validate_legacy(Enum['present', 'absent'], 'validate_re', $ensure,
-    [['^present$', '^absent$'], 'Valid values for ensure parameter are present or absent'])
-
-  validate_legacy(Boolean, 'validate_bool', $configure_endpoint)
-  validate_legacy(Boolean, 'validate_bool', $configure_user)
-  validate_legacy(Boolean, 'validate_bool', $configure_user_role)
-  validate_legacy(Boolean, 'validate_bool', $configure_service)
 
   if $service_name == undef {
     $service_name_real = $auth_name
@@ -159,12 +151,13 @@ define keystone::resource::service_identity(
   }
 
   if $configure_user {
-    validate_legacy(String, 'validate_string', $password)
-    validate_legacy(String, 'validate_string', $auth_name)
-    validate_legacy(String, 'validate_string', $email)
+    ['password', 'auth_name', 'email'].each |String $userprop| {
+      if getvar($userprop) == undef {
+        fail("The ${userprop} parameter is required when configuring a user.")
+      }
+    }
 
     if $user_domain_real {
-      validate_legacy(String, 'validate_string', $user_domain_real)
       # We have to use ensure_resource here and hope for the best, because we have
       # no way to know if the $user_domain is the same domain passed as the
       # $default_domain parameter to class keystone.
@@ -173,23 +166,18 @@ define keystone::resource::service_identity(
         'enabled' => true,
       })
     }
+
     ensure_resource('keystone_user', $auth_name, {
-      'ensure'                => $ensure,
-      'enabled'               => true,
-      'password'              => $password,
-      'email'                 => $email,
-      'domain'                => $user_domain_real,
+      'ensure'   => $ensure,
+      'enabled'  => true,
+      'password' => $password,
+      'email'    => $email,
+      'domain'   => $user_domain_real,
     })
-    if ! $password {
-      warning("No password had been set for ${auth_name} user.")
-    }
+
   }
 
   if $configure_user_role {
-    validate_legacy(String, 'validate_string', $tenant)
-    validate_legacy(String, 'validate_string', $system_scope)
-    validate_legacy(Array, 'validate_array', $roles)
-    validate_legacy(Array, 'validate_array', $system_roles)
 
     if $ensure == 'present' {
       # NOTE(jaosorior): We only handle ensure 'present' here, since deleting a
@@ -199,6 +187,7 @@ define keystone::resource::service_identity(
       ensure_resource('keystone_role', $roles, { 'ensure' => 'present' })
       ensure_resource('keystone_role', $system_roles, { 'ensure' => 'present' })
     }
+
     unless empty($roles) {
       ensure_resource('keystone_user_role', "${auth_name}@${tenant}", {
         'ensure' => $ensure,

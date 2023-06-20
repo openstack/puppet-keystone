@@ -81,7 +81,7 @@
 class keystone::federation::identity_provider(
   $idp_entity_id,
   $idp_sso_endpoint,
-  $idp_metadata_path,
+  Stdlib::Absolutepath $idp_metadata_path,
   $certfile                      = $::keystone::ssl_ca_certs,
   $keyfile                       = $::keystone::ssl_ca_key,
   $user                          = $::keystone::params::user,

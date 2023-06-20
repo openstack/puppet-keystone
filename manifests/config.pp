@@ -21,12 +21,10 @@
 #   or Puppet catalog compilation will fail with duplicate resources.
 #
 class keystone::config (
-  $keystone_config = {},
+  Hash $keystone_config = {},
 ) {
 
   include keystone::deps
-
-  validate_legacy(Hash, 'validate_hash', $keystone_config)
 
   create_resources('keystone_config', $keystone_config)
 }
