@@ -1,0 +1,5 @@
+---
+upgrade:
+  - |
+    The ``keystone::catalog_type`` parameter has been removed. Use
+    the ``catalog_driver`` parameter instead.

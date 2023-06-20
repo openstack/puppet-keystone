@@ -10,7 +10,7 @@
 #
 # [*catalog_driver*]
 #   (Optional) Catalog driver used by Keystone to store endpoints and services.
-#   Defaults to false.
+#   Defaults to $facts['os_service_default'].
 #
 # [*catalog_template_file*]
 #   (Optional) Path to the catalog used if 'templated' catalog driver is used.
@@ -319,11 +319,6 @@
 #
 # DEPRECATED PARAMETERS
 #
-# [*catalog_type*]
-#   (Optional) Type of catalog that keystone uses to store endpoints, services.
-#   This accepts sql or template.
-#   Defaults to undef.
-#
 # [*client_package_ensure*]
 #   (Optional) Desired ensure state of the client package.
 #   accepts latest or specific versions.
@@ -339,7 +334,7 @@
 #
 class keystone(
   $package_ensure                       = 'present',
-  $catalog_driver                       = false,
+  $catalog_driver                       = $facts['os_service_default'],
   $catalog_template_file                = '/etc/keystone/default_catalog.templates',
   $token_provider                       = 'fernet',
   $token_expiration                     = 3600,
@@ -394,7 +389,6 @@ class keystone(
   $purge_config                         = false,
   $amqp_durable_queues                  = $facts['os_service_default'],
   # DEPRECATED PARAMETERS
-  $catalog_type                         = undef,
   $client_package_ensure                = undef,
 ) inherits keystone::params {
 
@@ -409,13 +403,6 @@ class keystone(
   validate_legacy(Boolean, 'validate_bool', $enable_credential_setup)
   validate_legacy(Boolean, 'validate_bool', $using_domain_config)
   validate_legacy(Boolean, 'validate_bool', $manage_policyrcd)
-
-  if $catalog_type != undef {
-    warning('The catalog_type parameter is deprecated. Use the catalog_driver parameter instead.')
-    if ! $catalog_driver {
-      validate_legacy(Enum['template', 'sql'], 'validate_re', $catalog_type)
-    }
-  }
 
   if $client_package_ensure != undef {
     warning('The client_package_ensure parameter is deprecated and has no effect.')
@@ -474,19 +461,8 @@ class keystone(
     max_request_body_size        => $max_request_body_size,
   }
 
-  # configure based on the catalog backend
-  if $catalog_driver {
-    $catalog_driver_real = $catalog_driver
-  }
-  elsif ($catalog_type == 'template') {
-    $catalog_driver_real = 'templated'
-  }
-  else {
-    $catalog_driver_real = 'sql'
-  }
-
   keystone_config {
-    'catalog/driver':        value => $catalog_driver_real;
+    'catalog/driver':        value => $catalog_driver;
     'catalog/template_file': value => $catalog_template_file;
   }
 

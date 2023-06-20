@@ -44,7 +44,7 @@ describe 'keystone' do
           :max_request_body_size        => '<SERVICE DEFAULT>',
         )
 
-        is_expected.to contain_keystone_config('catalog/driver').with_value('sql')
+        is_expected.to contain_keystone_config('catalog/driver').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('catalog/template_file').with_value('/etc/keystone/default_catalog.templates')
         is_expected.to contain_keystone_config('token/provider').with_value('fernet')
         is_expected.to contain_keystone_config('DEFAULT/max_token_size').with_value('<SERVICE DEFAULT>')
@@ -210,14 +210,6 @@ describe 'keystone' do
       end
 
       it { is_expected.to_not contain_service('keystone') }
-    end
-
-    context 'with invalid catalog_type' do
-      let :params do
-        { :catalog_type => 'invalid' }
-      end
-
-      it { should raise_error(Puppet::Error) }
     end
 
     context 'when sync_db is set to false' do
