@@ -116,19 +116,15 @@ describe 'keystone::resource::service_identity' do
       )}
     end
 
-    context 'when trying to create an endpoint without service_type (will be dropped in Mitaka)' do
+    context 'when trying to create an endpoint without service_type' do
       let :params do
         required_params.delete(:service_type)
         required_params.merge(
           :configure_service => false,
         )
       end
-      it { is_expected.to contain_keystone_endpoint("RegionOne/#{title}").with(
-        :ensure       => 'present',
-        :public_url   => 'http://7.7.7.7:9696',
-        :internal_url => 'http://10.0.0.1:9696',
-        :admin_url    => 'http://192.168.0.1:9696',
-      )}
+
+      it { is_expected.to raise_error(Puppet::Error) }
     end
 
     context 'when trying to create a service without service_type' do

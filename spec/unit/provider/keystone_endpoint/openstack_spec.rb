@@ -19,7 +19,8 @@ describe Puppet::Type.type(:keystone_endpoint).provider(:openstack) do
         :ensure       => 'present',
         :public_url   => 'http://127.0.0.1:5000',
         :internal_url => 'http://127.0.0.1:5001',
-        :admin_url    => 'http://127.0.0.1:5002'
+        :admin_url    => 'http://127.0.0.1:5002',
+        :type         => 'type_one',
       }
     end
 
@@ -66,25 +67,8 @@ region="region"
 "service_id1","endpoint","type_one"
 ')
       end
-      context 'without the type' do
-        it 'creates an endpoint' do
-          provider.create
-          expect(provider.exists?).to be_truthy
-          expect(provider.id).to eq('endpoint1_id,endpoint2_id,endpoint3_id')
-        end
-      end
-      context 'with the type' do
-        let(:endpoint_attrs) do
-          {
-            :title        => 'region/endpoint',
-            :ensure       => 'present',
-            :public_url   => 'http://127.0.0.1:5000',
-            :internal_url => 'http://127.0.0.1:5001',
-            :admin_url    => 'http://127.0.0.1:5002',
-            :type         => 'type_one'
-          }
-        end
 
+      context 'with required parameters' do
         it 'creates an endpoint' do
           provider.create
           expect(provider.exists?).to be_truthy
@@ -160,55 +144,70 @@ region="region"
 ')
           instances = described_class.instances
           expect(instances).to have_array_of_instances_hash([
-            {:name=>"RegionOne/keystone::identity",
+            {
+              :name=>"RegionOne/keystone::identity",
               :ensure=>:present,
               :id=>"endpoint1_id,endpoint2_id,endpoint3_id",
               :region=>"RegionOne",
               :admin_url=>"http://One-127.0.0.1:5002",
               :internal_url=>"https://One-127.0.0.1:5001",
-              :public_url=>"https://One-127.0.0.1:5000"},
-            {:name=>"RegionTwo/keystone::identity",
+              :public_url=>"https://One-127.0.0.1:5000"
+            },
+            {
+              :name=>"RegionTwo/keystone::identity",
               :ensure=>:present,
               :id=>"endpoint4_id,endpoint5_id,endpoint6_id",
               :region=>"RegionTwo",
               :admin_url=>"http://Two-127.0.0.1:5002",
               :internal_url=>"https://Two-127.0.0.1:5001",
-              :public_url=>"https://Two-127.0.0.1:5000"},
-            {:name=>"RegionThree/keystone::identity",
+              :public_url=>"https://Two-127.0.0.1:5000"
+            },
+            {
+              :name=>"RegionThree/keystone::identity",
               :ensure=>:present,
               :id=>"endpoint7_id,endpoint8_id,endpoint9_id",
               :region=>"RegionThree",
               :admin_url=>"http://Three-127.0.0.1:5002",
               :internal_url=>"https://Three-127.0.0.1:5001",
-              :public_url=>"https://Three-127.0.0.1:5000"},
-            {:name=>"RegionFour/keystone::identity",
+              :public_url=>"https://Three-127.0.0.1:5000"
+            },
+            {
+              :name=>"RegionFour/keystone::identity",
               :ensure=>:present,
               :id=>"endpoint10_id,endpoint11_id,endpoint12_id",
               :region=>"RegionFour",
               :admin_url=>"http://Four-127.0.0.1:5002",
               :internal_url=>"https://Four-127.0.0.1:5001",
-              :public_url=>"https://Four-127.0.0.1:5000"},
-            {:name=>"RegionFive/keystone::identity",
+              :public_url=>"https://Four-127.0.0.1:5000"
+            },
+            {
+              :name=>"RegionFive/keystone::identity",
               :ensure=>:present,
               :id=>"endpoint13_id,endpoint14_id,endpoint15_id",
               :region=>"RegionFive",
               :admin_url=>"http://Five-127.0.0.1:5002",
               :internal_url=>"https://Five-127.0.0.1:5001",
-              :public_url=>"https://Five-127.0.0.1:5000"},
-            {:name=>"RegionSix/keystone::identity",
+              :public_url=>"https://Five-127.0.0.1:5000"
+            },
+            {
+              :name=>"RegionSix/keystone::identity",
               :ensure=>:present,
               :id=>"endpoint16_id,endpoint17_id,endpoint18_id",
               :region=>"RegionSix",
               :admin_url=>"http://Six-127.0.0.1:5002",
               :internal_url=>"https://Six-127.0.0.1:5001",
-              :public_url=>"https://Six-127.0.0.1:5000"},
-            {:name=>"RegionSeven/keystone::identity",
+              :public_url=>"https://Six-127.0.0.1:5000"
+            },
+            {
+              :name=>"RegionSeven/keystone::identity",
               :ensure=>:present,
               :id=>"endpoint19_id,endpoint20_id,endpoint21_id",
               :region=>"RegionSeven",
               :admin_url=>"http://Seven-127.0.0.1:5002",
               :internal_url=>"https://Seven-127.0.0.1:5001",
-              :public_url=>"https://Seven-127.0.0.1:5000"}])
+              :public_url=>"https://Seven-127.0.0.1:5000"
+            }
+          ])
         end
       end
     end
@@ -226,67 +225,21 @@ region="region"
         end
         context '#fq resource in title' do
           let(:resources) do
-            [Puppet::Type.type(:keystone_endpoint).new(:title => 'RegionOne/keystone::identity', :ensure => :present),
-              Puppet::Type.type(:keystone_endpoint).new(:title => 'RegionOne/keystone::identityv3', :ensure => :present)]
+            [
+              Puppet::Type.type(:keystone_endpoint).new(:title => 'RegionOne/keystone::identity', :ensure => :present),
+              Puppet::Type.type(:keystone_endpoint).new(:title => 'RegionOne/keystone::identityv3', :ensure => :present)
+            ]
           end
           include_examples 'prefetch the resources'
         end
         context '#fq resource' do
           let(:resources) do
-            [Puppet::Type.type(:keystone_endpoint).new(:title => 'keystone', :region => 'RegionOne', :type => 'identity', :ensure => :present),
-              Puppet::Type.type(:keystone_endpoint).new(:title => 'RegionOne/keystone::identityv3', :ensure => :present)]
+            [
+              Puppet::Type.type(:keystone_endpoint).new(:title => 'keystone', :region => 'RegionOne', :type => 'identity', :ensure => :present),
+              Puppet::Type.type(:keystone_endpoint).new(:title => 'keystone', :region => 'RegionOne', :type => 'identityv3', :ensure => :present)
+            ]
           end
           include_examples 'prefetch the resources'
-        end
-        context '#nfq resource in title matching existing endpoint' do
-          let(:resources) do
-            [Puppet::Type.type(:keystone_endpoint).new(:title => 'RegionOne/keystone', :ensure => :present),
-              Puppet::Type.type(:keystone_endpoint).new(:title => 'RegionOne/keystone::identityv3', :ensure => :present)]
-          end
-          include_examples 'prefetch the resources'
-        end
-        context '#nfq resource matching existing endpoint' do
-          let(:resources) do
-            [Puppet::Type.type(:keystone_endpoint).new(:title => 'keystone', :region => 'RegionOne', :ensure => :present),
-              Puppet::Type.type(:keystone_endpoint).new(:title => 'RegionOne/keystone::identityv3', :ensure => :present)]
-          end
-          include_examples 'prefetch the resources'
-        end
-      end
-
-      context 'not working' do
-        context 'too many type' do
-          before(:each) do
-            expect(described_class).to receive(:openstack)
-              .with('endpoint', 'list', '--quiet', '--format', 'csv', [])
-              .and_return('"ID","Region","Service Name","Service Type","Enabled","Interface","URL"
-"endpoint1_id","RegionOne","keystone","identity",True,"admin","http://127.0.0.1:5002"
-"endpoint2_id","RegionOne","keystone","identity",True,"internal","https://127.0.0.1:5001"
-"endpoint3_id","RegionOne","keystone","identity",True,"public","https://127.0.0.1:5000"
-"endpoint4_id","RegionOne","keystone","identityv3",True,"admin","http://127.0.0.1:5002"
-"endpoint5_id","RegionOne","keystone","identityv3",True,"internal","https://127.0.0.1:5001"
-"endpoint6_id","RegionOne","keystone","identityv3",True,"public","https://127.0.0.1:5000"
-')
-          end
-          it "should fail as it's not possible to get the right type here" do
-            existing = Puppet::Type.type(:keystone_endpoint)
-              .new(:title => 'RegionOne/keystone', :ensure => :present)
-            resource = double
-            r = []
-            r << existing
-
-            catalog = Puppet::Resource::Catalog.new
-            r.each { |res| catalog.add_resource(res) }
-            m_value = double
-            m_first = double
-            expect(resource).to receive(:values).and_return(m_value)
-            expect(m_value).to receive(:first).and_return(m_first)
-            expect(m_first).to receive(:catalog).and_return(catalog)
-            expect(m_first).to receive(:class).and_return(described_class.resource_type)
-            expect { described_class.prefetch(resource) }
-              .to raise_error(Puppet::Error,
-                              /endpoint matching RegionOne\/keystone: identity identityv3/)
-          end
         end
       end
 
@@ -299,15 +252,10 @@ region="region"
 "endpoint2_id","RegionOne","keystone","identity",True,"internal","https://127.0.0.1:5001"
 "endpoint3_id","RegionOne","keystone","identity",True,"public","https://127.0.0.1:5000"
 ')
-          expect(described_class).to receive(:openstack)
-            .with('service', 'list', '--quiet', '--format', 'csv', [])
-            .and_return('"ID","Name","Type"
-"service1_id","keystonev3","identity"
-')
         end
         it 'should be successful' do
           existing = Puppet::Type.type(:keystone_endpoint)
-            .new(:title => 'RegionOne/keystonev3', :ensure => :present)
+            .new(:title => 'RegionOne/keystonev3::identity', :ensure => :present)
           resource = double
           r = []
           r << existing

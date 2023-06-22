@@ -36,7 +36,6 @@ Puppet::Type.type(:keystone_endpoint).provide(
     name   = resource[:name]
     region = resource[:region]
     type   = resource[:type]
-    type   = self.class.type_from_service(name) unless set?(:type)
     @property_hash[:type] = type
     ids = []
     s_id = service_id
@@ -200,54 +199,8 @@ Puppet::Type.type(:keystone_endpoint).provide(
     @services = value
   end
 
-  def self.endpoint_from_region_name(region, name)
-    endpoints.find_all { |e| e[:region] == region && e[:service_name] == name }
-      .map { |e| e[:service_type] }.uniq
-  end
-
-  def self.type_from_service(name)
-    types = services.find_all { |s| s[:name] == name }.map { |e| e[:type] }.uniq
-    if types.count == 1
-      types[0]
-    else
-      # We don't fail here as it can happen during a ensure => absent.
-      PuppetX::Keystone::CompositeNamevar::Unset
-    end
-  end
-
-  def self.service_type(services, region, name)
-    nbr_of_services = services.count
-    err_msg         = ["endpoint matching #{region}/#{name}:"]
-    type            = nil
-
-    case
-    when nbr_of_services == 1
-      type = services[0]
-    when nbr_of_services > 1
-      err_msg += [endpoint_from_region_name(region, name).join(' ')]
-    when nbr_of_services < 1
-      # Then we try to get the type by service name.
-      type = type_from_service(name)
-    end
-
-    if !type.nil?
-      type
-    else
-      fail(Puppet::Error, 'Cannot get the correct endpoint type: ' \
-           "#{err_msg.join(' ')}")
-    end
-  end
-
   def self.transform_name(region, name, type)
-    if type == PuppetX::Keystone::CompositeNamevar::Unset
-      type = service_type(endpoint_from_region_name(region, name), region, name)
-    end
-    if type == PuppetX::Keystone::CompositeNamevar::Unset
-      Puppet.debug("Could not find the type for endpoint #{region}/#{name}")
-      "#{region}/#{name}"
-    else
-      "#{region}/#{name}::#{type}"
-    end
+    "#{region}/#{name}::#{type}"
   end
 
   def self.make_id(endpoint)

@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    The ``keystone_endpoint`` resource type now requires the ``type`` property.
