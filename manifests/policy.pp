@@ -62,6 +62,7 @@ class keystone::policy (
     file_group   => $::keystone::params::group,
     file_format  => 'yaml',
     purge_config => $purge_config,
+    tag          => 'keystone',
   }
 
   create_resources('openstacklib::policy', { $policy_path => $policy_parameters })

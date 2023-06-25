@@ -45,7 +45,7 @@ class keystone::deps {
 
   # policy config should occur in the config block also.
   Anchor['keystone::config::begin']
-  -> Openstacklib::Policy<||>
+  -> Openstacklib::Policy<| tag == 'keystone' |>
   ~> Anchor['keystone::config::end']
 
   # Support packages need to be installed in the install phase, but we don't
