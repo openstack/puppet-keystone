@@ -61,16 +61,16 @@
 #   Defaults to $::keystone::params::user
 #
 class keystone::cron::trust_flush (
-  $ensure           = present,
-  $minute           = 1,
-  $hour             = '*',
-  $monthday         = '*',
-  $month            = '*',
-  $weekday          = '*',
-  Integer $maxdelay = 0,
-  Integer $age      = 0,
-  $destination      = '/var/log/keystone/keystone-trustflush.log',
-  $user             = $::keystone::params::user,
+  Enum['present', 'absent'] $ensure = present,
+  $minute                           = 1,
+  $hour                             = '*',
+  $monthday                         = '*',
+  $month                            = '*',
+  $weekday                          = '*',
+  Integer $maxdelay                 = 0,
+  Integer $age                      = 0,
+  $destination                      = '/var/log/keystone/keystone-trustflush.log',
+  $user                             = $::keystone::params::user,
 ) inherits keystone::params {
 
   include keystone::deps

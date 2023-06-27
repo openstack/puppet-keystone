@@ -54,14 +54,14 @@
 #   Defaults to $::keystone::params::user
 #
 class keystone::cron::fernet_rotate (
-  $ensure   = present,
-  $minute   = 1,
-  $hour     = 0,
-  $monthday = '*',
-  $month    = '*',
-  $weekday  = '*',
-  $maxdelay = 0,
-  $user     = $::keystone::params::user,
+  Enum['present', 'absent'] $ensure = present,
+  $minute                           = 1,
+  $hour                             = 0,
+  $monthday                         = '*',
+  $month                            = '*',
+  $weekday                          = '*',
+  $maxdelay                         = 0,
+  $user                             = $::keystone::params::user,
 ) inherits keystone::params {
 
   include keystone::deps
