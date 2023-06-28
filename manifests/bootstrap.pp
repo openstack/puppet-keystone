@@ -59,19 +59,19 @@
 #   Defaults to true
 #
 class keystone::bootstrap (
-  $password,
-  $username             = 'admin',
-  $email                = 'admin@localhost',
-  $project_name         = 'admin',
-  $service_project_name = 'services',
-  $role_name            = 'admin',
-  $service_name         = 'keystone',
-  $admin_url            = 'http://127.0.0.1:5000',
-  $public_url           = 'http://127.0.0.1:5000',
-  $internal_url         = undef,
-  $region               = 'RegionOne',
-  $interface            = 'public',
-  Boolean $bootstrap    = true,
+  String[1] $password,
+  String[1] $username                     = 'admin',
+  String[1] $email                        = 'admin@localhost',
+  String[1] $project_name                 = 'admin',
+  String[1] $service_project_name         = 'services',
+  String[1] $role_name                    = 'admin',
+  String[1] $service_name                 = 'keystone',
+  Stdlib::HTTPUrl $admin_url              = 'http://127.0.0.1:5000',
+  Stdlib::HTTPUrl $public_url             = 'http://127.0.0.1:5000',
+  Optional[Stdlib::HTTPUrl] $internal_url = undef,
+  String[1] $region                       = 'RegionOne',
+  String[1] $interface                    = 'public',
+  Boolean $bootstrap                      = true,
 ) inherits keystone::params {
 
   include keystone::deps
