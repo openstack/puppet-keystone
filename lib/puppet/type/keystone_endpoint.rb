@@ -24,13 +24,7 @@ Puppet::Type.newtype(:keystone_endpoint) do
 
   newparam(:type) do
     isnamevar
-    defaultto do
-      deprecation_msg = 'Support for a endpoint without the type ' \
-      'set is deprecated in Liberty. ' \
-      'It will be dropped in Mitaka.'
-      warning(deprecation_msg)
-      PuppetX::Keystone::CompositeNamevar::Unset
-    end
+    include PuppetX::Keystone::Type::Required
   end
 
   newproperty(:public_url)
@@ -45,19 +39,7 @@ Puppet::Type.newtype(:keystone_endpoint) do
   end
 
   autorequire(:keystone_service) do
-    if parameter_set?(:type)
-      "#{name}::#{self[:type]}"
-    else
-      title = catalog.resources
-        .find_all { |e| e.type == :keystone_service && e[:name] == name }
-        .map { |e| e.title }.uniq
-      if title.count == 1
-        title
-      else
-        warning("Couldn't find the type of the domain to require using #{name}")
-        name
-      end
-    end
+    "#{name}::#{self[:type]}"
   end
 
   def self.title_patterns

@@ -214,29 +214,18 @@ define keystone::resource::service_identity(
   }
 
   if $configure_endpoint {
-    if $service_type {
-      if $public_url and $admin_url and $internal_url {
-        ensure_resource('keystone_endpoint', "${region}/${service_name_real}::${service_type}", {
-          'ensure'       => $ensure,
-          'public_url'   => $public_url,
-          'admin_url'    => $admin_url,
-          'internal_url' => $internal_url,
-        })
-      } else {
-        fail ('When configuring an endpoint, you need to set the _url parameters.')
-      }
+    if ! $service_type {
+      fail('When configuring an endpoint, you need to set the service_type parameter.')
+    }
+    if $public_url and $admin_url and $internal_url {
+      ensure_resource('keystone_endpoint', "${region}/${service_name_real}::${service_type}", {
+        'ensure'       => $ensure,
+        'public_url'   => $public_url,
+        'admin_url'    => $admin_url,
+        'internal_url' => $internal_url,
+      })
     } else {
-      if $public_url and $admin_url and $internal_url {
-        ensure_resource('keystone_endpoint', "${region}/${service_name_real}", {
-          'ensure'       => $ensure,
-          'public_url'   => $public_url,
-          'admin_url'    => $admin_url,
-          'internal_url' => $internal_url,
-        })
-      } else {
-        fail ('When configuring an endpoint, you need to set the _url parameters.')
-      }
-      warning('Defining a endpoint without the type is supported in Liberty and will be dropped in Mitaka. See https://bugs.launchpad.net/puppet-keystone/+bug/1506996')
+      fail ('When configuring an endpoint, you need to set the _url parameters.')
     }
   }
 }
