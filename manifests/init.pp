@@ -386,7 +386,7 @@ class keystone(
   Boolean $manage_policyrcd                       = false,
   $enable_proxy_headers_parsing                   = $facts['os_service_default'],
   $max_request_body_size                          = $facts['os_service_default'],
-  $purge_config                                   = false,
+  Boolean $purge_config                           = false,
   $amqp_durable_queues                            = $facts['os_service_default'],
   # DEPRECATED PARAMETERS
   $client_package_ensure                          = undef,
