@@ -138,16 +138,15 @@ define keystone::resource::service_identity(
 
   include keystone::deps
 
-  if $service_name == undef {
-    $service_name_real = $auth_name
-  } else {
-    $service_name_real = $service_name
-  }
+  $service_name_real = pick($service_name, $auth_name)
 
-  if $user_domain == undef {
-    $user_domain_real = $default_domain
-  } else {
-    $user_domain_real = $user_domain
+  $user_domain_real = $user_domain ? {
+    undef   => $default_domain,
+    default => $user_domain,
+  }
+  $project_domain_real = $project_domain ? {
+    undef   => $default_domain,
+    default => $project_domain,
   }
 
   if $configure_user {
@@ -190,14 +189,17 @@ define keystone::resource::service_identity(
 
     unless empty($roles) {
       ensure_resource('keystone_user_role', "${auth_name}@${tenant}", {
-        'ensure' => $ensure,
-        'roles'  => $roles,
+        'ensure'         => $ensure,
+        'roles'          => $roles,
+        'user_domain'    => $user_domain_real,
+        'project_domain' => $project_domain_real,
       })
     }
     unless empty($system_roles) {
       ensure_resource('keystone_user_role', "${auth_name}@::::${system_scope}", {
-        'ensure' => $ensure,
-        'roles'  => $system_roles,
+        'ensure'      => $ensure,
+        'roles'       => $system_roles,
+        'user_domain' => $user_domain_real,
       })
     }
   }

@@ -165,8 +165,9 @@ describe 'keystone::resource::service_identity' do
       )}
 
       it { is_expected.to contain_keystone_user_role("#{title}@services").with(
-        :ensure => 'present',
-        :roles  => ['admin'],
+        :ensure      => 'present',
+        :roles       => ['admin'],
+        :user_domain => 'userdomain',
       )}
 
       it { is_expected.to_not contain_keystone_user_role("#{title}@::::all") }
@@ -175,7 +176,7 @@ describe 'keystone::resource::service_identity' do
     context 'with user and project domain' do
       let :params do
         required_params.merge({
-          :user_domain => 'userdomain',
+          :user_domain    => 'userdomain',
           :project_domain => 'projdomain',
         })
       end
@@ -192,8 +193,10 @@ describe 'keystone::resource::service_identity' do
       )}
 
       it { is_expected.to contain_keystone_user_role("#{title}@services").with(
-        :ensure => 'present',
-        :roles  => ['admin'],
+        :ensure         => 'present',
+        :roles          => ['admin'],
+        :user_domain    => 'userdomain',
+        :project_domain => 'projdomain',
       )}
 
       it { is_expected.to_not contain_keystone_user_role("#{title}@::::all") }
@@ -218,8 +221,68 @@ describe 'keystone::resource::service_identity' do
       )}
 
       it { is_expected.to contain_keystone_user_role("#{title}@services").with(
-        :ensure => 'present',
-        :roles  => ['admin'],
+        :ensure         => 'present',
+        :roles          => ['admin'],
+        :user_domain    => 'defaultdomain',
+        :project_domain => 'defaultdomain',
+      )}
+
+      it { is_expected.to_not contain_keystone_user_role("#{title}@::::all") }
+    end
+
+    context 'with user and default domain' do
+      let :params do
+        required_params.merge({
+          :user_domain    => 'userdomain',
+          :default_domain => 'defaultdomain',
+        })
+      end
+
+      it { is_expected.to contain_keystone_user(title).with(
+        :ensure   => 'present',
+        :password => 'secrete',
+        :email    => 'neutron@localhost',
+        :domain   => 'userdomain',
+      )}
+
+      it { is_expected.to contain_keystone_domain('userdomain').with(
+        :ensure   => 'present',
+      )}
+
+      it { is_expected.to contain_keystone_user_role("#{title}@services").with(
+        :ensure         => 'present',
+        :roles          => ['admin'],
+        :user_domain    => 'userdomain',
+        :project_domain => 'defaultdomain',
+      )}
+
+      it { is_expected.to_not contain_keystone_user_role("#{title}@::::all") }
+    end
+
+    context 'with project and default domain' do
+      let :params do
+        required_params.merge({
+          :project_domain => 'projdomain',
+          :default_domain => 'defaultdomain',
+        })
+      end
+
+      it { is_expected.to contain_keystone_user(title).with(
+        :ensure   => 'present',
+        :password => 'secrete',
+        :email    => 'neutron@localhost',
+        :domain   => 'defaultdomain',
+      )}
+
+      it { is_expected.to contain_keystone_domain('defaultdomain').with(
+        :ensure   => 'present',
+      )}
+
+      it { is_expected.to contain_keystone_user_role("#{title}@services").with(
+        :ensure         => 'present',
+        :roles          => ['admin'],
+        :user_domain    => 'defaultdomain',
+        :project_domain => 'projdomain',
       )}
 
       it { is_expected.to_not contain_keystone_user_role("#{title}@::::all") }

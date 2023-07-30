@@ -61,17 +61,27 @@ describe 'keystone server running with Apache/WSGI with resources' do
       }
       # service user exists only in the service_domain - must
       # use v3 api
-      keystone::resource::service_identity { 'civ3::service_domain':
+      keystone::resource::service_identity { 'civ3':
         service_type        => 'civ3',
         service_description => 'civ3 service',
         service_name        => 'civ3',
         password            => 'secret',
-        tenant              => 'servicesv3::service_domain',
+        tenant              => 'servicesv3',
         public_url          => 'http://127.0.0.1:1234/v3',
         admin_url           => 'http://127.0.0.1:1234/v3',
         internal_url        => 'http://127.0.0.1:1234/v3',
         user_domain         => 'service_domain',
         project_domain      => 'service_domain',
+      }
+      keystone::resource::service_identity { 'civ3alt::service_domain':
+        service_type        => 'civ3alt',
+        service_description => 'civ3alt service',
+        service_name        => 'civ3alt',
+        password            => 'secret',
+        tenant              => 'servicesv3::service_domain',
+        public_url          => 'http://127.0.0.1:1234/v3',
+        admin_url           => 'http://127.0.0.1:1234/v3',
+        internal_url        => 'http://127.0.0.1:1234/v3',
       }
       EOS
 
@@ -135,7 +145,10 @@ describe 'keystone server running with Apache/WSGI with resources' do
     describe "with v3 service with v3 credentials" do
       include_examples 'keystone user/tenant/service/role/endpoint resources using v3 API',
         '--os-username civ3 --os-password secret --os-project-name servicesv3 --os-user-domain-name service_domain --os-project-domain-name service_domain'
-
+    end
+    describe "with v3 service with v3 credentials" do
+      include_examples 'keystone user/tenant/service/role/endpoint resources using v3 API',
+        '--os-username civ3alt --os-password secret --os-project-name servicesv3 --os-user-domain-name service_domain --os-project-domain-name service_domain'
     end
   end
   describe 'composite namevar quick test' do

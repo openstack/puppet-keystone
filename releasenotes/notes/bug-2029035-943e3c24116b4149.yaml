@@ -1,0 +1,5 @@
+---
+fixes:
+  - |
+    Fixed the ignored ``keystone::resource::service_identiry::project_domain``
+    parameter.
