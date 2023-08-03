@@ -10,6 +10,7 @@ describe 'keystone server running with Apache/WSGI with resources' do
       include openstack_integration::repos
       include openstack_integration::apache
       include openstack_integration::mysql
+      include openstack_integration::memcached
       include openstack_integration::keystone
 
       keystone::resource::service_identity { 'ci':

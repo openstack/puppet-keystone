@@ -18,6 +18,7 @@ describe 'basic keystone server with changed domain id' do
       include openstack_integration::repos
       include openstack_integration::apache
       include openstack_integration::mysql
+      include openstack_integration::memcached
 
       class { 'openstack_integration::keystone':
         default_domain => 'my_default_domain',
