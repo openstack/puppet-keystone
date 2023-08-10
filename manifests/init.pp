@@ -618,18 +618,9 @@ class keystone(
     }
   }
 
-  if $fernet_key_repository {
-    keystone_config {
-      'fernet_tokens/key_repository': value => $fernet_key_repository;
-    }
-  } else {
-    keystone_config {
-      'fernet_tokens/key_repository': ensure => absent;
-    }
-  }
-
   keystone_config {
     'token/revoke_by_id':            value => $revoke_by_id;
+    'fernet_tokens/key_repository':  value => $fernet_key_repository;
     'fernet_tokens/max_active_keys': value => $fernet_max_active_keys;
     'credential/key_repository':     value => $credential_key_repository;
   }
