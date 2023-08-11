@@ -60,22 +60,6 @@ class keystone::deps {
   Package<| tag == 'openstack'|>
   ~> Anchor['keystone::service::end']
 
-  # The following resources need to be provisioned after the service is up.
-  Anchor['keystone::service::end']
-  -> Keystone_domain<||>
-  Anchor['keystone::service::end']
-  -> Keystone_endpoint<||>
-  Anchor['keystone::service::end']
-  -> Keystone_role<||>
-  Anchor['keystone::service::end']
-  -> Keystone_service<||>
-  Anchor['keystone::service::end']
-  -> Keystone_tenant<||>
-  Anchor['keystone::service::end']
-  -> Keystone_user<||>
-  Anchor['keystone::service::end']
-  -> Keystone_user_role<||>
-
   # Installation or config changes will always restart services.
   Anchor['keystone::install::end'] ~> Anchor['keystone::service::begin']
   Anchor['keystone::config::end']  ~> Anchor['keystone::service::begin']
