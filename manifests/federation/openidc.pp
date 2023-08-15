@@ -116,7 +116,7 @@
 # [*remote_id_attribute*]
 #  (Optional) Value to be used to obtain the entity ID of the Identity
 #  Provider from the environment.
-#  Defaults to undef.
+#  Defaults to $facts['os_service_default'].
 #
 # [*template_order*]
 #  This number indicates the order for the concat::fragment that will apply
@@ -153,7 +153,7 @@ class keystone::federation::openidc (
   $memcached_servers              = undef,
   $redis_server                   = undef,
   $redis_password                 = undef,
-  $remote_id_attribute            = undef,
+  $remote_id_attribute            = $facts['os_service_default'],
   $template_order                 = 331,
 ) {
 
@@ -212,13 +212,8 @@ class keystone::federation::openidc (
   }
 
   keystone_config {
-    'auth/methods': value => join(any2array($methods),',');
-  }
-
-  if $remote_id_attribute {
-    keystone_config {
-      'openid/remote_id_attribute': value => $remote_id_attribute;
-    }
+    'auth/methods':               value => join(any2array($methods),',');
+    'openid/remote_id_attribute': value => $remote_id_attribute;
   }
 
   concat::fragment { 'configure_openidc_keystone':
