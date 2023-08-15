@@ -59,8 +59,7 @@ Apache + Mellon SP setups, where a REMOTE_USER env variable is always set, even 
   }
 
   keystone_config {
-    'auth/methods': value  => join(any2array($methods),',');
-    'auth/saml2':   ensure => absent;
+    'auth/methods': value => join(any2array($methods),',');
   }
 
   if($enable_websso){

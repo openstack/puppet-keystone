@@ -48,7 +48,6 @@ describe 'keystone::federation::mellon' do
 
       it 'should have basic params for mellon in Keystone configuration' do
         is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2')
-        is_expected.to contain_keystone_config('auth/saml2').with_ensure('absent')
       end
 
       it { is_expected.to contain_concat__fragment('configure_mellon_keystone').with({
@@ -67,7 +66,6 @@ describe 'keystone::federation::mellon' do
 
       it 'should have basic params for mellon in Keystone configuration' do
         is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2')
-        is_expected.to contain_keystone_config('auth/saml2').with_ensure('absent')
       end
 
       it 'should have parameters for websso in Keystone configuration' do

@@ -212,8 +212,7 @@ class keystone::federation::openidc (
   }
 
   keystone_config {
-    'auth/methods': value  => join(any2array($methods),',');
-    'auth/openid':  ensure => absent;
+    'auth/methods': value => join(any2array($methods),',');
   }
 
   if $remote_id_attribute {
