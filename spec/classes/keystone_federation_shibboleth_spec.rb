@@ -52,7 +52,6 @@ describe 'keystone::federation::shibboleth' do
       let (:params) { default_params }
       it 'should have basic params for shibboleth in Keystone configuration' do
         is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2')
-        is_expected.to contain_keystone_config('auth/saml2').with_ensure('absent')
       end
     end
 
@@ -83,7 +82,6 @@ describe 'keystone::federation::shibboleth' do
 
         it { is_expected.to contain_apache__mod('shib2') }
         it { is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2') }
-        it { is_expected.to contain_keystone_config('auth/saml2').with_ensure('absent') }
         it { is_expected.to contain_concat__fragment('configure_shibboleth_keystone').with({
           :target => "10-keystone_wsgi.conf",
           :order  => params[:template_order],
@@ -107,7 +105,6 @@ describe 'keystone::federation::shibboleth' do
 
         it { is_expected.to contain_apache__mod('shib2') }
         it { is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2') }
-        it { is_expected.to contain_keystone_config('auth/saml2').with_ensure('absent') }
         it { is_expected.to contain_concat__fragment('configure_shibboleth_keystone').with({
           :target => "10-keystone_wsgi.conf",
           :order  => params[:template_order],
@@ -120,7 +117,6 @@ describe 'keystone::federation::shibboleth' do
         let (:params) { default_params }
         it { is_expected.to_not contain_apache__mod('shib2') }
         it { is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2') }
-        it { is_expected.to contain_keystone_config('auth/saml2').with_ensure('absent') }
         it { is_expected.to_not contain_concat__fragment('configure_shibboleth_keystone') }
       end
     end

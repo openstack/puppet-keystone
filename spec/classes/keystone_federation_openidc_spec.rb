@@ -63,7 +63,6 @@ describe 'keystone::federation::openidc' do
     context 'with only required parameters' do
       it 'should have basic params for openidc in Keystone configuration' do
         is_expected.to contain_keystone_config('auth/methods').with_value('password, token, openid')
-        is_expected.to contain_keystone_config('auth/openid').with_ensure('absent')
       end
 
       it { is_expected.to contain_concat__fragment('configure_openidc_keystone').with({

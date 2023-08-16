@@ -68,8 +68,7 @@ Apache + Shibboleth SP setups, where a REMOTE_USER env variable is always set, e
   }
 
   keystone_config {
-    'auth/methods': value  => join(any2array($methods),',');
-    'auth/saml2':   ensure => absent;
+    'auth/methods': value => join(any2array($methods),',');
   }
 
   case $facts['os']['family'] {
