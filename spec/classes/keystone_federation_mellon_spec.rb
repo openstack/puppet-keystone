@@ -48,6 +48,7 @@ describe 'keystone::federation::mellon' do
 
       it 'should have basic params for mellon in Keystone configuration' do
         is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2')
+        is_expected.to contain_keystone_config('mapped/remote_id_attribute').with_ensure('absent')
       end
 
       it { is_expected.to contain_concat__fragment('configure_mellon_keystone').with({

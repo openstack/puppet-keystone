@@ -66,6 +66,10 @@ Apache + Mellon SP setups, where a REMOTE_USER env variable is always set, even 
     keystone_config {
       'mapped/remote_id_attribute': value => 'MELLON_IDP';
     }
+  } else {
+    keystone_config {
+      'mapped/remote_id_attribute': ensure => absent;
+    }
   }
 
   concat::fragment { 'configure_mellon_keystone':
