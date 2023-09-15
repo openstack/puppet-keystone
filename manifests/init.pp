@@ -88,6 +88,24 @@
 #   will be run through a green thread.
 #   Defaults to $facts['os_service_default']
 #
+# [*rabbit_quorum_queue*]
+#   (Optional) Use quorum queues in RabbitMQ.
+#   Defaults to $facts['os_service_default']
+#
+# [*rabbit_quorum_delivery_limit*]
+#   (Optional) Each time a message is rdelivered to a consumer, a counter is
+#   incremented. Once the redelivery count exceeds the delivery limit
+#   the message gets dropped or dead-lettered.
+#   Defaults to $facts['os_service_default']
+#
+# [*rabbit_quorum_max_memory_length*]
+#   (Optional) Limit the number of messages in the quorum queue.
+#   Defaults to $facts['os_service_default']
+#
+# [*rabbit_quorum_max_memory_bytes*]
+#   (Optional) Limit the number of memory bytes used by the quorum queue.
+#   Defaults to $facts['os_service_default']
+#
 # [*rabbit_use_ssl*]
 #   (Optional) Connect over SSL for RabbitMQ
 #   Defaults to $facts['os_service_default']
@@ -351,6 +369,10 @@ class keystone(
   $rabbit_use_ssl                                 = $facts['os_service_default'],
   $default_transport_url                          = $facts['os_service_default'],
   $rabbit_ha_queues                               = $facts['os_service_default'],
+  $rabbit_quorum_queue                            = $facts['os_service_default'],
+  $rabbit_quorum_delivery_limit                   = $facts['os_service_default'],
+  $rabbit_quorum_max_memory_length                = $facts['os_service_default'],
+  $rabbit_quorum_max_memory_bytes                 = $facts['os_service_default'],
   $kombu_ssl_ca_certs                             = $facts['os_service_default'],
   $kombu_ssl_certfile                             = $facts['os_service_default'],
   $kombu_ssl_keyfile                              = $facts['os_service_default'],
@@ -482,19 +504,23 @@ class keystone(
   }
 
   oslo::messaging::rabbit { 'keystone_config':
-    kombu_ssl_version           => $kombu_ssl_version,
-    kombu_ssl_keyfile           => $kombu_ssl_keyfile,
-    kombu_ssl_certfile          => $kombu_ssl_certfile,
-    kombu_ssl_ca_certs          => $kombu_ssl_ca_certs,
-    kombu_reconnect_delay       => $kombu_reconnect_delay,
-    kombu_failover_strategy     => $kombu_failover_strategy,
-    kombu_compression           => $kombu_compression,
-    rabbit_use_ssl              => $rabbit_use_ssl,
-    rabbit_ha_queues            => $rabbit_ha_queues,
-    heartbeat_timeout_threshold => $rabbit_heartbeat_timeout_threshold,
-    heartbeat_rate              => $rabbit_heartbeat_rate,
-    heartbeat_in_pthread        => $rabbit_heartbeat_in_pthread,
-    amqp_durable_queues         => $amqp_durable_queues,
+    kombu_ssl_version               => $kombu_ssl_version,
+    kombu_ssl_keyfile               => $kombu_ssl_keyfile,
+    kombu_ssl_certfile              => $kombu_ssl_certfile,
+    kombu_ssl_ca_certs              => $kombu_ssl_ca_certs,
+    kombu_reconnect_delay           => $kombu_reconnect_delay,
+    kombu_failover_strategy         => $kombu_failover_strategy,
+    kombu_compression               => $kombu_compression,
+    rabbit_use_ssl                  => $rabbit_use_ssl,
+    rabbit_ha_queues                => $rabbit_ha_queues,
+    heartbeat_timeout_threshold     => $rabbit_heartbeat_timeout_threshold,
+    heartbeat_rate                  => $rabbit_heartbeat_rate,
+    heartbeat_in_pthread            => $rabbit_heartbeat_in_pthread,
+    amqp_durable_queues             => $amqp_durable_queues,
+    rabbit_quorum_queue             => $rabbit_quorum_queue,
+    rabbit_quorum_delivery_limit    => $rabbit_quorum_delivery_limit,
+    rabbit_quorum_max_memory_length => $rabbit_quorum_max_memory_length,
+    rabbit_quorum_max_memory_bytes  => $rabbit_quorum_max_memory_bytes,
   }
 
   if $manage_service {
