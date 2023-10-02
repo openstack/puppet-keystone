@@ -3,13 +3,9 @@ $LOAD_PATH.push(File.join(File.dirname(__FILE__), 'fixtures', 'modules', 'inifil
 $LOAD_PATH.push(File.join(File.dirname(__FILE__), 'fixtures', 'modules', 'openstacklib', 'lib'))
 require 'puppetlabs_spec_helper/module_spec_helper'
 require 'shared_examples'
-require 'webmock/rspec'
 require 'puppet-openstack_spec_helper/facts'
 
 fixture_path = File.expand_path(File.join(File.dirname(__FILE__), 'fixtures'))
-
-# LP1492636 - Cohabitation of compile matcher and webmock
-WebMock.disable_net_connect!(:allow => "169.254.169.254")
 
 RSpec.configure do |c|
   c.alias_it_should_behave_like_to :it_configures, 'configures'
