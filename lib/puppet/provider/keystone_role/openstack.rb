@@ -11,7 +11,6 @@ Puppet::Type.type(:keystone_role).provide(
 
   def initialize(value={})
     super(value)
-    @property_flush = {}
   end
 
   def self.do_not_manage
@@ -63,7 +62,7 @@ Puppet::Type.type(:keystone_role).provide(
   def self.prefetch(resources)
     roles = instances
     resources.keys.each do |name|
-       if provider = roles.find{ |role| role.name == name.downcase }
+      if provider = roles.find{ |role| role.name == name.downcase }
         resources[name].provider = provider
       end
     end
