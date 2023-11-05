@@ -87,6 +87,7 @@ Puppet::Type.type(:keystone_user).provide(
     @property_hash ||= {}
     # This can happen in bad LDAP mapping
     @property_hash[:enabled] = 'true' if @property_hash[:enabled].nil?
+    @property_hash[:domain] = domain_name
 
     return false if @property_hash.nil? || @property_hash[:id].nil?
     true
