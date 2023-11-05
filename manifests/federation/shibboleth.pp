@@ -73,7 +73,8 @@ Apache + Shibboleth SP setups, where a REMOTE_USER env variable is always set, e
 
   case $facts['os']['family'] {
     'Debian': {
-      class { 'apache::mod::shib': }
+      include apache::mod::shib
+      include apache::mod::authn_core
 
       concat::fragment { 'configure_shibboleth_keystone':
         target  => "${keystone::wsgi::apache::priority}-keystone_wsgi.conf",
