@@ -86,27 +86,15 @@ Puppet::Type.type(:keystone_user_role).provide(
     return @properties if @properties
     properties = []
     if set?(:project)
-      properties << '--project' << get_project_id
+      properties << '--project' << project
+      properties << '--project-domain' << project_domain
     elsif set?(:domain)
       properties << '--domain' << domain
     else
       properties << '--system' << system
     end
-    properties << '--user' << get_user_id
+    properties << '--user' << user
+    properties << '--user-domain' << user_domain
     @properties = properties
-  end
-
-  def get_user_id
-    id = self.class.user_id_from_name_and_domain_name(user, user_domain)
-    raise(Puppet::Error, "No user #{user} with domain #{user_domain} found") if id.nil?
-    id
-  end
-
-  def get_project_id
-    id = self.class.project_id_from_name_and_domain_name(project, project_domain)
-    if id.nil?
-      raise(Puppet::Error, "No project #{project} with domain #{project_domain} found")
-    end
-    id
   end
 end

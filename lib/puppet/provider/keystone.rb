@@ -102,20 +102,6 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
     @users_name[id_str]
   end
 
-  def self.project_id_from_name_and_domain_name(name, domain_name)
-    @projects_name ||= {}
-    id_str = "#{name}_#{domain_name}"
-    unless @projects_name.keys.include?(id_str)
-      project = fetch_project(name, domain_name)
-      if project && project.key?(:id)
-        @projects_name[id_str] = project[:id]
-      else
-        err("Could not find project with name [#{name}] and domain [#{domain_name}]")
-      end
-    end
-    @projects_name[id_str]
-  end
-
   def self.domain_name_from_id(id)
     unless @domain_hash
       list = system_request('domain', 'list')
@@ -150,15 +136,6 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
       end
     end
     @domain_hash_name[name]
-  end
-
-  def self.fetch_project(name, domain)
-    domain ||= default_domain
-    system_request('project', 'show',
-                   [name, '--domain', domain],
-                   {:no_retry_exception_msgs => /No project with a name or ID/})
-  rescue Puppet::ExecutionFailure => e
-    raise e unless e.message =~ /No project with a name or ID/
   end
 
   def self.fetch_user(name, domain)

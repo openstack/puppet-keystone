@@ -36,33 +36,27 @@ describe Puppet::Type.type(:keystone_user_role).provider(:openstack) do
 
     describe '#create' do
       before(:each) do
-
         expect(described_class).to receive(:openstack)
           .with('role assignment', 'list', '--quiet', '--format', 'csv',
-                ['--names', '--project', 'project1_id', '--user', 'user1_id'])
+                ['--names',
+                 '--project', 'project1', '--project-domain', 'domain1',
+                 '--user', 'user1', '--user-domain', 'domain1'])
           .and_return('"ID","Name","Project","User"
 "role1_id","role1","project1","user1"
 "role2_id","role2","project1","user1"
 ')
         expect(described_class).to receive(:openstack)
           .with('role', 'add',
-                ['role1', '--project', 'project1_id', '--user', 'user1_id'])
+                ['role1',
+                 '--project', 'project1', '--project-domain', 'domain1',
+                 '--user', 'user1', '--user-domain', 'domain1'])
         expect(described_class).to receive(:openstack)
           .with('role', 'add',
-                ['role2', '--project', 'project1_id', '--user', 'user1_id'])
-        expect(described_class).to receive(:openstack)
-          .with('project', 'show', '--format', 'shell',
-                ['project1', '--domain', 'domain1'])
-          .and_return('name="project1"
-id="project1_id"
-')
-        expect(described_class).to receive(:openstack)
-          .with('user', 'show', '--format', 'shell',
-                ['user1', '--domain', 'domain1'])
-          .and_return('name="user1"
-id="user1_id"
-')
+                ['role2',
+                 '--project', 'project1', '--project-domain', 'domain1',
+                 '--user', 'user1', '--user-domain', 'domain1'])
       end
+
       include_examples 'create the correct resource', [
         {
           'expected_results' => {}
@@ -107,25 +101,19 @@ id="user1_id"
         provider.instance_variable_get('@property_hash')[:roles] = ['role1', 'role2']
         expect(described_class).to receive(:openstack)
           .with('role', 'remove',
-                ['role1', '--project', 'project1_id', '--user', 'user1_id'])
+                ['role1',
+                 '--project', 'project1', '--project-domain', 'domain1',
+                 '--user', 'user1', '--user-domain', 'domain1'])
         expect(described_class).to receive(:openstack)
           .with('role', 'remove',
-                ['role2', '--project', 'project1_id', '--user', 'user1_id'])
-        expect(described_class).to receive(:openstack)
-          .with('project', 'show', '--format', 'shell',
-                ['project1', '--domain', 'domain1'])
-          .and_return('name="project1"
-id="project1_id"
-')
-        expect(described_class).to receive(:openstack)
-          .with('user', 'show', '--format', 'shell',
-                ['user1', '--domain', 'domain1'])
-          .and_return('name="user1"
-id="user1_id"
-')
+                ['role2',
+                 '--project', 'project1', '--project-domain', 'domain1',
+                 '--user', 'user1', '--user-domain', 'domain1'])
         expect(described_class).to receive(:openstack)
           .with('role assignment', 'list', '--quiet', '--format', 'csv',
-                ['--names', '--project', 'project1_id', '--user', 'user1_id'])
+                ['--names',
+                 '--project', 'project1', '--project-domain', 'domain1',
+                 '--user', 'user1', '--user-domain', 'domain1'])
           .and_return('"ID","Name","Project","User"
 ')
         provider.destroy
@@ -137,22 +125,12 @@ id="user1_id"
       subject(:response) do
         expect(described_class).to receive(:openstack)
           .with('role assignment', 'list', '--quiet', '--format', 'csv',
-                ['--names', '--project', 'project1_id', '--user', 'user1_id'])
+                ['--names',
+                 '--project', 'project1', '--project-domain', 'domain1',
+                 '--user', 'user1', '--user-domain', 'domain1'])
           .and_return('"ID","Name","Project","User"
 "role1_id","role1","project1","user1"
 "role2_id","role2","project1","user1"
-')
-        expect(described_class).to receive(:openstack)
-          .with('project', 'show', '--format', 'shell',
-                ['project1', '--domain', 'domain1'])
-          .and_return('name="project1"
-id="project1_id"
-')
-        expect(described_class).to receive(:openstack)
-          .with('user', 'show', '--format', 'shell',
-                ['user1', '--domain', 'domain1'])
-          .and_return('name="user1"
-id="user1_id"
 ')
         provider.exists?
       end
@@ -173,28 +151,24 @@ id="user1_id"
         expect(provider).to receive(:roles).and_return(%w(role_one role_two))
         expect(described_class).to receive(:openstack)
           .with('role', 'remove',
-                ['role_one', '--project', 'project1_id', '--user', 'user1_id'])
+                ['role_one',
+                 '--project', 'project_one', '--project-domain', 'Default',
+                 '--user', 'user_one', '--user-domain', 'Default'])
         expect(described_class).to receive(:openstack)
           .with('role', 'remove',
-                ['role_two', '--project', 'project1_id', '--user', 'user1_id'])
+                ['role_two',
+                 '--project', 'project_one', '--project-domain', 'Default',
+                 '--user', 'user_one', '--user-domain', 'Default'])
         expect(described_class).to receive(:openstack)
           .with('role', 'add',
-                ['one', '--project', 'project1_id', '--user', 'user1_id'])
+                ['one',
+                 '--project', 'project_one', '--project-domain', 'Default',
+                 '--user', 'user_one', '--user-domain', 'Default'])
         expect(described_class).to receive(:openstack)
           .with('role', 'add',
-                ['two', '--project', 'project1_id', '--user', 'user1_id'])
-        expect(described_class).to receive(:openstack)
-          .with('project', 'show', '--format', 'shell',
-                ['project_one', '--domain', 'Default'])
-          .and_return('name="project_one"
-id="project1_id"
-')
-        expect(described_class).to receive(:openstack)
-          .with('user', 'show', '--format', 'shell',
-                ['user_one', '--domain', 'Default'])
-          .and_return('name="role_one"
-id="user1_id"
-')
+                ['two',
+                 '--project', 'project_one', '--project-domain', 'Default',
+                 '--user', 'user_one', '--user-domain', 'Default'])
         provider.roles = %w(one two)
       end
     end

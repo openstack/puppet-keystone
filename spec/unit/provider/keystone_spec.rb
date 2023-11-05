@@ -62,38 +62,6 @@ id="newid"
     end
   end
 
-  describe '#fetch_project' do
-    let(:set_env) do
-      ENV['OS_USERNAME']     = 'test'
-      ENV['OS_PASSWORD']     = 'abc123'
-      ENV['OS_SYSTEM_SCOPE'] = 'all'
-      ENV['OS_AUTH_URL']     = 'http://127.0.0.1:5000/v3'
-    end
-
-    before(:each) do
-      set_env
-    end
-
-    it 'should be false if the project does not exist' do
-      expect(klass).to receive(:request_timeout).and_return(0)
-      expect(klass).to receive(:openstack)
-        .with('project', 'show', '--format', 'shell', ['no_project', '--domain', 'Default'])
-        .exactly(1).times
-        .and_raise(Puppet::ExecutionFailure, "Execution of '/usr/bin/openstack project show --format shell no_project' returned 1: No project with a name or ID of 'no_project' exists.")
-      expect(klass.fetch_project('no_project', 'Default')).to be_falsey
-    end
-
-    it 'should return the project' do
-      expect(klass).to receive(:openstack)
-        .with('project', 'show', '--format', 'shell', ['The Project', '--domain', 'Default'])
-        .and_return('
-name="The Project"
-id="the_project_id"
-')
-      expect(klass.fetch_project('The Project', 'Default')).to eq({:name=>"The Project", :id=>"the_project_id"})
-    end
-  end
-
   describe '#fetch_user' do
     let(:set_env) do
       ENV['OS_USERNAME']     = 'test'
