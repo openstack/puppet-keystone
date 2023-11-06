@@ -1,29 +1,3 @@
-# Cherry pick PUP-1073 from puppetlabs: support of composite namevar for alias.
-if Gem::Version.new(Puppet.version.sub(/\(Puppet Enterprise .*/i, '').strip) < Gem::Version.new('4.0.0')
-  Puppet::Resource::Catalog.class_eval do
-    def create_resource_aliases(resource)
-      # Skip creating aliases and checking collisions for non-isomorphic resources.
-      return unless resource.respond_to?(:isomorphic?) and resource.isomorphic?
-      # Add an alias if the uniqueness key is valid and not the
-      # title, which has already been checked.
-      ukey = resource.uniqueness_key
-      if ukey.any? and ukey != [resource.title]
-        self.alias(resource, ukey)
-      end
-    end
-  end
-  Puppet::Resource.class_eval do
-    def uniqueness_key
-      # Temporary kludge to deal with inconsistent use patterns; ensure we don't return nil for namevar/:name
-      h = self.to_hash
-      name = h[namevar] || h[:name] || self.name
-      h[namevar] ||= name
-      h[:name]   ||= name
-      h.values_at(*key_attributes.sort_by { |k| k.to_s })
-    end
-  end
-end
-
 require 'puppet_x/keystone/composite_namevar/helpers'
 
 module PuppetX
