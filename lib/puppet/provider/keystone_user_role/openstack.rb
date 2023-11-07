@@ -46,7 +46,6 @@ Puppet::Type.type(:keystone_user_role).provide(
 
   def exists?
     roles_db = self.class.system_request('role assignment', 'list', ['--names'] + properties)
-    @property_hash[:name] = resource[:name]
     if roles_db.empty?
       @property_hash[:ensure] = :absent
     else

@@ -32,8 +32,6 @@ Puppet::Type.newtype(:keystone_user_role) do
   include PuppetX::Keystone::CompositeNamevar::Helpers
   ensurable
 
-  newparam(:name, :namevar => true)
-
   [:user, :project].each do |p|
     newparam(p) do
       isnamevar
