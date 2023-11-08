@@ -116,7 +116,17 @@ class keystone::bootstrap (
     # use the below resources to make sure the current resources are
     # correct so if some value was updated we set that.
 
-    ensure_resource('keystone_role', $role_name, {
+    ensure_resource('keystone_role',
+      [$role_name, 'manager', 'member', 'reader', 'service'], {
+      'ensure' => 'present',
+    })
+
+    ensure_resource('keystone_implied_role',
+      [
+        "${role_name}@manager",
+        'manager@member',
+        'member@reader',
+      ], {
       'ensure' => 'present',
     })
 

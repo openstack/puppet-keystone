@@ -33,6 +33,14 @@ describe 'keystone::bootstrap' do
       )}
 
       it { is_expected.to contain_keystone_role('admin').with_ensure('present') }
+      it { is_expected.to contain_keystone_role('manager').with_ensure('present') }
+      it { is_expected.to contain_keystone_role('member').with_ensure('present') }
+      it { is_expected.to contain_keystone_role('reader').with_ensure('present') }
+      it { is_expected.to contain_keystone_role('service').with_ensure('present') }
+
+      it { is_expected.to contain_keystone_implied_role('admin@manager').with_ensure('present') }
+      it { is_expected.to contain_keystone_implied_role('manager@member').with_ensure('present') }
+      it { is_expected.to contain_keystone_implied_role('member@reader').with_ensure('present') }
 
       it { is_expected.to contain_keystone_user('admin').with(
         :ensure   => 'present',
@@ -137,6 +145,14 @@ describe 'keystone::bootstrap' do
       )}
 
       it { is_expected.to contain_keystone_role('adminrole').with_ensure('present') }
+      it { is_expected.to contain_keystone_role('manager').with_ensure('present') }
+      it { is_expected.to contain_keystone_role('member').with_ensure('present') }
+      it { is_expected.to contain_keystone_role('reader').with_ensure('present') }
+      it { is_expected.to contain_keystone_role('service').with_ensure('present') }
+
+      it { is_expected.to contain_keystone_implied_role('adminrole@manager').with_ensure('present') }
+      it { is_expected.to contain_keystone_implied_role('manager@member').with_ensure('present') }
+      it { is_expected.to contain_keystone_implied_role('member@reader').with_ensure('present') }
 
       it { is_expected.to contain_keystone_user('user').with(
         :ensure   => 'present',

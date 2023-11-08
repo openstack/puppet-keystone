@@ -1,0 +1,4 @@
+---
+features:
+  - |
+    The new ``keystone_implied_role`` resource type has been added.
