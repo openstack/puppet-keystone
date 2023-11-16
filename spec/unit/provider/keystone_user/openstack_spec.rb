@@ -16,7 +16,6 @@ describe Puppet::Type.type(:keystone_user).provider(:openstack) do
 
   after :each do
     described_class.reset
-    Puppet::Type.type(:keystone_tenant).provider(:openstack).reset
   end
 
   let(:resource_attrs) do
