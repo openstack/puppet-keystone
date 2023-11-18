@@ -1,4 +1,3 @@
-require 'puppet/util/inifile'
 require 'puppet/provider/openstack'
 require 'puppet/provider/openstack/auth'
 require 'puppet/provider/openstack/credentials'
