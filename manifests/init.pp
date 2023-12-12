@@ -419,12 +419,13 @@ class keystone(
 
   if $manage_policyrcd {
     # openstacklib policy_rcd only affects debian based systems.
-    Policy_rcd <| title == 'keystone' |> -> Package['keystone']
-    Policy_rcd['apache2'] -> Package['httpd']
     if ($facts['os']['name'] == 'Ubuntu') {
       $policy_services = 'apache2'
+      Policy_rcd['apache2'] -> Package['httpd']
     } else {
       $policy_services = ['keystone', 'apache2']
+      Policy_rcd['keystone'] -> Package['keystone']
+      Policy_rcd['apache2'] -> Package<| title == 'httpd' |>
     }
     ensure_resource('policy_rcd', $policy_services, { ensure => present, 'set_code' => '101' })
   }
