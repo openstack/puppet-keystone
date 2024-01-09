@@ -27,7 +27,7 @@
 #
 # [*password*]
 #   Password to create for the service user;
-#   string; required
+#   string; optional;
 #
 # [*auth_name*]
 #   The name of the service user;
@@ -35,11 +35,11 @@
 #
 # [*service_name*]
 #   Name of the service;
-#   string; required
+#   string; optional;
 #
 # [*service_type*]
 #   Type of the service;
-#   string; required
+#   string; optional;
 #
 # [*service_description*]
 #   Description of the service;
@@ -47,15 +47,15 @@
 #
 # [*public_url*]
 #   Public endpoint URL;
-#   string; required
+#   string; optional;
 #
 # [*internal_url*]
 #   Internal endpoint URL;
-#   string; required
+#   string; optional;
 #
 # [*admin_url*]
 #   Admin endpoint URL;
-#   string; required
+#   string; optional;
 #
 # [*region*]
 #   Endpoint region;
@@ -97,48 +97,44 @@
 #   Whether to create the service.
 #   boolean; optional: default to True
 #
+# [*default_domain*]
+#   (Optional) Domain for $auth_name and $tenant (project)
+#   Defaults to undef
+#
 # [*user_domain*]
-#   (Optional) Domain for $auth_name
+#   (Optional) Domain for $auth_name.
 #   Defaults to undef (use the keystone server default domain)
 #
 # [*project_domain*]
 #   (Optional) Domain for $tenant (project)
 #   Defaults to undef (use the keystone server default domain)
 #
-# [*default_domain*]
-#   (Optional) Domain for $auth_name and $tenant (project)
-#   If keystone_user_domain is not specified, use $keystone_default_domain
-#   If keystone_project_domain is not specified, use $keystone_default_domain
-#   Defaults to undef
-#
 define keystone::resource::service_identity(
   Enum['present', 'absent'] $ensure   = 'present',
-  Optional[String] $admin_url         = undef,
-  Optional[String] $internal_url      = undef,
-  Optional[String] $password          = undef,
-  Optional[String] $public_url        = undef,
-  Optional[String] $service_type      = undef,
+  Optional[String[1]] $admin_url      = undef,
+  Optional[String[1]] $internal_url   = undef,
+  Optional[String[1]] $password       = undef,
+  Optional[String[1]] $public_url     = undef,
   String[1] $auth_name                = $name,
+  Optional[String[1]] $service_name   = $auth_name,
+  Optional[String[1]] $service_type   = undef,
   Boolean $configure_endpoint         = true,
   Boolean $configure_user             = true,
   Boolean $configure_user_role        = true,
   Boolean $configure_service          = true,
   String $email                       = "${name}@localhost",
   String[1] $region                   = 'RegionOne',
-  Optional[String[1]] $service_name   = undef,
   String $service_description         = "${name} service",
   String[1] $tenant                   = 'services',
   Array[String[1]] $roles             = ['admin'],
   String[1] $system_scope             = 'all',
   Array[String[1]] $system_roles      = [],
-  Optional[String[1]] $user_domain    = undef,
-  Optional[String[1]] $project_domain = undef,
   Optional[String[1]] $default_domain = undef,
+  Optional[String[1]] $user_domain    = $default_domain,
+  Optional[String[1]] $project_domain = $default_domain,
 ) {
 
   include keystone::deps
-
-  $service_name_real = pick($service_name, $auth_name)
 
   $user_domain_real = $user_domain ? {
     undef   => $default_domain,
@@ -206,7 +202,7 @@ define keystone::resource::service_identity(
 
   if $configure_service {
     if $service_type {
-      ensure_resource('keystone_service', "${service_name_real}::${service_type}", {
+      ensure_resource('keystone_service', "${service_name}::${service_type}", {
         'ensure'      => $ensure,
         'description' => $service_description,
       })
@@ -220,7 +216,7 @@ define keystone::resource::service_identity(
       fail('When configuring an endpoint, you need to set the service_type parameter.')
     }
     if $public_url and $admin_url and $internal_url {
-      ensure_resource('keystone_endpoint', "${region}/${service_name_real}::${service_type}", {
+      ensure_resource('keystone_endpoint', "${region}/${service_name}::${service_type}", {
         'ensure'       => $ensure,
         'public_url'   => $public_url,
         'admin_url'    => $admin_url,
