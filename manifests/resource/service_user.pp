@@ -35,7 +35,7 @@
 #
 # [*send_service_user_token*]
 #  (Optional) The service uses service token feature when this is set as true
-#  Defaults to false
+#  Defaults to $facts['os_service_default']
 #
 # [*system_scope*]
 #   (Optional) Scope for system operations
@@ -80,7 +80,7 @@ define keystone::resource::service_user(
   $user_domain_name        = $facts['os_service_default'],
   $project_domain_name     = $facts['os_service_default'],
   $system_scope            = $facts['os_service_default'],
-  $send_service_user_token = false,
+  $send_service_user_token = $facts['os_service_default'],
   $insecure                = $facts['os_service_default'],
   $auth_type               = $facts['os_service_default'],
   $auth_version            = $facts['os_service_default'],
