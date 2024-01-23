@@ -20,7 +20,7 @@ describe 'keystone::resource::service_user' do
         is_expected.to contain_keystone_config('service_user/project_domain_name').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('service_user/user_domain_name').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('service_user/system_scope').with_value('<SERVICE DEFAULT>')
-        is_expected.to contain_keystone_config('service_user/send_service_user_token').with_value(false)
+        is_expected.to contain_keystone_config('service_user/send_service_user_token').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('service_user/insecure').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('service_user/auth_type').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('service_user/auth_version').with_value('<SERVICE DEFAULT>')
