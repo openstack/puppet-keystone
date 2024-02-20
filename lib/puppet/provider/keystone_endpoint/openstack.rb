@@ -207,7 +207,8 @@ Puppet::Type.type(:keystone_endpoint).provide(
     id_str = ''
     id_sep = ''
     [:admin, :internal, :public].each do |type|
-      id_str += "#{id_sep}#{endpoint[type][:id]}" if endpoint[type]
+      id_str += id_sep
+      id_str += endpoint[type][:id] if endpoint[type]
       id_sep = ','
     end
     id_str
