@@ -132,15 +132,12 @@ region="region"
 "endpoint10_id","RegionFour","keystone","identity",True,"admin","http://Four-127.0.0.1:5002"
 "endpoint11_id","RegionFour","keystone","identity",True,"internal","https://Four-127.0.0.1:5001"
 "endpoint12_id","RegionFour","keystone","identity",True,"public","https://Four-127.0.0.1:5000"
-"endpoint13_id","RegionFive","keystone","identity",True,"admin","http://Five-127.0.0.1:5002"
-"endpoint14_id","RegionFive","keystone","identity",True,"internal","https://Five-127.0.0.1:5001"
-"endpoint15_id","RegionFive","keystone","identity",True,"public","https://Five-127.0.0.1:5000"
-"endpoint16_id","RegionSix","keystone","identity",True,"admin","http://Six-127.0.0.1:5002"
-"endpoint17_id","RegionSix","keystone","identity",True,"internal","https://Six-127.0.0.1:5001"
-"endpoint18_id","RegionSix","keystone","identity",True,"public","https://Six-127.0.0.1:5000"
-"endpoint19_id","RegionSeven","keystone","identity",True,"admin","http://Seven-127.0.0.1:5002"
-"endpoint20_id","RegionSeven","keystone","identity",True,"internal","https://Seven-127.0.0.1:5001"
-"endpoint21_id","RegionSeven","keystone","identity",True,"public","https://Seven-127.0.0.1:5000"
+"endpoint13_id","RegionFive","keystone","identity",True,"internal","https://Five-127.0.0.1:5001"
+"endpoint14_id","RegionFive","keystone","identity",True,"public","https://Five-127.0.0.1:5000"
+"endpoint15_id","RegionSix","keystone","identity",True,"admin","http://Six-127.0.0.1:5002"
+"endpoint16_id","RegionSix","keystone","identity",True,"public","https://Six-127.0.0.1:5000"
+"endpoint17_id","RegionSeven","keystone","identity",True,"admin","http://Seven-127.0.0.1:5002"
+"endpoint18_id","RegionSeven","keystone","identity",True,"internal","https://Seven-127.0.0.1:5001"
 ')
           instances = described_class.instances
           expect(instances).to have_array_of_instances_hash([
@@ -183,29 +180,29 @@ region="region"
             {
               :name=>"RegionFive/keystone::identity",
               :ensure=>:present,
-              :id=>"endpoint13_id,endpoint14_id,endpoint15_id",
+              :id=>",endpoint13_id,endpoint14_id",
               :region=>"RegionFive",
-              :admin_url=>"http://Five-127.0.0.1:5002",
+              :admin_url=>'',
               :internal_url=>"https://Five-127.0.0.1:5001",
               :public_url=>"https://Five-127.0.0.1:5000"
             },
             {
               :name=>"RegionSix/keystone::identity",
               :ensure=>:present,
-              :id=>"endpoint16_id,endpoint17_id,endpoint18_id",
+              :id=>"endpoint15_id,,endpoint16_id",
               :region=>"RegionSix",
               :admin_url=>"http://Six-127.0.0.1:5002",
-              :internal_url=>"https://Six-127.0.0.1:5001",
+              :internal_url=>'',
               :public_url=>"https://Six-127.0.0.1:5000"
             },
             {
               :name=>"RegionSeven/keystone::identity",
               :ensure=>:present,
-              :id=>"endpoint19_id,endpoint20_id,endpoint21_id",
+              :id=>"endpoint17_id,endpoint18_id,",
               :region=>"RegionSeven",
               :admin_url=>"http://Seven-127.0.0.1:5002",
               :internal_url=>"https://Seven-127.0.0.1:5001",
-              :public_url=>"https://Seven-127.0.0.1:5000"
+              :public_url=>''
             }
           ])
         end
