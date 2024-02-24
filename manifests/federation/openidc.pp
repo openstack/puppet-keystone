@@ -163,6 +163,10 @@ class keystone::federation::openidc (
   include keystone::deps
   include keystone::params
 
+  if ! defined(Class['keystone::wsgi::apache']) {
+    fail('The keystone::wsgi::apache class should be included in the catalog')
+  }
+
   if !($openidc_verify_method in ['introspection', 'jwks']) {
     fail('Unsupported token verification method.' +
         '  Must be one of "introspection" or "jwks"')

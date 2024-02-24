@@ -53,6 +53,10 @@ class keystone::federation::shibboleth (
   include apache
   include keystone::deps
 
+  if ! defined(Class['keystone::wsgi::apache']) {
+    fail('The keystone::wsgi::apache class should be included in the catalog')
+  }
+
   # Note: if puppet-apache modify these values, this needs to be updated
   if $template_order <= 330 or $template_order >= 999 {
     fail('The template order should be greater than 330 and less than 999.')
