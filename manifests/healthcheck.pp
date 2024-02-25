@@ -18,6 +18,10 @@
 #   healthcheck information.
 #   Defaults to $facts['os_service_default']
 #
+# [*ignore_proxied_requests*]
+#   (Optional) Ignore requests with proxy headers
+#   Defaults to $facts['os_service_default']
+#
 # [*disable_by_file_path*]
 #   (Optional) Check the presence of a file to determine if an application
 #   is running on a port.
@@ -29,20 +33,22 @@
 #   Defaults to $facts['os_service_default']
 #
 class keystone::healthcheck (
-  $detailed              = $facts['os_service_default'],
-  $backends              = $facts['os_service_default'],
-  $allowed_source_ranges = $facts['os_service_default'],
-  $disable_by_file_path  = $facts['os_service_default'],
-  $disable_by_file_paths = $facts['os_service_default'],
+  $detailed                = $facts['os_service_default'],
+  $backends                = $facts['os_service_default'],
+  $allowed_source_ranges   = $facts['os_service_default'],
+  $ignore_proxied_requests = $facts['os_service_default'],
+  $disable_by_file_path    = $facts['os_service_default'],
+  $disable_by_file_paths   = $facts['os_service_default'],
 ) {
 
   include keystone::deps
 
   oslo::healthcheck { 'keystone_config':
-    detailed              => $detailed,
-    backends              => $backends,
-    allowed_source_ranges => $allowed_source_ranges,
-    disable_by_file_path  => $disable_by_file_path,
-    disable_by_file_paths => $disable_by_file_paths,
+    detailed                => $detailed,
+    backends                => $backends,
+    allowed_source_ranges   => $allowed_source_ranges,
+    ignore_proxied_requests => $ignore_proxied_requests,
+    disable_by_file_path    => $disable_by_file_path,
+    disable_by_file_paths   => $disable_by_file_paths,
   }
 }

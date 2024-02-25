@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The new ``keystone::healthcheck::ignore_proxied_requests`` parameter has
+    been added.
