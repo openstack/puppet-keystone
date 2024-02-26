@@ -303,7 +303,7 @@ url="http://127.0.0.1:5001"
                     )
 
           expect(provider).to receive(:property_flush)
-            .exactly(5).times
+            .exactly(6).times
             .and_return({:admin_url => 'http://127.0.0.1:4999'})
           expect(provider).to receive(:property_hash)
             .exactly(2).times
@@ -322,7 +322,7 @@ url="http://127.0.0.1:5001"
             .with('endpoint', 'set',
                   ['endpoint1_id', '--url=http://127.0.0.1:4999'])
           expect(provider).to receive(:property_flush)
-            .exactly(4).times
+            .exactly(5).times
             .and_return({:admin_url => 'http://127.0.0.1:4999'})
           expect(provider).to receive(:property_hash)
             .exactly(2).times

@@ -41,7 +41,7 @@ Puppet::Type.type(:keystone_endpoint).provide(
     s_id = service_id
     created = false
     [:admin_url, :internal_url, :public_url].each do |scope|
-      if resource[scope]
+      if resource[scope] and !resource[scope].empty?
         created = true
         ids << endpoint_create(s_id, region, scope.to_s.sub(/_url$/, ''),
                                resource[scope])[:id]
@@ -146,7 +146,7 @@ Puppet::Type.type(:keystone_endpoint).provide(
       scopes = [:admin_url, :internal_url, :public_url]
       ids = Hash[scopes.zip(property_hash[:id].split(','))]
       scopes.each do |scope|
-        if property_flush[scope]
+        if property_flush[scope] and !property_flush[scope].empty?
           if ids[scope].nil? || ids[scope].empty?
             ids[scope] = endpoint_create(service_id, resource[:region],
                                          scope.to_s.sub(/_url$/, ''),

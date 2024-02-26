@@ -148,7 +148,7 @@ define keystone::resource::service_identity(
   if $configure_user {
     ['password', 'auth_name', 'email'].each |String $userprop| {
       if getvar($userprop) == undef {
-        fail("The ${userprop} parameter is required when configuring a user.")
+        fail("The ${userprop} parameter is required to configure a user.")
       }
     }
 
@@ -201,29 +201,28 @@ define keystone::resource::service_identity(
   }
 
   if $configure_service {
-    if $service_type {
-      ensure_resource('keystone_service', "${service_name}::${service_type}", {
-        'ensure'      => $ensure,
-        'description' => $service_description,
-      })
-    } else {
-      fail ('When configuring a service, you need to set the service_type parameter.')
+    if ! $service_type {
+      fail('The service_type parameter is required to configure a service.')
     }
+
+    ensure_resource('keystone_service', "${service_name}::${service_type}", {
+      'ensure'      => $ensure,
+      'description' => $service_description,
+    })
   }
 
   if $configure_endpoint {
     if ! $service_type {
-      fail('When configuring an endpoint, you need to set the service_type parameter.')
+      fail('The service_type parameter is required to configure a service.')
     }
-    if $public_url and $admin_url and $internal_url {
-      ensure_resource('keystone_endpoint', "${region}/${service_name}::${service_type}", {
-        'ensure'       => $ensure,
-        'public_url'   => $public_url,
-        'admin_url'    => $admin_url,
-        'internal_url' => $internal_url,
-      })
-    } else {
-      fail ('When configuring an endpoint, you need to set the _url parameters.')
+    if ! $public_url {
+      fail('The public_url parameter is required to configure endpoints.')
     }
+    ensure_resource('keystone_endpoint', "${region}/${service_name}::${service_type}", {
+      'ensure'       => $ensure,
+      'public_url'   => $public_url,
+      'admin_url'    => $admin_url,
+      'internal_url' => $internal_url,
+    })
   }
 }
