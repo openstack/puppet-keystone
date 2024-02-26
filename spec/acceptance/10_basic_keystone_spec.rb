@@ -84,6 +84,27 @@ describe 'keystone server running with Apache/WSGI with resources' do
         admin_url           => 'http://127.0.0.1:1234/v3',
         internal_url        => 'http://127.0.0.1:1234/v3',
       }
+      keystone::resource::service_identity { 'civ3public':
+        service_type        => 'civ3public',
+        service_description => 'civ3public service',
+        service_name        => 'civ3public',
+        password            => 'secret',
+        tenant              => 'servicesv3',
+        public_url          => 'http://127.0.0.1:1234/v3',
+        user_domain         => 'service_domain',
+        project_domain      => 'service_domain',
+      }
+      keystone::resource::service_identity { 'civ3noadmin':
+        service_type        => 'civ3noadmin',
+        service_description => 'civ3noadmin service',
+        service_name        => 'civ3noadmin',
+        password            => 'secret',
+        tenant              => 'servicesv3',
+        public_url          => 'http://127.0.0.1:1234/v3',
+        internal_url        => 'http://127.0.0.1:1234/v3',
+        user_domain         => 'service_domain',
+        project_domain      => 'service_domain',
+      }
       EOS
 
       # Run it twice and test for idempotency
@@ -152,6 +173,7 @@ describe 'keystone server running with Apache/WSGI with resources' do
         '--os-username civ3alt --os-password secret --os-project-name servicesv3 --os-user-domain-name service_domain --os-project-domain-name service_domain'
     end
   end
+
   describe 'composite namevar quick test' do
     context 'similar resources different naming' do
       let(:pp) do
@@ -180,6 +202,7 @@ describe 'keystone server running with Apache/WSGI with resources' do
       end
     end
   end
+
   describe 'composite namevar for keystone_service' do
     let(:pp) do
       <<-EOM
@@ -218,6 +241,7 @@ describe 'keystone server running with Apache/WSGI with resources' do
       apply_manifest(pp, :catch_failures => true)
       apply_manifest(pp, :catch_changes => true)
     end
+
     describe 'puppet service are created' do
       it 'for service' do
         command('puppet resource keystone_service') do |result|

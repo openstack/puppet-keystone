@@ -136,7 +136,7 @@ describe 'keystone::resource::service_identity' do
       it { is_expected.to raise_error(Puppet::Error) }
     end
 
-    context 'when trying to create an endpoint without url' do
+    context 'when trying to create an endpoint without public_url' do
       let :params do
         required_params.delete(:public_url)
         required_params
