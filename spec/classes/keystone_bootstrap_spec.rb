@@ -19,10 +19,10 @@ describe 'keystone::bootstrap' do
           "OS_BOOTSTRAP_PROJECT_NAME=admin",
           "OS_BOOTSTRAP_ROLE_NAME=admin",
           "OS_BOOTSTRAP_SERVICE_NAME=keystone",
-          "OS_BOOTSTRAP_ADMIN_URL=http://127.0.0.1:5000",
           "OS_BOOTSTRAP_PUBLIC_URL=http://127.0.0.1:5000",
-          "OS_BOOTSTRAP_INTERNAL_URL=http://127.0.0.1:5000",
           "OS_BOOTSTRAP_REGION_ID=RegionOne",
+          "OS_BOOTSTRAP_ADMIN_URL=http://127.0.0.1:5000",
+          "OS_BOOTSTRAP_INTERNAL_URL=http://127.0.0.1:5000",
         ],
         :user        => platform_params[:user],
         :path        => '/usr/bin',
@@ -131,10 +131,10 @@ describe 'keystone::bootstrap' do
           "OS_BOOTSTRAP_PROJECT_NAME=adminproj",
           "OS_BOOTSTRAP_ROLE_NAME=adminrole",
           "OS_BOOTSTRAP_SERVICE_NAME=servicename",
-          "OS_BOOTSTRAP_ADMIN_URL=http://admin:1234",
           "OS_BOOTSTRAP_PUBLIC_URL=http://public:4321",
-          "OS_BOOTSTRAP_INTERNAL_URL=http://internal:1342",
           "OS_BOOTSTRAP_REGION_ID=RegionTwo",
+          "OS_BOOTSTRAP_ADMIN_URL=http://admin:1234",
+          "OS_BOOTSTRAP_INTERNAL_URL=http://internal:1342",
         ],
         :user        => platform_params[:user],
         :path        => '/usr/bin',
@@ -288,6 +288,74 @@ describe 'keystone::bootstrap' do
       it { is_expected.to contain_openstacklib__clouds('/etc/openstack/puppet/admin-clouds.yaml').with(
         :auth_url  => 'http://internal:1234',
         :interface => 'internal',
+      )}
+    end
+
+    context 'when admin endpoint is omitted' do
+      let :params do
+        {
+          :password  => 'secret',
+          :admin_url => '',
+        }
+      end
+
+      it { is_expected.to contain_exec('keystone bootstrap').with(
+        :command     => 'keystone-manage bootstrap',
+        :environment => [
+          "OS_BOOTSTRAP_USERNAME=admin",
+          "OS_BOOTSTRAP_PASSWORD=secret",
+          "OS_BOOTSTRAP_PROJECT_NAME=admin",
+          "OS_BOOTSTRAP_ROLE_NAME=admin",
+          "OS_BOOTSTRAP_SERVICE_NAME=keystone",
+          "OS_BOOTSTRAP_PUBLIC_URL=http://127.0.0.1:5000",
+          "OS_BOOTSTRAP_REGION_ID=RegionOne",
+          "OS_BOOTSTRAP_INTERNAL_URL=http://127.0.0.1:5000",
+        ],
+        :user        => platform_params[:user],
+        :path        => '/usr/bin',
+        :refreshonly => true,
+        :subscribe   => 'Anchor[keystone::dbsync::end]',
+        :notify      => 'Anchor[keystone::service::begin]',
+        :tag         => 'keystone-bootstrap',
+      )}
+      it { is_expected.to contain_keystone_endpoint('RegionOne/keystone::identity').with(
+        :ensure       => 'present',
+        :public_url   => 'http://127.0.0.1:5000',
+        :internal_url => 'http://127.0.0.1:5000',
+      )}
+    end
+
+    context 'when internal endpoint is omitted' do
+      let :params do
+        {
+          :password     => 'secret',
+          :internal_url => '',
+        }
+      end
+
+      it { is_expected.to contain_exec('keystone bootstrap').with(
+        :command     => 'keystone-manage bootstrap',
+        :environment => [
+          "OS_BOOTSTRAP_USERNAME=admin",
+          "OS_BOOTSTRAP_PASSWORD=secret",
+          "OS_BOOTSTRAP_PROJECT_NAME=admin",
+          "OS_BOOTSTRAP_ROLE_NAME=admin",
+          "OS_BOOTSTRAP_SERVICE_NAME=keystone",
+          "OS_BOOTSTRAP_PUBLIC_URL=http://127.0.0.1:5000",
+          "OS_BOOTSTRAP_REGION_ID=RegionOne",
+          "OS_BOOTSTRAP_ADMIN_URL=http://127.0.0.1:5000",
+        ],
+        :user        => platform_params[:user],
+        :path        => '/usr/bin',
+        :refreshonly => true,
+        :subscribe   => 'Anchor[keystone::dbsync::end]',
+        :notify      => 'Anchor[keystone::service::begin]',
+        :tag         => 'keystone-bootstrap',
+      )}
+      it { is_expected.to contain_keystone_endpoint('RegionOne/keystone::identity').with(
+        :ensure       => 'present',
+        :public_url   => 'http://127.0.0.1:5000',
+        :admin_url    => 'http://127.0.0.1:5000',
       )}
     end
   end

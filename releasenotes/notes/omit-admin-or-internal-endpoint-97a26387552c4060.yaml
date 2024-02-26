@@ -1,0 +1,10 @@
+---
+features:
+  - |
+    The ``keystone::boostrap`` class now supports omitting internal endpoint
+    and/or admin endpoint. Set the url parameter(s) to ``''`` (empty string).
+
+  - |
+    The ``keystone::resource::service_identity`` defined type now allows
+    omitting internal endpiint and/or admin endpoint. Set the url parameter(s)
+    to ``''`` (empty string).
