@@ -65,10 +65,14 @@ class keystone::policy (
     file_group   => $::keystone::params::group,
     file_format  => 'yaml',
     purge_config => $purge_config,
-    tag          => 'keystone',
   }
 
   create_resources('openstacklib::policy', { $policy_path => $policy_parameters })
+
+  # policy config should occur in the config block also.
+  Anchor['keystone::config::begin']
+  -> Openstacklib::Policy[$policy_path]
+  -> Anchor['keystone::config::end']
 
   oslo::policy { 'keystone_config':
     enforce_scope        => $enforce_scope,

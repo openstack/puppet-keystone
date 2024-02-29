@@ -257,4 +257,7 @@ class keystone::cache(
     dead_timeout                         => $dead_timeout,
   }
 
+  # all cache settings should be applied and all packages should be installed
+  # before service startup
+  Oslo::Cache['keystone_config'] -> Anchor['keystone::service::begin']
 }
