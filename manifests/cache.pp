@@ -119,10 +119,6 @@
 #   (Optional) The password for the memcached with SASL enabled
 #   Defaults to $facts['os_service_default']
 #
-# [*manage_backend_package*]
-#   (Optional) Whether to install the backend package for the cache.
-#   Defaults to true
-#
 # [*token_caching*]
 #   (Optional) Toggle for token system caching. This has no effect unless
 #   cache_backend, cache_enabled and cache_memcache_servers is set.
@@ -191,6 +187,10 @@
 #   (Optional) Time in seconds before attempting to add a node
 #   back in the pool in the HashClient's internal mechanisms.
 #   Default to $facts['os_service_default']
+#
+# [*manage_backend_package*]
+#   (Optional) Whether to install the backend package for the cache.
+#   Defaults to true
 #
 class keystone::cache(
   $config_prefix                        = $facts['os_service_default'],
