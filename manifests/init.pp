@@ -548,6 +548,9 @@ class keystone(
           hasrestart => true,
           tag        => 'keystone-service',
         }
+
+        # On any uwsgi config change, we must restart Keystone.
+        Keystone_uwsgi_config<||> ~> Service['keystone']
       }
       'httpd': {
         include apache::params

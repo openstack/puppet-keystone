@@ -275,4 +275,7 @@ class keystone::cache(
     manage_backend_package               => $manage_backend_package,
   }
 
+  # all cache settings should be applied and all packages should be installed
+  # before service startup
+  Oslo::Cache['keystone_config'] -> Anchor['keystone::service::begin']
 }

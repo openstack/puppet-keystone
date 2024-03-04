@@ -69,4 +69,7 @@ class keystone::db (
     mysql_enable_ndb        => $mysql_enable_ndb,
   }
 
+  # all db settings should be applied and all packages should be installed
+  # before dbsync starts
+  Oslo::Db['keystone_config'] -> Anchor['keystone::dbsync::begin']
 }

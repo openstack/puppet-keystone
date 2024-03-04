@@ -24,22 +24,8 @@ class keystone::deps {
   ~> Service<| tag == 'keystone-service' |>
   ~> anchor { 'keystone::service::end': }
 
-  # On any uwsgi config change, we must restart Keystone.
   Anchor['keystone::config::begin']
   -> Keystone_uwsgi_config<||>
-  ~> Anchor['keystone::config::end']
-
-  # all cache settings should be applied and all packages should be installed
-  # before service startup
-  Oslo::Cache<||> -> Anchor['keystone::service::begin']
-
-  # all db settings should be applied and all packages should be installed
-  # before dbsync starts
-  Oslo::Db<||> -> Anchor['keystone::dbsync::begin']
-
-  # policy config should occur in the config block also.
-  Anchor['keystone::config::begin']
-  -> Openstacklib::Policy<| tag == 'keystone' |>
   -> Anchor['keystone::config::end']
 
   # Support packages need to be installed in the install phase, but we don't

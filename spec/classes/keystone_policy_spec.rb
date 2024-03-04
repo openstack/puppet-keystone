@@ -33,7 +33,6 @@ describe 'keystone::policy' do
           :file_group   => 'keystone',
           :file_format  => 'yaml',
           :purge_config => false,
-          :tag          => 'keystone',
         )
         is_expected.to contain_oslo__policy('keystone_config').with(
           :enforce_scope        => false,
@@ -64,7 +63,6 @@ describe 'keystone::policy' do
           :file_group   => 'keystone',
           :file_format  => 'yaml',
           :purge_config => true,
-          :tag          => 'keystone',
         )
         is_expected.to contain_oslo__policy('keystone_config').with(
           :enforce_scope        => false,
