@@ -33,6 +33,18 @@
 <%- if scope['::keystone::federation::openidc::redis_password'] != nil -%>
   OIDCRedisCachePassword "<%= scope['::keystone::federation::openidc::redis_password'] %>"
 <%- end -%>
+<%- if scope['::keystone::federation::openidc::redis_username'] != nil -%>
+  OIDCRedisCacheUsername "<%= scope['::keystone::federation::openidc::redis_username'] %>"
+<%- end -%>
+<%- if scope['::keystone::federation::openidc::redis_database'] != nil -%>
+  OIDCRedisCacheDatabase <%= scope['::keystone::federation::openidc::redis_database'] %>
+<%- end -%>
+<%- if scope['::keystone::federation::openidc::redis_connect_timeout'] != nil -%>
+  OIDCRedisCacheConnectTimeout <%= scope['::keystone::federation::openidc::redis_connect_timeout'] %>
+<%- end -%>
+<%- if scope['::keystone::federation::openidc::redis_timeout'] != nil -%>
+  OIDCRedisCacheTimeout <%= scope['::keystone::federation::openidc::redis_timeout'] %>
+<%- end -%>
 <%- if scope['::keystone::federation::openidc::openidc_claim_delimiter'] != nil -%>
   OIDCClaimDelimiter "<%= scope['::keystone::federation::openidc::openidc_claim_delimiter'] %>"
 <%- end -%>

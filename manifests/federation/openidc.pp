@@ -113,6 +113,24 @@
 #  authentication. When not specified, no authentication is
 #  performed. Defaults to undef.
 #
+# [*redis_username*]
+#  (Optional) Username to be used if the Redis server requires
+#  authentication.
+#  Defaults to undef
+#
+# [*redis_database*]
+#  (Optional) Logical database to select on the Redis server.
+#  Defaults to undef
+#
+# [*redis_connect_timeout*]
+#  (Optional) Timeout (in seconds) for connecting to the Redis servers.
+#  Defaults to undef
+#
+# [*redis_timeout*]
+#  (Optional) Timeout waiting for a response of the Redis servers after
+#  a request was sent.
+#  Defaults to undef
+#
 # [*remote_id_attribute*]
 #  (Optional) Value to be used to obtain the entity ID of the Identity
 #  Provider from the environment.
@@ -153,6 +171,10 @@ class keystone::federation::openidc (
   $memcached_servers              = undef,
   $redis_server                   = undef,
   $redis_password                 = undef,
+  $redis_username                 = undef,
+  $redis_database                 = undef,
+  $redis_connect_timeout          = undef,
+  $redis_timeout                  = undef,
   $remote_id_attribute            = $facts['os_service_default'],
   $template_order                 = 331,
 ) {
