@@ -13,16 +13,16 @@
   OIDCCacheType <%= scope['::keystone::federation::openidc::openidc_cache_type'] %>
 <%- end -%>
 <%- if scope['::keystone::federation::openidc::openidc_cache_shm_max'] != nil -%>
-  OIDCCacheShmMax scope['::keystone::federation::openidc::openidc_cache_shm_max'] %>
+  OIDCCacheShmMax <%= scope['::keystone::federation::openidc::openidc_cache_shm_max'] %>
 <%- end -%>
 <%- if scope['::keystone::federation::openidc::openidc_cache_shm_entry_size'] != nil -%>
-  OIDCCacheShmEntrySize scope['::keystone::federation::openidc::openidc_cache_shm_entry_size'] %>
+  OIDCCacheShmEntrySize <%= scope['::keystone::federation::openidc::openidc_cache_shm_entry_size'] %>
 <%- end -%>
 <%- if scope['::keystone::federation::openidc::openidc_cache_dir'] != nil -%>
-  OIDCCacheDir scope['::keystone::federation::openidc::openidc_cache_dir'] %>
+  OIDCCacheDir <%= scope['::keystone::federation::openidc::openidc_cache_dir'] %>
 <%- end -%>
 <%- if scope['::keystone::federation::openidc::openidc_cache_clean_interval'] != nil -%>
-  OIDCCacheFileCleanInterval scope['::keystone::federation::openidc::openidc_cache_clean_interval'] %>
+  OIDCCacheFileCleanInterval <%= scope['::keystone::federation::openidc::openidc_cache_clean_interval'] %>
 <%- end -%>
 <%- if scope['::keystone::federation::openidc::memcached_servers_real'] != nil -%>
   OIDCMemCacheServers "<%= scope['::keystone::federation::openidc::memcached_servers_real'] %>"
@@ -31,7 +31,7 @@
   OIDCRedisCacheServer "<%= scope['::keystone::federation::openidc::redis_server'] %>"
 <%- end -%>
 <%- if scope['::keystone::federation::openidc::redis_password'] != nil -%>
-  OIDCRedisCachecPassword scope['::keystone::federation::openidc::redis_password'] %>
+  OIDCRedisCachePassword "<%= scope['::keystone::federation::openidc::redis_password'] %>"
 <%- end -%>
 <%- if scope['::keystone::federation::openidc::openidc_claim_delimiter'] != nil -%>
   OIDCClaimDelimiter "<%= scope['::keystone::federation::openidc::openidc_claim_delimiter'] %>"

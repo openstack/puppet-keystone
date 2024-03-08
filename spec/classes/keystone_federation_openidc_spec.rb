@@ -125,6 +125,42 @@ describe 'keystone::federation::openidc' do
 
     end
 
+    context 'with memcache options' do
+      before do
+        params.merge!({
+          :openidc_cache_type           => 'memcache',
+          :openidc_cache_shm_max        => 10,
+          :openidc_cache_shm_entry_size => 11,
+          :openidc_cache_dir            => '/var/cache/openidc',
+          :openidc_cache_clean_interval => 12,
+        })
+      end
+
+      it 'should contain memcache servers' do
+        content = get_param('concat::fragment', 'configure_openidc_keystone', 'content')
+        expect(content).to match('OIDCCacheType memcache')
+        expect(content).to match('OIDCCacheShmMax 10')
+        expect(content).to match('OIDCCacheShmEntrySize 11')
+        expect(content).to match('OIDCCacheDir /var/cache/openidc')
+        expect(content).to match('OIDCCacheFileCleanInterval 12')
+      end
+    end
+
+    context 'with redis options' do
+      before do
+        params.merge!({
+          :openidc_cache_type => 'redis',
+          :redis_password     => 'redispass',
+        })
+      end
+
+      it 'should contain memcache servers' do
+        content = get_param('concat::fragment', 'configure_openidc_keystone', 'content')
+        expect(content).to match('OIDCCacheType redis')
+        expect(content).to match('OIDCRedisCachePassword "redispass"')
+      end
+    end
+
     context 'with memcached_servers attribute' do
       before do
         params.merge!({
