@@ -2,16 +2,6 @@
 #
 # == Parameters
 #
-# [*certfile*]
-#   (Required) Path of the certfile for SAML signing. The path can not
-#   contain a comma. (string value).
-#   Defaults to $::keystone::ssl_ca_certs value.
-#
-# [*keyfile*]
-#   (Required) Path of the keyfile for SAML signing. The path can not
-#   contain a comma (string value).
-#   Defaults to $::keystone::ssl_ca_key value.
-#
 # [*idp_entity_id*]
 #   (Required) Entity ID value for unique Identity Provider identification
 #   (string value).
@@ -21,6 +11,16 @@
 #
 # [*idp_metadata_path*]
 #   (Required) Path to the Identity Provider Metadata file (string value).
+#
+# [*certfile*]
+#   (Optional) Path of the certfile for SAML signing. The path can not
+#   contain a comma. (string value).
+#   Defaults to $facts['os_service_default'].
+#
+# [*keyfile*]
+#   (Optional) Path of the keyfile for SAML signing. The path can not
+#   contain a comma (string value).
+#   Defaults to $facts['os_service_default'].
 #
 # [*idp_organization_name*]
 #   (Optional) Organization name the installation belongs to (string value).
@@ -82,8 +82,8 @@ class keystone::federation::identity_provider(
   $idp_entity_id,
   $idp_sso_endpoint,
   Stdlib::Absolutepath $idp_metadata_path,
-  $certfile                      = $::keystone::ssl_ca_certs,
-  $keyfile                       = $::keystone::ssl_ca_key,
+  $certfile                      = $facts['os_service_default'],
+  $keyfile                       = $facts['os_service_default'],
   $user                          = $::keystone::params::user,
   $idp_organization_name         = $facts['os_service_default'],
   $idp_organization_display_name = $facts['os_service_default'],
