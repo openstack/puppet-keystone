@@ -149,8 +149,12 @@ describe 'keystone::federation::openidc' do
     context 'with redis options' do
       before do
         params.merge!({
-          :openidc_cache_type => 'redis',
-          :redis_password     => 'redispass',
+          :openidc_cache_type    => 'redis',
+          :redis_password        => 'redispass',
+          :redis_username        => 'redisuser',
+          :redis_database        => 0,
+          :redis_timeout         => 10,
+          :redis_connect_timeout => 11,
         })
       end
 
@@ -158,6 +162,10 @@ describe 'keystone::federation::openidc' do
         content = get_param('concat::fragment', 'configure_openidc_keystone', 'content')
         expect(content).to match('OIDCCacheType redis')
         expect(content).to match('OIDCRedisCachePassword "redispass"')
+        expect(content).to match('OIDCRedisCacheUsername "redisuser"')
+        expect(content).to match('OIDCRedisCacheDatabase 0')
+        expect(content).to match('OIDCRedisCacheTimeout 10')
+        expect(content).to match('OIDCRedisCacheConnectTimeout 11')
       end
     end
 

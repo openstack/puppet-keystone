@@ -1,0 +1,10 @@
+---
+features:
+  - |
+    The following parameters have been added to
+    the ``keystone::federation::openidc`` class.
+
+    - ``redis_username``
+    - ``redis_database``
+    - ``redis_timeout``
+    - ``redis_connect_timeout``
