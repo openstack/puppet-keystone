@@ -79,6 +79,7 @@ describe 'keystone' do
           :heartbeat_in_pthread               => '<SERVICE DEFAULT>',
           :amqp_durable_queues                => '<SERVICE DEFAULT>',
           :rabbit_quorum_queue                => '<SERVICE DEFAULT>',
+          :rabbit_transient_quorum_queue      => '<SERVICE DEFAULT>',
           :rabbit_quorum_delivery_limit       => '<SERVICE DEFAULT>',
           :rabbit_quorum_max_memory_length    => '<SERVICE DEFAULT>',
           :rabbit_quorum_max_memory_bytes     => '<SERVICE DEFAULT>',
