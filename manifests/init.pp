@@ -12,10 +12,6 @@
 #   (Optional) Catalog driver used by Keystone to store endpoints and services.
 #   Defaults to $facts['os_service_default'].
 #
-# [*catalog_template_file*]
-#   (Optional) Path to the catalog used if 'templated' catalog driver is used.
-#   Defaults to '/etc/keystone/default_catalog.templates'
-#
 # [*token_provider*]
 #   (Optional) Format keystone uses for tokens.
 #   Defaults to 'fernet'
@@ -342,6 +338,10 @@
 #   accepts latest or specific versions.
 #   Defaults to present.
 #
+# [*catalog_template_file*]
+#   (Optional) Path to the catalog used if 'templated' catalog driver is used.
+#   Defaults to '/etc/keystone/default_catalog.templates'
+#
 # == Authors
 #
 #   Dan Bode dan@puppetlabs.com
@@ -353,7 +353,6 @@
 class keystone(
   $package_ensure                                 = 'present',
   $catalog_driver                                 = $facts['os_service_default'],
-  $catalog_template_file                          = '/etc/keystone/default_catalog.templates',
   $token_provider                                 = 'fernet',
   $token_expiration                               = 3600,
   $password_hash_algorithm                        = $facts['os_service_default'],
@@ -412,6 +411,7 @@ class keystone(
   $amqp_durable_queues                            = $facts['os_service_default'],
   # DEPRECATED PARAMETERS
   $client_package_ensure                          = undef,
+  $catalog_template_file                          = undef,
 ) inherits keystone::params {
 
   include keystone::deps
@@ -420,6 +420,13 @@ class keystone(
 
   if $client_package_ensure != undef {
     warning('The client_package_ensure parameter is deprecated and has no effect.')
+  }
+
+  if $catalog_template_file != undef {
+    warning('The catalog_template_file parameter is deprecated and will be removed in a future release')
+    $catalog_template_file_real = $catalog_template_file
+  } else {
+    $catalog_template_file_real = '/etc/keystone/default_catalog.templates'
   }
 
   if $manage_policyrcd {
@@ -478,7 +485,7 @@ class keystone(
 
   keystone_config {
     'catalog/driver':        value => $catalog_driver;
-    'catalog/template_file': value => $catalog_template_file;
+    'catalog/template_file': value => $catalog_template_file_real;
   }
 
   keystone_config {
