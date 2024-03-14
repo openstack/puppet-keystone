@@ -1,5 +1,6 @@
 # Class keystone::messaging::amqp
 #
+# DEPRECATED !!
 # keystone messaging configuration
 #
 # == Parameters
@@ -43,6 +44,8 @@ class keystone::messaging::amqp(
 ) {
 
   include keystone::deps
+
+  warning('The keystone::messaging::amqp class has been deprecated.')
 
   oslo::messaging::amqp { 'keystone_config':
     pre_settled      => $amqp_pre_settled,
