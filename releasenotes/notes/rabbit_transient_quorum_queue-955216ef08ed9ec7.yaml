@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The new ``keystone::rabbit_transient_quorum_queue`` parameter has been
+    added.
