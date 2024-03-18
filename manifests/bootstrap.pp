@@ -60,18 +60,18 @@
 #
 class keystone::bootstrap (
   String[1] $password,
-  String[1] $username                     = 'admin',
-  String[1] $email                        = 'admin@localhost',
-  String[1] $project_name                 = 'admin',
-  String[1] $service_project_name         = 'services',
-  String[1] $role_name                    = 'admin',
-  String[1] $service_name                 = 'keystone',
-  Stdlib::HTTPUrl $admin_url              = 'http://127.0.0.1:5000',
-  Stdlib::HTTPUrl $public_url             = 'http://127.0.0.1:5000',
-  Optional[Stdlib::HTTPUrl] $internal_url = undef,
-  String[1] $region                       = 'RegionOne',
-  String[1] $interface                    = 'public',
-  Boolean $bootstrap                      = true,
+  String[1] $username                                   = 'admin',
+  String[1] $email                                      = 'admin@localhost',
+  String[1] $project_name                               = 'admin',
+  String[1] $service_project_name                       = 'services',
+  String[1] $role_name                                  = 'admin',
+  String[1] $service_name                               = 'keystone',
+  Keystone::KeystoneEndpointUrl $admin_url              = 'http://127.0.0.1:5000',
+  Keystone::KeystonePublicEndpointUrl $public_url       = 'http://127.0.0.1:5000',
+  Optional[Keystone::KeystoneEndpointUrl] $internal_url = undef,
+  String[1] $region                                     = 'RegionOne',
+  String[1] $interface                                  = 'public',
+  Boolean $bootstrap                                    = true,
 ) inherits keystone::params {
 
   include keystone::deps
@@ -88,22 +88,32 @@ class keystone::bootstrap (
   }
 
   if $bootstrap {
+    $bootstrap_adminurl_env = $admin_url ? {
+      ''      => undef,
+      default => "OS_BOOTSTRAP_ADMIN_URL=${admin_url}",
+    }
+    $bootstrap_internalurl_env = $internal_url_real ? {
+      ''      => undef,
+      default => "OS_BOOTSTRAP_INTERNAL_URL=${internal_url_real}",
+    }
+    $bootstrap_env = delete_undef_values([
+      "OS_BOOTSTRAP_USERNAME=${username}",
+      "OS_BOOTSTRAP_PASSWORD=${password}",
+      "OS_BOOTSTRAP_PROJECT_NAME=${project_name}",
+      "OS_BOOTSTRAP_ROLE_NAME=${role_name}",
+      "OS_BOOTSTRAP_SERVICE_NAME=${service_name}",
+      "OS_BOOTSTRAP_PUBLIC_URL=${public_url}",
+      "OS_BOOTSTRAP_REGION_ID=${region}",
+      $bootstrap_adminurl_env,
+      $bootstrap_internalurl_env,
+    ])
+
     # The initial bootstrap that creates all resources required but
     # only subscribes to notifies from the keystone::dbsync::end anchor
     # which means this is not guaranteed to execute on each run.
     exec { 'keystone bootstrap':
       command     => 'keystone-manage bootstrap',
-      environment => [
-        "OS_BOOTSTRAP_USERNAME=${username}",
-        "OS_BOOTSTRAP_PASSWORD=${password}",
-        "OS_BOOTSTRAP_PROJECT_NAME=${project_name}",
-        "OS_BOOTSTRAP_ROLE_NAME=${role_name}",
-        "OS_BOOTSTRAP_SERVICE_NAME=${service_name}",
-        "OS_BOOTSTRAP_ADMIN_URL=${admin_url}",
-        "OS_BOOTSTRAP_PUBLIC_URL=${public_url}",
-        "OS_BOOTSTRAP_INTERNAL_URL=${internal_url_real}",
-        "OS_BOOTSTRAP_REGION_ID=${region}",
-      ],
+      environment => $bootstrap_env,
       user        => $keystone_user,
       path        => '/usr/bin',
       refreshonly => true,
@@ -173,6 +183,9 @@ class keystone::bootstrap (
     'admin'    => $admin_url,
     'internal' => $internal_url_real,
     default    => $public_url
+  }
+  if $auth_url_real == '' {
+    fail("The ${interface} endpoint should not be empty to be used by the interface parameter.")
   }
 
   ensure_resource('file', '/etc/openstack', {
