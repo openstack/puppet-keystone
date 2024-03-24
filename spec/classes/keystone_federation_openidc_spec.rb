@@ -71,6 +71,8 @@ describe 'keystone::federation::openidc' do
         :order  => params[:template_order],
       })}
 
+      it { is_expected.to contain_concat('10-keystone_wsgi.conf').with_show_diff(false) }
+
       it 'should contain expected config' do
         content = get_param('concat::fragment', 'configure_openidc_keystone', 'content')
         expect(content).to match('OIDCProviderMetadataURL "https://accounts.google.com/.well-known/openid-configuration"')
