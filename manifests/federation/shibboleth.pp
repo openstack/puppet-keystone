@@ -90,6 +90,10 @@ Apache + Shibboleth SP setups, where a REMOTE_USER env variable is always set, e
       content => template('keystone/shibboleth.conf.erb'),
       order   => $template_order,
     }
+
+    Concat<| title == "${keystone::wsgi::apache::priority}-keystone_wsgi.conf" |> {
+      show_diff => false,
+    }
   } elsif $::osfamily == 'Redhat' {
     if !$suppress_warning {
       warning( 'Can not configure Shibboleth in Apache on RedHat OS.Read the Note on this federation/shibboleth.pp' )

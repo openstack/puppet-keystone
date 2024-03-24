@@ -52,6 +52,8 @@ describe 'keystone::federation::mellon' do
         :target => "10-keystone_wsgi.conf",
         :order  => params[:template_order],
       })}
+
+      it { is_expected.to contain_concat('10-keystone_wsgi.conf').with_show_diff(false) }
     end
 
     context 'with websso enabled' do
@@ -74,6 +76,8 @@ describe 'keystone::federation::mellon' do
         :target => "10-keystone_wsgi.conf",
         :order  => params[:template_order],
       })}
+
+      it { is_expected.to contain_concat('10-keystone_wsgi.conf').with_show_diff(false) }
     end
   end
 
