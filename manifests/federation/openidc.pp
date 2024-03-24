@@ -221,4 +221,8 @@ class keystone::federation::openidc (
     content => template('keystone/openidc.conf.erb'),
     order   => $template_order,
   }
+
+  Concat<| title == "${keystone::wsgi::apache::priority}-keystone_wsgi.conf" |> {
+    show_diff => false,
+  }
 }

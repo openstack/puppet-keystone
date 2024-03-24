@@ -86,6 +86,7 @@ describe 'keystone::federation::shibboleth' do
           :target => "10-keystone_wsgi.conf",
           :order  => params[:template_order],
         })}
+        it { is_expected.to contain_concat('10-keystone_wsgi.conf').with_show_diff(false) }
       end
     end
 
@@ -109,6 +110,7 @@ describe 'keystone::federation::shibboleth' do
           :target => "10-keystone_wsgi.conf",
           :order  => params[:template_order],
         })}
+        it { is_expected.to contain_concat('10-keystone_wsgi.conf').with_show_diff(false) }
       end
     end
 
@@ -132,6 +134,7 @@ describe 'keystone::federation::shibboleth' do
          :order  => params[:template_order],
        })}
 
+      it { is_expected.to contain_concat('10-keystone_wsgi.conf').with_show_diff(false) }
     end
   end
 

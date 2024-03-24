@@ -81,6 +81,10 @@ Apache + Shibboleth SP setups, where a REMOTE_USER env variable is always set, e
         content => template('keystone/shibboleth.conf.erb'),
         order   => $template_order,
       }
+
+      Concat<| title == "${keystone::wsgi::apache::priority}-keystone_wsgi.conf" |> {
+        show_diff => false,
+      }
     }
     'RedHat': {
       if defined(Yumrepo[$yum_repo_name]) or defined(Package['shibboleth']) {
@@ -94,6 +98,10 @@ Apache + Shibboleth SP setups, where a REMOTE_USER env variable is always set, e
           target  => "${keystone::wsgi::apache::priority}-keystone_wsgi.conf",
           content => template('keystone/shibboleth.conf.erb'),
           order   => $template_order,
+        }
+
+        Concat<| title == "${keystone::wsgi::apache::priority}-keystone_wsgi.conf" |> {
+          show_diff => false,
         }
       } else {
         if !$suppress_warning {
