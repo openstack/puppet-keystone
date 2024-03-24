@@ -88,6 +88,7 @@ describe 'keystone::federation::shibboleth' do
           :priority => 10,
           :order    => params[:template_order],
         })}
+        it { is_expected.to contain_concat('10-keystone_wsgi.conf').with_show_diff(false) }
       end
     end
 
@@ -113,6 +114,7 @@ describe 'keystone::federation::shibboleth' do
           :priority => 10,
           :order    => params[:template_order],
         })}
+        it { is_expected.to contain_concat('10-keystone_wsgi.conf').with_show_diff(false) }
       end
     end
 
@@ -131,12 +133,15 @@ describe 'keystone::federation::shibboleth' do
       let (:params) { default_params }
 
       it { is_expected.to contain_apache__mod('shib2') }
+
       it { is_expected.to contain_apache__vhost__fragment('configure_shibboleth_keystone').with({
         :vhost    => 'keystone_wsgi',
         # This need to change if priority is changed in keystone::wsgi::apache
         :priority => 10,
         :order    => params[:template_order],
       })}
+
+      it { is_expected.to contain_concat('10-keystone_wsgi.conf').with_show_diff(false) }
     end
   end
 
