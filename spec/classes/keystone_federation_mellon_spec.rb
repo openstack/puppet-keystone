@@ -51,10 +51,11 @@ describe 'keystone::federation::mellon' do
         is_expected.to contain_keystone_config('mapped/remote_id_attribute').with_ensure('absent')
       end
 
-      it { is_expected.to contain_concat__fragment('configure_mellon_keystone').with({
+      it { is_expected.to contain_apache__vhost__fragment('configure_mellon_keystone').with({
+        :vhost    => 'keystone_wsgi',
         # This need to change if priority is changed in keystone::wsgi::apache
-        :target => "10-keystone_wsgi.conf",
-        :order  => params[:template_order],
+        :priority => 10,
+        :order    => params[:template_order],
       })}
     end
 
@@ -73,9 +74,11 @@ describe 'keystone::federation::mellon' do
         is_expected.to contain_keystone_config('mapped/remote_id_attribute').with_value('MELLON_IDP')
       end
 
-      it { is_expected.to contain_concat__fragment('configure_mellon_keystone').with({
-        :target => "10-keystone_wsgi.conf",
-        :order  => params[:template_order],
+      it { is_expected.to contain_apache__vhost__fragment('configure_mellon_keystone').with({
+        :vhost    => 'keystone_wsgi',
+        # This need to change if priority is changed in keystone::wsgi::apache
+        :priority => 10,
+        :order    => params[:template_order],
       })}
     end
   end

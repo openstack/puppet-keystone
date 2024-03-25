@@ -82,9 +82,11 @@ describe 'keystone::federation::shibboleth' do
 
         it { is_expected.to contain_apache__mod('shib2') }
         it { is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2') }
-        it { is_expected.to contain_concat__fragment('configure_shibboleth_keystone').with({
-          :target => "10-keystone_wsgi.conf",
-          :order  => params[:template_order],
+        it { is_expected.to contain_apache__vhost__fragment('configure_shibboleth_keystone').with({
+          :vhost    => 'keystone_wsgi',
+          # This need to change if priority is changed in keystone::wsgi::apache
+          :priority => 10,
+          :order    => params[:template_order],
         })}
       end
     end
@@ -105,9 +107,11 @@ describe 'keystone::federation::shibboleth' do
 
         it { is_expected.to contain_apache__mod('shib2') }
         it { is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2') }
-        it { is_expected.to contain_concat__fragment('configure_shibboleth_keystone').with({
-          :target => "10-keystone_wsgi.conf",
-          :order  => params[:template_order],
+        it { is_expected.to contain_apache__vhost__fragment('configure_shibboleth_keystone').with({
+          :vhost    => 'keystone_wsgi',
+          # This need to change if priority is changed in keystone::wsgi::apache
+          :priority => 10,
+          :order    => params[:template_order],
         })}
       end
     end
@@ -117,7 +121,7 @@ describe 'keystone::federation::shibboleth' do
         let (:params) { default_params }
         it { is_expected.to_not contain_apache__mod('shib2') }
         it { is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2') }
-        it { is_expected.to_not contain_concat__fragment('configure_shibboleth_keystone') }
+        it { is_expected.to_not contain_apache__vhost__fragment('configure_shibboleth_keystone') }
       end
     end
   end
@@ -127,11 +131,12 @@ describe 'keystone::federation::shibboleth' do
       let (:params) { default_params }
 
       it { is_expected.to contain_apache__mod('shib2') }
-      it { is_expected.to contain_concat__fragment('configure_shibboleth_keystone').with({
-         :target => "10-keystone_wsgi.conf",
-         :order  => params[:template_order],
-       })}
-
+      it { is_expected.to contain_apache__vhost__fragment('configure_shibboleth_keystone').with({
+        :vhost    => 'keystone_wsgi',
+        # This need to change if priority is changed in keystone::wsgi::apache
+        :priority => 10,
+        :order    => params[:template_order],
+      })}
     end
   end
 

@@ -66,13 +66,14 @@ describe 'keystone::federation::openidc' do
         is_expected.to contain_keystone_config('openid/remote_id_attribute').with_value('<SERVICE DEFAULT>')
       end
 
-      it { is_expected.to contain_concat__fragment('configure_openidc_keystone').with({
-        :target => "10-keystone_wsgi.conf",
-        :order  => params[:template_order],
+      it { is_expected.to contain_apache__vhost__fragment('configure_openidc_keystone').with({
+        :vhost    => 'keystone_wsgi',
+        :priority => 10,
+        :order    => params[:template_order],
       })}
 
       it 'should contain expected config' do
-        content = get_param('concat::fragment', 'configure_openidc_keystone', 'content')
+        content = get_param('concat::fragment', 'keystone_wsgi-configure_openidc_keystone', 'content')
         expect(content).to match('OIDCProviderMetadataURL "https://accounts.google.com/.well-known/openid-configuration"')
         expect(content).to match('OIDCClientID "openid_client_id"')
         expect(content).to match('OIDCClientSecret "openid_client_secret"')
@@ -88,7 +89,7 @@ describe 'keystone::federation::openidc' do
       end
 
       it 'should contain oauth and introspection config' do
-        content = get_param('concat::fragment', 'configure_openidc_keystone', 'content')
+        content = get_param('concat::fragment', 'keystone_wsgi-configure_openidc_keystone', 'content')
         expect(content).to match('OIDCOAuthClientID "openid_client_id"')
         expect(content).to match('OIDCOAuthClientSecret "openid_client_secret"')
         expect(content).to match('OIDCOAuthIntrospectionEndpoint "http://example.com"')
@@ -106,7 +107,7 @@ describe 'keystone::federation::openidc' do
       end
 
       it 'should contain oauth and jwks config' do
-        content = get_param('concat::fragment', 'configure_openidc_keystone', 'content')
+        content = get_param('concat::fragment', 'keystone_wsgi-configure_openidc_keystone', 'content')
         expect(content).to match('OIDCOAuthVerifyJwksUri "http://example.com"')
         expect(content).to match('/v3/OS-FEDERATION/identity_providers/myidp/protocols/openid/auth')
       end
@@ -137,7 +138,7 @@ describe 'keystone::federation::openidc' do
       end
 
       it 'should contain memcache servers' do
-        content = get_param('concat::fragment', 'configure_openidc_keystone', 'content')
+        content = get_param('concat::fragment', 'keystone_wsgi-configure_openidc_keystone', 'content')
         expect(content).to match('OIDCCacheType memcache')
         expect(content).to match('OIDCCacheShmMax 10')
         expect(content).to match('OIDCCacheShmEntrySize 11')
@@ -159,7 +160,7 @@ describe 'keystone::federation::openidc' do
       end
 
       it 'should contain memcache servers' do
-        content = get_param('concat::fragment', 'configure_openidc_keystone', 'content')
+        content = get_param('concat::fragment', 'keystone_wsgi-configure_openidc_keystone', 'content')
         expect(content).to match('OIDCCacheType redis')
         expect(content).to match('OIDCRedisCachePassword "redispass"')
         expect(content).to match('OIDCRedisCacheUsername "redisuser"')
@@ -177,7 +178,7 @@ describe 'keystone::federation::openidc' do
       end
 
       it 'should contain memcache servers' do
-        content = get_param('concat::fragment', 'configure_openidc_keystone', 'content')
+        content = get_param('concat::fragment', 'keystone_wsgi-configure_openidc_keystone', 'content')
         expect(content).to match('OIDCMemCacheServers "127.0.0.1:11211 127.0.0.2:11211"')
       end
     end
@@ -190,7 +191,7 @@ describe 'keystone::federation::openidc' do
       end
 
       it 'should contain redis server' do
-        content = get_param('concat::fragment', 'configure_openidc_keystone', 'content')
+        content = get_param('concat::fragment', 'keystone_wsgi-configure_openidc_keystone', 'content')
         expect(content).to match('OIDCRedisCacheServer "127.0.0.1"')
       end
     end
@@ -203,7 +204,7 @@ describe 'keystone::federation::openidc' do
       end
 
       it 'should contain OIDC claim delimiter' do
-        content = get_param('concat::fragment', 'configure_openidc_keystone', 'content')
+        content = get_param('concat::fragment', 'keystone_wsgi-configure_openidc_keystone', 'content')
         expect(content).to match('OIDCClaimDelimiter ";"')
       end
     end
@@ -216,7 +217,7 @@ describe 'keystone::federation::openidc' do
       end
 
       it 'should contain OIDC pass userinfo as' do
-        content = get_param('concat::fragment', 'configure_openidc_keystone', 'content')
+        content = get_param('concat::fragment', 'keystone_wsgi-configure_openidc_keystone', 'content')
         expect(content).to match('OIDCPassUserInfoAs "claims"')
       end
     end
@@ -229,7 +230,7 @@ describe 'keystone::federation::openidc' do
       end
 
       it 'should contain OIDC pass claim as' do
-        content = get_param('concat::fragment', 'configure_openidc_keystone', 'content')
+        content = get_param('concat::fragment', 'keystone_wsgi-configure_openidc_keystone', 'content')
         expect(content).to match('OIDCPassClaimsAs "both"')
       end
     end
@@ -242,7 +243,7 @@ describe 'keystone::federation::openidc' do
       end
 
       it 'should contain OIDC response mode' do
-        content = get_param('concat::fragment', 'configure_openidc_keystone', 'content')
+        content = get_param('concat::fragment', 'keystone_wsgi-configure_openidc_keystone', 'content')
         expect(content).to match('OIDCResponseMode "form_post"')
       end
     end

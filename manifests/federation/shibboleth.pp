@@ -80,10 +80,11 @@ Apache + Shibboleth SP setups, where a REMOTE_USER env variable is always set, e
       include apache::mod::shib
       include apache::mod::authn_core
 
-      concat::fragment { 'configure_shibboleth_keystone':
-        target  => "${keystone::wsgi::apache::priority}-keystone_wsgi.conf",
-        content => template('keystone/shibboleth.conf.erb'),
-        order   => $template_order,
+      apache::vhost::fragment { 'configure_shibboleth_keystone':
+        vhost    => 'keystone_wsgi',
+        priority => $keystone::wsgi::apache::priority,
+        content  => template('keystone/shibboleth.conf.erb'),
+        order    => $template_order,
       }
     }
     'RedHat': {
@@ -94,10 +95,11 @@ Apache + Shibboleth SP setups, where a REMOTE_USER env variable is always set, e
           path => '/usr/lib64/shibboleth/mod_shib_24.so'
         }
 
-        concat::fragment { 'configure_shibboleth_keystone':
-          target  => "${keystone::wsgi::apache::priority}-keystone_wsgi.conf",
-          content => template('keystone/shibboleth.conf.erb'),
-          order   => $template_order,
+        apache::vhost::fragment { 'configure_shibboleth_keystone':
+          vhost    => 'keystone_wsgi',
+          priority => $keystone::wsgi::apache::priority,
+          content  => template('keystone/shibboleth.conf.erb'),
+          order    => $template_order,
         }
       } else {
         if !$suppress_warning {

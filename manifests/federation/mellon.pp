@@ -76,10 +76,10 @@ Apache + Mellon SP setups, where a REMOTE_USER env variable is always set, even 
     }
   }
 
-  concat::fragment { 'configure_mellon_keystone':
-    target  => "${keystone::wsgi::apache::priority}-keystone_wsgi.conf",
-    content => template('keystone/mellon.conf.erb'),
-    order   => $template_order,
+  apache::vhost::fragment { 'configure_mellon_keystone':
+    vhost    => 'keystone_wsgi',
+    priority => $keystone::wsgi::apache::priority,
+    content  => template('keystone/mellon.conf.erb'),
+    order    => $template_order,
   }
-
 }

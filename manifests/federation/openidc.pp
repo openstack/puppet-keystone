@@ -242,9 +242,10 @@ class keystone::federation::openidc (
     'openid/remote_id_attribute': value => $remote_id_attribute;
   }
 
-  concat::fragment { 'configure_openidc_keystone':
-    target  => "${keystone::wsgi::apache::priority}-keystone_wsgi.conf",
-    content => template('keystone/openidc.conf.erb'),
-    order   => $template_order,
+  apache::vhost::fragment { 'configure_openidc_keystone':
+    vhost    => 'keystone_wsgi',
+    priority => $keystone::wsgi::apache::priority,
+    content  => template('keystone/openidc.conf.erb'),
+    order    => $template_order,
   }
 }
