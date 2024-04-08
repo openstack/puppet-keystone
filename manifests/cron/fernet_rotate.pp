@@ -60,7 +60,7 @@ class keystone::cron::fernet_rotate (
   $monthday                         = '*',
   $month                            = '*',
   $weekday                          = '*',
-  $maxdelay                         = 0,
+  Integer[0] $maxdelay              = 0,
   $user                             = $::keystone::params::user,
 ) inherits keystone::params {
 

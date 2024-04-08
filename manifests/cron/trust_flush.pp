@@ -67,8 +67,8 @@ class keystone::cron::trust_flush (
   $monthday                         = '*',
   $month                            = '*',
   $weekday                          = '*',
-  Integer $maxdelay                 = 0,
-  Integer $age                      = 0,
+  Integer[0] $maxdelay              = 0,
+  Integer[0] $age                   = 0,
   $destination                      = '/var/log/keystone/keystone-trustflush.log',
   $user                             = $::keystone::params::user,
 ) inherits keystone::params {
