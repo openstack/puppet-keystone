@@ -1,0 +1,5 @@
+---
+deprecations:
+  - |
+    The ``keystone::catalog_template_file`` parameter has been deprecated and
+    will be removed in a futrue release.
