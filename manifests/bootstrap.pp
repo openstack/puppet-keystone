@@ -70,7 +70,7 @@ class keystone::bootstrap (
   Keystone::KeystonePublicEndpointUrl $public_url       = 'http://127.0.0.1:5000',
   Optional[Keystone::KeystoneEndpointUrl] $internal_url = undef,
   String[1] $region                                     = 'RegionOne',
-  String[1] $interface                                  = 'public',
+  Enum['public', 'internal', 'admin'] $interface        = 'public',
   Boolean $bootstrap                                    = true,
 ) inherits keystone::params {
 
