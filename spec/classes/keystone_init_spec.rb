@@ -35,6 +35,7 @@ describe 'keystone' do
         is_expected.to contain_keystone_config('token/expiration').with_value(3600)
         is_expected.to contain_keystone_config('identity/password_hash_algorithm').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('identity/password_hash_rounds').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('identity/max_password_length').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('revoke/driver').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('policy/driver').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('token/revoke_by_id').with_value(true)
@@ -127,6 +128,7 @@ describe 'keystone' do
           :token_expiration             => 7200,
           :password_hash_algorithm      => 'bcrypt',
           :password_hash_rounds         => 12,
+          :max_password_length          => 54,
           :revoke_driver                => 'sql',
           :policy_driver                => 'sql',
           :revoke_by_id                 => true,
@@ -151,6 +153,7 @@ describe 'keystone' do
         is_expected.to contain_keystone_config('token/expiration').with_value(7200)
         is_expected.to contain_keystone_config('identity/password_hash_algorithm').with_value('bcrypt')
         is_expected.to contain_keystone_config('identity/password_hash_rounds').with_value(12)
+        is_expected.to contain_keystone_config('identity/max_password_length').with_value(54)
         is_expected.to contain_keystone_config('revoke/driver').with_value('sql')
         is_expected.to contain_keystone_config('policy/driver').with_value('sql')
         is_expected.to contain_keystone_config('token/revoke_by_id').with_value(true)
