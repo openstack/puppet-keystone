@@ -29,6 +29,10 @@
 #   (Optional) The amount of rounds to do on the hash.
 #   Defaults to $facts['os_service_default']
 #
+# [*max_password_length*]
+#   (Optional) Maximum allowed length for user passwords.
+#   Defaults to $facts['os_service_default']
+#
 # [*revoke_driver*]
 #   (Optional) Driver for token revocation.
 #   Defaults to $facts['os_service_default']
@@ -361,6 +365,7 @@ class keystone(
   $token_expiration                               = 3600,
   $password_hash_algorithm                        = $facts['os_service_default'],
   $password_hash_rounds                           = $facts['os_service_default'],
+  $max_password_length                            = $facts['os_service_default'],
   $revoke_driver                                  = $facts['os_service_default'],
   $revoke_by_id                                   = true,
   $public_endpoint                                = $facts['os_service_default'],
@@ -473,6 +478,7 @@ class keystone(
   keystone_config {
     'identity/password_hash_algorithm': value => $password_hash_algorithm;
     'identity/password_hash_rounds':    value => $password_hash_rounds;
+    'identity/max_password_length':     value => $max_password_length;
   }
 
   keystone_config {
