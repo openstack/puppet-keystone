@@ -248,7 +248,7 @@
 #   Puppet will create a file per key in $fernet_key_repository.
 #   Note: defaults to false so keystone-manage fernet_setup will be executed.
 #   Otherwise Puppet will manage keys with File resource.
-#   Defaults to false
+#   Defaults to undef
 #
 # [*fernet_replace_keys*]
 #   (Optional) Whether or not to replace the fernet keys if they are already in
@@ -281,7 +281,7 @@
 #   Puppet will create a file per key in $credential_key_repository.
 #   Note: defaults to false so keystone-manage credential_setup will be executed.
 #   Otherwise Puppet will manage keys with File resource.
-#   Defaults to false
+#   Defaults to undef
 #
 # [*default_domain*]
 #   (Optional) When Keystone v3 support is enabled, v2 clients will need
