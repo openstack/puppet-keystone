@@ -38,7 +38,7 @@ describe 'keystone' do
         is_expected.to contain_keystone_config('identity/max_password_length').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('revoke/driver').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('policy/driver').with_value('<SERVICE DEFAULT>')
-        is_expected.to contain_keystone_config('token/revoke_by_id').with_value(true)
+        is_expected.to contain_keystone_config('token/revoke_by_id').with_value('<SERVICE DEFAULT>')
 
         is_expected.to contain_oslo__middleware('keystone_config').with(
           :enable_proxy_headers_parsing => '<SERVICE DEFAULT>',
@@ -404,7 +404,6 @@ describe 'keystone' do
         {
           'enable_fernet_setup'    => true,
           'fernet_max_active_keys' => 5,
-          'revoke_by_id'           => false,
           'fernet_key_repository'  => '/etc/keystone/fernet-keys',
         }
       end
@@ -423,7 +422,6 @@ describe 'keystone' do
         :require => 'File[/etc/keystone/fernet-keys]',
       ) }
       it { is_expected.to contain_keystone_config('fernet_tokens/max_active_keys').with_value(5)}
-      it { is_expected.to contain_keystone_config('token/revoke_by_id').with_value(false)}
     end
 
     context 'when overriding the fernet key directory' do
