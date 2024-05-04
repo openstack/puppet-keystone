@@ -104,6 +104,21 @@ describe 'keystone' do
 
       it { is_expected.to_not contain_file('/etc/keystone/domains') }
 
+      it { is_expected.to contain_file('/etc/keystone/fernet-keys').with(
+        :ensure => 'directory',
+        :owner  => 'keystone',
+        :group  => 'keystone',
+        'mode'  => '0600',
+      ) }
+
+      it { is_expected.to contain_exec('keystone-manage fernet_setup').with(
+        :command => 'keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone',
+        :user    => 'keystone',
+        :creates => '/etc/keystone/fernet-keys/0',
+        :require => 'File[/etc/keystone/fernet-keys]',
+      ) }
+      it { is_expected.to contain_keystone_config('fernet_tokens/key_repository').with_value('/etc/keystone/fernet-keys') }
+
       it { is_expected.to contain_file('/etc/keystone/credential-keys').with(
         :ensure => 'directory',
         :owner  => 'keystone',
@@ -387,16 +402,16 @@ describe 'keystone' do
       )}
     end
 
-    context 'when disabling credential_setup' do
+    context 'when disabling fernet_setup' do
       let :params do
         {
-          'enable_credential_setup'   => false,
-          'credential_key_repository' => '/etc/keystone/credential-keys',
+          'enable_fernet_setup' => false,
         }
       end
 
-      it { is_expected.to_not contain_file(params['credential_key_repository']) }
-      it { is_expected.to_not contain_exec('keystone-manage credential_setup') }
+      it { is_expected.to_not contain_file('/etc/keystone/fernet-keys') }
+      it { is_expected.to_not contain_exec('keystone-manage fernet_setup') }
+      it { is_expected.to contain_keystone_config('fernet_tokens/key_repository').with_value('/etc/keystone/fernet-keys') }
     end
 
     context 'when enabling fernet_setup' do
@@ -404,11 +419,10 @@ describe 'keystone' do
         {
           'enable_fernet_setup'    => true,
           'fernet_max_active_keys' => 5,
-          'fernet_key_repository'  => '/etc/keystone/fernet-keys',
         }
       end
 
-      it { is_expected.to contain_file(params['fernet_key_repository']).with(
+      it { is_expected.to contain_file('/etc/keystone/fernet-keys').with(
         :ensure => 'directory',
         :owner  => 'keystone',
         :group  => 'keystone',
@@ -432,18 +446,25 @@ describe 'keystone' do
         }
       end
 
+      it { is_expected.to contain_file('/var/lib/fernet-keys').with(
+        :ensure => 'directory',
+        :owner  => 'keystone',
+        :group  => 'keystone',
+        :mode   => '0600',
+      ) }
+
       it { is_expected.to contain_exec('keystone-manage fernet_setup').with(
         :creates => '/var/lib/fernet-keys/0'
       ) }
+      it { is_expected.to contain_keystone_config('fernet_tokens/key_repository').with_value('/var/lib/fernet-keys') }
     end
 
     context 'when overriding the keystone group and user' do
       let :params do
         {
-          'enable_fernet_setup'   => true,
-          'fernet_key_repository' => '/etc/keystone/fernet-keys',
-          'keystone_user'         => 'test_user',
-          'keystone_group'        => 'test_group',
+          'enable_fernet_setup' => true,
+          'keystone_user'       => 'test_user',
+          'keystone_group'      => 'test_group',
         }
       end
 
