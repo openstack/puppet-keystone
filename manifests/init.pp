@@ -43,7 +43,7 @@
 #   These enumerations are processed to determine the list of tokens to revoke.
 #   Only disable if you are switching to using the Revoke extension with a backend
 #   other than KVS, which stores events in memory.
-#   Defaults to true.
+#   Defaults to $facts['os_service_default']
 #
 # [*manage_service*]
 #   (Optional) If Puppet should manage service startup / shutdown.
@@ -367,7 +367,7 @@ class keystone(
   $password_hash_rounds                           = $facts['os_service_default'],
   $max_password_length                            = $facts['os_service_default'],
   $revoke_driver                                  = $facts['os_service_default'],
-  $revoke_by_id                                   = true,
+  $revoke_by_id                                   = $facts['os_service_default'],
   $public_endpoint                                = $facts['os_service_default'],
   Boolean $manage_service                         = true,
   Boolean $enabled                                = true,
