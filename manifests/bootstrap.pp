@@ -58,6 +58,10 @@
 #   (Optional) Whether to run keystone-manage bootstrap command.
 #   Defaults to true
 #
+# [*manage_resources*]
+#   (Optional) Whether to manage resources created by bootstrap.
+#   Defaults to true
+#
 class keystone::bootstrap (
   String[1] $password,
   String[1] $username                                   = 'admin',
@@ -72,6 +76,7 @@ class keystone::bootstrap (
   String[1] $region                                     = 'RegionOne',
   Enum['public', 'internal', 'admin'] $interface        = 'public',
   Boolean $bootstrap                                    = true,
+  Boolean $manage_resources                             = true,
 ) inherits keystone::params {
 
   include keystone::deps
@@ -121,7 +126,9 @@ class keystone::bootstrap (
       notify      => Anchor['keystone::service::begin'],
       tag         => 'keystone-bootstrap',
     }
+  }
 
+  if $manage_resources {
     # Since the bootstrap is not guaranteed to execute on each run we
     # use the below resources to make sure the current resources are
     # correct so if some value was updated we set that.

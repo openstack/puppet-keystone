@@ -227,13 +227,13 @@ describe 'keystone::bootstrap' do
 
       it { is_expected.to_not contain_exec('keystone bootstrap') }
 
-      it { is_expected.to_not contain_keystone_role('admin') }
-      it { is_expected.to_not contain_keystone_user('admin') }
-      it { is_expected.to_not contain_keystone_tenant('services') }
-      it { is_expected.to_not contain_keystone_tenant('admin') }
-      it { is_expected.to_not contain_keystone_user_role('admin@admin') }
-      it { is_expected.to_not contain_keystone_service('keystone::identity') }
-      it { is_expected.to_not contain_keystone_endpoint('RegionOne/keystone::identity') }
+      it { is_expected.to contain_keystone_role('admin') }
+      it { is_expected.to contain_keystone_user('admin') }
+      it { is_expected.to contain_keystone_tenant('services') }
+      it { is_expected.to contain_keystone_tenant('admin') }
+      it { is_expected.to contain_keystone_user_role('admin@admin') }
+      it { is_expected.to contain_keystone_service('keystone::identity') }
+      it { is_expected.to contain_keystone_endpoint('RegionOne/keystone::identity') }
 
       it { is_expected.to contain_file('/etc/openstack').with(
         :ensure  => 'directory',
@@ -274,6 +274,28 @@ describe 'keystone::bootstrap' do
       end
 
       it { is_expected.to contain_exec('keystone bootstrap').with_user('some') }
+    end
+
+    context 'with bootstrap enabled and manage_resource to false' do
+      let :params do
+        {
+          :bootstrap        => false,
+          :manage_resources => false,
+          :password         => 'secret'
+        }
+      end
+
+      it { is_expected.to contain_class('keystone::deps') }
+
+      it { is_expected.to_not contain_exec('keystone bootstrap') }
+
+      it { is_expected.to_not contain_keystone_role('admin') }
+      it { is_expected.to_not contain_keystone_user('admin') }
+      it { is_expected.to_not contain_keystone_tenant('services') }
+      it { is_expected.to_not contain_keystone_tenant('admin') }
+      it { is_expected.to_not contain_keystone_user_role('admin@admin') }
+      it { is_expected.to_not contain_keystone_service('keystone::identity') }
+      it { is_expected.to_not contain_keystone_endpoint('RegionOne/keystone::identity') }
     end
 
     context 'when setting interface to internal' do

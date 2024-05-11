@@ -1,0 +1,10 @@
+---
+features:
+  - |
+    Added new ``manage_resources`` (default to true) in ``keystone::bootstrap``
+    class that can be set to false to not manage resources created by bootstrap.
+upgrade:
+  - |
+    If you're setting ``bootstrap`` parameter in ``keystone::bootstrap`` class
+    to false you now also need to set ``manage_resources`` to false to keep the
+    same behaviour.
