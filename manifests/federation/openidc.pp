@@ -101,6 +101,10 @@
 #  "both": claims/tokens are passed as both headers as well as environment variables (default)
 #  Defaults to undef
 #
+# [*openidc_redirect_uri*]
+#  (Optional) An arbitrary URI for OIDCRedirectURI. Defaults to undef, in this
+#  case the URI is generated from keystone_url and idp_name.
+#
 # [*memcached_servers*]
 #  (Optional) A list of memcache servers. Defaults to undef.
 #
@@ -168,6 +172,7 @@ class keystone::federation::openidc (
   $openidc_verify_method          = 'introspection',
   $openidc_pass_userinfo_as       = undef,
   $openidc_pass_claim_as          = undef,
+  $openidc_redirect_uri           = undef,
   $memcached_servers              = undef,
   $redis_server                   = undef,
   $redis_password                 = undef,

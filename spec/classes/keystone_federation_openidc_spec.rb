@@ -79,6 +79,19 @@ describe 'keystone::federation::openidc' do
         expect(content).to match('OIDCProviderMetadataURL "https://accounts.google.com/.well-known/openid-configuration"')
         expect(content).to match('OIDCClientID "openid_client_id"')
         expect(content).to match('OIDCClientSecret "openid_client_secret"')
+        expect(content).to match('OIDCRedirectURI "http://localhost:5000/v3/OS-FEDERATION/identity_providers/myidp/protocols/openid/auth"')
+      end
+    end
+
+    context 'with redirect uri overridden' do
+      before do
+        params.merge!({
+          :openidc_redirect_uri => 'CUSTOM_URI'
+        })
+      end
+      it 'should contain the expected redirect uri' do
+        content = get_param('concat::fragment', 'keystone_wsgi-configure_openidc_keystone', 'content')
+        expect(content).to match('OIDCRedirectURI "CUSTOM_URI"')
       end
     end
 
