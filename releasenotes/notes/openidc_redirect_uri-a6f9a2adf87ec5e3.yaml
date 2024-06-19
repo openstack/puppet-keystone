@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The new ``keystone::federation::openidc::openidc_redirect_uri`` parameter
+    has been added.

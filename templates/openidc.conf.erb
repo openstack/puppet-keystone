@@ -55,7 +55,11 @@
   OIDCPassClaimsAs "<%= scope['::keystone::federation::openidc::openidc_pass_claim_as'] %>"
 <%- end -%>
 
+<%- if scope['::keystone::federation::openidc::openidc_redirect_uri'] != nil -%>
+  OIDCRedirectURI "<%= scope['::keystone::federation::openidc::openidc_redirect_uri'] %>"
+<% else %>
   OIDCRedirectURI "<%= @keystone_url -%>/v3/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::openidc::idp_name']-%>/protocols/openid/auth"
+<%- end -%>
 
 <%- if scope['::keystone::federation::openidc::openidc_enable_oauth'] -%>
   <%- if scope['keystone::federation::openidc::openidc_verify_method'] == 'introspection' -%>
