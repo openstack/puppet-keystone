@@ -17,8 +17,13 @@
 #  (Required) String value.
 #
 # [*openidc_provider_metadata_url*]
-#  The url that points to your OpenID Connect metadata provider
-#  (Required) String value.
+#  (Optional) The url that points to your OpenID Connect metadata provider.
+#  Defaults to undef
+#
+# [*openidc_metadata_dir*]
+#  (Optional) Path of OIDCMetadataDir, directory that holds metadata in case of
+#  usage of multiple OIDC provider.
+#  Defaults to undef
 #
 # [*openidc_client_id*]
 #  The client ID to use when handshaking with your OpenID Connect provider
@@ -154,36 +159,36 @@ class keystone::federation::openidc (
   $keystone_url,
   $methods,
   $idp_name,
-  $openidc_provider_metadata_url,
   $openidc_client_id,
   $openidc_client_secret,
-  $openidc_crypto_passphrase      = 'openstack',
-  $openidc_response_type          = 'id_token',
-  $openidc_response_mode          = undef,
-  $openidc_cache_type             = undef,
-  $openidc_cache_shm_max          = undef,
-  $openidc_cache_shm_entry_size   = undef,
-  $openidc_cache_dir              = undef,
-  $openidc_cache_clean_interval   = undef,
-  $openidc_claim_delimiter        = undef,
-  Boolean $openidc_enable_oauth   = false,
-  $openidc_introspection_endpoint = undef,
-  $openidc_verify_jwks_uri        = undef,
-  $openidc_verify_method          = 'introspection',
-  $openidc_pass_userinfo_as       = undef,
-  $openidc_pass_claim_as          = undef,
-  $openidc_redirect_uri           = undef,
-  $memcached_servers              = undef,
-  $redis_server                   = undef,
-  $redis_password                 = undef,
-  $redis_username                 = undef,
-  $redis_database                 = undef,
-  $redis_connect_timeout          = undef,
-  $redis_timeout                  = undef,
-  $remote_id_attribute            = $facts['os_service_default'],
-  $template_order                 = 331,
+  Optional[Stdlib::HTTPUrl] $openidc_provider_metadata_url = undef,
+  Optional[Stdlib::Unixpath] $openidc_metadata_dir         = undef,
+  $openidc_crypto_passphrase                               = 'openstack',
+  $openidc_response_type                                   = 'id_token',
+  $openidc_response_mode                                   = undef,
+  $openidc_cache_type                                      = undef,
+  $openidc_cache_shm_max                                   = undef,
+  $openidc_cache_shm_entry_size                            = undef,
+  $openidc_cache_dir                                       = undef,
+  $openidc_cache_clean_interval                            = undef,
+  $openidc_claim_delimiter                                 = undef,
+  Boolean $openidc_enable_oauth                            = false,
+  $openidc_introspection_endpoint                          = undef,
+  $openidc_verify_jwks_uri                                 = undef,
+  $openidc_verify_method                                   = 'introspection',
+  $openidc_pass_userinfo_as                                = undef,
+  $openidc_pass_claim_as                                   = undef,
+  $openidc_redirect_uri                                    = undef,
+  $memcached_servers                                       = undef,
+  $redis_server                                            = undef,
+  $redis_password                                          = undef,
+  $redis_username                                          = undef,
+  $redis_database                                          = undef,
+  $redis_connect_timeout                                   = undef,
+  $redis_timeout                                           = undef,
+  $remote_id_attribute                                     = $facts['os_service_default'],
+  $template_order                                          = 331,
 ) {
-
   include apache
   include apache::mod::auth_openidc
 
@@ -192,6 +197,15 @@ class keystone::federation::openidc (
 
   if ! defined(Class['keystone::wsgi::apache']) {
     fail('The keystone::wsgi::apache class should be included in the catalog')
+  }
+  # With a single provider, OIDCProviderMetadataURL should be set, with multiple
+  # providers OIDCMetadataDir should be used instead
+  if !$openidc_provider_metadata_url and !$openidc_metadata_dir {
+    fail('Set one openidc_provider_metadata_url or openidc_metadata_dir')
+  }
+  if $openidc_provider_metadata_url and $openidc_metadata_dir {
+    fail("openidc_provider_metadata_url and openidc_metadata_dir are mutually \
+exclusive, set only one of the two.")
   }
 
   if !($openidc_verify_method in ['introspection', 'jwks']) {

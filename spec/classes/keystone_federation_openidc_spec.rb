@@ -50,6 +50,18 @@ describe 'keystone::federation::openidc' do
       params.merge!(:openidc_enable_oauth => true)
       it_raises 'a Puppet:Error', /You must set openidc_introspection_endpoint when enabling oauth support/
     end
+
+    before do
+      params.merge!({
+        :openidc_metadata_dir => '/CUSTOM_METADATA_DIR',
+      })
+      it_raises 'a Puppet:Error', /openidc_provider_metadata_url and openidc_metadata_dir are mutually/
+    end
+
+    before do
+      params.delete(:openidc_provider_metadata_url)
+      it_raises 'a Puppet:Error', /Set openidc_provider_metadata_url or openidc_metadata_dir/
+    end
   end
 
   on_supported_os({
@@ -76,10 +88,23 @@ describe 'keystone::federation::openidc' do
 
       it 'should contain expected config' do
         content = get_param('concat::fragment', 'keystone_wsgi-configure_openidc_keystone', 'content')
-        expect(content).to match('OIDCProviderMetadataURL "https://accounts.google.com/.well-known/openid-configuration"')
         expect(content).to match('OIDCClientID "openid_client_id"')
         expect(content).to match('OIDCClientSecret "openid_client_secret"')
         expect(content).to match('OIDCRedirectURI "http://localhost:5000/v3/OS-FEDERATION/identity_providers/myidp/protocols/openid/auth"')
+        expect(content).to match('OIDCProviderMetadataURL "https://accounts.google.com/.well-known/openid-configuration"')
+      end
+    end
+
+    context 'with openidc_metadata_dir' do
+      before do
+        params.delete(:openidc_provider_metadata_url)
+        params.merge!({
+          :openidc_metadata_dir => '/CUSTOM_METADATA_DIR'
+        })
+      end
+      it 'should contain the expected OIDCMetadataDir' do
+        content = get_param('concat::fragment', 'keystone_wsgi-configure_openidc_keystone', 'content')
+        expect(content).to match('OIDCMetadataDir "/CUSTOM_METADATA_DIR"')
       end
     end
 

@@ -1,0 +1,5 @@
+---
+features: >
+  Add ``keystone::federation::openidc:openidc_metadata_dir`` parameter
+  to specify OIDCMetadataDir path instead of OIDCProviderMetadataURL . This may
+  be required when multiple OIDC providers are used for the federation.

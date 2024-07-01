@@ -1,11 +1,15 @@
   OIDCClaimPrefix "OIDC-"
   OIDCResponseType "<%= scope['keystone::federation::openidc::openidc_response_type']-%>"
   OIDCScope "openid email profile"
+<%- if scope['::keystone::federation::openidc::openidc_provider_metadata_url'] != nil -%>
   OIDCProviderMetadataURL "<%= scope['keystone::federation::openidc::openidc_provider_metadata_url']-%>"
+<%- end -%>
+<%- if scope['::keystone::federation::openidc::openidc_metadata_dir'] != nil -%>
+  OIDCMetadataDir "<%= scope['::keystone::federation::openidc::openidc_metadata_dir'] %>"
+<%- end -%>
   OIDCClientID "<%= scope['keystone::federation::openidc::openidc_client_id']-%>"
   OIDCClientSecret "<%= scope['keystone::federation::openidc::openidc_client_secret']-%>"
   OIDCCryptoPassphrase "<%= scope['keystone::federation::openidc::openidc_crypto_passphrase']-%>"
-
 <%- if scope['::keystone::federation::openidc::openidc_response_mode'] != nil -%>
   OIDCResponseMode "<%= scope['::keystone::federation::openidc::openidc_response_mode'] %>"
 <%- end -%>
