@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Add ``keystone::federation::openidc::additional_locations`` to specify
+    additional Apache Location directives with mod_auth_openidc parameters.

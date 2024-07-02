@@ -166,6 +166,24 @@ describe 'keystone::federation::openidc' do
 
     end
 
+    context 'with additional location' do
+      before do
+        params.merge!({
+          :additional_locations => [{
+            url:             "/v3/auth/a-custom-url",
+            authtype:        "openid-connect",
+            oidcdiscoverurl: "https://my-endpoint.example.com:40000",
+            requireoidc:     "claim iss:https://iam.example.com",
+            loglevel:        "debug"
+          }]
+        })
+      end
+      it 'should contain the expected additional location' do
+        content = get_param('concat::fragment', 'keystone_wsgi-configure_openidc_keystone', 'content')
+        expect(content).to match('/v3/auth/a-custom-url')
+      end
+    end
+
     context 'with memcache options' do
       before do
         params.merge!({
