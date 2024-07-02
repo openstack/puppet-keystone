@@ -190,19 +190,18 @@ class keystone::federation::openidc (
   }
 
   if !($openidc_verify_method in ['introspection', 'jwks']) {
-    fail('Unsupported token verification method.' +
-        '  Must be one of "introspection" or "jwks"')
+    fail('Unsupported token verification method. Must be one of "introspection" or "jwks"')
   }
 
   if ($openidc_verify_method == 'introspection') {
     if $openidc_enable_oauth and !$openidc_introspection_endpoint {
-      fail('You must set openidc_introspection_endpoint when enabling oauth support' +
-          ' and introspection.')
+      fail("You must set openidc_introspection_endpoint when enabling oauth support \
+and introspection.")
     }
   } elsif ($openidc_verify_method == 'jwks') {
     if $openidc_enable_oauth and !$openidc_verify_jwks_uri {
-      fail('You must set openidc_verify_jwks_uri when enabling oauth support' +
-          ' and local signature verification using a JWKS URL')
+      fail("You must set openidc_verify_jwks_uri when enabling oauth support \
+and local signature verification using a JWKS URL")
     }
   }
 
