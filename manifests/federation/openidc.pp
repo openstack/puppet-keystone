@@ -175,9 +175,9 @@ class keystone::federation::openidc (
   Boolean $openidc_enable_oauth                            = false,
   $openidc_introspection_endpoint                          = undef,
   $openidc_verify_jwks_uri                                 = undef,
-  $openidc_verify_method                                   = 'introspection',
-  $openidc_pass_userinfo_as                                = undef,
-  $openidc_pass_claim_as                                   = undef,
+  Enum['introspection', 'jwks'] $openidc_verify_method     = 'introspection',
+  Optional[Enum['claims', 'json', 'jwt']] $openidc_pass_userinfo_as = undef,
+  Optional[Enum['none', 'environment', 'headers', 'both']] $openidc_pass_claim_as = undef,
   $openidc_redirect_uri                                    = undef,
   $memcached_servers                                       = undef,
   $redis_server                                            = undef,
@@ -208,31 +208,17 @@ class keystone::federation::openidc (
 exclusive, set only one of the two.")
   }
 
-  if !($openidc_verify_method in ['introspection', 'jwks']) {
-    fail('Unsupported token verification method. Must be one of "introspection" or "jwks"')
-  }
-
-  if ($openidc_verify_method == 'introspection') {
-    if $openidc_enable_oauth and !$openidc_introspection_endpoint {
-      fail("You must set openidc_introspection_endpoint when enabling oauth support \
+  if $openidc_enable_oauth {
+    if ($openidc_verify_method == 'introspection') {
+      if !$openidc_introspection_endpoint {
+        fail("You must set openidc_introspection_endpoint when enabling oauth support \
 and introspection.")
-    }
-  } elsif ($openidc_verify_method == 'jwks') {
-    if $openidc_enable_oauth and !$openidc_verify_jwks_uri {
-      fail("You must set openidc_verify_jwks_uri when enabling oauth support \
+      }
+    } else { # $openidc_verify_method == 'jwks'
+      if !$openidc_verify_jwks_uri {
+        fail("You must set openidc_verify_jwks_uri when enabling oauth support \
 and local signature verification using a JWKS URL")
-    }
-  }
-
-  if $openidc_pass_userinfo_as != undef {
-    if !($openidc_pass_userinfo_as in ['claims', 'json', 'jwt']) {
-      fail('Unsupported OIDCPassUserInfoAs. Must be one of: claims, json or jwt')
-    }
-  }
-
-  if $openidc_pass_claim_as != undef {
-    if !($openidc_pass_claim_as in ['none', 'environment', 'headers', 'both']) {
-      fail('Unsupported OIDCPassClaimAs. Must be one of: none, environment, headers, both')
+      }
     }
   }
 

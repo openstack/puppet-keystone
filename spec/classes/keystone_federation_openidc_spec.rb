@@ -48,7 +48,7 @@ describe 'keystone::federation::openidc' do
 
     before do
       params.merge!(:openidc_enable_oauth => true)
-      it_raises 'a Puppet:Error', /You must set openidc_introspection_endpoint when enabling oauth support/
+      it_raises 'a Puppet:Error', /openidc_enable_oauth/
     end
 
     before do
