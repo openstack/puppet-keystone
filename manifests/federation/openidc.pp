@@ -110,6 +110,19 @@
 #  (Optional) An arbitrary URI for OIDCRedirectURI. Defaults to undef, in this
 #  case the URI is generated from keystone_url and idp_name.
 #
+# [*additional_locations*]
+#  (Optional) Array of hashes of additional Apache <Location> directives with
+#  mod_auth_openidc configuration. Accepted parameters are url, authtype,
+#  oidcdiscoverurl (optional), requireoidc, loglevel (optional)
+#  Example:
+#  additional_locations => [{
+#    url             => "/v3/auth/OS-FEDERATION/a-custom-url-needed-somehow",
+#    authtype        => "openid-connect",
+#    oidcdiscoverurl => "https://my-endpoint.example.com:40000",
+#    requireoidc     => "claim iss:https://iam.example.com",
+#    loglevel        => "debug"
+#  }]
+#
 # [*memcached_servers*]
 #  (Optional) A list of memcache servers. Defaults to undef.
 #
@@ -179,6 +192,7 @@ class keystone::federation::openidc (
   Optional[Enum['claims', 'json', 'jwt']] $openidc_pass_userinfo_as = undef,
   Optional[Enum['none', 'environment', 'headers', 'both']] $openidc_pass_claim_as = undef,
   $openidc_redirect_uri                                    = undef,
+  Optional[Array[Hash]] $additional_locations              = undef,
   $memcached_servers                                       = undef,
   $redis_server                                            = undef,
   $redis_password                                          = undef,

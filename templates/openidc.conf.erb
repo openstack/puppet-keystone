@@ -96,3 +96,19 @@
       AuthType "openid-connect"
       Require valid-user
   </Location>
+
+<%- if @additional_locations -%>
+  # Additional Location directives from keystone::federation::openidc:locations
+<% @additional_locations.each do |loc| %>
+  <Location "<%= loc['url'] %>">
+    AuthType "<%= loc['authtype'] %>"
+  <%- if loc['oidcdiscoverurl'] -%>
+    OIDCDiscoverURL <%= loc['oidcdiscoverurl'] %>
+  <%- end -%>
+    Require <%= loc['requireoidc'] %>
+  <%- if loc['loglevel'] -%>
+    LogLevel <%= loc['loglevel'] %>
+  <%- end -%>
+  </Location>
+<%- end -%>
+<%- end -%>
