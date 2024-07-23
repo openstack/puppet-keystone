@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The new ``keystone::healthcheck::enable_by_file_paths`` parameter has been
+    added.

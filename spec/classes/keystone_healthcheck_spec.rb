@@ -17,6 +17,7 @@ describe 'keystone::healthcheck' do
           :ignore_proxied_requests => '<SERVICE DEFAULT>',
           :disable_by_file_path    => '<SERVICE DEFAULT>',
           :disable_by_file_paths   => '<SERVICE DEFAULT>',
+          :enable_by_file_paths    => '<SERVICE DEFAULT>',
         )
       end
     end
@@ -30,6 +31,7 @@ describe 'keystone::healthcheck' do
           :ignore_proxied_requests => false,
           :disable_by_file_path    => '/etc/keystone/healthcheck/disabled',
           :disable_by_file_paths   => ['5000:/etc/keystone/healthcheck/disabled'],
+          :enable_by_file_paths    => ['/etc/keystone/healthcheck/enabled'],
         }
       end
 
@@ -41,6 +43,7 @@ describe 'keystone::healthcheck' do
           :ignore_proxied_requests => false,
           :disable_by_file_path    => '/etc/keystone/healthcheck/disabled',
           :disable_by_file_paths   => ['5000:/etc/keystone/healthcheck/disabled'],
+          :enable_by_file_paths    => ['/etc/keystone/healthcheck/enabled'],
         )
       end
     end
