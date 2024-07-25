@@ -32,6 +32,11 @@
 #   is running on a port. Expects a "port:path" list of strings.
 #   Defaults to $facts['os_service_default']
 #
+# [*enable_by_file_paths*]
+#   (Optional) Check the presence of files. Used by EnableByFilesHealthcheck
+#   plugin.
+#   Defaults to $facts['os_service_default']
+#
 class keystone::healthcheck (
   $detailed                = $facts['os_service_default'],
   $backends                = $facts['os_service_default'],
@@ -39,6 +44,7 @@ class keystone::healthcheck (
   $ignore_proxied_requests = $facts['os_service_default'],
   $disable_by_file_path    = $facts['os_service_default'],
   $disable_by_file_paths   = $facts['os_service_default'],
+  $enable_by_file_paths    = $facts['os_service_default'],
 ) {
 
   include keystone::deps
@@ -50,5 +56,6 @@ class keystone::healthcheck (
     ignore_proxied_requests => $ignore_proxied_requests,
     disable_by_file_path    => $disable_by_file_path,
     disable_by_file_paths   => $disable_by_file_paths,
+    enable_by_file_paths    => $enable_by_file_paths,
   }
 }
