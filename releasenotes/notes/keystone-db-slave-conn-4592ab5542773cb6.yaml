@@ -1,0 +1,4 @@
+---
+features:
+  - |
+    Added ``database_slave_connection`` parameter to ``keystone::db`` class.
