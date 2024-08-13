@@ -13,6 +13,10 @@
 #   Url used to connect to database.
 #   (Optional) Defaults to 'sqlite:////var/lib/keystone/keystone.sqlite'.
 #
+# [*database_slave_connection*]
+#   Url used to connect to slave database.
+#   (Optional) Defaults to $facts['os_service_default']
+#
 # [*database_connection_recycle_time*]
 #   Timeout when db connections should be reaped.
 #   (Optional) Defaults to $facts['os_service_default']
@@ -46,6 +50,7 @@
 class keystone::db (
   $database_db_max_retries          = $facts['os_service_default'],
   $database_connection              = 'sqlite:////var/lib/keystone/keystone.sqlite',
+  $database_slave_connection        = $facts['os_service_default'],
   $database_connection_recycle_time = $facts['os_service_default'],
   $database_max_pool_size           = $facts['os_service_default'],
   $database_max_retries             = $facts['os_service_default'],
@@ -60,6 +65,7 @@ class keystone::db (
   oslo::db { 'keystone_config':
     db_max_retries          => $database_db_max_retries,
     connection              => $database_connection,
+    slave_connection        => $database_slave_connection,
     connection_recycle_time => $database_connection_recycle_time,
     max_pool_size           => $database_max_pool_size,
     max_retries             => $database_max_retries,
