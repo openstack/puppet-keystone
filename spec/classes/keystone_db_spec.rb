@@ -8,6 +8,7 @@ describe 'keystone::db' do
       it { should contain_oslo__db('keystone_config').with(
         :db_max_retries          => '<SERVICE DEFAULT>',
         :connection              => 'sqlite:////var/lib/keystone/keystone.sqlite',
+        :slave_connection        => '<SERVICE DEFAULT>',
         :connection_recycle_time => '<SERVICE DEFAULT>',
         :max_pool_size           => '<SERVICE DEFAULT>',
         :max_retries             => '<SERVICE DEFAULT>',
@@ -23,6 +24,7 @@ describe 'keystone::db' do
         {
           :database_db_max_retries          => '-1',
           :database_connection              => 'mysql+pymysql://keystone:keystone@localhost/keystone',
+          :database_slave_connection        => 'mysql+pymysql://keystone:keystone@replica/keystone',
           :database_connection_recycle_time => '3601',
           :database_max_pool_size           => '21',
           :database_max_retries             => '11',
@@ -38,6 +40,7 @@ describe 'keystone::db' do
       it { should contain_oslo__db('keystone_config').with(
         :db_max_retries          => '-1',
         :connection              => 'mysql+pymysql://keystone:keystone@localhost/keystone',
+        :slave_connection        => 'mysql+pymysql://keystone:keystone@replica/keystone',
         :connection_recycle_time => '3601',
         :max_pool_size           => '21',
         :max_retries             => '11',
