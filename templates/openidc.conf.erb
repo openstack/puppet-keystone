@@ -62,7 +62,7 @@
 <%- if scope['::keystone::federation::openidc::openidc_redirect_uri'] != nil -%>
   OIDCRedirectURI "<%= scope['::keystone::federation::openidc::openidc_redirect_uri'] %>"
 <% else %>
-  OIDCRedirectURI "<%= @keystone_url -%>/v3/OS-FEDERATION/identity_providers/<%= scope['keystone::federation::openidc::idp_name']-%>/protocols/openid/auth"
+  OIDCRedirectURI "<%= @keystone_url -%>/v3/redirect_uri"
 <%- end -%>
 
 <%- if scope['::keystone::federation::openidc::openidc_enable_oauth'] -%>
@@ -84,6 +84,11 @@
       Require valid-user
   </Location>
 <%- end -%>
+
+   <Location "/v3/redirect_uri">
+       AuthType "openid-connect"
+       Require valid-user
+   </Location>
 
   # The following directives are necessary to support websso from Horizon
   # (Per https://docs.openstack.org/keystone/latest/admin/federation/configure_federation.html#id5)
