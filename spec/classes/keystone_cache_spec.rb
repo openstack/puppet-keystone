@@ -11,6 +11,11 @@ describe 'keystone::cache' do
     context 'with default parameters' do
       it 'configures cache' do
         is_expected.to contain_keystone_config('token/caching').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('token/cache_time').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('credential/caching').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('credential/cache_time').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('application_credential/caching').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('application_credential/cache_time').with_value('<SERVICE DEFAULT>')
 
         is_expected.to contain_oslo__cache('keystone_config').with(
           :config_prefix                        => '<SERVICE DEFAULT>',
@@ -94,11 +99,21 @@ describe 'keystone::cache' do
           :dead_timeout                         => 60,
           :manage_backend_package               => false,
           :token_caching                        => true,
+          :token_cache_time                     => 3599,
+          :credential_caching                   => true,
+          :credential_cache_time                => 3598,
+          :application_credential_caching       => true,
+          :application_credential_cache_time    => 3597,
         }
       end
 
       it 'configures cache' do
         is_expected.to contain_keystone_config('token/caching').with_value(true)
+        is_expected.to contain_keystone_config('token/cache_time').with_value(3599)
+        is_expected.to contain_keystone_config('credential/caching').with_value(true)
+        is_expected.to contain_keystone_config('credential/cache_time').with_value(3598)
+        is_expected.to contain_keystone_config('application_credential/caching').with_value(true)
+        is_expected.to contain_keystone_config('application_credential/cache_time').with_value(3597)
 
         is_expected.to contain_oslo__cache('keystone_config').with(
           :config_prefix                        => 'prefix',

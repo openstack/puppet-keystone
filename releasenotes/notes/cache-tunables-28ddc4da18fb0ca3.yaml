@@ -1,0 +1,11 @@
+---
+features:
+  - |
+    The following new parameters have been added to the ``keystone::cache``
+    class.
+
+    - ``token_cache_time``
+    - ``credential_caching``
+    - ``credential_cache_time``
+    - ``application_credential_caching``
+    - ``application_credential_cache_time``
