@@ -216,6 +216,11 @@
 #   (Optional) maximum allowable Keystone token size
 #   Defaults to $facts['os_service_default']
 #
+# [*list_limit*]
+#   (Optional) The maximum number of entities that will be returned in
+#   a collection.
+#   Defaults to $facts['os_service_default']
+#
 # [*sync_db*]
 #   (Optional) Run db sync on the node.
 #   Defaults to true
@@ -399,6 +404,7 @@ class keystone(
   $rpc_response_timeout                           = $facts['os_service_default'],
   $service_name                                   = $::keystone::params::service_name,
   $max_token_size                                 = $facts['os_service_default'],
+  $list_limit                                     = $facts['os_service_default'],
   Boolean $sync_db                                = true,
   Boolean $enable_fernet_setup                    = true,
   Stdlib::Absolutepath $fernet_key_repository     = '/etc/keystone/fernet-keys',
@@ -472,6 +478,7 @@ class keystone(
   }
 
   keystone_config {
+    'token/provider':   value => $token_provider;
     'token/expiration': value => $token_expiration;
   }
 
@@ -500,8 +507,8 @@ class keystone(
   }
 
   keystone_config {
-    'token/provider':              value => $token_provider;
     'DEFAULT/max_token_size':      value => $max_token_size;
+    'DEFAULT/list_limit':          value => $list_limit;
   }
 
   keystone_config {

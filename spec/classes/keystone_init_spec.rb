@@ -32,6 +32,7 @@ describe 'keystone' do
       it 'should set the default values' do
         is_expected.to contain_resources('keystone_config').with({ :purge => false })
         is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('token/provider').with_value('fernet')
         is_expected.to contain_keystone_config('token/expiration').with_value(3600)
         is_expected.to contain_keystone_config('identity/password_hash_algorithm').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('identity/password_hash_rounds').with_value('<SERVICE DEFAULT>')
@@ -47,8 +48,8 @@ describe 'keystone' do
 
         is_expected.to contain_keystone_config('catalog/driver').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('catalog/template_file').with_value('/etc/keystone/default_catalog.templates')
-        is_expected.to contain_keystone_config('token/provider').with_value('fernet')
         is_expected.to contain_keystone_config('DEFAULT/max_token_size').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('DEFAULT/list_limit').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('DEFAULT/notification_format').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('DEFAULT/notification_opt_out').with_value('<SERVICE DEFAULT>')
 
@@ -140,6 +141,7 @@ describe 'keystone' do
         {
           :purge_config                 => true,
           :public_endpoint              => 'http://127.0.0.1:5000',
+          :token_provider               => 'uuid',
           :token_expiration             => 7200,
           :password_hash_algorithm      => 'bcrypt',
           :password_hash_rounds         => 12,
@@ -151,8 +153,8 @@ describe 'keystone' do
           :max_request_body_size        => 114688,
           :catalog_driver               => 'templated',
           :catalog_template_file        => '/some/template_file',
-          :token_provider               => 'uuid',
           :max_token_size               => 255,
+          :list_limit                   => 10000,
           :notification_format          => 'basic',
           :notification_opt_out         => [
             'identity.authenticate.success',
@@ -165,6 +167,7 @@ describe 'keystone' do
       it 'should set the overridden values' do
         is_expected.to contain_resources('keystone_config').with({ :purge => true })
         is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value('http://127.0.0.1:5000')
+        is_expected.to contain_keystone_config('token/provider').with_value('uuid')
         is_expected.to contain_keystone_config('token/expiration').with_value(7200)
         is_expected.to contain_keystone_config('identity/password_hash_algorithm').with_value('bcrypt')
         is_expected.to contain_keystone_config('identity/password_hash_rounds').with_value(12)
@@ -180,8 +183,8 @@ describe 'keystone' do
 
         is_expected.to contain_keystone_config('catalog/driver').with_value('templated')
         is_expected.to contain_keystone_config('catalog/template_file').with_value('/some/template_file')
-        is_expected.to contain_keystone_config('token/provider').with_value('uuid')
         is_expected.to contain_keystone_config('DEFAULT/max_token_size').with_value(255)
+        is_expected.to contain_keystone_config('DEFAULT/list_limit').with_value(10000)
         is_expected.to contain_keystone_config('DEFAULT/notification_format').with_value('basic')
         is_expected.to contain_keystone_config('DEFAULT/notification_opt_out').with_value([
           'identity.authenticate.success',
