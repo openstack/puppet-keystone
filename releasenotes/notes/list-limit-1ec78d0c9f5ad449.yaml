@@ -1,0 +1,4 @@
+---
+features:
+  - |
+    The new ``keystone::list_limit`` parameter has been added.
