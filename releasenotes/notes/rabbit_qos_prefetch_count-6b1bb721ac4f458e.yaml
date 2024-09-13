@@ -1,0 +1,4 @@
+---
+features:
+  - |
+    The new ``keystone::rabbit_qos_prefetch_count`` parameter has been added.
