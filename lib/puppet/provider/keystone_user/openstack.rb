@@ -28,8 +28,7 @@ Puppet::Type.type(:keystone_user).provide(
     if self.class.do_not_manage
       fail("Not managing Keystone_user[#{@resource[:name]}] due to earlier Keystone API failures.")
     end
-    user_name, user_domain = resource[:name], resource[:domain]
-    properties = [user_name]
+    properties = [resource[:name]]
     if resource[:enabled] == :true
       properties << '--enable'
     elsif resource[:enabled] == :false
@@ -44,13 +43,10 @@ Puppet::Type.type(:keystone_user).provide(
     if resource[:email]
       properties << '--email' << resource[:email]
     end
-    if user_domain
-      properties << '--domain'
-      properties << user_domain
-    end
+    properties << '--domain' << resource[:domain]
     @property_hash = self.class.system_request('user', 'create', properties)
     @property_hash[:name] = resource[:name]
-    @property_hash[:domain] = user_domain
+    @property_hash[:domain] = resource[:domain]
     @property_hash[:ensure] = :present
   end
 
