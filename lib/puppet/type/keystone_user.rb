@@ -1,7 +1,3 @@
-# LP#1408531
-File.expand_path('../..', File.dirname(__FILE__)).tap { |dir| $LOAD_PATH.unshift(dir) unless $LOAD_PATH.include?(dir) }
-File.expand_path('../../../../openstacklib/lib', File.dirname(__FILE__)).tap { |dir| $LOAD_PATH.unshift(dir) unless $LOAD_PATH.include?(dir) }
-
 require 'puppet/provider/keystone/util'
 require 'puppet_x/keystone/composite_namevar'
 require 'puppet_x/keystone/type'
