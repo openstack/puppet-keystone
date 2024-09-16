@@ -35,11 +35,9 @@ Puppet::Type.type(:keystone_tenant).provide(
       properties << '--disable'
     end
     if resource[:description]
-      properties << '--description'
-      properties << resource[:description]
+      properties << '--description' << resource[:description]
     end
-    properties << '--domain'
-    properties << resource[:domain]
+    properties << '--domain' << resource[:domain]
 
     @property_hash = self.class.system_request('project', 'create', properties)
     @property_hash[:name]   = resource[:name]
