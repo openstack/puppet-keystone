@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The new ``keystone::bootstrap::service_description`` parameter has been
+    added.

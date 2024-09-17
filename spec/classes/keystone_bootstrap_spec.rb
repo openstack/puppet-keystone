@@ -69,7 +69,10 @@ describe 'keystone::bootstrap' do
         :roles  => ['admin'],
       )}
 
-      it { is_expected.to contain_keystone_service('keystone::identity').with_ensure('present') }
+      it { is_expected.to contain_keystone_service('keystone::identity').with(
+        :ensure      => 'present',
+        :description => 'OpenStack Identity Service'
+      ) }
 
       it { is_expected.to contain_keystone_endpoint('RegionOne/keystone::identity').with(
         :ensure       => 'present',
@@ -113,6 +116,7 @@ describe 'keystone::bootstrap' do
           :service_project_name => 'serviceproj',
           :role_name            => 'adminrole',
           :service_name         => 'servicename',
+          :service_description  => 'Alternative OpenStack Identity Service',
           :admin_url            => 'http://admin:1234',
           :public_url           => 'http://public:4321',
           :internal_url         => 'http://internal:1342',
@@ -181,7 +185,10 @@ describe 'keystone::bootstrap' do
         :roles  => ['adminrole'],
       )}
 
-      it { is_expected.to contain_keystone_service('servicename::identity').with_ensure('present') }
+      it { is_expected.to contain_keystone_service('servicename::identity').with(
+        :ensure      => 'present',
+        :description => 'Alternative OpenStack Identity Service'
+      ) }
 
       it { is_expected.to contain_keystone_endpoint('RegionTwo/servicename::identity').with(
         :ensure       => 'present',
