@@ -1,0 +1,4 @@
+---
+features:
+  - |
+    Added ``manage_package`` parameter to the ``keystone`` class.

@@ -3,6 +3,10 @@
 #
 # == Parameters
 #
+# [*manage_package*]
+#   (Optional) Manage package resources.
+#   Defaults to true.
+#
 # [*package_ensure*]
 #   (Optional) Desired ensure state of packages.
 #   accepts latest or specific versions.
@@ -368,6 +372,7 @@
 # Copyright 2012 Puppetlabs Inc, unless otherwise noted.
 #
 class keystone(
+  Boolean $manage_package                         = true,
   $package_ensure                                 = 'present',
   $catalog_driver                                 = $facts['os_service_default'],
   $token_provider                                 = 'fernet',
@@ -466,12 +471,14 @@ class keystone(
   include keystone::db
   include keystone::params
 
-  package { 'keystone':
-    ensure => $package_ensure,
-    name   => $::keystone::params::package_name,
-    tag    => ['openstack', 'keystone-package'],
+  if $manage_package {
+    package { 'keystone':
+      ensure => $package_ensure,
+      name   => $::keystone::params::package_name,
+      tag    => ['openstack', 'keystone-package'],
+    }
+    include openstacklib::openstackclient
   }
-  include openstacklib::openstackclient
 
   resources { 'keystone_config':
     purge  => $purge_config,

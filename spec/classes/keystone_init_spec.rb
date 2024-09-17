@@ -239,6 +239,15 @@ describe 'keystone' do
       it { is_expected.to_not contain_service('keystone') }
     end
 
+    context 'with disabled package managing' do
+      let :params do
+        { :manage_package => false }
+      end
+
+      it { is_expected.to_not contain_package('keystone') }
+      it { is_expected.to_not contain_class('openstacklib::openstackclient') }
+    end
+
     context 'when sync_db is set to false' do
       let :params do
         {
