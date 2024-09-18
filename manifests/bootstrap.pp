@@ -31,6 +31,10 @@
 #   (Optional) The service name.
 #   Defaults to 'keystone'
 #
+# [*service_description*]
+#   (Optional) Description for keystone service.
+#   Defaults to 'OpenStack Identity Service'.
+#
 # [*admin_url*]
 #   (Optional) Admin URL for Keystone endpoint.
 #   This url should *not* contain any version or trailing '/'.
@@ -70,6 +74,7 @@ class keystone::bootstrap (
   String[1] $service_project_name                       = 'services',
   String[1] $role_name                                  = 'admin',
   String[1] $service_name                               = 'keystone',
+  String[1] $service_description                        = 'OpenStack Identity Service',
   Keystone::KeystoneEndpointUrl $admin_url              = 'http://127.0.0.1:5000',
   Keystone::KeystonePublicEndpointUrl $public_url       = 'http://127.0.0.1:5000',
   Optional[Keystone::KeystoneEndpointUrl] $internal_url = undef,
@@ -175,7 +180,8 @@ class keystone::bootstrap (
     })
 
     ensure_resource('keystone_service', "${service_name}::identity", {
-      'ensure' => 'present',
+      'ensure'      => 'present',
+      'description' => $service_description,
     })
 
     ensure_resource('keystone_endpoint', "${region}/${service_name}::identity", {
