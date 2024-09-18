@@ -143,11 +143,6 @@
 #   (Optional) Service name of the redis sentinel cluster.
 #   Defaults to $facts['os_service_default']
 #
-# [*token_caching*]
-#   (Optional) Toggle for token system caching. This has no effect unless
-#   cache_backend, cache_enabled and cache_memcache_servers is set.
-#   Default to $facts['os_service_default']
-#
 # [*tls_enabled*]
 #   (Optional) Global toggle for TLS usage when communicating with
 #   the caching servers.
@@ -216,6 +211,35 @@
 #   (Optional) Whether to install the backend package for the cache.
 #   Defaults to true
 #
+# [*token_caching*]
+#   (Optional) Toggle for token system caching. This has no effect unless
+#   cache_backend, cache_enabled and cache_memcache_servers are set.
+#   Default to $facts['os_service_default']
+#
+# [*token_cache_time*]
+#   (Optional) The number of seconds to cache token creation and validation
+#   data.
+#   Default to $facts['os_service_default']
+#
+# [*credential_caching*]
+#   (Optional) Toggle for credential system caching. This has no effect unless
+#   cache_backend, cache_enabled and cache_memcache_servers are set.
+#   Default to $facts['os_service_default']
+#
+# [*credential_cache_time*]
+#   (Optional) Time to cache credential data in seconds.
+#   Default to $facts['os_service_default']
+#
+# [*application_credential_caching*]
+#   (Optional) Toggle for application credential system caching. This has no
+#   effect unless cache_backend, cache_enabled and cache_memcache_servers are
+#   set.
+#   Default to $facts['os_service_default']
+#
+# [*application_credential_cache_time*]
+#   (Optional) Time to cache application credential data in seconds.
+#   Default to $facts['os_service_default']
+#
 class keystone::cache(
   $config_prefix                        = $facts['os_service_default'],
   $expiration_time                      = $facts['os_service_default'],
@@ -244,7 +268,6 @@ class keystone::cache(
   $redis_sentinels                      = $facts['os_service_default'],
   $redis_socket_timeout                 = $facts['os_service_default'],
   $redis_sentinel_service_name          = $facts['os_service_default'],
-  $token_caching                        = $facts['os_service_default'],
   $tls_enabled                          = $facts['os_service_default'],
   $tls_cafile                           = $facts['os_service_default'],
   $tls_certfile                         = $facts['os_service_default'],
@@ -256,6 +279,12 @@ class keystone::cache(
   $hashclient_retry_attempts            = $facts['os_service_default'],
   $hashclient_retry_delay               = $facts['os_service_default'],
   $dead_timeout                         = $facts['os_service_default'],
+  $token_caching                        = $facts['os_service_default'],
+  $token_cache_time                     = $facts['os_service_default'],
+  $credential_caching                   = $facts['os_service_default'],
+  $credential_cache_time                = $facts['os_service_default'],
+  $application_credential_caching       = $facts['os_service_default'],
+  $application_credential_cache_time    = $facts['os_service_default'],
   Boolean $manage_backend_package       = true,
 ){
 
@@ -266,7 +295,12 @@ class keystone::cache(
   }
 
   keystone_config {
-    'token/caching': value => $token_caching;
+    'token/caching':                     value => $token_caching;
+    'token/cache_time':                  value => $token_cache_time;
+    'credential/caching':                value => $credential_caching;
+    'credential/cache_time':             value => $credential_cache_time;
+    'application_credential/caching':    value => $application_credential_caching;
+    'application_credential/cache_time': value => $application_credential_cache_time;
   }
 
   oslo::cache { 'keystone_config':
