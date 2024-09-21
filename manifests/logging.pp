@@ -106,9 +106,11 @@
 #   Defaults to $facts['os_service_default']
 #   Example: 'Y-%m-%d %H:%M:%S'
 #
+# DEPRECATED PARAMETERS
+#
 # [*watch_log_file*]
 #   (Optional) Uses logging handler designed to watch file system (boolean value).
-#   Defaults to $facts['os_service_default']
+#   Defaults to undef
 #
 class keystone::logging(
   $use_syslog                    = $facts['os_service_default'],
@@ -131,7 +133,8 @@ class keystone::logging(
   $instance_format               = $facts['os_service_default'],
   $instance_uuid_format          = $facts['os_service_default'],
   $log_date_format               = $facts['os_service_default'],
-  $watch_log_file                = $facts['os_service_default'],
+  # DEPRECATED PARAMETERS
+  $watch_log_file                = undef,
 ) {
 
   include keystone::deps
