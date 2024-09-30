@@ -177,6 +177,11 @@
 #   (list value)
 #   Default to $facts['os_service_default']
 #
+# [*notification_retry*]
+#   (Optional) The maximum number of attempts to re-sent a notification
+#   message, which failed to be delivered due to a recoverable error.
+#   Defaults to $facts['os_service_default'].
+#
 # [*notification_format*]
 #   (Optional) Define the notification format for identity service events.
 #   Valid values are 'basic' and 'cadf'.
@@ -413,6 +418,7 @@ class keystone(
   $notification_transport_url                     = $facts['os_service_default'],
   $notification_driver                            = $facts['os_service_default'],
   $notification_topics                            = $facts['os_service_default'],
+  $notification_retry                             = $facts['os_service_default'],
   $notification_format                            = $facts['os_service_default'],
   $notification_opt_out                           = $facts['os_service_default'],
   $control_exchange                               = $facts['os_service_default'],
@@ -545,6 +551,7 @@ class keystone(
     transport_url => $notification_transport_url,
     driver        => $notification_driver,
     topics        => $notification_topics,
+    retry         => $notification_retry,
   }
 
   oslo::messaging::rabbit { 'keystone_config':

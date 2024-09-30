@@ -1,0 +1,4 @@
+---
+features:
+  - |
+    The new ``keystone::notification_retry`` parameter has been added.

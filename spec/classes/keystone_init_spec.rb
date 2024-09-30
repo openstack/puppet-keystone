@@ -64,6 +64,7 @@ describe 'keystone' do
           :transport_url => '<SERVICE DEFAULT>',
           :driver        => '<SERVICE DEFAULT>',
           :topics        => '<SERVICE DEFAULT>',
+          :retry         => '<SERVICE DEFAULT>',
         )
 
         is_expected.to contain_oslo__messaging__rabbit('keystone_config').with(
@@ -300,6 +301,7 @@ describe 'keystone' do
           :notification_transport_url => 'rabbit://user:pass@host:1234/virt',
           :notification_driver        => ['keystone.openstack.common.notifier.rpc_notifier'],
           :notification_topics        => ['notifications'],
+          :notification_retry         => 10,
           :control_exchange           => 'keystone',
           :rpc_response_timeout       => 120,
           :executor_thread_pool_size  => 64,
@@ -318,6 +320,7 @@ describe 'keystone' do
           :transport_url => 'rabbit://user:pass@host:1234/virt',
           :driver        => ['keystone.openstack.common.notifier.rpc_notifier'],
           :topics        => ['notifications'],
+          :retry         => 10,
         )
       }
     end
