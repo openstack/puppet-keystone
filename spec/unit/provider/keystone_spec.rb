@@ -74,12 +74,21 @@ id="newid"
       set_env
     end
 
-    it 'should be false if the user does not exist' do
+    it 'should be false if the user does not exist (osc<7)' do
       expect(klass).to receive(:request_timeout).and_return(0)
       expect(klass).to receive(:openstack)
         .with('user', 'show', '--format', 'shell', ['no_user', '--domain', 'Default'])
         .exactly(1).times
         .and_raise(Puppet::ExecutionFailure, "Execution of '/usr/bin/openstack user show --format shell no_user' returned 1: No user with a name or ID of 'no_user' exists.")
+      expect(klass.fetch_user('no_user', 'Default')).to be_falsey
+    end
+
+    it 'should be false if the user does not exist (osc>=7)' do
+      expect(klass).to receive(:request_timeout).and_return(0)
+      expect(klass).to receive(:openstack)
+        .with('user', 'show', '--format', 'shell', ['no_user', '--domain', 'Default'])
+        .exactly(1).times
+        .and_raise(Puppet::ExecutionFailure, "Execution of '/usr/bin/openstack user show --format shell no_user' returned 1: No user found for no_user")
       expect(klass.fetch_user('no_user', 'Default')).to be_falsey
     end
 
