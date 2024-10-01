@@ -88,7 +88,7 @@ id="newid"
       expect(klass).to receive(:openstack)
         .with('user', 'show', '--format', 'shell', ['no_user', '--domain', 'Default'])
         .exactly(1).times
-        .and_raise(Puppet::ExecutionFailure, "Execution of '/usr/bin/openstack user show --format shell no_user' returned 1: No user found for no_user")
+        .and_raise(Puppet::ExecutionFailure, "Execution of '/usr/bin/openstack user show --format shell no_user' returned 1: No User found for no_user")
       expect(klass.fetch_user('no_user', 'Default')).to be_falsey
     end
 

@@ -144,7 +144,7 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
       [name, '--domain', domain],
       {
         # TODO(tkajinam): Remove the first item after 2024.2 release.
-        :no_retry_exception_msgs => [/No user with a name or ID/, /No user found for/]
+        :no_retry_exception_msgs => [/No user with a name or ID/, /No User found for/]
       })
     # The description key is only set if it exists
     if user and user.key?(:id) and !user.key?(:description)
@@ -152,7 +152,7 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
     end
     user
   rescue Puppet::ExecutionFailure => e
-    raise e unless (e.message =~ /No user with a name or ID/ or e.message =~ /No user found for/)
+    raise e unless (e.message =~ /No user with a name or ID/ or e.message =~ /No User found for/)
   end
 
   def self.get_auth_url
