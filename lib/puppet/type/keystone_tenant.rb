@@ -1,4 +1,3 @@
-require 'puppet/provider/keystone/util'
 require 'puppet_x/keystone/composite_namevar'
 require 'puppet_x/keystone/type'
 
