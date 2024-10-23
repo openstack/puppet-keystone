@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Add the ``access_log_env_var`` parameter to the ``keystone::wsgi::apache``
+    class to allow filtering logs (eg. suppress healthecks)
