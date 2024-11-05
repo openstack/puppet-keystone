@@ -1,5 +1,4 @@
 require File.join(File.dirname(__FILE__), '..','..','..', 'puppet/provider/keystone')
-require File.join(File.dirname(__FILE__), '..','..','..', 'puppet/provider/keystone/util')
 require File.join(File.dirname(__FILE__), '..','..','..', 'puppet_x/keystone/composite_namevar')
 
 Puppet::Type.type(:keystone_user_role).provide(
