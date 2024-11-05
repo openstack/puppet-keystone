@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The new ``keystone::cache::backend_expiration_time`` parameter has been
+    added.
