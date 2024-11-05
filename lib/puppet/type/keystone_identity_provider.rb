@@ -1,5 +1,3 @@
-require 'puppet/provider/keystone/util'
-
 Puppet::Type.newtype(:keystone_identity_provider) do
 
   desc 'Type for managing identity provider.'
