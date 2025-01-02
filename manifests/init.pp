@@ -364,11 +364,6 @@
 #
 # DEPRECATED PARAMETERS
 #
-# [*client_package_ensure*]
-#   (Optional) Desired ensure state of the client package.
-#   accepts latest or specific versions.
-#   Defaults to present.
-#
 # [*catalog_template_file*]
 #   (Optional) Path to the catalog used if 'templated' catalog driver is used.
 #   Defaults to '/etc/keystone/default_catalog.templates'
@@ -448,17 +443,12 @@ class keystone(
   Boolean $purge_config                           = false,
   $amqp_durable_queues                            = $facts['os_service_default'],
   # DEPRECATED PARAMETERS
-  $client_package_ensure                          = undef,
   $catalog_template_file                          = undef,
 ) inherits keystone::params {
 
   include keystone::deps
   include keystone::logging
   include keystone::policy
-
-  if $client_package_ensure != undef {
-    warning('The client_package_ensure parameter is deprecated and has no effect.')
-  }
 
   if $catalog_template_file != undef {
     warning('The catalog_template_file parameter is deprecated and will be removed in a future release')

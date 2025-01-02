@@ -1,0 +1,7 @@
+---
+upgrade:
+  - |
+    The ``keystone::client`` class has been removed.
+
+  - |
+    The ``keystone::client_package_ensure`` parameter has been removed.
