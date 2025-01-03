@@ -432,7 +432,7 @@ class keystone(
   Stdlib::Absolutepath $fernet_key_repository     = '/etc/keystone/fernet-keys',
   $fernet_max_active_keys                         = $facts['os_service_default'],
   Optional[Hash] $fernet_keys                     = undef,
-  $fernet_replace_keys                            = true,
+  Boolean $fernet_replace_keys                    = true,
   Boolean $enable_credential_setup                = true,
   Stdlib::Absolutepath $credential_key_repository = '/etc/keystone/credential-keys',
   Optional[Hash] $credential_keys                 = undef,
