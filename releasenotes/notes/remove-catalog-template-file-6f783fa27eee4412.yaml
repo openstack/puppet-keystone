@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    The ``keystone::catalog_template_file`` parameter has been removed.

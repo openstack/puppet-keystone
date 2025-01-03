@@ -362,12 +362,6 @@
 #   (Optional) Whether to use durable queues in AMQP.
 #   Defaults to $facts['os_service_default'].
 #
-# DEPRECATED PARAMETERS
-#
-# [*catalog_template_file*]
-#   (Optional) Path to the catalog used if 'templated' catalog driver is used.
-#   Defaults to '/etc/keystone/default_catalog.templates'
-#
 # == Authors
 #
 #   Dan Bode dan@puppetlabs.com
@@ -442,20 +436,11 @@ class keystone(
   $max_request_body_size                          = $facts['os_service_default'],
   Boolean $purge_config                           = false,
   $amqp_durable_queues                            = $facts['os_service_default'],
-  # DEPRECATED PARAMETERS
-  $catalog_template_file                          = undef,
 ) inherits keystone::params {
 
   include keystone::deps
   include keystone::logging
   include keystone::policy
-
-  if $catalog_template_file != undef {
-    warning('The catalog_template_file parameter is deprecated and will be removed in a future release')
-    $catalog_template_file_real = $catalog_template_file
-  } else {
-    $catalog_template_file_real = '/etc/keystone/default_catalog.templates'
-  }
 
   if $manage_policyrcd {
     # openstacklib policy_rcd only affects debian based systems.
@@ -516,8 +501,12 @@ class keystone(
   }
 
   keystone_config {
-    'catalog/driver':        value => $catalog_driver;
-    'catalog/template_file': value => $catalog_template_file_real;
+    'catalog/driver': value => $catalog_driver;
+  }
+
+  # TODO(tkajinam): Remove this after 2025.1 release
+  keystone_config {
+    'catalog/template_file': ensure => absent;
   }
 
   keystone_config {

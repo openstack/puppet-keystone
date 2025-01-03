@@ -47,7 +47,6 @@ describe 'keystone' do
         )
 
         is_expected.to contain_keystone_config('catalog/driver').with_value('<SERVICE DEFAULT>')
-        is_expected.to contain_keystone_config('catalog/template_file').with_value('/etc/keystone/default_catalog.templates')
         is_expected.to contain_keystone_config('DEFAULT/max_token_size').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('DEFAULT/list_limit').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('DEFAULT/notification_format').with_value('<SERVICE DEFAULT>')
@@ -155,7 +154,6 @@ describe 'keystone' do
           :enable_proxy_headers_parsing => true,
           :max_request_body_size        => 114688,
           :catalog_driver               => 'templated',
-          :catalog_template_file        => '/some/template_file',
           :max_token_size               => 255,
           :list_limit                   => 10000,
           :notification_format          => 'basic',
@@ -185,7 +183,6 @@ describe 'keystone' do
         )
 
         is_expected.to contain_keystone_config('catalog/driver').with_value('templated')
-        is_expected.to contain_keystone_config('catalog/template_file').with_value('/some/template_file')
         is_expected.to contain_keystone_config('DEFAULT/max_token_size').with_value(255)
         is_expected.to contain_keystone_config('DEFAULT/list_limit').with_value(10000)
         is_expected.to contain_keystone_config('DEFAULT/notification_format').with_value('basic')
