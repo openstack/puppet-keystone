@@ -1,0 +1,4 @@
+---
+features:
+  - |
+    The new ``keystone::max_db_limit`` parameter has been added.
