@@ -49,6 +49,7 @@ describe 'keystone' do
         is_expected.to contain_keystone_config('catalog/driver').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('DEFAULT/max_token_size').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('DEFAULT/list_limit').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('DEFAULT/max_db_limit').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('DEFAULT/notification_format').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('DEFAULT/notification_opt_out').with_value('<SERVICE DEFAULT>')
 
@@ -156,6 +157,7 @@ describe 'keystone' do
           :catalog_driver               => 'templated',
           :max_token_size               => 255,
           :list_limit                   => 10000,
+          :max_db_limit                 => 10001,
           :notification_format          => 'basic',
           :notification_opt_out         => [
             'identity.authenticate.success',
@@ -185,6 +187,7 @@ describe 'keystone' do
         is_expected.to contain_keystone_config('catalog/driver').with_value('templated')
         is_expected.to contain_keystone_config('DEFAULT/max_token_size').with_value(255)
         is_expected.to contain_keystone_config('DEFAULT/list_limit').with_value(10000)
+        is_expected.to contain_keystone_config('DEFAULT/max_db_limit').with_value(10001)
         is_expected.to contain_keystone_config('DEFAULT/notification_format').with_value('basic')
         is_expected.to contain_keystone_config('DEFAULT/notification_opt_out').with_value([
           'identity.authenticate.success',

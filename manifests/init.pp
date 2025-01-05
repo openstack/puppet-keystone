@@ -239,6 +239,10 @@
 #   a collection.
 #   Defaults to $facts['os_service_default']
 #
+# [*max_db_limit*]
+#   (Optional) Limit the maximum number of items in a single response.
+#   Defaults to $facts['os_service_default']
+#
 # [*sync_db*]
 #   (Optional) Run db sync on the node.
 #   Defaults to true
@@ -416,6 +420,7 @@ class keystone(
   $service_name                                   = $::keystone::params::service_name,
   $max_token_size                                 = $facts['os_service_default'],
   $list_limit                                     = $facts['os_service_default'],
+  $max_db_limit                                   = $facts['os_service_default'],
   Boolean $sync_db                                = true,
   Boolean $enable_fernet_setup                    = true,
   Stdlib::Absolutepath $fernet_key_repository     = '/etc/keystone/fernet-keys',
@@ -510,8 +515,9 @@ class keystone(
   }
 
   keystone_config {
-    'DEFAULT/max_token_size':      value => $max_token_size;
-    'DEFAULT/list_limit':          value => $list_limit;
+    'DEFAULT/max_token_size': value => $max_token_size;
+    'DEFAULT/list_limit':     value => $list_limit;
+    'DEFAULT/max_db_limit':   value => $max_db_limit;
   }
 
   keystone_config {
