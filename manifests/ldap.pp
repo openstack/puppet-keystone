@@ -179,10 +179,6 @@
 #   Valid options for tls_req_cert are demand, never, and allow. (string value)
 #   Defaults to $facts['os_service_default']
 #
-# [*identity_driver*]
-#   Identity backend driver. (string value)
-#   Defaults to $facts['os_service_default']
-#
 # [*use_pool*]
 #   Enable LDAP connection pooling. (boolean value)
 #   Defaults to $facts['os_service_default']
@@ -220,14 +216,6 @@
 #   End user auth connection lifetime in seconds. (integer value)
 #   Defaults to $facts['os_service_default']
 #
-# [*credential_driver*]
-#   Credential backend driver. (string value)
-#   Defaults to $facts['os_service_default']
-#
-# [*assignment_driver*]
-#   Assignment backend driver. (string value)
-#   Defaults to $facts['os_service_default']
-#
 # [*package_ensure*]
 #   (optional) Desired ensure state of packages.
 #   accepts latest or specific versions.
@@ -237,6 +225,20 @@
 #   (optional) Whether or not this module should manage
 #   LDAP support packages.
 #   Defaults to true.
+#
+# DEPRECATED PARAMETERS
+#
+# [*identity_driver*]
+#   Identity backend driver. (string value)
+#   Defaults to undef
+#
+# [*credential_driver*]
+#   Credential backend driver. (string value)
+#   Defaults to undef
+#
+# [*assignment_driver*]
+#   Assignment backend driver. (string value)
+#   Defaults to undef
 #
 # == Authors
 #
@@ -287,9 +289,6 @@ class keystone::ldap(
     = $facts['os_service_default'],
   $tls_cacertfile                       = $facts['os_service_default'],
   $tls_req_cert                         = $facts['os_service_default'],
-  $identity_driver                      = $facts['os_service_default'],
-  $assignment_driver                    = $facts['os_service_default'],
-  $credential_driver                    = $facts['os_service_default'],
   $use_pool                             = $facts['os_service_default'],
   $pool_size                            = $facts['os_service_default'],
   $pool_retry_max                       = $facts['os_service_default'],
@@ -301,9 +300,19 @@ class keystone::ldap(
   $auth_pool_connection_lifetime        = $facts['os_service_default'],
   $package_ensure                       = present,
   Boolean $manage_packages              = true,
+  # DEPRECATED PARAMETERS
+  $identity_driver                      = undef,
+  $assignment_driver                    = undef,
+  $credential_driver                    = undef,
 ) inherits keystone::params {
 
   include keystone::deps
+
+  ['identity_driver', 'assignment_driver', 'credential_driver'].each |String $driver_opt| {
+    if getvar($driver_opt) != undef {
+      warning("The ${driver_opt} parameter is deprecated and will be removed.")
+    }
+  }
 
   if $manage_packages {
     ensure_resource('package',  'python-ldappool', {
@@ -367,8 +376,8 @@ class keystone::ldap(
     'ldap/use_auth_pool':                        value => $use_auth_pool;
     'ldap/auth_pool_size':                       value => $auth_pool_size;
     'ldap/auth_pool_connection_lifetime':        value => $auth_pool_connection_lifetime;
-    'identity/driver':                           value => $identity_driver;
-    'credential/driver':                         value => $credential_driver;
-    'assignment/driver':                         value => $assignment_driver;
+    'identity/driver':                           value => pick($identity_driver, $::facts['os_service_default']);
+    'credential/driver':                         value => pick($credential_driver, $::facts['os_service_default']);
+    'assignment/driver':                         value => pick($assignment_driver, $::facts['os_service_default']);
   }
 }

@@ -1,0 +1,9 @@
+---
+deprecations:
+  - |
+    The following parameters of the ``keystone::ldap`` class have been
+    deprecated and will be removed in a future release.
+
+    - ``identity_driver``
+    - ``assignment_driver``
+    - ``credential_driver``
