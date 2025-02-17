@@ -186,7 +186,7 @@ class keystone::wsgi::apache (
 
   Anchor['keystone::install::end'] -> Class['apache']
 
-  ::openstacklib::wsgi::apache { 'keystone_wsgi':
+  openstacklib::wsgi::apache { 'keystone_wsgi':
     servername                  => $servername,
     bind_host                   => $bind_host,
     bind_port                   => $port,

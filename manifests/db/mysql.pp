@@ -45,7 +45,7 @@ class keystone::db::mysql(
 
   include keystone::deps
 
-  ::openstacklib::db::mysql { 'keystone':
+  openstacklib::db::mysql { 'keystone':
     user          => $user,
     password      => $password,
     dbname        => $dbname,

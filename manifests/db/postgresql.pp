@@ -44,7 +44,7 @@ class keystone::db::postgresql(
 
   include keystone::deps
 
-  ::openstacklib::db::postgresql { 'keystone':
+  openstacklib::db::postgresql { 'keystone':
     password   => $password,
     dbname     => $dbname,
     user       => $user,
