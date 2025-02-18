@@ -53,6 +53,10 @@
 #  supported by mod_auth_openidc (shm, file, memcache, redis).
 #  Defaults to undef.
 #
+# [*openidc_scope*]
+#  (Optional) Array of mod_auth_openidc requested scope(s).
+#  Defaults to ['openid', 'email', 'profile'].
+#
 # [*openidc_cache_shm_max*]
 #  (Optional) The maximum number of name/value pair entries that can
 #  be cached when using the 'shm' cache type. Defaults to undef.
@@ -178,6 +182,7 @@ class keystone::federation::openidc (
   Optional[Stdlib::Unixpath] $openidc_metadata_dir         = undef,
   $openidc_crypto_passphrase                               = 'openstack',
   $openidc_response_type                                   = 'id_token',
+  Array[String[1], 1] $openidc_scope                       = ['openid', 'email', 'profile'],
   $openidc_response_mode                                   = undef,
   $openidc_cache_type                                      = undef,
   $openidc_cache_shm_max                                   = undef,

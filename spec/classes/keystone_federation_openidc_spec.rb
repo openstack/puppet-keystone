@@ -88,6 +88,8 @@ describe 'keystone::federation::openidc' do
 
       it 'should contain expected config' do
         content = get_param('concat::fragment', 'keystone_wsgi-configure_openidc_keystone', 'content')
+        expect(content).to match('OIDCResponseType "id_token"')
+        expect(content).to match('OIDCScope "openid email profile"')
         expect(content).to match('OIDCClientID "openid_client_id"')
         expect(content).to match('OIDCClientSecret "openid_client_secret"')
         expect(content).to match('OIDCRedirectURI "http://localhost:5000/v3/redirect_uri"')
@@ -181,6 +183,18 @@ describe 'keystone::federation::openidc' do
       it 'should contain the expected additional location' do
         content = get_param('concat::fragment', 'keystone_wsgi-configure_openidc_keystone', 'content')
         expect(content).to match('/v3/auth/a-custom-url')
+      end
+    end
+
+    context 'with additional openidc scope' do
+      before do
+        params.merge!({
+          :openidc_scope => ['iam', 'openid', 'email', 'profile'],
+        })
+      end
+      it 'should use the specified OIDCScope' do
+        content = get_param('concat::fragment', 'keystone_wsgi-configure_openidc_keystone', 'content')
+        expect(content).to match('OIDCScope "iam openid email profile"')
       end
     end
 

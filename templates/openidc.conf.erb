@@ -1,6 +1,6 @@
   OIDCClaimPrefix "OIDC-"
   OIDCResponseType "<%= scope['keystone::federation::openidc::openidc_response_type']-%>"
-  OIDCScope "openid email profile"
+  OIDCScope "<%= scope['keystone::federation::openidc::openidc_scope'].join(' ')-%>"
 <%- if scope['::keystone::federation::openidc::openidc_provider_metadata_url'] != nil -%>
   OIDCProviderMetadataURL "<%= scope['keystone::federation::openidc::openidc_provider_metadata_url']-%>"
 <%- end -%>
