@@ -458,7 +458,7 @@ class keystone(
   include openstacklib::openstackclient
 
   resources { 'keystone_config':
-    purge  => $purge_config,
+    purge => $purge_config,
   }
 
   # Endpoint configuration

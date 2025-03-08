@@ -39,8 +39,6 @@ class { 'keystone::bootstrap':
   admin_url  => "https://${facts['networking']['fqdn']}:443/v3",
 }
 
-keystone_config { 'ssl/enable': ensure  => absent }
-
 include apache
 class { 'keystone::wsgi::apache':
   ssl      => true,
