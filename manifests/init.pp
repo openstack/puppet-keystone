@@ -476,7 +476,7 @@ class keystone(
   }
 
   resources { 'keystone_config':
-    purge  => $purge_config,
+    purge => $purge_config,
   }
 
   # Endpoint configuration
