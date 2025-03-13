@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    A new parameter ``rabbit_transient_queues_ttl`` has been added to the
+    keystone class to configure how long transient queue should stay until
+    they are automatically deleted.
