@@ -526,11 +526,6 @@ class keystone(
     'catalog/driver': value => $catalog_driver;
   }
 
-  # TODO(tkajinam): Remove this after 2025.1 release
-  keystone_config {
-    'catalog/template_file': ensure => absent;
-  }
-
   keystone_config {
     'DEFAULT/max_token_size': value => $max_token_size;
     'DEFAULT/list_limit':     value => $list_limit;
