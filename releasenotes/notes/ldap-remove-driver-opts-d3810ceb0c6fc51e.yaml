@@ -1,0 +1,8 @@
+---
+upgrade:
+  - |
+    The following parameters of the ``keystone::ldap`` class have been removed.
+
+    - ``identity_driver``
+    - ``assignment_driver``
+    - ``credential_driver``

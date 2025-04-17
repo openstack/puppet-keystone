@@ -226,20 +226,6 @@
 #   LDAP support packages.
 #   Defaults to true.
 #
-# DEPRECATED PARAMETERS
-#
-# [*identity_driver*]
-#   Identity backend driver. (string value)
-#   Defaults to undef
-#
-# [*credential_driver*]
-#   Credential backend driver. (string value)
-#   Defaults to undef
-#
-# [*assignment_driver*]
-#   Assignment backend driver. (string value)
-#   Defaults to undef
-#
 # == Authors
 #
 #   Dan Bode dan@puppetlabs.com
@@ -300,19 +286,9 @@ class keystone::ldap(
   $auth_pool_connection_lifetime        = $facts['os_service_default'],
   $package_ensure                       = present,
   Boolean $manage_packages              = true,
-  # DEPRECATED PARAMETERS
-  $identity_driver                      = undef,
-  $assignment_driver                    = undef,
-  $credential_driver                    = undef,
 ) inherits keystone::params {
 
   include keystone::deps
-
-  ['identity_driver', 'assignment_driver', 'credential_driver'].each |String $driver_opt| {
-    if getvar($driver_opt) != undef {
-      warning("The ${driver_opt} parameter is deprecated and will be removed.")
-    }
-  }
 
   if $manage_packages {
     ensure_resource('package',  'python-ldappool', {
@@ -376,8 +352,5 @@ class keystone::ldap(
     'ldap/use_auth_pool':                        value => $use_auth_pool;
     'ldap/auth_pool_size':                       value => $auth_pool_size;
     'ldap/auth_pool_connection_lifetime':        value => $auth_pool_connection_lifetime;
-    'identity/driver':                           value => pick($identity_driver, $::facts['os_service_default']);
-    'credential/driver':                         value => pick($credential_driver, $::facts['os_service_default']);
-    'assignment/driver':                         value => pick($assignment_driver, $::facts['os_service_default']);
   }
 }

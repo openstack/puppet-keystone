@@ -76,8 +76,6 @@ describe 'keystone::ldap' do
         is_expected.to contain_keystone_config('ldap/auth_pool_size').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('ldap/auth_pool_connection_lifetime').with_value('<SERVICE DEFAULT>')
       }
-
-      it { is_expected.to contain_keystone_config('identity/driver').with_value('<SERVICE DEFAULT>') }
     end
 
     context 'with parameters' do
@@ -121,7 +119,6 @@ describe 'keystone::ldap' do
           :tls_cacertdir                        => '/etc/ssl/certs/',
           :tls_cacertfile                       => '/etc/ssl/certs/ca-certificates.crt',
           :tls_req_cert                         => 'demand',
-          :identity_driver                      => 'ldap',
           :use_pool                             => true,
           :pool_size                            => 10,
           :pool_retry_max                       => 3,
@@ -214,8 +211,6 @@ describe 'keystone::ldap' do
         is_expected.to contain_keystone_config('ldap/auth_pool_size').with_value(100)
         is_expected.to contain_keystone_config('ldap/auth_pool_connection_lifetime').with_value(60)
       }
-
-      it { is_expected.to contain_keystone_config('identity/driver').with_value('ldap') }
     end
 
     context 'with manage_packages set to false' do
