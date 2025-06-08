@@ -190,6 +190,10 @@
 #   Identity backend driver. (string value)
 #   Defaults to 'ldap'
 #
+# [*connection_timeout*]
+#   Connection timeout in seconds to use with the LDAP server. (integer value)
+#   Defaults to $facts['os_service_default']
+#
 # [*use_pool*]
 #   Enable LDAP connection pooling. (boolean value)
 #   Defaults to $facts['os_service_default']
@@ -285,6 +289,7 @@ define keystone::ldap_backend(
   $tls_cacertfile                       = $facts['os_service_default'],
   $tls_req_cert                         = $facts['os_service_default'],
   $identity_driver                      = 'ldap',
+  $connection_timeout                   = $facts['os_service_default'],
   $use_pool                             = $facts['os_service_default'],
   $pool_size                            = $facts['os_service_default'],
   $pool_retry_max                       = $facts['os_service_default'],
@@ -364,6 +369,7 @@ define keystone::ldap_backend(
     "${domain}::ldap/tls_cacertdir":                        value => $tls_cacertdir;
     "${domain}::ldap/tls_cacertfile":                       value => $tls_cacertfile;
     "${domain}::ldap/tls_req_cert":                         value => $tls_req_cert;
+    "${domain}::ldap/connection_timeout":                   value => $connection_timeout;
     "${domain}::ldap/use_pool":                             value => $use_pool;
     "${domain}::ldap/pool_size":                            value => $pool_size;
     "${domain}::ldap/pool_retry_max":                       value => $pool_retry_max;

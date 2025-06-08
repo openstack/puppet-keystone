@@ -179,6 +179,10 @@
 #   Valid options for tls_req_cert are demand, never, and allow. (string value)
 #   Defaults to $facts['os_service_default']
 #
+# [*connection_timeout*]
+#   Connection timeout in seconds to use with the LDAP server. (integer value)
+#   Defaults to $facts['os_service_default']
+#
 # [*use_pool*]
 #   Enable LDAP connection pooling. (boolean value)
 #   Defaults to $facts['os_service_default']
@@ -275,6 +279,7 @@ class keystone::ldap(
     = $facts['os_service_default'],
   $tls_cacertfile                       = $facts['os_service_default'],
   $tls_req_cert                         = $facts['os_service_default'],
+  $connection_timeout                   = $facts['os_service_default'],
   $use_pool                             = $facts['os_service_default'],
   $pool_size                            = $facts['os_service_default'],
   $pool_retry_max                       = $facts['os_service_default'],
@@ -343,6 +348,7 @@ class keystone::ldap(
     'ldap/tls_cacertdir':                        value => $tls_cacertdir;
     'ldap/tls_cacertfile':                       value => $tls_cacertfile;
     'ldap/tls_req_cert':                         value => $tls_req_cert;
+    'ldap/connection_timeout':                   value => $connection_timeout;
     'ldap/use_pool':                             value => $use_pool;
     'ldap/pool_size':                            value => $pool_size;
     'ldap/pool_retry_max':                       value => $pool_retry_max;

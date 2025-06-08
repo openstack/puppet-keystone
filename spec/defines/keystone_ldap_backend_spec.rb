@@ -56,6 +56,7 @@ describe 'keystone::ldap_backend' do
             :tls_cacertfile                       => '/etc/ssl/certs/ca-certificates.crt',
             :tls_req_cert                         => 'demand',
             :identity_driver                      => 'ldap',
+            :connection_timeout                   => 111,
             :use_pool                             => 'True',
             :pool_size                            => 20,
             :pool_retry_max                       => 2,
@@ -123,6 +124,8 @@ describe 'keystone::ldap_backend' do
           is_expected.to contain_keystone_domain_config('Default::ldap/tls_cacertdir').with_value('/etc/ssl/certs/')
           is_expected.to contain_keystone_domain_config('Default::ldap/tls_cacertfile').with_value('/etc/ssl/certs/ca-certificates.crt')
           is_expected.to contain_keystone_domain_config('Default::ldap/tls_req_cert').with_value('demand')
+
+          is_expected.to contain_keystone_domain_config('Default::ldap/connection_timeout').with_value('111')
 
           # ldap pooling
           is_expected.to contain_keystone_domain_config('Default::ldap/use_pool').with_value('True')

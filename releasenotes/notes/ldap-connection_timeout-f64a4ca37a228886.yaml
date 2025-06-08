@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    The new ``connection_timeout`` parameter has been added to
+    the ``keystone::ldap`` class and the ``keystone::ldap_backend`` defined
+    resource type.
