@@ -324,6 +324,15 @@ define keystone::ldap_backend(
     ensure_resource('file', $tls_cacertdir, { ensure => directory })
   }
 
+  file { "${keystone::domain_config_directory}/keystone.${domain}.conf":
+    ensure  => 'present',
+    mode    => '0640',
+    owner   => 'root',
+    group   => $::keystone::params::group,
+    require => Anchor['keystone::config::begin'],
+    before  => Anchor['keystone::config::end']
+  }
+
   keystone_domain_config {
     "${domain}::ldap/url":                                  value => $url;
     "${domain}::ldap/user":                                 value => $user;

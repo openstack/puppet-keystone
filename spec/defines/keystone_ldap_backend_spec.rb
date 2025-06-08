@@ -73,6 +73,14 @@ describe 'keystone::ldap_backend' do
             :name => platform_params[:python_ldappool_package_name],
           )
         }
+        it 'should prepare the config file' do
+          is_expected.to contain_file('/etc/keystone/domains/keystone.Default.conf').with(
+            :ensure => 'present',
+            :mode   => '0640',
+            :owner  => 'root',
+            :group  => 'keystone'
+          )
+        end
         it 'should have basic params' do
           # basic params
           is_expected.to contain_keystone_domain_config('Default::ldap/url').with_value('ldap://foo')
