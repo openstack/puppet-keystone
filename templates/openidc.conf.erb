@@ -9,7 +9,11 @@
 <%- end -%>
   OIDCClientID "<%= scope['keystone::federation::openidc::openidc_client_id']-%>"
   OIDCClientSecret "<%= scope['keystone::federation::openidc::openidc_client_secret']-%>"
+<%- if scope['keystone::federation::openidc::openidc_crypto_passphrase'].kind_of?(Array) -%>
+  OIDCCryptoPassphrase "<%= scope['keystone::federation::openidc::openidc_crypto_passphrase'].join('" "') -%>"
+<%- else -%>
   OIDCCryptoPassphrase "<%= scope['keystone::federation::openidc::openidc_crypto_passphrase']-%>"
+<%- end -%>
 <%- if scope['::keystone::federation::openidc::openidc_response_mode'] != nil -%>
   OIDCResponseMode "<%= scope['::keystone::federation::openidc::openidc_response_mode'] %>"
 <%- end -%>
