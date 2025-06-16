@@ -12,6 +12,10 @@ describe 'keystone::security_compliance' do
       is_expected.to contain_keystone_config('security_compliance/password_regex').with_value('<SERVICE DEFAULT>')
       is_expected.to contain_keystone_config('security_compliance/password_regex_description').with_value('<SERVICE DEFAULT>')
       is_expected.to contain_keystone_config('security_compliance/unique_last_password_count').with_value('<SERVICE DEFAULT>')
+      is_expected.to contain_keystone_config('security_compliance/report_invalid_password_hash').with_value('<SERVICE DEFAULT>')
+      is_expected.to contain_keystone_config('security_compliance/invalid_password_hash_secret_key').with_value('<SERVICE DEFAULT>').with_secret(true)
+      is_expected.to contain_keystone_config('security_compliance/invalid_password_hash_function').with_value('<SERVICE DEFAULT>')
+      is_expected.to contain_keystone_config('security_compliance/invalid_password_hash_max_chars').with_value('<SERVICE DEFAULT>')
     end
 
     context 'with specific params' do
@@ -26,6 +30,10 @@ describe 'keystone::security_compliance' do
           :password_regex                     => 'SomeRegex',
           :password_regex_description         => 'this is some regex',
           :unique_last_password_count         => 6,
+          :report_invalid_password_hash       => 'event',
+          :invalid_password_hash_secret_key   => 'secret',
+          :invalid_password_hash_function     => 'sha256',
+          :invalid_password_hash_max_chars    => 5,
         }
       end
       it 'should have configure security compliance with params' do
@@ -38,6 +46,10 @@ describe 'keystone::security_compliance' do
         is_expected.to contain_keystone_config('security_compliance/password_regex').with_value('SomeRegex')
         is_expected.to contain_keystone_config('security_compliance/password_regex_description').with_value('this is some regex')
         is_expected.to contain_keystone_config('security_compliance/unique_last_password_count').with_value(6)
+        is_expected.to contain_keystone_config('security_compliance/report_invalid_password_hash').with_value('event')
+        is_expected.to contain_keystone_config('security_compliance/invalid_password_hash_secret_key').with_value('secret').with_secret(true)
+        is_expected.to contain_keystone_config('security_compliance/invalid_password_hash_function').with_value('sha256')
+        is_expected.to contain_keystone_config('security_compliance/invalid_password_hash_max_chars').with_value(5)
       end
     end
   end

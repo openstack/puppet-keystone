@@ -57,6 +57,23 @@
 #   (Integer value)
 #   Defaults to $facts['os_service_default']
 #
+# [*report_invalid_password_hash*]
+#   (Optional) Enriches `identiy.authenticate.failure` event notifications with
+#   partial invalid password hash.
+#   Defaults to $facts['os_service_default']
+#
+# [*invalid_password_hash_secret_key*]
+#   (Optional) Secret key used when generating password hashes.
+#   Defaults to $facts['os_service_default']
+#
+# [*invalid_password_hash_function*]
+#   (Optional) Hash function used when generating password hashes.
+#   Defaults to $facts['os_service_default']
+#
+# [*invalid_password_hash_max_chars*]
+#   (Optional) Number of characters of hash of invalid password to be returned.
+#   Defaults to $facts['os_service_default']
+#
 class keystone::security_compliance(
   $change_password_upon_first_use     = $facts['os_service_default'],
   $disable_user_account_days_inactive = $facts['os_service_default'],
@@ -67,6 +84,10 @@ class keystone::security_compliance(
   $password_regex                     = $facts['os_service_default'],
   $password_regex_description         = $facts['os_service_default'],
   $unique_last_password_count         = $facts['os_service_default'],
+  $report_invalid_password_hash       = $facts['os_service_default'],
+  $invalid_password_hash_secret_key   = $facts['os_service_default'],
+  $invalid_password_hash_function     = $facts['os_service_default'],
+  $invalid_password_hash_max_chars    = $facts['os_service_default'],
 ) {
 
   include keystone::deps
@@ -81,5 +102,9 @@ class keystone::security_compliance(
     'security_compliance/password_regex':                     value => $password_regex;
     'security_compliance/password_regex_description':         value => $password_regex_description;
     'security_compliance/unique_last_password_count':         value => $unique_last_password_count;
+    'security_compliance/report_invalid_password_hash':       value => join(any2array($report_invalid_password_hash), ',');
+    'security_compliance/invalid_password_hash_secret_key':   value => $invalid_password_hash_secret_key, secret => true;
+    'security_compliance/invalid_password_hash_function':     value => $invalid_password_hash_function;
+    'security_compliance/invalid_password_hash_max_chars':    value => $invalid_password_hash_max_chars;
   }
 }
