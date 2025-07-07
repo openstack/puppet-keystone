@@ -140,10 +140,10 @@ describe 'keystone::resource::authtoken' do
     end
 
     context 'without password required parameter' do
-      let :params do
+      before do
         params.delete(:password)
       end
-      it { expect { is_expected.to raise_error(Puppet::Error) } }
+      it { is_expected.to raise_error(Puppet::Error) }
     end
 
     context 'when specifying all memcache params' do
@@ -221,7 +221,7 @@ describe 'keystone::resource::authtoken' do
       before do
         params.merge!({ :memcache_security_strategy => 'mystrategy', })
       end
-      it { expect { is_expected.to raise_error(Puppet::Error, 'memcache_security_strategy can be set only to MAC or ENCRYPT') } }
+      it { is_expected.to raise_error(Puppet::Error, /memcache_security_strategy can be set only to None, MAC or ENCRYPT/) }
     end
 
     context 'memcache_security_strategy in lower case' do
@@ -234,14 +234,14 @@ describe 'keystone::resource::authtoken' do
       it { is_expected.to contain_keystone_config('keystone_authtoken/memcache_security_strategy').with_value( params[:memcache_security_strategy] ) }
     end
 
-    context 'require memcache_secret_key when memcache_security_strategy is defined' do
+    context 'require memcache_secret_key when memcache_security_strategy is not None' do
       before do
         params.merge!({
           :memcache_security_strategy => 'MAC',
           :memcache_secret_key        => '<SERVICE DEFAULT>',
         })
       end
-      it { expect { is_expected.to raise_error(Puppet::Error, 'memcache_secret_key is required when memcache_security_strategy is defined') } }
+      it { is_expected.to raise_error(Puppet::Error, /memcache_secret_key is required when memcache_security_strategy is not None/) }
     end
 
     context 'memcache_security_strategy is None' do
