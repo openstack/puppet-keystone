@@ -48,7 +48,8 @@
 #   (Required) Password to create for the service user
 #
 # [*auth_url*]
-#   (Required) The URL to use for authentication.
+#   (Optional) The URL to use for authentication.
+#   Defaults to 'http://127.0.0.1:5000'
 #
 # [*project_name*]
 #   (Optional) Service project name
@@ -230,7 +231,7 @@
 define keystone::resource::authtoken(
   $username,
   $password,
-  $auth_url,
+  $auth_url                        = 'http://127.0.0.1:5000',
   $project_name                    = $facts['os_service_default'],
   $user_domain_name                = $facts['os_service_default'],
   $project_domain_name             = $facts['os_service_default'],

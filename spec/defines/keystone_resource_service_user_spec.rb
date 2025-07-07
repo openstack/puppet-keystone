@@ -6,8 +6,7 @@ describe 'keystone::resource::service_user' do
 
   let :params do
     { :username     => 'keystone',
-      :password     => 'secret',
-      :auth_url     => 'http://127.0.0.1:5000' }
+      :password     => 'secret' }
   end
 
   shared_examples 'shared examples' do
@@ -15,7 +14,7 @@ describe 'keystone::resource::service_user' do
       it 'configures keystone service_user' do
         is_expected.to contain_keystone_config('service_user/username').with_value('keystone')
         is_expected.to contain_keystone_config('service_user/password').with_value('secret').with_secret(true)
-        is_expected.to contain_keystone_config('service_user/auth_url').with_value( params[:auth_url] )
+        is_expected.to contain_keystone_config('service_user/auth_url').with_value('http://127.0.0.1:5000')
         is_expected.to contain_keystone_config('service_user/project_name').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('service_user/project_domain_name').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('service_user/user_domain_name').with_value('<SERVICE DEFAULT>')
@@ -53,7 +52,7 @@ describe 'keystone::resource::service_user' do
       it 'override keystone service_user parameters' do
         is_expected.to contain_keystone_config('service_user/username').with_value(params[:username])
         is_expected.to contain_keystone_config('service_user/password').with_value(params[:password]).with_secret(true)
-        is_expected.to contain_keystone_config('service_user/auth_url').with_value( params[:auth_url] )
+        is_expected.to contain_keystone_config('service_user/auth_url').with_value(params[:auth_url])
         is_expected.to contain_keystone_config('service_user/project_name').with_value( params[:project_name] )
         is_expected.to contain_keystone_config('service_user/project_domain_name').with_value(params[:project_domain_name])
         is_expected.to contain_keystone_config('service_user/user_domain_name').with_value(params[:user_domain_name])

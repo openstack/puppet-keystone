@@ -6,8 +6,7 @@ describe 'keystone::resource::authtoken' do
 
   let :params do
     { :username     => 'keystone',
-      :password     => 'secret',
-      :auth_url     => 'http://127.0.0.1:5000' }
+      :password     => 'secret' }
   end
 
   shared_examples 'shared examples' do
@@ -15,7 +14,7 @@ describe 'keystone::resource::authtoken' do
       it 'configures keystone authtoken' do
         is_expected.to contain_keystone_config('keystone_authtoken/username').with_value('keystone')
         is_expected.to contain_keystone_config('keystone_authtoken/password').with_value('secret').with_secret(true)
-        is_expected.to contain_keystone_config('keystone_authtoken/auth_url').with_value( params[:auth_url] )
+        is_expected.to contain_keystone_config('keystone_authtoken/auth_url').with_value('http://127.0.0.1:5000')
         is_expected.to contain_keystone_config('keystone_authtoken/project_name').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('keystone_authtoken/project_domain_name').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('keystone_authtoken/system_scope').with_value('<SERVICE DEFAULT>')
@@ -88,7 +87,7 @@ describe 'keystone::resource::authtoken' do
       it 'override keystone authtoken parameters' do
         is_expected.to contain_keystone_config('keystone_authtoken/username').with_value(params[:username])
         is_expected.to contain_keystone_config('keystone_authtoken/password').with_value(params[:password]).with_secret(true)
-        is_expected.to contain_keystone_config('keystone_authtoken/auth_url').with_value( params[:auth_url] )
+        is_expected.to contain_keystone_config('keystone_authtoken/auth_url').with_value(params[:auth_url])
         is_expected.to contain_keystone_config('keystone_authtoken/project_name').with_value( params[:project_name] )
         is_expected.to contain_keystone_config('keystone_authtoken/user_domain_name').with_value(params[:user_domain_name])
         is_expected.to contain_keystone_config('keystone_authtoken/project_domain_name').with_value(params[:project_domain_name])
