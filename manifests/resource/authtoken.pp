@@ -292,7 +292,7 @@ define keystone::resource::authtoken(
     if $manage_memcache_package {
       ensure_packages('python-memcache', {
         ensure => present,
-        name   => $::keystone::params::python_memcache_package_name,
+        name   => $keystone::params::python_memcache_package_name,
         tag    => ['openstack'],
       })
     }

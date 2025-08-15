@@ -91,10 +91,10 @@ class keystone::bootstrap (
     default => $internal_url
   }
 
-  if defined('$::keystone::keystone_user') {
-    $keystone_user = $::keystone::keystone_user
+  if defined('$keystone::keystone_user') {
+    $keystone_user = $keystone::keystone_user
   } else {
-    $keystone_user = $::keystone::params::user
+    $keystone_user = $keystone::params::user
   }
 
   if $bootstrap {

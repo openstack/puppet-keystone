@@ -30,7 +30,7 @@ yumrepo { 'shibboleth':
   gpgcheck => 1,
   gpgkey   => 'http://download.opensuse.org/repositories/security:/shibboleth/CentOS_7/repodata/repomd.xml.key',
   enabled  => 1,
-  require  => Anchor['openstack_extras_redhat']
+  require  => Anchor['openstack_extras_redhat'],
 }
 
 Yumrepo['shibboleth'] -> Class['keystone::federation::shibboleth']
@@ -61,7 +61,7 @@ keystone_config { 'ssl/enable': value => true }
 
 include apache
 class { 'keystone::wsgi::apache':
-  ssl => true
+  ssl => true,
 }
 
 class { 'keystone::federation::shibboleth':

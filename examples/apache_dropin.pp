@@ -42,5 +42,5 @@ keystone_config { 'ssl/enable': value => true }
 
 include apache
 class { 'keystone::wsgi::apache':
-  ssl => true
+  ssl => true,
 }

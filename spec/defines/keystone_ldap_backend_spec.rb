@@ -76,7 +76,7 @@ describe 'keystone::ldap_backend' do
         }
         it 'should prepare the config file' do
           is_expected.to contain_file('/etc/keystone/domains/keystone.Default.conf').with(
-            :ensure => 'present',
+            :ensure => 'file',
             :mode   => '0640',
             :owner  => 'root',
             :group  => 'keystone'

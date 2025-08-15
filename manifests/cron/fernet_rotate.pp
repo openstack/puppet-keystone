@@ -51,7 +51,7 @@
 #
 # [*user*]
 #   (Optional) Allow to run the crontab on behalf any user.
-#   Defaults to $::keystone::params::user
+#   Defaults to $keystone::params::user
 #
 class keystone::cron::fernet_rotate (
   Enum['present', 'absent'] $ensure = present,
@@ -61,7 +61,7 @@ class keystone::cron::fernet_rotate (
   $month                            = '*',
   $weekday                          = '*',
   Integer[0] $maxdelay              = 0,
-  $user                             = $::keystone::params::user,
+  $user                             = $keystone::params::user,
 ) inherits keystone::params {
 
   include keystone::deps

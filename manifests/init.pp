@@ -234,7 +234,7 @@
 #   web service.  After calling class {'keystone'...}
 #   use class { 'keystone::wsgi::apache'...} to make keystone be
 #   a web app using apache mod_wsgi.
-#   Defaults to '$::keystone::params::service_name'
+#   Defaults to '$keystone::params::service_name'
 #
 # [*max_token_size*]
 #   (Optional) maximum allowable Keystone token size
@@ -344,11 +344,11 @@
 #
 # [*keystone_user*]
 #   (Optional) Specify the keystone system user to be used with keystone-manage.
-#   Defaults to $::keystone::params::user
+#   Defaults to $keystone::params::user
 #
 # [*keystone_group*]
 #   (Optional) Specify the keystone system group to be used with keystone-manage.
-#   Defaults to $::keystone::params::group
+#   Defaults to $keystone::params::group
 #
 # [*manage_policyrcd*]
 #   (Optional) Whether to manage the policy-rc.d on debian based systems to
@@ -441,7 +441,7 @@ class keystone(
   $control_exchange                               = $facts['os_service_default'],
   $executor_thread_pool_size                      = $facts['os_service_default'],
   $rpc_response_timeout                           = $facts['os_service_default'],
-  $service_name                                   = $::keystone::params::service_name,
+  $service_name                                   = $keystone::params::service_name,
   $max_token_size                                 = $facts['os_service_default'],
   $list_limit                                     = $facts['os_service_default'],
   $max_db_limit                                   = $facts['os_service_default'],
@@ -458,8 +458,8 @@ class keystone(
   $policy_driver                                  = $facts['os_service_default'],
   Boolean $using_domain_config                    = false,
   Stdlib::Absolutepath $domain_config_directory   = '/etc/keystone/domains',
-  $keystone_user                                  = $::keystone::params::user,
-  $keystone_group                                 = $::keystone::params::group,
+  $keystone_user                                  = $keystone::params::user,
+  $keystone_group                                 = $keystone::params::group,
   Boolean $manage_policyrcd                       = false,
   $enable_proxy_headers_parsing                   = $facts['os_service_default'],
   $max_request_body_size                          = $facts['os_service_default'],
@@ -493,7 +493,7 @@ class keystone(
   if $manage_package {
     package { 'keystone':
       ensure => $package_ensure,
-      name   => $::keystone::params::package_name,
+      name   => $keystone::params::package_name,
       tag    => ['openstack', 'keystone-package'],
     }
     include openstacklib::openstackclient
@@ -596,13 +596,13 @@ class keystone(
     }
 
     case $service_name {
-      $::keystone::params::service_name: {
+      $keystone::params::service_name: {
         if $facts['os']['name'] != 'Debian' {
           # TODO(tkajinam): Make this hard-fail
           warning('Keystone under Eventlet is no longer supported by this operating system')
         }
 
-        $service_name_real = $::keystone::params::service_name
+        $service_name_real = $keystone::params::service_name
 
         service { 'keystone':
           ensure     => $service_ensure,
@@ -618,13 +618,13 @@ class keystone(
       }
       'httpd': {
         include apache::params
-        $service_name_real = $::apache::params::service_name
+        $service_name_real = $apache::params::service_name
         Service <| title == 'httpd' |> { tag +> 'keystone-service' }
 
         if $facts['os']['name'] == 'Debian' {
           service { 'keystone':
             ensure => 'stopped',
-            name   => $::keystone::params::service_name,
+            name   => $keystone::params::service_name,
             enable => false,
             tag    => 'keystone-service',
           }

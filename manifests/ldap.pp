@@ -305,7 +305,7 @@ class keystone::ldap(
 
   if ! is_service_default($tls_cacertdir) {
     file { $tls_cacertdir:
-      ensure => directory
+      ensure => directory,
     }
   }
 

@@ -55,7 +55,7 @@ describe 'keystone::federation::identity_provider' do
       )}
 
       it { is_expected.to contain_file("#{params[:idp_metadata_path]}").with(
-        :ensure => 'present',
+        :ensure => 'file',
         :mode   => '0600',
         :owner  => 'keystone',
       )}

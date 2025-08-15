@@ -61,7 +61,7 @@
 #
 # [*user*]
 #  (Optional) User with access to keystone files. (string value)
-#  Defaults to $::keystone::params::user.
+#  Defaults to $keystone::params::user.
 #
 # [*package_ensure*]
 #   (optional) Desired ensure state of packages.
@@ -84,7 +84,7 @@ class keystone::federation::identity_provider(
   Stdlib::Absolutepath $idp_metadata_path,
   $certfile                      = $facts['os_service_default'],
   $keyfile                       = $facts['os_service_default'],
-  $user                          = $::keystone::params::user,
+  $user                          = $keystone::params::user,
   $idp_organization_name         = $facts['os_service_default'],
   $idp_organization_display_name = $facts['os_service_default'],
   $idp_organization_url          = $facts['os_service_default'],
@@ -99,7 +99,7 @@ class keystone::federation::identity_provider(
 
   include keystone::deps
 
-  if $::keystone::service_name != 'httpd' {
+  if $keystone::service_name != 'httpd' {
     fail ('Keystone need to be running under Apache for Federation work.')
   }
 
@@ -144,7 +144,7 @@ class keystone::federation::identity_provider(
   }
 
   file { $idp_metadata_path:
-    ensure => present,
+    ensure => file,
     mode   => '0600',
     owner  => $user,
   }

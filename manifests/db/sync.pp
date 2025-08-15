@@ -12,7 +12,7 @@
 #
 # [*keystone_user*]
 #   (Optional) Specify the keystone system user to be used with keystone-manage.
-#   Defaults to $::keystone::params::user
+#   Defaults to $keystone::params::user
 #
 # [*db_sync_timeout*]
 #   (Optional) Timeout for the execution of the db_sync
@@ -20,7 +20,7 @@
 #
 class keystone::db::sync(
   $extra_params    = undef,
-  $keystone_user   = $::keystone::params::user,
+  $keystone_user   = $keystone::params::user,
   $db_sync_timeout = 300,
 ) inherits keystone::params {
 
@@ -41,6 +41,6 @@ class keystone::db::sync(
       Anchor['keystone::dbsync::begin']
     ],
     notify      => Anchor['keystone::dbsync::end'],
-    tag         => ['keystone-exec', 'openstack-db']
+    tag         => ['keystone-exec', 'openstack-db'],
   }
 }

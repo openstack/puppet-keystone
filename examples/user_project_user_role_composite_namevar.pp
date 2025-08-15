@@ -21,7 +21,7 @@ keystone_user { 'user_one::domain_one': ensure => present }
 # Note, that parameter override title paring.  So:
 keystone_user { 'user_one::domain_two':
   ensure => present,
-  domain => 'domain_one'
+  domain => 'domain_one',
 }
 
 # will create the user in the domain_one, not domain_two.
@@ -33,7 +33,7 @@ keystone_user { 'user_one::domain_two':
 keystone_user { 'meanlinglesstitle':
   ensure => present,
   user   => 'user_one',
-  domain => 'domain_one'
+  domain => 'domain_one',
 }
 
 # This works for user, project and, with a twist, for user_role, where
@@ -43,7 +43,7 @@ keystone_user { 'meanlinglesstitle':
 
 keystone_tenant { 'project_one':
   ensure => present,
-  domain => 'domain_one'
+  domain => 'domain_one',
 }
 
 # is identical to
@@ -57,13 +57,13 @@ keystone_user_role { 'user_one@project_one':
   ensure         => present,
   user_domain    => 'domain_one',
   project_domain => 'domain_two',
-  roles          => ['admin']
+  roles          => ['admin'],
 }
 
 # all the way to
 keystone_user_role { 'user_one::domain_one@project_one::domain_two':
   ensure => present,
-  roles  => ['admin']
+  roles  => ['admin'],
 }
 # and all combinations in between.
 
@@ -71,7 +71,7 @@ keystone_user_role { 'user_one::domain_one@project_one::domain_two':
 keystone_user_role { 'user_one::domain_one@project_one::domain_one':
   ensure         => present,
   project_domain => 'domain_two',
-  roles          => ['admin']
+  roles          => ['admin'],
 }
 
 # will match the project project_one::domain_two, not
@@ -84,7 +84,7 @@ keystone_user_role { 'user_one':
   user_domain    => 'domain_one',
   project        => 'project_one',
   project_domain => 'domain_two',
-  roles          => ['admin']
+  roles          => ['admin'],
 }
 
 # this will trigger an error.  You need the '::'
@@ -93,13 +93,13 @@ keystone_user_role { 'user_one':
 keystone_user_role { 'user_one@::domain':
   ensure      => present,
   user_domain => 'domain_one',
-  roles       => ['admin']
+  roles       => ['admin'],
 }
 
 # is identical to
 keystone_user_role { 'user_one::domain_one@::domain_one':
   ensure => present,
-  roles  => ['admin']
+  roles  => ['admin'],
 }
 
 # But, you cannot define:
@@ -108,7 +108,7 @@ keystone_user_role { 'meaningless_title':
   user        => 'user_one',
   user_domain => 'domain_one',
   domain      => 'domain_one',
-  roles       => ['admin']
+  roles       => ['admin'],
 }
 
 # this will trigger an error, you need the '::@'
@@ -122,7 +122,7 @@ keystone_user_role { 'meaningless::meaningless':
   user_domain    => 'domain_one',
   project        => 'project_one',
   project_domain => 'domain_one',
-  roles          => ['admin']
+  roles          => ['admin'],
 }
 
 # 2: user role to domain
@@ -131,7 +131,7 @@ keystone_user_role { 'meaningless::@meaningless':
   user        => 'user_one',
   user_domain => 'domain_one',
   domain      => 'project_one',
-  roles       => ['admin']
+  roles       => ['admin'],
 }
 
 # Finally it should be noted that specifying an domain and a project
@@ -141,16 +141,16 @@ keystone_user_role { 'user_one@::domain_one':
   user_domain    => 'domain_one',
   project        => 'project_one',
   project_domain => 'domain_two',
-  roles          => ['admin']
+  roles          => ['admin'],
 }
 # is an error, and will trigger one.
 
 
 # NOTE: for the all examples above to work you have to define:
 keystone_domain { 'domain_one':
-  ensure => present
+  ensure => present,
 }
 
 keystone_domain { 'domain_two':
-  ensure => present
+  ensure => present,
 }

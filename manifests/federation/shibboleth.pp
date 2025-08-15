@@ -96,7 +96,7 @@ Apache + Shibboleth SP setups, where a REMOTE_USER env variable is always set, e
         warning('The platform is not officially supported, use at your own risk.  Check manifest documentation for more.')
         apache::mod { 'shib2':
           id   => 'mod_shib',
-          path => '/usr/lib64/shibboleth/mod_shib_24.so'
+          path => '/usr/lib64/shibboleth/mod_shib_24.so',
         }
 
         apache::vhost::fragment { 'configure_shibboleth_keystone':

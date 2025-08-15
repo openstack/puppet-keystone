@@ -311,7 +311,7 @@ define keystone::ldap_backend(
     fail('The keystone class should be included before this class')
   }
 
-  if ! $::keystone::using_domain_config {
+  if ! $keystone::using_domain_config {
     fail('Domain specific drivers are not enabled. Set keystone::using_domain_config to true.')
   }
 
@@ -330,10 +330,10 @@ define keystone::ldap_backend(
   }
 
   file { "${keystone::domain_config_directory}/keystone.${domain}.conf":
-    ensure  => 'present',
+    ensure  => file,
     mode    => '0640',
     owner   => 'root',
-    group   => $::keystone::params::group,
+    group   => $keystone::params::group,
     require => Anchor['keystone::config::begin'],
     before  => Anchor['keystone::config::end']
   }
@@ -395,7 +395,7 @@ define keystone::ldap_backend(
     keystone_domain { $domain :
       ensure  => 'present',
       enabled => true,
-      tag     => 'domain-specific-ldap'
+      tag     => 'domain-specific-ldap',
     }
     Keystone_domain[$domain] ~> Exec<| title == 'restart_keystone' |>
   }

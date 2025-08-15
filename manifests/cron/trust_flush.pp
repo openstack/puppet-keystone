@@ -58,7 +58,7 @@
 #
 # [*user*]
 #   (Optional) Allow to run the crontab on behalf any user.
-#   Defaults to $::keystone::params::user
+#   Defaults to $keystone::params::user
 #
 class keystone::cron::trust_flush (
   Enum['present', 'absent'] $ensure = present,
@@ -70,7 +70,7 @@ class keystone::cron::trust_flush (
   Integer[0] $maxdelay              = 0,
   Integer[0] $age                   = 0,
   $destination                      = '/var/log/keystone/keystone-trustflush.log',
-  $user                             = $::keystone::params::user,
+  $user                             = $keystone::params::user,
 ) inherits keystone::params {
 
   include keystone::deps

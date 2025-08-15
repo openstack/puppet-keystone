@@ -6,7 +6,7 @@ class { 'keystone':
   debug               => true,
   enabled             => true,
   # helper for using domains
-  using_domain_config => true
+  using_domain_config => true,
 }
 
 # Ensure this matches what is in LDAP or keystone will try to recreate
