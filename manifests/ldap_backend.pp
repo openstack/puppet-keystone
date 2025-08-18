@@ -335,7 +335,7 @@ define keystone::ldap_backend(
     owner   => 'root',
     group   => $keystone::params::group,
     require => Anchor['keystone::config::begin'],
-    before  => Anchor['keystone::config::end']
+    before  => Anchor['keystone::config::end'],
   }
 
   keystone_domain_config {
