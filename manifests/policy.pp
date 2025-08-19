@@ -54,7 +54,6 @@ class keystone::policy (
   $policy_dirs          = $facts['os_service_default'],
   Boolean $purge_config = false,
 ) {
-
   include keystone::deps
   include keystone::params
 
@@ -81,5 +80,4 @@ class keystone::policy (
     policy_default_rule  => $policy_default_rule,
     policy_dirs          => $policy_dirs,
   }
-
 }

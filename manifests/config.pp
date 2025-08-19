@@ -23,7 +23,6 @@
 class keystone::config (
   Hash $keystone_config = {},
 ) {
-
   include keystone::deps
 
   create_resources('keystone_config', $keystone_config)

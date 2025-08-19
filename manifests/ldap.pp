@@ -239,7 +239,7 @@
 #
 # Copyright 2012 Puppetlabs Inc, unless otherwise noted.
 #
-class keystone::ldap(
+class keystone::ldap (
   $url                                  = $facts['os_service_default'],
   $user                                 = $facts['os_service_default'],
   $password                             = $facts['os_service_default'],
@@ -292,7 +292,6 @@ class keystone::ldap(
   $package_ensure                       = present,
   Boolean $manage_packages              = true,
 ) inherits keystone::params {
-
   include keystone::deps
 
   if $manage_packages {

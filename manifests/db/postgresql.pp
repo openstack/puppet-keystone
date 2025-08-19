@@ -34,14 +34,13 @@
 #    (Optional) Privileges given to the database user.
 #    Default to 'ALL'
 #
-class keystone::db::postgresql(
+class keystone::db::postgresql (
   $password,
   $dbname     = 'keystone',
   $user       = 'keystone',
   $encoding   = undef,
   $privileges = 'ALL',
 ) {
-
   include keystone::deps
 
   openstacklib::db::postgresql { 'keystone':

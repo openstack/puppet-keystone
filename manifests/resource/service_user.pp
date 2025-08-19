@@ -73,7 +73,7 @@
 #  (Optional) The region in which the identity server can be found.
 #  Defaults to $facts['os_service_default'].
 #
-define keystone::resource::service_user(
+define keystone::resource::service_user (
   $username,
   $password,
   $auth_url                = 'http://127.0.0.1:5000',
@@ -90,10 +90,6 @@ define keystone::resource::service_user(
   $keyfile                 = $facts['os_service_default'],
   $region_name             = $facts['os_service_default'],
 ) {
-
-  include keystone::params
-  include keystone::deps
-
   if is_service_default($system_scope) {
     $project_name_real        = $project_name
     $project_domain_name_real = $project_domain_name
@@ -105,21 +101,21 @@ define keystone::resource::service_user(
   }
 
   $service_user_options = {
-    'service_user/auth_type'               => {'value' => $auth_type},
-    'service_user/auth_version'            => {'value' => $auth_version},
-    'service_user/cafile'                  => {'value' => $cafile},
-    'service_user/certfile'                => {'value' => $certfile},
-    'service_user/keyfile'                 => {'value' => $keyfile},
-    'service_user/region_name'             => {'value' => $region_name},
-    'service_user/auth_url'                => {'value' => $auth_url},
-    'service_user/username'                => {'value' => $username},
-    'service_user/password'                => {'value' => $password, 'secret' => true},
-    'service_user/user_domain_name'        => {'value' => $user_domain_name},
-    'service_user/project_name'            => {'value' => $project_name_real},
-    'service_user/project_domain_name'     => {'value' => $project_domain_name_real},
-    'service_user/system_scope'            => {'value' => $system_scope},
-    'service_user/send_service_user_token' => {'value' => $send_service_user_token},
-    'service_user/insecure'                => {'value' => $insecure},
+    'service_user/auth_type'               => { 'value' => $auth_type },
+    'service_user/auth_version'            => { 'value' => $auth_version },
+    'service_user/cafile'                  => { 'value' => $cafile },
+    'service_user/certfile'                => { 'value' => $certfile },
+    'service_user/keyfile'                 => { 'value' => $keyfile },
+    'service_user/region_name'             => { 'value' => $region_name },
+    'service_user/auth_url'                => { 'value' => $auth_url },
+    'service_user/username'                => { 'value' => $username },
+    'service_user/password'                => { 'value' => $password, 'secret' => true },
+    'service_user/user_domain_name'        => { 'value' => $user_domain_name },
+    'service_user/project_name'            => { 'value' => $project_name_real },
+    'service_user/project_domain_name'     => { 'value' => $project_domain_name_real },
+    'service_user/system_scope'            => { 'value' => $system_scope },
+    'service_user/send_service_user_token' => { 'value' => $send_service_user_token },
+    'service_user/insecure'                => { 'value' => $insecure },
   }
 
   create_resources($name, $service_user_options)

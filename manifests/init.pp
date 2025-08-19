@@ -396,7 +396,7 @@
 #
 # Copyright 2012 Puppetlabs Inc, unless otherwise noted.
 #
-class keystone(
+class keystone (
   Boolean $manage_package                         = true,
   $package_ensure                                 = 'present',
   $catalog_driver                                 = $facts['os_service_default'],
@@ -469,7 +469,6 @@ class keystone(
   # DEPRECATED PARAMETERS
   $rabbit_heartbeat_in_pthread                    = undef,
 ) inherits keystone::params {
-
   include keystone::deps
   include keystone::logging
   include keystone::policy

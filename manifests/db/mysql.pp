@@ -33,7 +33,7 @@
 #   Only used with mysql modules >= 2.2.
 #   Defaults to 'utf8_general_ci'
 #
-class keystone::db::mysql(
+class keystone::db::mysql (
   String[1] $password,
   $dbname        = 'keystone',
   $user          = 'keystone',
@@ -42,7 +42,6 @@ class keystone::db::mysql(
   $collate       = 'utf8_general_ci',
   $allowed_hosts = undef
 ) {
-
   include keystone::deps
 
   openstacklib::db::mysql { 'keystone':

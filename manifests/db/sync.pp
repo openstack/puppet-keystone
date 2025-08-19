@@ -18,12 +18,11 @@
 #   (Optional) Timeout for the execution of the db_sync
 #   Defaults to 300
 #
-class keystone::db::sync(
+class keystone::db::sync (
   $extra_params    = undef,
   $keystone_user   = $keystone::params::user,
   $db_sync_timeout = 300,
 ) inherits keystone::params {
-
   include keystone::deps
 
   exec { 'keystone-manage db_sync':

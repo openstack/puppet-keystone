@@ -145,7 +145,6 @@ keystone_user_role { 'user_one@::domain_one':
 }
 # is an error, and will trigger one.
 
-
 # NOTE: for the all examples above to work you have to define:
 keystone_domain { 'domain_one':
   ensure => present,

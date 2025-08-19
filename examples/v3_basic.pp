@@ -1,6 +1,5 @@
 Exec { logoutput => 'on_failure' }
 
-
 class { 'mysql::server': }
 class { 'keystone::db::mysql':
   password => 'keystone',

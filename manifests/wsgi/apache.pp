@@ -180,7 +180,6 @@ class keystone::wsgi::apache (
   $vhost_custom_fragment             = undef,
   $custom_wsgi_process_options       = {},
 ) {
-
   include keystone::deps
   include keystone::params
 

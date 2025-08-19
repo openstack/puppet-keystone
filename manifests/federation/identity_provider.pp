@@ -78,7 +78,7 @@
 #
 #   Copyright 2013 eNovance <licensing@enovance.com>
 #
-class keystone::federation::identity_provider(
+class keystone::federation::identity_provider (
   $idp_entity_id,
   $idp_sso_endpoint,
   Stdlib::Absolutepath $idp_metadata_path,
@@ -96,14 +96,13 @@ class keystone::federation::identity_provider(
   $idp_contact_type              = $facts['os_service_default'],
   $package_ensure                = present,
 ) inherits keystone::params {
-
   include keystone::deps
 
   if $keystone::service_name != 'httpd' {
     fail ('Keystone need to be running under Apache for Federation work.')
   }
 
-  package{ 'xmlsec1':
+  package { 'xmlsec1':
     ensure => $package_ensure,
     tag    => 'keystone-support-package',
   }
@@ -129,11 +128,11 @@ class keystone::federation::identity_provider(
     keystone_config {
       'saml/idp_contact_type': value => $idp_contact_type;
     }
-  } else{
+  } else {
     fail('Allowed values for idp_contact_type are: technical, support, administrative, billing and other')
   }
 
-  exec {'saml_idp_metadata':
+  exec { 'saml_idp_metadata':
     path      => '/usr/bin',
     user      => $user,
     command   => "keystone-manage saml_idp_metadata > ${idp_metadata_path}",
@@ -148,5 +147,4 @@ class keystone::federation::identity_provider(
     mode   => '0600',
     owner  => $user,
   }
-
 }
