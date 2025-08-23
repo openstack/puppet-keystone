@@ -31,7 +31,7 @@ describe 'keystone::wsgi::apache' do
         :wsgi_application_group      => '%{GLOBAL}',
         :wsgi_script_dir             => platform_params[:wsgi_script_path],
         :wsgi_script_file            => 'keystone',
-        :wsgi_script_source          => '/usr/bin/keystone-wsgi-public',
+        :wsgi_script_source          => platform_params[:wsgi_script_source],
         :wsgi_pass_authorization     => 'On',
         :headers                     => nil,
         :request_headers             => nil,
@@ -205,11 +205,13 @@ describe 'keystone::wsgi::apache' do
         case facts[:os]['family']
         when 'Debian'
           {
-            :wsgi_script_path => '/usr/lib/cgi-bin/keystone',
+            :wsgi_script_path   => '/usr/lib/cgi-bin/keystone',
+            :wsgi_script_source => '/usr/bin/keystone-wsgi-public',
           }
         when 'RedHat'
           {
-            :wsgi_script_path => '/var/www/cgi-bin/keystone',
+            :wsgi_script_path   => '/var/www/cgi-bin/keystone',
+            :wsgi_script_source => '/usr/lib/python3.9/site-packages/keystone/wsgi/api.py',
           }
         end
       end

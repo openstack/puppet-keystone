@@ -166,7 +166,7 @@ class keystone::wsgi::apache (
   $wsgi_application_group            = '%{GLOBAL}',
   $wsgi_pass_authorization           = 'On',
   $wsgi_chunked_request              = undef,
-  $wsgi_script_source                = '/usr/bin/keystone-wsgi-public',
+  $wsgi_script_source                = $keystone::params::keystone_wsgi_script_source,
   $access_log_file                   = undef,
   $access_log_pipe                   = undef,
   $access_log_syslog                 = undef,
@@ -179,9 +179,8 @@ class keystone::wsgi::apache (
   $request_headers                   = undef,
   $vhost_custom_fragment             = undef,
   $custom_wsgi_process_options       = {},
-) {
+) inherits keystone::params{
   include keystone::deps
-  include keystone::params
 
   Anchor['keystone::install::end'] -> Class['apache']
 
