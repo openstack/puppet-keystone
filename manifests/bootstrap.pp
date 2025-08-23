@@ -83,7 +83,6 @@ class keystone::bootstrap (
   Boolean $bootstrap                                    = true,
   Boolean $manage_resources                             = true,
 ) inherits keystone::params {
-
   include keystone::deps
 
   $internal_url_real = $internal_url ? {

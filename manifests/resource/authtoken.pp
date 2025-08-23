@@ -228,7 +228,7 @@
 #  "public", "internal" or "admin".
 #  Defaults to $facts['os_service_default'].
 #
-define keystone::resource::authtoken(
+define keystone::resource::authtoken (
   $username,
   $password,
   $auth_url                        = 'http://127.0.0.1:5000',
@@ -268,12 +268,10 @@ define keystone::resource::authtoken(
   $service_type                    = $facts['os_service_default'],
   $interface                       = $facts['os_service_default'],
 ) {
-
-  include keystone::deps
   include keystone::params
 
   if !is_service_default($memcache_security_strategy) {
-    if !(downcase($memcache_security_strategy) in ['none', 'mac', 'encrypt']){
+    if !(downcase($memcache_security_strategy) in ['none', 'mac', 'encrypt']) {
       fail('memcache_security_strategy can be set only to None, MAC or ENCRYPT')
     }
 
@@ -282,7 +280,7 @@ define keystone::resource::authtoken(
     }
   }
 
-  if !is_service_default($memcached_servers) and !empty($memcached_servers){
+  if !is_service_default($memcached_servers) and !empty($memcached_servers) {
     $memcached_servers_array = $memcached_servers ? {
       String  => split($memcached_servers, ','),
       default => $memcached_servers
@@ -311,43 +309,43 @@ define keystone::resource::authtoken(
   }
 
   $keystonemiddleware_options = {
-    'keystone_authtoken/auth_section'                   => {'value' => $auth_section},
-    'keystone_authtoken/www_authenticate_uri'           => {'value' => $www_authenticate_uri},
-    'keystone_authtoken/auth_type'                      => {'value' => $auth_type},
-    'keystone_authtoken/auth_version'                   => {'value' => $auth_version},
-    'keystone_authtoken/cache'                          => {'value' => $cache},
-    'keystone_authtoken/cafile'                         => {'value' => $cafile},
-    'keystone_authtoken/certfile'                       => {'value' => $certfile},
-    'keystone_authtoken/collect_timing'                 => {'value' => $collect_timing},
-    'keystone_authtoken/delay_auth_decision'            => {'value' => $delay_auth_decision},
-    'keystone_authtoken/enforce_token_bind'             => {'value' => $enforce_token_bind},
-    'keystone_authtoken/http_connect_timeout'           => {'value' => $http_connect_timeout},
-    'keystone_authtoken/http_request_max_retries'       => {'value' => $http_request_max_retries},
-    'keystone_authtoken/include_service_catalog'        => {'value' => $include_service_catalog},
-    'keystone_authtoken/keyfile'                        => {'value' => $keyfile},
-    'keystone_authtoken/memcache_pool_conn_get_timeout' => {'value' => $memcache_pool_conn_get_timeout},
-    'keystone_authtoken/memcache_pool_dead_retry'       => {'value' => $memcache_pool_dead_retry},
-    'keystone_authtoken/memcache_pool_maxsize'          => {'value' => $memcache_pool_maxsize},
-    'keystone_authtoken/memcache_pool_socket_timeout'   => {'value' => $memcache_pool_socket_timeout},
-    'keystone_authtoken/memcache_pool_unused_timeout'   => {'value' => $memcache_pool_unused_timeout},
-    'keystone_authtoken/memcache_secret_key'            => {'value' => $memcache_secret_key, 'secret' => true},
-    'keystone_authtoken/memcache_security_strategy'     => {'value' => $memcache_security_strategy},
-    'keystone_authtoken/memcache_use_advanced_pool'     => {'value' => $memcache_use_advanced_pool},
-    'keystone_authtoken/memcached_servers'              => {'value' => $memcached_servers_real},
-    'keystone_authtoken/region_name'                    => {'value' => $region_name},
-    'keystone_authtoken/token_cache_time'               => {'value' => $token_cache_time},
-    'keystone_authtoken/auth_url'                       => {'value' => $auth_url},
-    'keystone_authtoken/username'                       => {'value' => $username},
-    'keystone_authtoken/password'                       => {'value' => $password, 'secret' => true},
-    'keystone_authtoken/user_domain_name'               => {'value' => $user_domain_name},
-    'keystone_authtoken/project_name'                   => {'value' => $project_name_real},
-    'keystone_authtoken/project_domain_name'            => {'value' => $project_domain_name_real},
-    'keystone_authtoken/system_scope'                   => {'value' => $system_scope},
-    'keystone_authtoken/insecure'                       => {'value' => $insecure},
-    'keystone_authtoken/service_token_roles'            => {'value' => join(any2array($service_token_roles), ',')},
-    'keystone_authtoken/service_token_roles_required'   => {'value' => $service_token_roles_required},
-    'keystone_authtoken/service_type'                   => {'value' => $service_type},
-    'keystone_authtoken/interface'                      => {'value' => $interface},
+    'keystone_authtoken/auth_section'                   => { 'value'  => $auth_section },
+    'keystone_authtoken/www_authenticate_uri'           => { 'value'  => $www_authenticate_uri },
+    'keystone_authtoken/auth_type'                      => { 'value'  => $auth_type },
+    'keystone_authtoken/auth_version'                   => { 'value'  => $auth_version },
+    'keystone_authtoken/cache'                          => { 'value'  => $cache },
+    'keystone_authtoken/cafile'                         => { 'value'  => $cafile },
+    'keystone_authtoken/certfile'                       => { 'value'  => $certfile },
+    'keystone_authtoken/collect_timing'                 => { 'value'  => $collect_timing },
+    'keystone_authtoken/delay_auth_decision'            => { 'value'  => $delay_auth_decision },
+    'keystone_authtoken/enforce_token_bind'             => { 'value'  => $enforce_token_bind },
+    'keystone_authtoken/http_connect_timeout'           => { 'value'  => $http_connect_timeout },
+    'keystone_authtoken/http_request_max_retries'       => { 'value'  => $http_request_max_retries },
+    'keystone_authtoken/include_service_catalog'        => { 'value'  => $include_service_catalog },
+    'keystone_authtoken/keyfile'                        => { 'value'  => $keyfile },
+    'keystone_authtoken/memcache_pool_conn_get_timeout' => { 'value'  => $memcache_pool_conn_get_timeout },
+    'keystone_authtoken/memcache_pool_dead_retry'       => { 'value'  => $memcache_pool_dead_retry },
+    'keystone_authtoken/memcache_pool_maxsize'          => { 'value'  => $memcache_pool_maxsize },
+    'keystone_authtoken/memcache_pool_socket_timeout'   => { 'value'  => $memcache_pool_socket_timeout },
+    'keystone_authtoken/memcache_pool_unused_timeout'   => { 'value'  => $memcache_pool_unused_timeout },
+    'keystone_authtoken/memcache_secret_key'            => { 'value'  => $memcache_secret_key, 'secret' => true },
+    'keystone_authtoken/memcache_security_strategy'     => { 'value'  => $memcache_security_strategy },
+    'keystone_authtoken/memcache_use_advanced_pool'     => { 'value'  => $memcache_use_advanced_pool },
+    'keystone_authtoken/memcached_servers'              => { 'value'  => $memcached_servers_real },
+    'keystone_authtoken/region_name'                    => { 'value'  => $region_name },
+    'keystone_authtoken/token_cache_time'               => { 'value'  => $token_cache_time },
+    'keystone_authtoken/auth_url'                       => { 'value'  => $auth_url },
+    'keystone_authtoken/username'                       => { 'value'  => $username },
+    'keystone_authtoken/password'                       => { 'value'  => $password, 'secret' => true },
+    'keystone_authtoken/user_domain_name'               => { 'value'  => $user_domain_name },
+    'keystone_authtoken/project_name'                   => { 'value'  => $project_name_real },
+    'keystone_authtoken/project_domain_name'            => { 'value'  => $project_domain_name_real },
+    'keystone_authtoken/system_scope'                   => { 'value'  => $system_scope },
+    'keystone_authtoken/insecure'                       => { 'value'  => $insecure },
+    'keystone_authtoken/service_token_roles'            => { 'value'  => join(any2array($service_token_roles), ',') },
+    'keystone_authtoken/service_token_roles_required'   => { 'value'  => $service_token_roles_required },
+    'keystone_authtoken/service_type'                   => { 'value'  => $service_type },
+    'keystone_authtoken/interface'                      => { 'value'  => $interface },
   }
 
   create_resources($name, $keystonemiddleware_options)

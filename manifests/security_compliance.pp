@@ -74,7 +74,7 @@
 #   (Optional) Number of characters of hash of invalid password to be returned.
 #   Defaults to $facts['os_service_default']
 #
-class keystone::security_compliance(
+class keystone::security_compliance (
   $change_password_upon_first_use     = $facts['os_service_default'],
   $disable_user_account_days_inactive = $facts['os_service_default'],
   $lockout_duration                   = $facts['os_service_default'],
@@ -89,7 +89,6 @@ class keystone::security_compliance(
   $invalid_password_hash_function     = $facts['os_service_default'],
   $invalid_password_hash_max_chars    = $facts['os_service_default'],
 ) {
-
   include keystone::deps
 
   keystone_config {

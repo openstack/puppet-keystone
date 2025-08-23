@@ -49,7 +49,6 @@ class keystone::federation::shibboleth (
   $template_order           = 331,
   $yum_repo_name            = 'shibboleth',
 ) {
-
   include apache
   include keystone::deps
 

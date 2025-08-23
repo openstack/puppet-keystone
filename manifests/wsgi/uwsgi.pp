@@ -25,11 +25,10 @@ class keystone::wsgi::uwsgi (
   $processes         = $facts['os_workers'],
   $threads           = 32,
   $listen_queue_size = 100,
-){
-
+) {
   include keystone::deps
 
-  if $facts['os']['name'] != 'Debian'{
+  if $facts['os']['name'] != 'Debian' {
     warning('This class is only valid for Debian, as other operating systems are not using uwsgi by default.')
   }
 

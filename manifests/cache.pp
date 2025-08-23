@@ -245,7 +245,7 @@
 #   (Optional) Time to cache application credential data in seconds.
 #   Default to $facts['os_service_default']
 #
-class keystone::cache(
+class keystone::cache (
   $config_prefix                        = $facts['os_service_default'],
   $expiration_time                      = $facts['os_service_default'],
   $backend_expiration_time              = $facts['os_service_default'],
@@ -292,8 +292,7 @@ class keystone::cache(
   $application_credential_caching       = $facts['os_service_default'],
   $application_credential_cache_time    = $facts['os_service_default'],
   Boolean $manage_backend_package       = true,
-){
-
+) {
   include keystone::deps
 
   if !is_service_default($memcache_servers) {

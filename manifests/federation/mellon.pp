@@ -38,7 +38,6 @@ class keystone::federation::mellon (
   $template_order        = 331,
   Boolean $enable_websso = false,
 ) {
-
   include apache
   include apache::mod::auth_mellon
   include keystone::deps
@@ -66,7 +65,7 @@ Apache + Mellon SP setups, where a REMOTE_USER env variable is always set, even 
     'auth/methods': value => join(any2array($methods),',');
   }
 
-  if($enable_websso){
+  if $enable_websso {
     keystone_config {
       'mapped/remote_id_attribute': value => 'MELLON_IDP';
     }

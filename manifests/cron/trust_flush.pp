@@ -72,7 +72,6 @@ class keystone::cron::trust_flush (
   $destination                      = '/var/log/keystone/keystone-trustflush.log',
   $user                             = $keystone::params::user,
 ) inherits keystone::params {
-
   include keystone::deps
 
   if $maxdelay == 0 {

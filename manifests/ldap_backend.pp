@@ -248,7 +248,7 @@
 #
 # == Dependencies
 # == Examples
-define keystone::ldap_backend(
+define keystone::ldap_backend (
   $url                                  = $facts['os_service_default'],
   $user                                 = $facts['os_service_default'],
   $password                             = $facts['os_service_default'],
@@ -303,7 +303,6 @@ define keystone::ldap_backend(
   Boolean $manage_packages              = true,
   Boolean $create_domain_entry          = false,
 ) {
-
   include keystone::deps
   include keystone::params
 

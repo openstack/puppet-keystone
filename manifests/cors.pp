@@ -44,7 +44,6 @@ class keystone::cors (
   $allow_methods     = $facts['os_service_default'],
   $allow_headers     = $facts['os_service_default'],
 ) {
-
   include keystone::deps
 
   oslo::cors { 'keystone_config':

@@ -109,7 +109,7 @@
 #   (Optional) Domain for $tenant (project)
 #   Defaults to undef (use the keystone server default domain)
 #
-define keystone::resource::service_identity(
+define keystone::resource::service_identity (
   Enum['present', 'absent'] $ensure                 = 'present',
   Optional[Keystone::EndpointUrl] $admin_url        = undef,
   Optional[Keystone::EndpointUrl] $internal_url     = undef,
@@ -133,7 +133,6 @@ define keystone::resource::service_identity(
   Optional[String[1]] $user_domain                  = $default_domain,
   Optional[String[1]] $project_domain               = $default_domain,
 ) {
-
   include keystone::deps
 
   $user_domain_real = $user_domain ? {
@@ -169,11 +168,9 @@ define keystone::resource::service_identity(
       'email'    => $email,
       'domain'   => $user_domain_real,
     })
-
   }
 
   if $configure_user_role {
-
     if $ensure == 'present' {
       # NOTE(jaosorior): We only handle ensure 'present' here, since deleting a
       # role might be conflicting in some cases. e.g. the deployer removing a

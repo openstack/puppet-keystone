@@ -63,7 +63,6 @@ class keystone::cron::fernet_rotate (
   Integer[0] $maxdelay              = 0,
   $user                             = $keystone::params::user,
 ) inherits keystone::params {
-
   include keystone::deps
 
   if $maxdelay == 0 {

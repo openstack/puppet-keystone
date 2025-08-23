@@ -18,7 +18,6 @@ class keystone::federation (
   $trusted_dashboards  = $facts['os_service_default'],
   $remote_id_attribute = $facts['os_service_default'],
 ) {
-
   include keystone::deps
 
   keystone_config {
