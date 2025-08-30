@@ -378,16 +378,6 @@
 #
 # DEPRECATED PARAMETERS
 #
-# [*rabbit_heartbeat_in_pthread*]
-#   (Optional) EXPERIMENTAL: Run the health check heartbeat thread
-#   through a native python thread. By default if this
-#   option isn't provided the  health check heartbeat will
-#   inherit the execution model from the parent process. By
-#   example if the parent process have monkey patched the
-#   stdlib by using eventlet/greenlet then the heartbeat
-#   will be run through a green thread.
-#   Defaults to undef
-#
 # == Authors
 #
 #   Dan Bode dan@puppetlabs.com
@@ -466,8 +456,6 @@ class keystone (
   Boolean $purge_config                           = false,
   $amqp_durable_queues                            = $facts['os_service_default'],
   $amqp_auto_delete                               = $facts['os_service_default'],
-  # DEPRECATED PARAMETERS
-  $rabbit_heartbeat_in_pthread                    = undef,
 ) inherits keystone::params {
   include keystone::deps
   include keystone::logging
@@ -572,7 +560,6 @@ class keystone (
     rabbit_ha_queues                => $rabbit_ha_queues,
     heartbeat_timeout_threshold     => $rabbit_heartbeat_timeout_threshold,
     heartbeat_rate                  => $rabbit_heartbeat_rate,
-    heartbeat_in_pthread            => $rabbit_heartbeat_in_pthread,
     rabbit_qos_prefetch_count       => $rabbit_qos_prefetch_count,
     amqp_durable_queues             => $amqp_durable_queues,
     amqp_auto_delete                => $amqp_auto_delete,
