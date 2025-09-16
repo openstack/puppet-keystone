@@ -288,7 +288,7 @@ define keystone::resource::authtoken (
     $memcached_servers_real = join(any2array(inet6_prefix($memcached_servers_array)), ',')
 
     if $manage_memcache_package {
-      ensure_packages('python-memcache', {
+      stdlib::ensure_packages('python-memcache', {
         ensure => present,
         name   => $keystone::params::python_memcache_package_name,
         tag    => ['openstack'],
