@@ -388,7 +388,7 @@
 #
 class keystone (
   Boolean $manage_package                         = true,
-  $package_ensure                                 = 'present',
+  Stdlib::Ensure::Package $package_ensure         = present,
   $catalog_driver                                 = $facts['os_service_default'],
   $token_provider                                 = 'fernet',
   $token_expiration                               = 3600,

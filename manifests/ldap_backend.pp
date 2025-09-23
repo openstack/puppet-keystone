@@ -231,15 +231,15 @@
 #   End user auth connection lifetime in seconds. (integer value)
 #   Defaults to $facts['os_service_default']
 #
-# [*package_ensure*]
-#   (optional) Desired ensure state of packages.
-#   accepts latest or specific versions.
-#   Defaults to present.
-#
 # [*manage_packages*]
 #   (optional) Whether or not this module should manage
 #   LDAP support packages.
 #   Defaults to true.
+#
+# [*package_ensure*]
+#   (optional) Desired ensure state of packages.
+#   accepts latest or specific versions.
+#   Defaults to present.
 #
 # [*create_domain_entry*]
 #   (optional) Creates the domain in keystone via a keystone_domain resource
@@ -249,59 +249,59 @@
 # == Dependencies
 # == Examples
 define keystone::ldap_backend (
-  $url                                  = $facts['os_service_default'],
-  $user                                 = $facts['os_service_default'],
-  $password                             = $facts['os_service_default'],
-  $suffix                               = $facts['os_service_default'],
-  $query_scope                          = $facts['os_service_default'],
-  $page_size                            = $facts['os_service_default'],
-  $user_tree_dn                         = $facts['os_service_default'],
-  $user_filter                          = $facts['os_service_default'],
-  $user_objectclass                     = $facts['os_service_default'],
-  $user_id_attribute                    = $facts['os_service_default'],
-  $user_name_attribute                  = $facts['os_service_default'],
-  $user_description_attribute           = $facts['os_service_default'],
-  $user_mail_attribute                  = $facts['os_service_default'],
-  $user_enabled_attribute               = $facts['os_service_default'],
-  $user_enabled_mask                    = $facts['os_service_default'],
-  $user_enabled_default                 = $facts['os_service_default'],
-  $user_enabled_invert                  = $facts['os_service_default'],
-  $user_attribute_ignore                = $facts['os_service_default'],
-  $user_default_project_id_attribute    = $facts['os_service_default'],
-  $user_pass_attribute                  = $facts['os_service_default'],
-  $user_enabled_emulation               = $facts['os_service_default'],
-  $user_enabled_emulation_dn            = $facts['os_service_default'],
-  $user_additional_attribute_mapping    = $facts['os_service_default'],
-  $group_tree_dn                        = $facts['os_service_default'],
-  $group_filter                         = $facts['os_service_default'],
-  $group_objectclass                    = $facts['os_service_default'],
-  $group_id_attribute                   = $facts['os_service_default'],
-  $group_name_attribute                 = $facts['os_service_default'],
-  $group_member_attribute               = $facts['os_service_default'],
-  $group_members_are_ids                = $facts['os_service_default'],
-  $group_desc_attribute                 = $facts['os_service_default'],
-  $group_attribute_ignore               = $facts['os_service_default'],
-  $group_additional_attribute_mapping   = $facts['os_service_default'],
-  $group_ad_nesting                     = $facts['os_service_default'],
-  $chase_referrals                      = $facts['os_service_default'],
-  $use_tls                              = $facts['os_service_default'],
-  $tls_cacertdir                        = $facts['os_service_default'],
-  $tls_cacertfile                       = $facts['os_service_default'],
-  $tls_req_cert                         = $facts['os_service_default'],
-  $identity_driver                      = 'ldap',
-  $connection_timeout                   = $facts['os_service_default'],
-  $use_pool                             = $facts['os_service_default'],
-  $pool_size                            = $facts['os_service_default'],
-  $pool_retry_max                       = $facts['os_service_default'],
-  $pool_retry_delay                     = $facts['os_service_default'],
-  $pool_connection_timeout              = $facts['os_service_default'],
-  $pool_connection_lifetime             = $facts['os_service_default'],
-  $use_auth_pool                        = $facts['os_service_default'],
-  $auth_pool_size                       = $facts['os_service_default'],
-  $auth_pool_connection_lifetime        = $facts['os_service_default'],
-  $package_ensure                       = present,
-  Boolean $manage_packages              = true,
-  Boolean $create_domain_entry          = false,
+  $url                                    = $facts['os_service_default'],
+  $user                                   = $facts['os_service_default'],
+  $password                               = $facts['os_service_default'],
+  $suffix                                 = $facts['os_service_default'],
+  $query_scope                            = $facts['os_service_default'],
+  $page_size                              = $facts['os_service_default'],
+  $user_tree_dn                           = $facts['os_service_default'],
+  $user_filter                            = $facts['os_service_default'],
+  $user_objectclass                       = $facts['os_service_default'],
+  $user_id_attribute                      = $facts['os_service_default'],
+  $user_name_attribute                    = $facts['os_service_default'],
+  $user_description_attribute             = $facts['os_service_default'],
+  $user_mail_attribute                    = $facts['os_service_default'],
+  $user_enabled_attribute                 = $facts['os_service_default'],
+  $user_enabled_mask                      = $facts['os_service_default'],
+  $user_enabled_default                   = $facts['os_service_default'],
+  $user_enabled_invert                    = $facts['os_service_default'],
+  $user_attribute_ignore                  = $facts['os_service_default'],
+  $user_default_project_id_attribute      = $facts['os_service_default'],
+  $user_pass_attribute                    = $facts['os_service_default'],
+  $user_enabled_emulation                 = $facts['os_service_default'],
+  $user_enabled_emulation_dn              = $facts['os_service_default'],
+  $user_additional_attribute_mapping      = $facts['os_service_default'],
+  $group_tree_dn                          = $facts['os_service_default'],
+  $group_filter                           = $facts['os_service_default'],
+  $group_objectclass                      = $facts['os_service_default'],
+  $group_id_attribute                     = $facts['os_service_default'],
+  $group_name_attribute                   = $facts['os_service_default'],
+  $group_member_attribute                 = $facts['os_service_default'],
+  $group_members_are_ids                  = $facts['os_service_default'],
+  $group_desc_attribute                   = $facts['os_service_default'],
+  $group_attribute_ignore                 = $facts['os_service_default'],
+  $group_additional_attribute_mapping     = $facts['os_service_default'],
+  $group_ad_nesting                       = $facts['os_service_default'],
+  $chase_referrals                        = $facts['os_service_default'],
+  $use_tls                                = $facts['os_service_default'],
+  $tls_cacertdir                          = $facts['os_service_default'],
+  $tls_cacertfile                         = $facts['os_service_default'],
+  $tls_req_cert                           = $facts['os_service_default'],
+  $identity_driver                        = 'ldap',
+  $connection_timeout                     = $facts['os_service_default'],
+  $use_pool                               = $facts['os_service_default'],
+  $pool_size                              = $facts['os_service_default'],
+  $pool_retry_max                         = $facts['os_service_default'],
+  $pool_retry_delay                       = $facts['os_service_default'],
+  $pool_connection_timeout                = $facts['os_service_default'],
+  $pool_connection_lifetime               = $facts['os_service_default'],
+  $use_auth_pool                          = $facts['os_service_default'],
+  $auth_pool_size                         = $facts['os_service_default'],
+  $auth_pool_connection_lifetime          = $facts['os_service_default'],
+  Boolean $manage_packages                = true,
+  Stdlib::Ensure::Package $package_ensure = present,
+  Boolean $create_domain_entry            = false,
 ) {
   include keystone::deps
   include keystone::params
