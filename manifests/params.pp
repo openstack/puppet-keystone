@@ -17,7 +17,14 @@ class keystone::params {
   case $facts['os']['family'] {
     'Debian': {
       $package_name                 = 'keystone'
-      $service_name                 = 'keystone'
+      case $facts['os']['name'] {
+        'Debian': {
+          $service_name             = 'keystone'
+        }
+        default: {
+          $service_name             = undef
+        }
+      }
       $keystone_wsgi_script_path    = '/usr/lib/cgi-bin/keystone'
       $keystone_wsgi_script_source  = '/usr/bin/keystone-wsgi-public'
       $python_memcache_package_name = 'python3-memcache'
@@ -25,7 +32,7 @@ class keystone::params {
     }
     'RedHat': {
       $package_name                 = 'openstack-keystone'
-      $service_name                 = 'openstack-keystone'
+      $service_name                 = undef
       $keystone_wsgi_script_path    = '/var/www/cgi-bin/keystone'
       $keystone_wsgi_script_source  = "/usr/lib/python${pyver3}/site-packages/keystone/wsgi/api.py"
       $python_memcache_package_name = 'python3-memcached'

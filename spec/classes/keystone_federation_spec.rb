@@ -2,12 +2,6 @@ require 'spec_helper'
 
 describe 'keystone::federation' do
 
-  let(:pre_condition) do
-    <<-EOS
-    class { 'keystone': }
-    EOS
-  end
-
   shared_examples_for 'keystone::federation' do
     context 'with defaults' do
       it 'should configure federation options' do

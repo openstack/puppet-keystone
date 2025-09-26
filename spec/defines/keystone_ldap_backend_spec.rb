@@ -6,11 +6,14 @@ describe 'keystone::ldap_backend' do
     context 'Using Default domain' do
       let(:title) { 'Default' }
       let(:pre_condition) do
-        <<-EOM
+        <<-EOS
+        include apache
         class { 'keystone':
+          service_name        => 'httpd',
           using_domain_config => true
         }
-        EOM
+        include keystone::wsgi::apache
+EOS
       end
 
       context 'with basic params' do
@@ -175,11 +178,14 @@ describe 'keystone::ldap_backend' do
         }
       end
       let(:pre_condition) do
-        <<-EOM
+        <<EOS
+        include apache
         class { 'keystone':
+          service_name        => 'httpd',
           using_domain_config => true
         }
-        EOM
+        include keystone::wsgi::apache
+EOS
       end
       it 'should use the domain from the title' do
         is_expected.to contain_keystone_domain_config('foobar::ldap/url').with_value('ldap://foo')
@@ -187,17 +193,19 @@ describe 'keystone::ldap_backend' do
       end
     end
 
-    context 'checks' do
+    context 'with domain specific drivers disabled' do
       let(:title) { 'domain' }
-      context 'with domain specific drivers disabled' do
-        let(:pre_condition) do
-        <<-EOM
-        class { 'keystone': }
-        EOM
-        end
-
-        it { should raise_error(Puppet::Error) }
+      let(:pre_condition) do
+        <<-EOS
+        include apache
+        class { 'keystone':
+          service_name => 'httpd',
+        }
+        include keystone::wsgi::apache
+EOS
       end
+
+      it { should raise_error(Puppet::Error) }
     end
   end
 

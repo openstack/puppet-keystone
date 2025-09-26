@@ -8,8 +8,10 @@ describe 'keystone::federation::openidc' do
 
   let(:pre_condition) do
     <<-EOS
-    class { 'keystone': }
-
+    include apache
+    class { 'keystone':
+      service_name => 'httpd',
+    }
     include keystone::wsgi::apache
     EOS
   end

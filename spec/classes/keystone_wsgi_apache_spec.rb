@@ -3,9 +3,12 @@ require 'spec_helper'
 describe 'keystone::wsgi::apache' do
 
   let :pre_condition do
-    "class { 'keystone':
-       service_name => 'httpd',
-     }"
+    <<-EOS
+    include apache
+    class { 'keystone':
+      service_name => 'httpd',
+    }
+EOS
   end
 
   shared_examples 'keystone::wsgi::apache' do

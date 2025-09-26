@@ -275,9 +275,14 @@ describe 'keystone::bootstrap' do
       end
 
       let :pre_condition do
-        "class { '::keystone':
-           keystone_user => 'some',
-         }"
+        <<-EOS
+        class { 'keystone':
+          keystone_user => 'some',
+          service_name  => 'httpd',
+        }
+        include apache
+        include keystone::wsgi::apache
+EOS
       end
 
       it { is_expected.to contain_exec('keystone bootstrap').with_user('some') }

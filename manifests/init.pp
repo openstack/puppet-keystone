@@ -57,6 +57,16 @@
 #   (Optional) If the keystone services should be enabled.
 #   Default to true.
 #
+# [*service_name*]
+#   (Optional) Name of the service that will be providing the
+#   server functionality of keystone.
+#   If the value is 'httpd', this means keystone will be a web
+#   service, and you must use another class to configure that
+#   web service.  After calling class {'keystone'...}
+#   use class { 'keystone::wsgi::apache'...} to make keystone be
+#   a web app using apache mod_wsgi.
+#   Defaults to '$keystone::params::service_name'
+#
 # [*default_transport_url*]
 #   (Optional) A URL representing the messaging driver to use and its full
 #   configuration. Transport URLs take the form:
@@ -216,25 +226,6 @@
 #   advertised to clients (NOTE: this does NOT affect how
 #   keystone listens for connections) (string value)
 #   Defaults to $facts['os_service_default']
-#
-# [*service_name*]
-#   (Optional) Name of the service that will be providing the
-#   server functionality of keystone.  For example, the default
-#   is just 'keystone', which means keystone will be run as a
-#   standalone service, and will able to be managed separately
-#   by the operating system's service manager. For example,
-#   under Red Hat based systems, you will be able to use:
-#   systemctl restart openstack-keystone
-#   to restart the service. Under Debian, which uses uwsgi
-#   (as opposed to eventlet), the service name is simply
-#   keystone, so this will work:
-#   systemctl restart keystone
-#   If the value is 'httpd', this means keystone will be a web
-#   service, and you must use another class to configure that
-#   web service.  After calling class {'keystone'...}
-#   use class { 'keystone::wsgi::apache'...} to make keystone be
-#   a web app using apache mod_wsgi.
-#   Defaults to '$keystone::params::service_name'
 #
 # [*max_token_size*]
 #   (Optional) maximum allowable Keystone token size
@@ -400,6 +391,7 @@ class keystone (
   $public_endpoint                                = $facts['os_service_default'],
   Boolean $manage_service                         = true,
   Boolean $enabled                                = true,
+  String[1] $service_name                         = $keystone::params::service_name,
   $rabbit_heartbeat_timeout_threshold             = $facts['os_service_default'],
   $rabbit_heartbeat_rate                          = $facts['os_service_default'],
   $rabbit_qos_prefetch_count                      = $facts['os_service_default'],
@@ -431,7 +423,6 @@ class keystone (
   $control_exchange                               = $facts['os_service_default'],
   $executor_thread_pool_size                      = $facts['os_service_default'],
   $rpc_response_timeout                           = $facts['os_service_default'],
-  $service_name                                   = $keystone::params::service_name,
   $max_token_size                                 = $facts['os_service_default'],
   $list_limit                                     = $facts['os_service_default'],
   $max_db_limit                                   = $facts['os_service_default'],
@@ -575,20 +566,30 @@ class keystone (
   }
 
   if $manage_service {
-    if $enabled {
-      $service_ensure = 'running'
-    } else {
-      $service_ensure = 'stopped'
-    }
-
     case $service_name {
-      $keystone::params::service_name: {
-        if $facts['os']['name'] != 'Debian' {
-          # TODO(tkajinam): Make this hard-fail
-          warning('Keystone under Eventlet is no longer supported by this operating system')
+      'httpd': {
+        Service <| title == 'httpd' |> { tag +> 'keystone-service' }
+
+        if $keystone::params::service_name {
+          service { 'keystone':
+            ensure => 'stopped',
+            name   => $keystone::params::service_name,
+            enable => false,
+            tag    => 'keystone-service',
+          }
+          # we need to make sure keystone/eventlet is stopped before trying to start apache
+          Service['keystone'] -> Service['httpd']
         }
 
-        $service_name_real = $keystone::params::service_name
+        include apache::params
+        $service_title = 'httpd'
+        $service_name_real = $apache::params::service_name
+      }
+      default: {
+        $service_ensure = $enabled ? {
+          true    => 'running',
+          default => 'stopped',
+        }
 
         service { 'keystone':
           ensure     => $service_ensure,
@@ -601,25 +602,9 @@ class keystone (
 
         # On any uwsgi config change, we must restart Keystone.
         Keystone_uwsgi_config<||> ~> Service['keystone']
-      }
-      'httpd': {
-        include apache::params
-        $service_name_real = $apache::params::service_name
-        Service <| title == 'httpd' |> { tag +> 'keystone-service' }
 
-        if $facts['os']['name'] == 'Debian' {
-          service { 'keystone':
-            ensure => 'stopped',
-            name   => $keystone::params::service_name,
-            enable => false,
-            tag    => 'keystone-service',
-          }
-          # we need to make sure keystone/eventlet is stopped before trying to start apache
-          Service['keystone'] -> Service[$service_name]
-        }
-      }
-      default: {
-        fail('Invalid service_name.')
+        $service_title = 'keystone'
+        $service_name_real = $service_name
       }
     }
   }
@@ -728,7 +713,7 @@ class keystone (
     } ~> Exec<| title == 'restart_keystone' |>
 
     if $manage_service {
-      Service[$service_name] -> Keystone_domain[$default_domain]
+      Service[$service_title] -> Keystone_domain[$default_domain]
     }
 
     anchor { 'default_domain_created':
@@ -749,7 +734,7 @@ class keystone (
     }
 
     if $manage_service {
-      File[$domain_config_directory] ~> Service[$service_name]
+      File[$domain_config_directory] ~> Anchor['keystone::service::begin']
     }
 
     keystone_config {

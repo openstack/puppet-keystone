@@ -5,9 +5,11 @@ describe 'keystone::federation::mellon' do
   let(:pre_condition) do
     <<-EOS
     include apache
-
+    class { 'keystone':
+      service_name => 'httpd',
+    }
     class { 'keystone::wsgi::apache': }
-    EOS
+EOS
   end
 
   let :params do

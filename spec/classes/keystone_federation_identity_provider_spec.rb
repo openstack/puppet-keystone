@@ -28,10 +28,13 @@ describe 'keystone::federation::identity_provider' do
 
   shared_examples 'keystone::federation::identity_provider' do
     let :pre_condition do
-      "include apache
-       class { 'keystone':
-         service_name => 'httpd',
-       }"
+      <<-EOS
+      include apache
+      class { 'keystone':
+        service_name => 'httpd',
+      }
+      include keystone::wsgi::apache
+EOS
     end
 
     context 'with required params' do
@@ -112,7 +115,9 @@ describe 'keystone::federation::identity_provider' do
       end
 
       it_behaves_like 'keystone::federation::identity_provider'
-      it_behaves_like 'keystone::federation::identity_provider without Apache'
+      if facts[:os]['name'] == 'Debian'
+        it_behaves_like 'keystone::federation::identity_provider without Apache'
+      end
     end
   end
 end

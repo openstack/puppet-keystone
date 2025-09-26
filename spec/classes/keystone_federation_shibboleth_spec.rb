@@ -4,9 +4,11 @@ describe 'keystone::federation::shibboleth' do
   let(:pre_condition) do
     <<-EOS
     include apache
-
+    class { 'keystone':
+      service_name => 'httpd',
+    }
     class { 'keystone::wsgi::apache': }
-    EOS
+EOS
   end
 
   let :default_params do
@@ -39,15 +41,6 @@ describe 'keystone::federation::shibboleth' do
   end
 
   shared_examples 'keystone::federation::shibboleth' do
-    let(:pre_condition) do
-      <<-EOS
-      include apache
-
-      class { 'keystone::wsgi::apache': }
-      EOS
-    end
-
-
     context 'with only required parameters' do
       let (:params) { default_params }
       it 'should have basic params for shibboleth in Keystone configuration' do
@@ -70,11 +63,13 @@ describe 'keystone::federation::shibboleth' do
     context 'with shibboleth package' do
       let(:pre_condition) do
         <<-EOS
-        include apache
-
         package { 'shibboleth': ensure => present }
+        include apache
+        class { 'keystone':
+          service_name => 'httpd',
+        }
         class { 'keystone::wsgi::apache': }
-        EOS
+EOS
       end
 
       context 'with defaults' do
@@ -96,11 +91,13 @@ describe 'keystone::federation::shibboleth' do
     context 'with shibboleth repo' do
       let(:pre_condition) do
         <<-EOS
-        include apache
-
         yumrepo { 'shibboleth': ensure => present }
+        include apache
+        class { 'keystone':
+          service_name => 'httpd',
+        }
         class { 'keystone::wsgi::apache': }
-        EOS
+EOS
       end
 
       context 'with defaults' do

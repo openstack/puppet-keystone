@@ -3,6 +3,14 @@ require 'spec_helper'
 describe 'keystone' do
 
   shared_examples 'keystone' do
+    let :params do
+      { :service_name => 'httpd' }
+    end
+
+    let :pre_condition do
+      'include apache
+       include keystone::wsgi::apache'
+    end
 
     context 'with default parameters' do
       it { is_expected.to contain_class('keystone::logging') }
@@ -18,15 +26,7 @@ describe 'keystone' do
       it { is_expected.to contain_class('openstacklib::openstackclient') }
 
       it 'should synchronize the db if $sync_db is true' do
-        is_expected.to contain_exec('keystone-manage db_sync').with(
-          :command     => 'keystone-manage  db_sync',
-          :user        => 'keystone',
-          :refreshonly => true,
-          :subscribe   => ['Anchor[keystone::install::end]',
-                           'Anchor[keystone::config::end]',
-                           'Anchor[keystone::dbsync::begin]'],
-          :notify      => 'Anchor[keystone::dbsync::end]',
-        )
+        is_expected.to contain_class('keystone::db::sync')
       end
 
       it 'should set the default values' do
@@ -97,18 +97,6 @@ describe 'keystone' do
         is_expected.to contain_keystone_config('identity/domain_config_dir').with_ensure('absent')
       end
 
-      it { is_expected.to contain_service('keystone').with(
-        'ensure'     => 'running',
-        'enable'     => true,
-        'hasstatus'  => true,
-        'hasrestart' => true,
-        'tag'        => 'keystone-service',
-      ) }
-
-      it { is_expected.to contain_anchor('keystone::service::end') }
-
-      it { is_expected.to contain_exec('keystone-manage db_sync') }
-
       it { is_expected.to_not contain_file('/etc/keystone/domains') }
 
       it { is_expected.to contain_file('/etc/keystone/fernet-keys').with(
@@ -140,11 +128,29 @@ describe 'keystone' do
         :require => 'File[/etc/keystone/credential-keys]',
       ) }
       it { is_expected.to contain_keystone_config('credential/key_repository').with_value('/etc/keystone/credential-keys')}
+
+      it do
+        if facts[:os]['name'] == 'Debian'
+          is_expected.to contain_service('keystone').with(
+            :ensure => 'stopped',
+            :name   => platform_params[:service_name],
+            :enable => false,
+            :tag    => 'keystone-service',
+          )
+        else
+          is_expected.to_not contain_service('keystone')
+        end
+      end
+
+      it { is_expected.to contain_exec('restart_keystone').with(
+        'command' => "systemctl restart #{platform_params[:httpd_service_name]}",
+      ) }
     end
 
     context 'with overridden parameters' do
-      let :params do
-        {
+      before :each do
+        params.merge!({
+          :service_name                 => 'httpd',
           :purge_config                 => true,
           :public_endpoint              => 'http://127.0.0.1:5000',
           :token_provider               => 'uuid',
@@ -167,8 +173,14 @@ describe 'keystone' do
             'identity.authenticate.pending',
             'identity.authenticate.failed'
             ],
-        }
+        })
       end
+
+      let :pre_condition do
+        'include apache
+         include keystone::wsgi::apache'
+      end
+
 
       it 'should set the overridden values' do
         is_expected.to contain_resources('keystone_config').with({ :purge => true })
@@ -200,53 +212,11 @@ describe 'keystone' do
       end
     end
 
-    context "when running keystone in wsgi" do
-      let :params do
-        { 'service_name' => 'httpd' }
-      end
-
-      let :pre_condition do
-        'include apache
-         include keystone::wsgi::apache'
-      end
-
-      it do
-        if facts[:os]['name'] == 'Debian'
-          is_expected.to contain_service('keystone').with(
-            :ensure => 'stopped',
-            :name   => platform_params[:service_name],
-            :enable => false,
-            :tag    => 'keystone-service',
-          )
-        else
-          is_expected.to_not contain_service('keystone')
-        end
-      end
-
-      it { is_expected.to contain_exec('restart_keystone').with(
-        'command' => "systemctl restart #{platform_params[:httpd_service_name]}",
-      ) }
-    end
-
-    context 'when using invalid service name for keystone' do
-      let (:params) do
-        { 'service_name' => 'foo' }
-      end
-
-      it_raises 'a Puppet::Error', /Invalid service_name/
-    end
-
-    context 'with disabled service managing' do
-      let :params do
-        { :manage_service => false }
-      end
-
-      it { is_expected.to_not contain_service('keystone') }
-    end
-
-    context 'with disabled package managing' do
-      let :params do
-        { :manage_package => false }
+    context 'with package management disabled' do
+      before :each do
+        params.merge!({
+          :manage_package => false
+        })
       end
 
       it { is_expected.to_not contain_package('keystone') }
@@ -254,24 +224,24 @@ describe 'keystone' do
     end
 
     context 'when sync_db is set to false' do
-      let :params do
-        {
+      before :each do
+        params.merge!({
           'sync_db' => false,
-        }
+        })
       end
 
       it { is_expected.not_to contain_exec('keystone-manage db_sync') }
     end
 
     context 'with RabbitMQ communication SSLed' do
-      let :params do
-        {
+      before :each do
+        params.merge!({
           :rabbit_use_ssl     => true,
           :kombu_ssl_ca_certs => '/path/to/ssl/ca/certs',
           :kombu_ssl_certfile => '/path/to/ssl/cert/file',
           :kombu_ssl_keyfile  => '/path/to/ssl/keyfile',
           :kombu_ssl_version  => 'TLSv1'
-        }
+        })
       end
 
       it { is_expected.to contain_oslo__messaging__rabbit('keystone_config').with(
@@ -284,10 +254,6 @@ describe 'keystone' do
     end
 
     context 'with RabbitMQ communication not SSLed' do
-      let :params do
-        {}
-      end
-
       it { is_expected.to contain_oslo__messaging__rabbit('keystone_config').with(
           :rabbit_use_ssl     => '<SERVICE DEFAULT>',
           :kombu_ssl_ca_certs => '<SERVICE DEFAULT>',
@@ -298,8 +264,8 @@ describe 'keystone' do
     end
 
     context 'setting notification settings' do
-      let :params do
-        {
+      before :each do
+        params.merge!({
           :default_transport_url      => 'rabbit://user:pass@host:1234/virt',
           :notification_transport_url => 'rabbit://user:pass@host:1234/virt',
           :notification_driver        => ['keystone.openstack.common.notifier.rpc_notifier'],
@@ -308,7 +274,7 @@ describe 'keystone' do
           :control_exchange           => 'keystone',
           :rpc_response_timeout       => 120,
           :executor_thread_pool_size  => 64,
-        }
+        })
       end
 
       it {
@@ -329,11 +295,11 @@ describe 'keystone' do
     end
 
     context 'setting kombu settings' do
-      let :params do
-        {
+      before :each do
+        params.merge!({
           :kombu_reconnect_delay => '1.0',
           :kombu_compression     => 'gzip',
-        }
+        })
       end
 
       it {
@@ -344,10 +310,10 @@ describe 'keystone' do
     end
 
     context 'when disabling credential_setup' do
-      let :params do
-        {
+      before :each do
+        params.merge!({
           'enable_credential_setup' => false,
-        }
+        })
       end
 
       it { is_expected.to_not contain_file('/etc/keystone/credential-keys') }
@@ -356,11 +322,11 @@ describe 'keystone' do
     end
 
     context 'when overriding the credential key directory' do
-      let :params do
-        {
+      before :each do
+        params.merge!({
           'enable_credential_setup'   => true,
           'credential_key_repository' => '/var/lib/credential-keys',
-        }
+        })
       end
 
       it { is_expected.to contain_file('/var/lib/credential-keys').with(
@@ -376,12 +342,12 @@ describe 'keystone' do
     end
 
     context 'when overriding the keystone group and user' do
-      let :params do
-        {
+      before :each do
+        params.merge!({
           'enable_credential_setup' => true,
           'keystone_user'           => 'test_user',
           'keystone_group'          => 'test_group',
-        }
+        })
       end
 
       it { is_expected.to contain_exec('keystone-manage credential_setup').with(
@@ -393,8 +359,8 @@ describe 'keystone' do
     end
 
     context 'when setting credential_keys parameter' do
-      let :params do
-        {
+      before :each do
+        params.merge!({
           'enable_credential_setup' => true,
           'credential_keys' => {
             '/etc/keystone/credential-keys/0' => {
@@ -404,7 +370,7 @@ describe 'keystone' do
               'content' => 'GLlnyygEVJP4-H2OMwClXn3sdSQUZsM5F194139Unv8=',
             },
           }
-        }
+        })
       end
 
       it { is_expected.to_not contain_exec('keystone-manage credential_setup') }
@@ -423,10 +389,10 @@ describe 'keystone' do
     end
 
     context 'when disabling fernet_setup' do
-      let :params do
-        {
+      before :each do
+        params.merge!({
           'enable_fernet_setup' => false,
-        }
+        })
       end
 
       it { is_expected.to_not contain_file('/etc/keystone/fernet-keys') }
@@ -435,11 +401,11 @@ describe 'keystone' do
     end
 
     context 'when enabling fernet_setup' do
-      let :params do
-        {
+      before :each do
+        params.merge!({
           'enable_fernet_setup'    => true,
           'fernet_max_active_keys' => 5,
-        }
+        })
       end
 
       it { is_expected.to contain_file('/etc/keystone/fernet-keys').with(
@@ -459,11 +425,11 @@ describe 'keystone' do
     end
 
     context 'when overriding the fernet key directory' do
-      let :params do
-        {
+      before :each do
+        params.merge!({
           'enable_fernet_setup'   => true,
           'fernet_key_repository' => '/var/lib/fernet-keys',
-        }
+        })
       end
 
       it { is_expected.to contain_file('/var/lib/fernet-keys').with(
@@ -480,12 +446,12 @@ describe 'keystone' do
     end
 
     context 'when overriding the keystone group and user' do
-      let :params do
-        {
+      before :each do
+        params.merge!({
           'enable_fernet_setup' => true,
           'keystone_user'       => 'test_user',
           'keystone_group'      => 'test_group',
-        }
+        })
       end
 
       it { is_expected.to contain_exec('keystone-manage fernet_setup').with(
@@ -497,8 +463,8 @@ describe 'keystone' do
     end
 
     context 'when setting fernet_keys parameter' do
-      let :params do
-        {
+      before :each do
+        params.merge!({
           'enable_fernet_setup' => true,
           'fernet_keys' => {
             '/etc/keystone/fernet-keys/0' => {
@@ -508,7 +474,7 @@ describe 'keystone' do
               'content' => 'GLlnyygEVJP4-H2OMwClXn3sdSQUZsM5F194139Unv8=',
             },
           }
-        }
+        })
       end
 
       it { is_expected.to_not contain_exec('keystone-manage fernet_setup') }
@@ -531,8 +497,8 @@ describe 'keystone' do
     end
 
     context 'when not replacing fernet_keys and setting fernet_keys parameter' do
-      let :params do
-        {
+      before :each do
+        params.merge!({
           'enable_fernet_setup' => true,
           'fernet_keys' => {
             '/etc/keystone/fernet-keys/0' => {
@@ -543,7 +509,7 @@ describe 'keystone' do
             },
           },
           'fernet_replace_keys' => false,
-        }
+        })
       end
 
       it { is_expected.to_not contain_exec('keystone-manage fernet_setup') }
@@ -564,46 +530,42 @@ describe 'keystone' do
     end
 
     context 'with default domain and eventlet service is managed and enabled' do
-      let :params do
-        { 'default_domain' => 'test' }
+      before :each do
+        params.merge!({
+          'default_domain' => 'test'
+        })
       end
 
-      it { is_expected.to contain_exec('restart_keystone').with(
-        'command' => "systemctl restart #{platform_params[:service_name]}",
+      it { is_expected.to contain_keystone_domain('test').with(
+        :ensure     => 'present',
+        :enabled    => true,
+        :is_default => true,
       ) }
       it { is_expected.to contain_anchor('default_domain_created') }
     end
 
-    context 'with default domain and wsgi service is managed and enabled' do
-      let :pre_condition do
-        'include apache'
-      end
-
-      let :params do
-        {
-          'default_domain'=> 'test',
-          'service_name'  => 'httpd',
-        }
-      end
-
-      it { is_expected.to contain_anchor('default_domain_created') }
-    end
-
     context 'with default domain and service is not managed' do
-      let :params do
-        {
+      before :each do
+        params.merge!({
           'default_domain' => 'test',
           'manage_service' => false,
-        }
+        })
       end
 
+      it { is_expected.to contain_keystone_domain('test').with(
+        :ensure     => 'present',
+        :enabled    => true,
+        :is_default => true,
+      ) }
       it { is_expected.to_not contain_exec('restart_keystone') }
       it { is_expected.to contain_anchor('default_domain_created') }
     end
 
     context 'when using domain config' do
-      let :params do
-        { 'using_domain_config'=> true }
+      before :each do
+        params.merge!({
+          'using_domain_config'=> true
+        })
       end
 
       it { is_expected.to contain_file('/etc/keystone/domains').with(
@@ -620,22 +582,22 @@ describe 'keystone' do
     end
 
     context 'when using domain config and a wrong directory' do
-      let :params do
-        {
+      before :each do
+        params.merge!({
           'using_domain_config'=> true,
           'domain_config_directory' => 'this/is/not/an/absolute/path'
-        }
+        })
       end
 
       it { should raise_error(Puppet::Error) }
     end
 
     context 'when setting domain directory and not using domain config' do
-      let :params do
-        {
+      before :each do
+        params.merge!({
           'using_domain_config'=> false,
           'domain_config_directory' => '/this/is/an/absolute/path'
-        }
+        })
       end
 
       it 'should raise an error' do
@@ -645,17 +607,36 @@ describe 'keystone' do
     end
 
     context 'when setting domain directory and using domain config' do
-      let :params do
-        {
+      before :each do
+        params.merge!({
           'using_domain_config'=> true,
           'domain_config_directory' => '/this/is/an/absolute/path'
-        }
+        })
       end
 
       it { is_expected.to contain_file('/this/is/an/absolute/path').with(
         'ensure' => "directory",
       ) }
     end
+  end
+
+  shared_examples 'keystone in Debian' do
+    context 'with default parameters' do
+      it { is_expected.to contain_service('keystone').with(
+        :ensure     => 'running',
+        :enable     => true,
+        :name       => platform_params[:service_name],
+        :hasstatus  => true,
+        :hasrestart => true,
+        :tag        => 'keystone-service',
+      ) }
+
+      it { is_expected.to contain_exec('restart_keystone').with(
+        'command' => "systemctl restart #{platform_params[:service_name]}",
+      ) }
+    end
+
+
   end
 
   on_supported_os({
@@ -669,17 +650,25 @@ describe 'keystone' do
       let(:platform_params) do
         case facts[:os]['family']
         when 'Debian'
-          { :package_name       => 'keystone',
-            :service_name       => 'keystone',
-            :httpd_service_name => 'apache2' }
+          case facts[:os]['name']
+          when 'Debian'
+            { :package_name       => 'keystone',
+              :service_name       => 'keystone',
+              :httpd_service_name => 'apache2' }
+          when 'Ubuntu'
+            { :package_name       => 'keystone',
+              :httpd_service_name => 'apache2' }
+          end
         when 'RedHat'
           { :package_name       => 'openstack-keystone',
-            :service_name       => 'openstack-keystone',
             :httpd_service_name => 'httpd' }
         end
       end
 
       it_behaves_like 'keystone'
+      if facts[:os]['name'] == 'Debian'
+        it_behaves_like 'keystone in Debian'
+      end
     end
   end
 end
