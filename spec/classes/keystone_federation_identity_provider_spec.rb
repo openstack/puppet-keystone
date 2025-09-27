@@ -95,9 +95,7 @@ describe 'keystone::federation::identity_provider' do
 
   shared_examples 'keystone::federation::identity_provider without Apache' do
     let :pre_condition do
-      "class { 'keystone':
-         service_name => '#{platform_params[:keystone_service]}',
-       }"
+      'include keystone'
     end
 
     context 'with default parameters' do
@@ -111,20 +109,6 @@ describe 'keystone::federation::identity_provider' do
     context "on #{os}" do
       let (:facts) do
         facts.merge!(OSDefaults.get_facts())
-      end
-
-      let (:platform_params) do
-        if facts[:os]['family'] == 'RedHat'
-          keystone_service = 'openstack-keystone'
-          python_pysaml2_package_name = 'python3-pysaml2'
-        else
-          keystone_service = 'keystone'
-          python_pysaml2_package_name = 'python3-pysaml2'
-        end
-        {
-          :keystone_service            => keystone_service,
-          :python_pysaml2_package_name => python_pysaml2_package_name
-        }
       end
 
       it_behaves_like 'keystone::federation::identity_provider'
