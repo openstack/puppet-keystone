@@ -155,14 +155,11 @@ class Puppet::Provider::Keystone < Puppet::Provider::Openstack
   end
 
   def self.get_auth_url
-    auth_url = nil
     if ENV['OS_AUTH_URL']
-      auth_url = ENV['OS_AUTH_URL'].dup
-    elsif auth_url = get_os_vars_from_rcfile(rc_filename)['OS_AUTH_URL']
+      ENV['OS_AUTH_URL'].dup
     else
-      auth_url = auth_endpoint
+      auth_endpoint
     end
-    return auth_url
   end
 
   def self.project_request(service, action, properties=nil, options={})

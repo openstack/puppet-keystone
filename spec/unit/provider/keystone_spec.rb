@@ -110,15 +110,7 @@ id="the_user_id"
       expect(klass.get_auth_url).to eq('http://127.0.0.1:5001')
     end
 
-    it 'should return the OS_AUTH_URL from the openrc file when there is no OS_AUTH_URL in the environment' do
-      home = ENV['HOME']
-      ENV.clear
-      mock = {'OS_AUTH_URL' => 'http://127.0.0.1:5001'}
-      expect(klass).to receive(:get_os_vars_from_rcfile).with("#{home}/openrc").and_return(mock)
-      expect(klass.get_auth_url).to eq('http://127.0.0.1:5001')
-    end
-
-    it 'should use auth_endpoint when nothing else is available' do
+    it 'should use auth_endpoint when OS_AUTH_URL is not set' do
       ENV.clear
       mock = 'http://127.0.0.1:5001'
       expect(klass).to receive(:auth_endpoint).and_return(mock)
