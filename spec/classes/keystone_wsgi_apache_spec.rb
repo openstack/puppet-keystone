@@ -209,7 +209,7 @@ EOS
         when 'Debian'
           {
             :wsgi_script_path   => '/usr/lib/cgi-bin/keystone',
-            :wsgi_script_source => '/usr/bin/keystone-wsgi-public',
+            :wsgi_script_source => '/usr/lib/python3/dist-packages/keystone/wsgi/api.py',
           }
         when 'RedHat'
           {
