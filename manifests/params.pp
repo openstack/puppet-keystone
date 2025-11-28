@@ -26,7 +26,7 @@ class keystone::params {
         }
       }
       $keystone_wsgi_script_path    = '/usr/lib/cgi-bin/keystone'
-      $keystone_wsgi_script_source  = '/usr/bin/keystone-wsgi-public'
+      $keystone_wsgi_script_source  = '/usr/lib/python3/dist-packages/keystone/wsgi/api.py'
       $python_memcache_package_name = 'python3-memcache'
       $python_ldappool_package_name = 'python3-ldappool'
     }
