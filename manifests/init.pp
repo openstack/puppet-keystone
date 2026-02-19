@@ -18,12 +18,11 @@
 #
 # [*token_provider*]
 #   (Optional) Format keystone uses for tokens.
-#   Defaults to 'fernet'
-#   Supports fernet or uuid.
+#   Defaults to $facts['os_service_default']
 #
 # [*token_expiration*]
 #   (Optional) Amount of time a token should remain valid (seconds).
-#   Defaults to 3600 (1 hour).
+#   Defaults to $facts['os_service_default']
 #
 # [*password_hash_algorithm*]
 #   (Optional) The password hash algorithm to use.
@@ -381,8 +380,8 @@ class keystone (
   Boolean $manage_package                         = true,
   Stdlib::Ensure::Package $package_ensure         = present,
   $catalog_driver                                 = $facts['os_service_default'],
-  $token_provider                                 = 'fernet',
-  $token_expiration                               = 3600,
+  $token_provider                                 = $facts['os_service_default'],
+  $token_expiration                               = $facts['os_service_default'],
   $password_hash_algorithm                        = $facts['os_service_default'],
   $password_hash_rounds                           = $facts['os_service_default'],
   $max_password_length                            = $facts['os_service_default'],

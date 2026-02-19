@@ -32,8 +32,8 @@ describe 'keystone' do
       it 'should set the default values' do
         is_expected.to contain_resources('keystone_config').with({ :purge => false })
         is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value('<SERVICE DEFAULT>')
-        is_expected.to contain_keystone_config('token/provider').with_value('fernet')
-        is_expected.to contain_keystone_config('token/expiration').with_value(3600)
+        is_expected.to contain_keystone_config('token/provider').with_value('<SERVICE DEFAULT>')
+        is_expected.to contain_keystone_config('token/expiration').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('identity/password_hash_algorithm').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('identity/password_hash_rounds').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('identity/max_password_length').with_value('<SERVICE DEFAULT>')
@@ -153,8 +153,8 @@ describe 'keystone' do
           :service_name                 => 'httpd',
           :purge_config                 => true,
           :public_endpoint              => 'http://127.0.0.1:5000',
-          :token_provider               => 'uuid',
-          :token_expiration             => 7200,
+          :token_provider               => 'fernet',
+          :token_expiration             => 3600,
           :password_hash_algorithm      => 'bcrypt',
           :password_hash_rounds         => 12,
           :max_password_length          => 54,
@@ -185,8 +185,8 @@ describe 'keystone' do
       it 'should set the overridden values' do
         is_expected.to contain_resources('keystone_config').with({ :purge => true })
         is_expected.to contain_keystone_config('DEFAULT/public_endpoint').with_value('http://127.0.0.1:5000')
-        is_expected.to contain_keystone_config('token/provider').with_value('uuid')
-        is_expected.to contain_keystone_config('token/expiration').with_value(7200)
+        is_expected.to contain_keystone_config('token/provider').with_value('fernet')
+        is_expected.to contain_keystone_config('token/expiration').with_value(3600)
         is_expected.to contain_keystone_config('identity/password_hash_algorithm').with_value('bcrypt')
         is_expected.to contain_keystone_config('identity/password_hash_rounds').with_value(12)
         is_expected.to contain_keystone_config('identity/max_password_length').with_value(54)
