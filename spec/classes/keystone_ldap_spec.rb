@@ -66,6 +66,7 @@ describe 'keystone::ldap' do
       }
 
       it {
+        is_expected.to contain_keystone_config('ldap/connection_timeout').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('ldap/use_pool').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('ldap/pool_size').with_value('<SERVICE DEFAULT>')
         is_expected.to contain_keystone_config('ldap/pool_retry_max').with_value('<SERVICE DEFAULT>')
@@ -119,6 +120,7 @@ describe 'keystone::ldap' do
           :tls_cacertdir                        => '/etc/ssl/certs/',
           :tls_cacertfile                       => '/etc/ssl/certs/ca-certificates.crt',
           :tls_req_cert                         => 'demand',
+          :connection_timeout                   => -1,
           :use_pool                             => true,
           :pool_size                            => 10,
           :pool_retry_max                       => 3,
@@ -201,6 +203,7 @@ describe 'keystone::ldap' do
       }
 
       it {
+        is_expected.to contain_keystone_config('ldap/connection_timeout').with_value(-1)
         is_expected.to contain_keystone_config('ldap/use_pool').with_value(true)
         is_expected.to contain_keystone_config('ldap/pool_size').with_value('10')
         is_expected.to contain_keystone_config('ldap/pool_retry_max').with_value(3)
