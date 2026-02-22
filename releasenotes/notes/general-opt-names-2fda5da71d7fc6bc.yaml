@@ -1,0 +1,10 @@
+---
+deprecations:
+  - |
+    The following parameters of the ``keystone::cache`` class have
+    been deprecated in favor of the new generic parameters.
+
+    - ``memcache_username`` and ``redis_username`` (Use ``username``)
+    - ``memcache_password`` and ``redis_password`` (Use ``password``)
+    - ``memcache_socket_timeout`` and ``redis_socket_timeout``
+      (Use ``socket_timeout``)
