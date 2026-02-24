@@ -51,6 +51,18 @@
 #   Typically this should be left set to false. (boolean value)
 #   Defaults to $facts['os_service_default']
 #
+# [*socket_timeout*]
+#   (Optional) Timeout in seconds for every call to a server.
+#   Defaults to $facts['os_service_default']
+#
+# [*username*]
+#   (Optional) The user name for authentication to backend.
+#   Defaults to $facts['os_service_default']
+#
+# [*password*]
+#   (Optional) The password for authentication to backend.
+#   Defaults to $facts['os_service_default']
+#
 # [*memcache_servers*]
 #   (Optional) Memcache servers in the format of "host:port".
 #   (dogpile.cache.memcache and oslo_cache.memcache_pool backends only).
@@ -61,12 +73,6 @@
 #   (Optional) Number of seconds memcached server is considered dead before
 #   it is tried again. (dogpile.cache.memcache and oslo_cache.memcache_pool
 #   backends only). (integer value)
-#   Defaults to $facts['os_service_default']
-#
-# [*memcache_socket_timeout*]
-#   (Optional) Timeout in seconds for every call to a server.
-#   (dogpile.cache.memcache and oslo_cache.memcache_pool backends only).
-#   (floating point value)
 #   Defaults to $facts['os_service_default']
 #
 # [*enable_socket_keepalive*]
@@ -116,32 +122,12 @@
 #   (Optional) Whether SASL is enabled in memcached
 #   Defaults to $facts['os_service_default']
 #
-# [*memcache_username*]
-#   (Optional) The user name for the memcached with SASL enabled
-#   Defaults to $facts['os_service_default']
-#
-# [*memcache_password*]
-#   (Optional) The password for the memcached with SASL enabled
-#   Defaults to $facts['os_service_default']
-#
 # [*redis_server*]
 #   (Optional) Redis server in the format of "host:port".
 #   Defaults to $facts['os_service_default']
 #
-# [*redis_username*]
-#   (Optional) The user name for redis
-#   Defaults to $facts['os_service_default']
-#
-# [*redis_password*]
-#   (Optional) The password for redis
-#   Defaults to $facts['os_service_default']
-#
 # [*redis_sentinels*]
 #   (Optional) Redis sentinel servers in the format of host:port
-#   Defaults to $facts['os_service_default']
-#
-# [*redis_socket_timeout*]
-#   (Optional) Timeout in seconds for every call to a server
 #   Defaults to $facts['os_service_default']
 #
 # [*redis_sentinel_service_name*]
@@ -257,6 +243,32 @@
 #   back in the pool in the HashClient's internal mechanisms.
 #   Default to undef
 #
+# [*memcache_username*]
+#   (Optional) The user name for the memcached with SASL enabled
+#   Default to undef
+#
+# [*memcache_password*]
+#   (Optional) The password for the memcached with SASL enabled
+#   Default to undef
+#
+# [*redis_username*]
+#   (Optional) The user name for redis
+#   Default to undef
+#
+# [*redis_password*]
+#   (Optional) The password for redis
+#   Default to undef
+#
+# [*memcache_socket_timeout*]
+#   (Optional) Timeout in seconds for every call to a server.
+#   (dogpile.cache.memcache and oslo_cache.memcache_pool backends only).
+#   (floating point value)
+#   Default to undef
+#
+# [*redis_socket_timeout*]
+#   (Optional) Timeout in seconds for every call to a server
+#   Default to undef
+#
 class keystone::cache (
   $config_prefix                        = $facts['os_service_default'],
   $expiration_time                      = $facts['os_service_default'],
@@ -266,9 +278,11 @@ class keystone::cache (
   $proxies                              = $facts['os_service_default'],
   $enabled                              = $facts['os_service_default'],
   $debug_cache_backend                  = $facts['os_service_default'],
+  $socket_timeout                       = $facts['os_service_default'],
+  $username                             = $facts['os_service_default'],
+  $password                             = $facts['os_service_default'],
   $memcache_servers                     = $facts['os_service_default'],
   $memcache_dead_retry                  = $facts['os_service_default'],
-  $memcache_socket_timeout              = $facts['os_service_default'],
   $enable_socket_keepalive              = $facts['os_service_default'],
   $socket_keepalive_idle                = $facts['os_service_default'],
   $socket_keepalive_interval            = $facts['os_service_default'],
@@ -278,13 +292,8 @@ class keystone::cache (
   $memcache_pool_connection_get_timeout = $facts['os_service_default'],
   $memcache_pool_flush_on_reconnect     = $facts['os_service_default'],
   $memcache_sasl_enabled                = $facts['os_service_default'],
-  $memcache_username                    = $facts['os_service_default'],
-  $memcache_password                    = $facts['os_service_default'],
   $redis_server                         = $facts['os_service_default'],
-  $redis_username                       = $facts['os_service_default'],
-  $redis_password                       = $facts['os_service_default'],
   $redis_sentinels                      = $facts['os_service_default'],
-  $redis_socket_timeout                 = $facts['os_service_default'],
   $redis_sentinel_service_name          = $facts['os_service_default'],
   $tls_enabled                          = $facts['os_service_default'],
   $tls_cafile                           = $facts['os_service_default'],
@@ -307,6 +316,12 @@ class keystone::cache (
   # DEPRECATED PARAMETERS
   $hashclient_retry_delay               = undef,
   $dead_timeout                         = undef,
+  $memcache_username                    = undef,
+  $memcache_password                    = undef,
+  $redis_username                       = undef,
+  $redis_password                       = undef,
+  $memcache_socket_timeout              = undef,
+  $redis_socket_timeout                 = undef,
 ) {
   include keystone::deps
 
@@ -332,6 +347,9 @@ class keystone::cache (
     proxies                              => $proxies,
     enabled                              => $enabled,
     debug_cache_backend                  => $debug_cache_backend,
+    socket_timeout                       => $socket_timeout,
+    username                             => $username,
+    password                             => $password,
     memcache_servers                     => $memcache_servers,
     memcache_dead_retry                  => $memcache_dead_retry,
     memcache_socket_timeout              => $memcache_socket_timeout,
