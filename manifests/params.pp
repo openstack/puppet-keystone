@@ -4,7 +4,7 @@
 class keystone::params {
   include openstacklib::defaults
 
-  $pyver3 = $openstacklib::defaults::pyver3
+  $pybasedir = $openstacklib::defaults::pybasedir
 
   $client_package_name = 'python3-keystoneclient'
   $user                = 'keystone'
@@ -26,7 +26,7 @@ class keystone::params {
         }
       }
       $keystone_wsgi_script_path    = '/usr/lib/cgi-bin/keystone'
-      $keystone_wsgi_script_source  = '/usr/lib/python3/dist-packages/keystone/wsgi/api.py'
+      $keystone_wsgi_script_source  = "${pybasedir}/keystone/wsgi/api.py"
       $python_memcache_package_name = 'python3-memcache'
       $python_ldappool_package_name = 'python3-ldappool'
     }
@@ -34,7 +34,7 @@ class keystone::params {
       $package_name                 = 'openstack-keystone'
       $service_name                 = undef
       $keystone_wsgi_script_path    = '/var/www/cgi-bin/keystone'
-      $keystone_wsgi_script_source  = "/usr/lib/python${pyver3}/site-packages/keystone/wsgi/api.py"
+      $keystone_wsgi_script_source  = "${pybasedir}/keystone/wsgi/api.py"
       $python_memcache_package_name = 'python3-memcached'
       $python_ldappool_package_name = 'python3-ldappool'
     }
