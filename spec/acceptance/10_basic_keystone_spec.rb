@@ -116,6 +116,11 @@ describe 'keystone server running with Apache/WSGI with resources' do
       it { is_expected.to be_listening }
     end
 
+    describe cron do
+      it { is_expected.to have_entry('*/30 * * * * keystone-manage fernet_rotate').with_user('keystone') }
+      it { is_expected.to have_entry('1 * * * * keystone-manage trust_flush >>/var/log/keystone/keystone-trustflush.log 2>&1').with_user('keystone') }
+    end
+
     shared_examples_for 'keystone user/tenant/service/role/endpoint resources using v3 API' do |auth_creds|
       it 'should find ci user' do
         command("openstack #{auth_creds} --os-auth-url http://127.0.0.1:5000/v3 --os-identity-api-version 3 user list --long") do |r|
