@@ -293,6 +293,32 @@ describe 'keystone::federation::openidc' do
       end
     end
 
+    context 'with openidc_xforwarded_headers attribute' do
+      before do
+        params.merge!({
+          :openidc_xforwarded_headers => ['X-Forwarded-Proto'],
+        })
+      end
+
+      it 'should contain OIDC xforwarded headers' do
+        content = get_param('concat::fragment', 'keystone_wsgi-configure_openidc_keystone', 'content')
+        expect(content).to match('OIDCXForwardedHeaders "X-Forwarded-Proto"')
+      end
+    end
+
+    context 'with openidc_xforwarded_headers attribute (multiple values)' do
+      before do
+        params.merge!({
+          :openidc_xforwarded_headers => ['X-Forwarded-Proto', 'X-Forwarded-For', 'X-Forwarded-Port'],
+        })
+      end
+
+      it 'should contain OIDC xforwarded headers' do
+        content = get_param('concat::fragment', 'keystone_wsgi-configure_openidc_keystone', 'content')
+        expect(content).to match('OIDCXForwardedHeaders "X-Forwarded-Proto" "X-Forwarded-For" "X-Forwarded-Port"')
+      end
+    end
+
     context 'with openidc_response_mode attribute' do
       before do
         params.merge!({
