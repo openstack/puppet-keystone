@@ -110,6 +110,17 @@
 #  "both": claims/tokens are passed as both headers as well as environment variables (default)
 #  Defaults to undef
 #
+# [*openidc_xforwarded_headers*]
+#  Define the X-Forwarded-* or Forwarded headers that will be considered as set by a reverse proxy
+#  in front of mod_auth_openidc. Must be one or more of:
+#   X-Forwarded-Host
+#   X-Forwarded-Port
+#   X-Forwarded-Proto
+#   Forwarded
+#   none
+#  When not defined or "none", such headers will be ignored.
+#  Defaults to []
+#
 # [*openidc_redirect_uri*]
 #  (Optional) An arbitrary URI for OIDCRedirectURI. Defaults to undef, in this
 #  case the URI is generated from keystone_url and idp_name.
@@ -178,35 +189,36 @@ class keystone::federation::openidc (
   $idp_name,
   $openidc_client_id,
   $openidc_client_secret,
-  Optional[Stdlib::HTTPUrl] $openidc_provider_metadata_url = undef,
-  Optional[Stdlib::Unixpath] $openidc_metadata_dir         = undef,
-  $openidc_crypto_passphrase                               = 'openstack',
-  $openidc_response_type                                   = 'id_token',
-  Array[String[1], 1] $openidc_scope                       = ['openid', 'email', 'profile'],
-  $openidc_response_mode                                   = undef,
-  $openidc_cache_type                                      = undef,
-  $openidc_cache_shm_max                                   = undef,
-  $openidc_cache_shm_entry_size                            = undef,
-  $openidc_cache_dir                                       = undef,
-  $openidc_cache_clean_interval                            = undef,
-  $openidc_claim_delimiter                                 = undef,
-  Boolean $openidc_enable_oauth                            = false,
-  $openidc_introspection_endpoint                          = undef,
-  $openidc_verify_jwks_uri                                 = undef,
-  Enum['introspection', 'jwks'] $openidc_verify_method     = 'introspection',
-  Optional[Enum['claims', 'json', 'jwt']] $openidc_pass_userinfo_as = undef,
+  Optional[Stdlib::HTTPUrl] $openidc_provider_metadata_url                        = undef,
+  Optional[Stdlib::Unixpath] $openidc_metadata_dir                                = undef,
+  $openidc_crypto_passphrase                                                      = 'openstack',
+  $openidc_response_type                                                          = 'id_token',
+  Array[String[1], 1] $openidc_scope                                              = ['openid', 'email', 'profile'],
+  $openidc_response_mode                                                          = undef,
+  $openidc_cache_type                                                             = undef,
+  $openidc_cache_shm_max                                                          = undef,
+  $openidc_cache_shm_entry_size                                                   = undef,
+  $openidc_cache_dir                                                              = undef,
+  $openidc_cache_clean_interval                                                   = undef,
+  $openidc_claim_delimiter                                                        = undef,
+  Boolean $openidc_enable_oauth                                                   = false,
+  $openidc_introspection_endpoint                                                 = undef,
+  $openidc_verify_jwks_uri                                                        = undef,
+  Enum['introspection', 'jwks'] $openidc_verify_method                            = 'introspection',
+  Optional[Enum['claims', 'json', 'jwt']] $openidc_pass_userinfo_as               = undef,
   Optional[Enum['none', 'environment', 'headers', 'both']] $openidc_pass_claim_as = undef,
-  $openidc_redirect_uri                                    = undef,
-  Optional[Array[Hash]] $additional_locations              = undef,
-  $memcached_servers                                       = undef,
-  $redis_server                                            = undef,
-  $redis_password                                          = undef,
-  $redis_username                                          = undef,
-  $redis_database                                          = undef,
-  $redis_connect_timeout                                   = undef,
-  $redis_timeout                                           = undef,
-  $remote_id_attribute                                     = $facts['os_service_default'],
-  $template_order                                          = 331,
+  Array[String[1]] $openidc_xforwarded_headers                                    = [],
+  $openidc_redirect_uri                                                           = undef,
+  Optional[Array[Hash]] $additional_locations                                     = undef,
+  $memcached_servers                                                              = undef,
+  $redis_server                                                                   = undef,
+  $redis_password                                                                 = undef,
+  $redis_username                                                                 = undef,
+  $redis_database                                                                 = undef,
+  $redis_connect_timeout                                                          = undef,
+  $redis_timeout                                                                  = undef,
+  $remote_id_attribute                                                            = $facts['os_service_default'],
+  $template_order                                                                 = 331,
 ) {
   include apache
   include apache::mod::auth_openidc
