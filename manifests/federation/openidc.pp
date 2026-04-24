@@ -101,6 +101,17 @@
 #  "both": claims/tokens are passed as both headers as well as environment variables (default)
 #  Defaults to undef
 #
+# [*openidc_xforwarded_headers*]
+#  Define the X-Forwarded-* or Forwarded headers that will be considered as set by a reverse proxy
+#  in front of mod_auth_openidc. Must be one or more of:
+#   X-Forwarded-Host
+#   X-Forwarded-Port
+#   X-Forwarded-Proto
+#   Forwarded
+#   none
+#  When not defined or "none", such headers will be ignored.
+#  Defaults to []
+#
 # [*openidc_redirect_uri*]
 #  (Optional) An arbitrary URI for OIDCRedirectURI. Defaults to undef, in this
 #  case the URI is generated from keystone_url and idp_name.
@@ -157,31 +168,32 @@ class keystone::federation::openidc (
   $openidc_provider_metadata_url,
   $openidc_client_id,
   $openidc_client_secret,
-  $openidc_crypto_passphrase      = 'openstack',
-  $openidc_response_type          = 'id_token',
-  $openidc_response_mode          = undef,
-  $openidc_cache_type             = undef,
-  $openidc_cache_shm_max          = undef,
-  $openidc_cache_shm_entry_size   = undef,
-  $openidc_cache_dir              = undef,
-  $openidc_cache_clean_interval   = undef,
-  $openidc_claim_delimiter        = undef,
-  Boolean $openidc_enable_oauth   = false,
-  $openidc_introspection_endpoint = undef,
-  $openidc_verify_jwks_uri        = undef,
-  $openidc_verify_method          = 'introspection',
-  $openidc_pass_userinfo_as       = undef,
-  $openidc_pass_claim_as          = undef,
-  $openidc_redirect_uri           = undef,
-  $memcached_servers              = undef,
-  $redis_server                   = undef,
-  $redis_password                 = undef,
-  $redis_username                 = undef,
-  $redis_database                 = undef,
-  $redis_connect_timeout          = undef,
-  $redis_timeout                  = undef,
-  $remote_id_attribute            = $facts['os_service_default'],
-  $template_order                 = 331,
+  $openidc_crypto_passphrase                   = 'openstack',
+  $openidc_response_type                       = 'id_token',
+  $openidc_response_mode                       = undef,
+  $openidc_cache_type                          = undef,
+  $openidc_cache_shm_max                       = undef,
+  $openidc_cache_shm_entry_size                = undef,
+  $openidc_cache_dir                           = undef,
+  $openidc_cache_clean_interval                = undef,
+  $openidc_claim_delimiter                     = undef,
+  Boolean $openidc_enable_oauth                = false,
+  $openidc_introspection_endpoint              = undef,
+  $openidc_verify_jwks_uri                     = undef,
+  $openidc_verify_method                       = 'introspection',
+  $openidc_pass_userinfo_as                    = undef,
+  $openidc_pass_claim_as                       = undef,
+  Array[String[1]] $openidc_xforwarded_headers = [],
+  $openidc_redirect_uri                        = undef,
+  $memcached_servers                           = undef,
+  $redis_server                                = undef,
+  $redis_password                              = undef,
+  $redis_username                              = undef,
+  $redis_database                              = undef,
+  $redis_connect_timeout                       = undef,
+  $redis_timeout                               = undef,
+  $remote_id_attribute                         = $facts['os_service_default'],
+  $template_order                              = 331,
 ) {
 
   include apache

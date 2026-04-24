@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    Added new parameter ``keystone:federation::openid::openidc_xforwarded_headers``
+    that can be used to configure the ``OIDCXForwardedHeaders`` configuration for
+    the httpd mod_auth_openidc plugin.

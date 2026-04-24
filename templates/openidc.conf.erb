@@ -54,6 +54,9 @@
 <%- if scope['::keystone::federation::openidc::openidc_pass_claim_as'] != nil -%>
   OIDCPassClaimsAs "<%= scope['::keystone::federation::openidc::openidc_pass_claim_as'] %>"
 <%- end -%>
+<%- if ! scope['::keystone::federation::openidc::openidc_xforwarded_headers'].empty? -%>
+  OIDCXForwardedHeaders "<%= scope['::keystone::federation::openidc::openidc_xforwarded_headers'].join('" "') %>"
+<%- end -%>
 
 <%- if scope['::keystone::federation::openidc::openidc_redirect_uri'] != nil -%>
   OIDCRedirectURI "<%= scope['::keystone::federation::openidc::openidc_redirect_uri'] %>"
