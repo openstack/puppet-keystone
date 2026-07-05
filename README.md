@@ -140,9 +140,9 @@ bug](https://bugs.launchpad.net/puppet-keystone/+bug/1506996)
 
 A keystone database can be configured separately from the keystone services.
 
-If one needs to actually install a fresh database they have the choice of mysql or postgres.  Use the mysql::server or postgreql::server classes to do this setup, and then the Class['keystone::db::mysql'] or Class['keystone::db::postgresql'] for adding the databases and users that will be needed by keystone.
-
-* For mysql
+If one needs to actually install a fresh database. Use the mysql::server class
+to do this setup, and then the Class['keystone::db::mysql'] for adding
+the databases and users that will be needed by keystone.
 
 ```puppet
 class { 'mysql::server': }
@@ -151,14 +151,6 @@ class { 'keystone::db::mysql':
   password      => 'super_secret_db_password',
   allowed_hosts => '%',
 }
-```
-
-* For postgresql
-
-```puppet
-class { 'postgresql::server': }
-
-class { 'keystone::db::postgresql': password => 'super_secret_db_password', }
 ```
 
 **About Keystone V3 syntax in keystone_user/keystone_tenant/keystone_user_role**
