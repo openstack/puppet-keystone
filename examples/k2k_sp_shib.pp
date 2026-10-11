@@ -24,13 +24,11 @@ Exec { logoutput => 'on_failure' }
 # Note: The yumrepo part is only necessary if you are using RedHat.
 # Yumrepo begin
 yumrepo { 'shibboleth':
-  name     => 'Shibboleth',
-  baseurl  => 'http://download.opensuse.org/repositories/security:/shibboleth/CentOS_7/',
-  descr    => 'Shibboleth repo for RedHat',
-  gpgcheck => 1,
-  gpgkey   => 'http://download.opensuse.org/repositories/security:/shibboleth/CentOS_7/repodata/repomd.xml.key',
-  enabled  => 1,
-  require  => Anchor['openstack_extras_redhat'],
+  name       => 'Shibboleth',
+  mirrorlist => 'https://shibboleth.net/cgi-bin/mirrorlist.cgi/rockylinux9',
+  gpgcheck   => 1,
+  gpgkey     => 'https://shibboleth.net/downloads/service-provider/RPMS/cantor.repomd.xml.key',
+  enabled    => 1,
 }
 
 Yumrepo['shibboleth'] -> Class['keystone::federation::shibboleth']
@@ -65,5 +63,5 @@ class { 'keystone::wsgi::apache':
 }
 
 class { 'keystone::federation::shibboleth':
-  methods => 'password, token, oauth1, saml2',
+  methods => ['password', 'token', 'oauth1', 'saml2'],
 }
