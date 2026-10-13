@@ -78,43 +78,29 @@ Apache + Shibboleth SP setups, where a REMOTE_USER env variable is always set, e
     'Debian': {
       include apache::mod::shib
       include apache::mod::authn_core
-
-      apache::vhost::fragment { 'configure_shibboleth_keystone':
-        vhost    => 'keystone_wsgi',
-        priority => $keystone::wsgi::apache::priority,
-        content  => template('keystone/shibboleth.conf.erb'),
-        order    => $template_order,
-      }
-
-      Concat<| title == "${keystone::wsgi::apache::priority}-keystone_wsgi.conf" |> {
-        show_diff => false,
-      }
     }
     'RedHat': {
-      if defined(Yumrepo[$yum_repo_name]) or defined(Package['shibboleth']) {
-        class { 'apache::mod::shib':
-          mod_full_path    => '/usr/lib64/shibboleth/mod_shib_24.so',
-          suppress_warning => $suppress_warning,
-        }
-
-        apache::vhost::fragment { 'configure_shibboleth_keystone':
-          vhost    => 'keystone_wsgi',
-          priority => $keystone::wsgi::apache::priority,
-          content  => template('keystone/shibboleth.conf.erb'),
-          order    => $template_order,
-        }
-
-        Concat<| title == "${keystone::wsgi::apache::priority}-keystone_wsgi.conf" |> {
-          show_diff => false,
-        }
-      } else {
-        if !$suppress_warning {
-          warning( 'Can not configure Shibboleth in Apache on RedHat OS. Read the Note on this federation/shibboleth.pp' )
-        }
+      if defined(Yumrepo[$yum_repo_name]) and ! $suppress_warning {
+        warning("The Yumrepo[${yum_repo_name}] resource is not found.")
+      }
+      class { 'apache::mod::shib':
+        mod_full_path    => '/usr/lib64/shibboleth/mod_shib_24.so',
+        suppress_warning => $suppress_warning,
       }
     }
     default: {
       fail('Unsupported platform')
     }
+  }
+
+  apache::vhost::fragment { 'configure_shibboleth_keystone':
+    vhost    => 'keystone_wsgi',
+    priority => $keystone::wsgi::apache::priority,
+    content  => template('keystone/shibboleth.conf.erb'),
+    order    => $template_order,
+  }
+
+  Concat<| title == "${keystone::wsgi::apache::priority}-keystone_wsgi.conf" |> {
+    show_diff => false,
   }
 }

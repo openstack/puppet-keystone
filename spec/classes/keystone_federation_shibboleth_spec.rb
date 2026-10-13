@@ -60,10 +60,9 @@ EOS
   end
 
   shared_examples 'keystone::federation::shibboleth on RedHat' do
-    context 'with shibboleth package' do
+    context 'with shibboleth repo' do
       let(:pre_condition) do
         <<-EOS
-        package { 'shibboleth': ensure => present }
         include apache
         class { 'keystone':
           service_name => 'httpd',
@@ -112,15 +111,6 @@ EOS
           :order    => params[:template_order],
         })}
         it { is_expected.to contain_concat('10-keystone_wsgi.conf').with_show_diff(false) }
-      end
-    end
-
-    context 'without repo or package' do
-      context 'with defaults' do
-        let (:params) { default_params }
-        it { is_expected.to_not contain_apache__mod('shib2') }
-        it { is_expected.to contain_keystone_config('auth/methods').with_value('password, token, saml2') }
-        it { is_expected.to_not contain_apache__vhost__fragment('configure_shibboleth_keystone') }
       end
     end
   end
